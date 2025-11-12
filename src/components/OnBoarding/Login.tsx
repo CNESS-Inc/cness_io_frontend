@@ -201,10 +201,14 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
+  console.log("🚀 ~ Login ~ apiMessage:", apiMessage)
   const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
   const [showResendEmail, setShowResendEmail] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const { showToast } = useToast();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const validatePassword = (password: string): string | undefined => {
     if (!password) return "Password is required";
@@ -451,6 +455,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
       if (response) {
         setAuthenticated(true);
+          setShowResendEmail(false);
         setApiMessage(response?.success?.message || "Login successful");
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
@@ -654,9 +659,10 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
         // Check if the error is about email verification
         if (
-          errorMessage?.includes("Email Not Verified") ||
-          errorMessage?.includes("verify") ||
-          errorMessage?.includes("verification")
+          errorMessage?.includes("Email Not Verified. Please Verify to login.!")
+          // ||
+          // errorMessage?.includes("verify") ||
+          // errorMessage?.includes("verification")
         ) {
           setShowResendEmail(true);
           setUnverifiedEmail(form.email.value.trim());
@@ -1289,9 +1295,15 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     name="email"
                     required
                     placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setApiMessage(null);
+                      setShowResendEmail(false);
+                    }}
                     onFocus={() => setEmailFocused(true)}
                     onBlur={() => setEmailFocused(false)}
-                    className={`w-full h-[53px] px-[10px] rounded-[2px] border-2 ${
+                    className={`w-full h-[53px] px-2.5 rounded-xs border-2 ${
                       loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
                     } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
@@ -1322,8 +1334,14 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                   id="password"
                   name="password"
                   required
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setApiMessage(null);
+                    setShowResendEmail(false);
+                  }}
                   placeholder="Enter your Password"
-                  className={`w-full h-[53px] px-[10px] rounded-[4px] border-2 ${
+                  className={`w-full h-[53px] px-2.5 rounded-sm border-2 ${
                     loginErrors.password ? "border-red-500" : "border-[#CBD5E1]"
                   } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                 />

@@ -1,5 +1,9 @@
-import React from "react";
-import { Play, Download, Star, Pencil, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Play, Download, Star, Pencil, X, Video, Music, BookOpen, FileAudio, FileText, Palette } from "lucide-react";
+import { DeleteSellerProduct, GetSellerProducts } from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
 //import { useState } from "react";
 interface StatCardProps {
   title: string;
@@ -7,24 +11,35 @@ interface StatCardProps {
   icon: string;
 }
 
-interface ProductRowProps {
-  productNo: string
-  thumbnail: string
-  courseName: string
-  price: string
-  category: string
-  uploadDate: string
-  status: 'pending' | 'approved' | 'rejected'
-}
 interface ProductItemProps {
   title: string;
   price: string;
-  category: string;
+  category: any;
   downloads: string;
   rating: string;
   image: string;
 }
 
+interface ProductRowProps {
+  id: string;
+  video_details?: any;
+  product_name: string;
+  price: string;
+  original_price: string;
+  discount_percentage: string;
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  updated_date: string;
+  status: string;
+  is_published: boolean;
+  is_active: boolean;
+  index: number;
+  currentPage: number;
+  handleDelete: (id: string) => void;
+}
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon }) => {
   return (
@@ -44,8 +59,6 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon }) => {
   );
 };
 
-
-
 const ProductItem: React.FC<ProductItemProps> = ({
   title,
   price,
@@ -55,7 +68,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
   image,
 }) => {
   return (
-   <div className="
+    <div className="
   
   gap-1 py-1              /* XS (extra small, very compact) */
   sm:gap-3 sm:py-3        /* Small and up */
@@ -137,109 +150,273 @@ const products = [
   },
 ];
 
+const getCategoryIcon = (categoryName: string) => {
+  const iconMap: { [key: string]: any } = {
+    "Video": <Video className="w-5 h-5 text-black" />,
+    "Music": <Music className="w-5 h-5 text-black" />,
+    "Course": <BookOpen className="w-5 h-5 text-black" />,
+    "Podcast": <FileAudio className="w-5 h-5 text-black" />,
+    "eBook": <FileText className="w-5 h-5 text-black" />,
+    "Art": <Palette className="w-5 h-5 text-black" />,
+  };
 
-const ProductRow: React.FC<ProductRowProps> = ({ 
-  productNo, 
-  thumbnail, 
-  courseName, 
-  price, 
-  category, 
-  uploadDate, 
-  status 
+  return iconMap[categoryName] || <BookOpen className="w-5 h-5 text-black" />;
+};
+
+const getCategoryIconLarge = (categoryName: string) => {
+  const iconMap: { [key: string]: any } = {
+    "Video": <Video className="w-8 h-8 text-white" />,
+    "Music": <Music className="w-8 h-8 text-white" />,
+    "Course": <BookOpen className="w-8 h-8 text-white" />,
+    "Podcast": <FileAudio className="w-8 h-8 text-white" />,
+    "eBook": <FileText className="w-8 h-8 text-white" />,
+    "Art": <Palette className="w-8 h-8 text-white" />,
+  };
+
+  return iconMap[categoryName] || <BookOpen className="w-8 h-8 text-white" />;
+};
+
+const getCategoryColor = (categoryName: string) => {
+  const colorMap: { [key: string]: string } = {
+    "Video": "bg-gradient-to-br from-red-500 to-pink-500",
+    "Music": "bg-gradient-to-br from-purple-500 to-indigo-500",
+    "Course": "bg-gradient-to-br from-blue-500 to-cyan-500",
+    "Podcast": "bg-gradient-to-br from-orange-500 to-yellow-500",
+    "eBook": "bg-gradient-to-br from-emerald-500 to-teal-500",
+    "Art": "bg-gradient-to-br from-pink-500 to-rose-500",
+  };
+
+  return colorMap[categoryName] || "bg-gradient-to-br from-gray-500 to-slate-500";
+};
+
+const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string) => void }> = ({
+  id,
+  video_details,
+  product_name,
+  price,
+  original_price,
+  discount_percentage,
+  category,
+  updated_date,
+  status,
+  onEdit,
+  handleDelete
 }) => {
+
   const getStatusStyle = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-purple-100 text-purple-600'
-      case 'approved':
-        return 'bg-green-100 text-green-600'
-      case 'rejected':
-        return 'bg-red-100 text-red-600'
+    switch (status.toLowerCase()) {
+      case "draft":
+        return "bg-yellow-100 text-yellow-600";
+      case "pending":
+        return "bg-purple-100 text-purple-600";
+      case "published":
+        return "bg-green-100 text-green-600";
+      case "approved":
+        return "bg-green-100 text-green-600";
+      case "rejected":
+        return "bg-red-100 text-red-600";
       default:
-        return 'bg-gray-100 text-gray-600'
+        return "bg-gray-100 text-gray-600";
     }
-  }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    };
+    return date.toLocaleDateString('en-US', options);
+  };
+
+  const displayPrice = () => {
+    const hasDiscount = discount_percentage && parseFloat(discount_percentage) > 0;
+
+    if (hasDiscount) {
+      return (
+        <div className="flex flex-col">
+          <span className="text-[#1A1A1A] text-base font-semibold">${price}</span>
+          <span className="text-gray-400 text-xs line-through">${original_price}</span>
+        </div>
+      );
+    }
+
+    return <span className="text-[#1A1A1A] text-base font-semibold">${price}</span>;
+  };
+
+  const renderThumbnail = () => {
+    const isVideo = category.slug.toLowerCase() === 'video';
+
+    if (isVideo) {
+      const thumbnailUrl = video_details?.main_video?.thumbnail ||
+        video_details?.thumbnail_url ||
+        video_details?.thumbnail;
+
+      if (thumbnailUrl) {
+        return (
+          <img
+            src={thumbnailUrl}
+            alt={product_name}
+            className="w-[90px] h-[58px] rounded-md object-cover shadow-sm"
+            onError={(e) => {
+              // Fallback to default video icon on error
+              (e.target as HTMLImageElement).src = 'https://cdn.cness.io/VIDEO%20(1).svg';
+            }}
+          />
+        );
+      }
+    }
+
+    // For other categories, show a professional box with icon
+    return (
+      <div className={`w-[90px] h-[58px] rounded-lg ${getCategoryColor(category.name)} flex items-center justify-center shadow-md hover:shadow-lg transition-shadow duration-200`}>
+        {getCategoryIconLarge(category.name)}
+      </div>
+    );
+  };
 
   return (
-    <tr className="border-b border-gray-100">
-      <td className="py-6 px-6 text-gray-900 text-base">{productNo}</td>
-      <td className="py-6 px-6">
-        <img 
-          src={thumbnail} 
-          alt="Product thumbnail"
-          className="w-22.25 h-14.5 rounded object-cover"
-        />
+    <tr className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+      <td className="py-6 px-6 text-[#1A1A1A] text-base">
+        {id}
       </td>
-      <td className="py-3 px-2 text-gray-900 text-sm leading-5 max-w-31.25">{courseName}</td>
-      <td className="py-6 px-6 text-gray-900 text-base">{price}</td>
+      <td className="py-6 px-6">
+        {renderThumbnail()}
+      </td>
+      <td className="py-6 px-6 text-[#1A1A1A] text-sm leading-5 max-w-[220px] truncate" title={product_name}>
+        {product_name}
+      </td>
+      <td className="py-6 px-6">
+        {displayPrice()}
+      </td>
       <td className="py-6 px-6">
         <div className="flex items-center gap-2">
-          <Play className="w-5 h-5 text-gray-900" />
-          <span className="text-gray-900 text-base">{category}</span>
+          {getCategoryIcon(category.name)}
+          <span className="text-[#1A1A1A] text-base">{category.name}</span>
         </div>
       </td>
-      <td className="py-3 px-2 text-gray-900 text-base">{uploadDate}</td>
+      <td className="py-6 px-6 text-[#1A1A1A] text-base">{formatDate(updated_date)}</td>
       <td className="py-6 px-6">
-        <span className={`px-5 py-1.5 rounded-full text-xs font-medium ${getStatusStyle(status)}`}>
+        <span
+          className={`px-5 py-1.5 rounded-full text-xs font-medium ${getStatusStyle(status)}`}
+        >
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
       </td>
       <td className="py-6 px-6">
         <div className="flex items-center gap-2">
-          
-          <button className="text-gray-600 hover:text-gray-800">
-            <Pencil className="w-6 h-6" fill="black" />
+          <button
+            className="text-gray-600 hover:text-gray-800 transition-colors p-1 rounded hover:bg-gray-100"
+            onClick={() => onEdit(id, category?.slug)}
+            title="Edit product"
+          >
+            <Pencil className="w-5 h-5" />
           </button>
-          <button className="text-gray-600 hover:text-gray-800">
-            <X className="w-6 h-6" />
+          <button
+            className="text-gray-600 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
+            title="Delete product"
+            onClick={() => handleDelete(id)}
+          >
+            <X className="w-5 h-5" />
           </button>
         </div>
       </td>
     </tr>
-  )
-}
-
-const queue = [
-    {
-      productNo: "#P0012",
-      thumbnail: "https://static.codia.ai/image/2025-10-29/MqPwkBCmiC.png",
-      courseName: "Soft guitar moods that heals your inner pain",
-      price: "$1259",
-      category: "Course",
-      uploadDate: "12 Oct, 2025",
-      status: "pending" as const
-    },
-    {
-      productNo: "#P0013",
-      thumbnail: "https://static.codia.ai/image/2025-10-29/MqPwkBCmiC.png",
-      courseName: "Soft guitar moods that heals your inner pain",
-      price: "$1259",
-      category: "Course",
-      uploadDate: "12 Oct, 2025",
-      status: "approved" as const
-    },
-    {
-      productNo: "#P0014",
-      thumbnail: "https://static.codia.ai/image/2025-10-29/MqPwkBCmiC.png",
-      courseName: "Soft guitar moods that heals your inner pain",
-      price: "$1259",
-      category: "Course",
-      uploadDate: "12 Oct, 2025",
-      status: "rejected" as const
-    }
-  ]
-
+  );
+};
 
 const VendorDashboard: React.FC = () => {
+  const [productData, setProductData] = useState<ProductRowProps[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteProductId, setDeleteProductId] = useState<string | null>(null);
+  const { showToast } = useToast();
+  const navigate = useNavigate();
 
-const chartData = [
-  { week: "Week 6", date: "1 - 7 Oct, 2025", value: "$1200", height: 180 },
-  { week: "Week 5", date: "8 - 14 Oct, 2025", value: "$950", height: 140 },
-  { week: "Week 4", date: "15 - 21 Oct, 2025", value: "$1210", height: 200 },
-  { week: "Week 3", date: "12 - 18 October, 2025", value: "$2435", height: 240 },
-  { week: "Week 2", date: "22 - 28 Oct, 2025", value: "$1280", height: 210 },
-  { week: "Week 1", date: "29 Oct - 4 Nov, 2025", value: "$700", height: 110 },
-];
+  useEffect(() => {
+    fetchProductsData();
+  }, [])
+
+  const fetchProductsData = async () => {
+    setIsLoadingProducts(true);
+    try {
+      const response = await GetSellerProducts();
+      const products = response?.data?.data?.products || [];
+      setProductData(products);
+      // const pagination = response?.data?.data?.pagination || {};
+
+      // const filteredProducts = products.filter((product: any) => product.status.toLowerCase() !== "deleted");
+
+      // setProductData(filteredProducts);
+      // setTotalPages(pagination.total_pages || 1);
+
+      // if (filteredProducts.length === 0 && currentPage > 1) {
+      //   setCurrentPage(1);
+      // }
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.error?.message || "Failed to load products.";
+      showToast({
+        message: errorMessage,
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  };
+
+  const handleEditProduct = (productId: string, categorySlug: string) => {
+    // Navigate to edit page based on category
+    const routeMap: { [key: string]: string } = {
+      "video": `/dashboard/products/edit-video/${productId}`,
+      "music": `/dashboard/products/edit-music/${productId}`,
+      "course": `/dashboard/products/edit-course/${productId}`,
+      "podcast": `/dashboard/products/edit-podcast/${productId}`,
+      "ebook": `/dashboard/products/edit-ebook/${productId}`,
+      "art": `/dashboard/products/edit-art/${productId}`,
+    };
+
+    const route = routeMap[categorySlug] || `/dashboard/products/edit/${productId}`;
+    navigate(route);
+  };
+
+  const handleDelete = (productId: string) => {
+    setDeleteProductId(productId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteProductId) {
+      try {
+        await DeleteSellerProduct(deleteProductId);
+        setShowDeleteModal(false);
+        showToast({
+          message: "Product deleted successfully.",
+          type: "success",
+          duration: 3000,
+        });
+        fetchProductsData();
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.error?.message || "Failed to delete product.";
+        showToast({
+          message: errorMessage,
+          type: "error",
+          duration: 3000,
+        });
+      }
+    }
+  };
+
+  const chartData = [
+    { week: "Week 6", date: "1 - 7 Oct, 2025", value: "$1200", height: 180 },
+    { week: "Week 5", date: "8 - 14 Oct, 2025", value: "$950", height: 140 },
+    { week: "Week 4", date: "15 - 21 Oct, 2025", value: "$1210", height: 200 },
+    { week: "Week 3", date: "12 - 18 October, 2025", value: "$2435", height: 240 },
+    { week: "Week 2", date: "22 - 28 Oct, 2025", value: "$1280", height: 210 },
+    { week: "Week 1", date: "29 Oct - 4 Nov, 2025", value: "$700", height: 110 },
+  ];
 
   //const [hovered, setHovered] = useState<number | null>(null);
 
@@ -269,107 +446,106 @@ const chartData = [
         />
       </div>
 
-   {/* Sales Summary + Best Selling */}
-   <div className="grid  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6 mt-5">
+      {/* Sales Summary + Best Selling */}
+      <div className="grid  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6 mt-5">
         {/* Sales Summary */}
-      
- <div className="col-span-2 sm:col-span-1 md:col-span-1 lg:col-span-2 bg-white border border-[#E6E8EC] rounded-[12px] p-[14px] shadow-sm">
-      {/* Header */}
-        <h2 className="text-[#242E3A] font-['Poppins'] font-semibold text-[18px] mb-1">
-    Sales Summary
-  </h2>
-  <p className="text-gray-500 text-sm mb-6 font-['Open_Sans']">
-    Will update every week’s data
-  </p>
 
-  {/* CHART */}
-  <div className="relative h-[365px] sm:px-0 md:px-0 lg:px-3 flex items-end gap-1 overflow-hidden">
+        <div className="col-span-2 bg-white border border-[#E6E8EC] rounded-xl p-6 shadow-sm">
+          {/* Header */}
+          <h2 className="text-[#242E3A] font-['Poppins'] font-semibold text-[18px] mb-1">
+            Sales Summary
+          </h2>
+          <p className="text-gray-500 text-sm mb-6 font-['Open_Sans']">
+            Will update every week’s data
+          </p>
 
-    {chartData.map((bar, i) => {
-      const CIRCLE_OFFSET = 15;
-      const CHART_MAX_HEIGHT = 330;
+          {/* CHART */}
+          <div className="relative h-[350px] px-3 pb-6 flex items-end gap-1 overflow-hidden">
 
-      // Circle Bottom Position (relative to bar height)
-      const circleBottom = bar.height - CIRCLE_OFFSET;
+            {chartData.map((bar, i) => {
+              const CIRCLE_OFFSET = 15;
+              const CHART_MAX_HEIGHT = 330;
 
-      // Dashed line height = remaining space from bar top to max height
-      const dashedLineHeight = CHART_MAX_HEIGHT - bar.height;
+              // Circle Bottom Position (relative to bar height)
+              const circleBottom = bar.height - CIRCLE_OFFSET;
 
-      return (
-        <div key={i} className="relative flex-1 min-w-[60px] flex flex-col items-center justify-end group">
-          {/* Tooltip */}
-          <div className="absolute -top-[90px] left-1/2 -translate-x-1/2 z-20 
+              // Dashed line height = remaining space from bar top to max height
+              const dashedLineHeight = CHART_MAX_HEIGHT - bar.height;
+
+              return (
+                <div key={i} className="relative flex-1 min-w-[60px] flex flex-col items-center justify-end group">
+                  {/* Tooltip */}
+                  <div className="absolute -top-[90px] left-1/2 -translate-x-1/2 z-20 
                           opacity-0 group-hover:opacity-100 invisible group-hover:visible
                           transition-all duration-200">
-                            
-            <div className="bg-white border border-[#B197FC] rounded-xl shadow-lg px-3 py-2 text-center min-w-[140px]">
-              <div className="text-gray-500 text-[12px]">{bar.date}</div>
-              <div className="text-gray-900 font-semibold text-[16px] mt-[2px]">{bar.value}</div>
-            </div>
+
+                    <div className="bg-white border border-[#B197FC] rounded-xl shadow-lg px-3 py-2 text-center min-w-[140px]">
+                      <div className="text-gray-500 text-[12px]">{bar.date}</div>
+                      <div className="text-gray-900 font-semibold text-[16px] mt-[2px]">{bar.value}</div>
+                    </div>
+                  </div>
+
+                  {/* Vertical Dashed Line (from bar top to remaining space) */}
+                  <svg
+                    className="absolute left-1/2 -translate-x-1/2 z-[5]"
+                    width="2"
+                    height={dashedLineHeight}
+                    style={{ bottom: `${bar.height}px` }}
+                  >
+                    <line
+                      x1="1"
+                      y1={0}
+                      x2="1"
+                      y2={dashedLineHeight}
+                      stroke="#9CA3AF"
+                      strokeWidth="1.5"
+                      strokeDasharray="12 10"
+                      opacity="0.6"
+                    />
+                  </svg>
+
+                  {/* Circle (outer dashed + inner solid) */}
+                  <div
+                    className="absolute left-1/2 -translate-x-1/2 z-20"
+                    style={{ bottom: `${circleBottom}px` }}
+                  >
+                    <div className="relative w-[54px] h-[54px] flex items-center justify-center">
+                      {/* Outer dashed circle */}
+                      <svg width="54" height="54" viewBox="0 0 54 54" className="absolute">
+                        <circle
+                          cx="27"
+                          cy="27"
+                          r="25"
+                          fill="transparent"
+                          stroke="#7077FE"
+                          strokeWidth="1"
+                          strokeDasharray="10,8"
+                        />
+                      </svg>
+
+                      {/* Inner solid */}
+                      <div className="w-[40px] h-[40px] rounded-full bg-[#7177FE] shadow-md"></div>
+                    </div>
+                  </div>
+
+                  {/* Bar */}
+                  <div
+                    className="w-[42px] rounded-t-full relative overflow-hidden"
+                    style={{ height: bar.height }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-[#E2E4FF]/100 via-[#E2E4FF] to-[#B3B8FA]"></div>
+                  </div>
+
+                  {/* ✅ Label */}
+                  <span className="text-gray-600 text-[14px] mt-3">{bar.week}</span>
+                </div>
+              );
+            })}
           </div>
-
-          {/* Vertical Dashed Line (from bar top to remaining space) */}
-          <svg
-            className="absolute left-1/2 -translate-x-1/2 z-[5]"
-            width="2"
-            height={dashedLineHeight}
-            style={{ bottom: `${bar.height}px` }}
-          >
-            <line
-              x1="1"
-              y1={0}
-              x2="1"
-              y2={dashedLineHeight}
-              stroke="#9CA3AF"
-              strokeWidth="1.5"
-              strokeDasharray="12 10"
-              opacity="0.6"
-            />
-          </svg>
-
-          {/* Circle (outer dashed + inner solid) */}
-          <div
-            className="absolute left-1/2 -translate-x-1/2 z-20"
-            style={{ bottom: `${circleBottom}px` }}
-          >
-            <div className="relative w-[54px] h-[54px] flex items-center justify-center">
-              {/* Outer dashed circle */}
-              <svg width="54" height="54" viewBox="0 0 54 54" className="absolute">
-                <circle
-                  cx="27"
-                  cy="27"
-                  r="25"
-                  fill="transparent"
-                  stroke="#7077FE"
-                  strokeWidth="1"
-                  strokeDasharray="10,8"
-                />
-              </svg>
-
-              {/* Inner solid */}
-              <div className="w-[40px] h-[40px] rounded-full bg-[#7177FE] shadow-md"></div>
-            </div>
-          </div>
-
-          {/* Bar */}
-          <div
-            className="w-[42px] rounded-t-full relative overflow-hidden"
-            style={{ height: bar.height }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-[#E2E4FF]/100 via-[#E2E4FF] to-[#B3B8FA]"></div>
-          </div>
-
-          {/* ✅ Label */}
-          <span className="text-gray-600 text-[14px] mt-3">{bar.week}</span>
         </div>
-      );
-    })}
-  </div>
-</div>
-
 
         {/* Best Selling */}
-  <div className="bg-white border border-gray-200 rounded-[12px] p-[10px] h-auto shadow-sm">
+        <div className="bg-white border border-gray-200 rounded-[12px] p-[10px] h-auto shadow-sm">
           <h2 className="text-[#242E3A] font-['Poppins'] font-semibold text-[18px] mb-1">
             Best Selling
           </h2>
@@ -385,37 +561,97 @@ const chartData = [
         </div>
       </div>
 
-{/* Product Submission Queue */}
+      {/* Product Submission Queue */}
       <div className="space-y-4 mt-10">
-      <div>
-       <h2 className="text-gray-800 font-['Poppins'] font-semibold text-[18px] leading-[130%] tracking-[0] capitalize mb-0.5">
-Product Submission Queue</h2>
-<p className="text-gray-600 font-['Open_Sans'] font-[400] text-[14px] leading-[115%] tracking-[0] mt-2">
-Check the status of all newly submitted digital products and take action quickly</p>
+        <div>
+          <h2 className="text-gray-800 font-['Poppins'] font-semibold text-[18px] leading-[130%] tracking-[0] capitalize mb-0.5">
+            Product Submission Queue</h2>
+          <p className="text-gray-600 font-['Open_Sans'] font-[400] text-[14px] leading-[115%] tracking-[0] mt-2">
+            Check the status of all newly submitted digital products and take action quickly</p>
+        </div>
+
+        <div className="bg-white border border-gray-300 rounded-xl overflow-hidden">
+          {isLoadingProducts ? (
+            <div className="flex justify-center items-center py-20">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <table className="w-full table-auto">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[8%]">P.No</th>
+                  <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[10%]">Thumbnail</th>
+                  <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[20%]">Course name</th>
+                  <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[10%]">Price</th>
+                  <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[12%]">Categories</th>
+                  <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[10%]">Uploaded Date</th>
+                  <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[10%]">Status</th>
+                  <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[8%]">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {productData.length > 0 ? (
+                  productData.map((product: ProductRowProps, index: number) => (
+                    <ProductRow
+                      key={product.id}
+                      {...product}
+                      index={index}
+                      onEdit={handleEditProduct}
+                      handleDelete={handleDelete}
+                      video_details={product.video_details}
+                    />
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={8} className="text-center py-12">
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="text-gray-400 mb-2">
+                          <Video className="w-16 h-16" />
+                        </div>
+                        <p className="text-gray-600 font-medium">No products found</p>
+                        <p className="text-gray-400 text-sm mt-1">
+                          You haven't added any products yet. Start by adding your first one!
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
-      
-  <div className="bg-white border border-gray-300 rounded-xl overflow-x-auto">
-    <table className="min-w-[800px] w-full table-auto">
-          <thead>
-            <tr className="border-b border-gray-200">
-              <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[8%]">P.No</th>
-          <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[10%]">Thumbnail</th>
-          <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[20%]">Course name</th>
-          <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[10%]">Price</th>
-          <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[12%]">Categories</th>
-          <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[10%]">Uploaded Date</th>
-          <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[10%]">Status</th>
-          <th className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#8A8A8A] text-left w-[8%]">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {queue.map((product, index) => (
-              <ProductRow key={index} {...product} />
-            ))}
-          </tbody>
-      </table>
-      </div>
-    </div>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowDeleteModal(false)}
+          ></div>
+          <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-8 w-[450px]">
+            <h3 className="text-[20px] font-semibold font-['Poppins'] text-[#242E3A] mb-4">
+              Delete Product?
+            </h3>
+            <p className="text-[14px] text-[#665B5B] font-['Open_Sans'] mb-6">
+              Are you sure you want to delete this product? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-5 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

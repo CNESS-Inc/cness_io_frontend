@@ -36,7 +36,12 @@ const StoryCard: React.FC<StoryCardProps> = ({
     {/* <div onClick={() => handleReel(id)}> */}
       <div className="relative w-40 h-80 rounded-lg overflow-hidden shadow-md">
         <LazyLoadComponent>
-          <video
+          <img
+              src={videoSrc}
+              alt={userName}
+             className="w-full h-full object-cover absolute top-0 left-0"
+            />
+          {/* <video
             className="w-full h-full object-cover absolute top-0 left-0"
             autoPlay
             loop
@@ -44,7 +49,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
           >
             <source src={videoSrc} type="video/mp4" />
             Your browser does not support the video tag.
-          </video>
+          </video> */}
         </LazyLoadComponent>
       <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-black/30 to-black/20 animate-shimmer"></div>
         <div className="absolute bottom-0 left-0 w-full p-4">

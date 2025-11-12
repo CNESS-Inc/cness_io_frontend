@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Trash2, Video, ShoppingCart } from "lucide-react";
+import { Trash2, Video, ShoppingCart, Star, ClockFading, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   AddProductToWishlist,
+  CreateCheckoutSession,
   GetProductCart,
   RemoveProductToCart,
   RemoveProductToWishlist
@@ -10,49 +11,16 @@ import {
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
-interface CartItem {
-  id: string;
-  product_id: string;
-  quantity: number;
-  product: {
-    id: string;
-    product_title: string;
-    thumbnail_url: string;
-    seller: {
-      shop_name: string;
-    };
-    product_category: {
-      name: string;
-    };
-    mood: {
-      name: string;
-      icon: string;
-    };
-    rating: string;
-    total_reviews: number;
-    price: string;
-    final_price: string;
-    discount_percentage: string;
-    video_details?: {
-      duration: string;
-    };
-    music_details?: {
-      total_duration: string;
-    };
-    isInWishlist?: boolean;
-  };
-}
-
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
 
   const [cartItems, setCartItems] = useState<any[]>([]);
-  // const [summary, setSummary] = useState<any>({});
+  const [summary, setSummary] = useState<any>({});
   // console.log('cartItems', cartItems)
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-  const [selectAll, setSelectAll] = useState(false);
+  // const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  // const [selectAll, setSelectAll] = useState(false);
 
   // Fetch cart items
   const fetchCartItems = async () => {
@@ -61,7 +29,7 @@ const CartPage: React.FC = () => {
       const response = await GetProductCart();
       console.log('response', response)
       const items = response?.data?.data?.cart_items || [];
-      // setSummary(response?.data?.data?.summary || {});
+      setSummary(response?.data?.data?.summary || {});
       setCartItems(items);
     } catch (error: any) {
       showToast({
@@ -91,11 +59,11 @@ const CartPage: React.FC = () => {
       fetchCartItems(); // Refresh cart
 
       // Remove from selected items if it was selected
-      setSelectedItems(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(cartItemId);
-        return newSet;
-      });
+      // setSelectedItems(prev => {
+      //   const newSet = new Set(prev);
+      //   newSet.delete(cartItemId);
+      //   return newSet;
+      // });
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message || "Failed to remove item",
@@ -106,9 +74,9 @@ const CartPage: React.FC = () => {
   };
 
   // Handle Add/Remove from Wishlist
-  const handleWishlistToggle = async (item: CartItem) => {
+  const handleWishlistToggle = async (item: any) => {
     try {
-      if (item.product.isInWishlist) {
+      if (item?.is_in_wishlist) {
         await RemoveProductToWishlist(item.product_id);
         showToast({
           message: "Removed from wishlist",
@@ -134,86 +102,102 @@ const CartPage: React.FC = () => {
   };
 
   // Handle Select Item
-  const handleSelectItem = (itemId: string) => {
-    setSelectedItems(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(itemId)) {
-        newSet.delete(itemId);
-      } else {
-        newSet.add(itemId);
-      }
-      return newSet;
-    });
-  };
+  // const handleSelectItem = (itemId: string) => {
+  //   setSelectedItems(prev => {
+  //     const newSet = new Set(prev);
+  //     if (newSet.has(itemId)) {
+  //       newSet.delete(itemId);
+  //     } else {
+  //       newSet.add(itemId);
+  //     }
+  //     return newSet;
+  //   });
+  // };
 
   // Handle Select All
-  const handleSelectAll = () => {
-    if (selectAll) {
-      setSelectedItems(new Set());
-    } else {
-      setSelectedItems(new Set(cartItems.map(item => item.id)));
-    }
-    setSelectAll(!selectAll);
-  };
+  // const handleSelectAll = () => {
+  //   if (selectAll) {
+  //     setSelectedItems(new Set());
+  //   } else {
+  //     setSelectedItems(new Set(cartItems.map(item => item.id)));
+  //   }
+  //   setSelectAll(!selectAll);
+  // };
 
   // Update selectAll state when individual items change
-  useEffect(() => {
-    setSelectAll(cartItems.length > 0 && selectedItems.size === cartItems.length);
-  }, [selectedItems, cartItems]);
+  // useEffect(() => {
+  //   setSelectAll(cartItems.length > 0 && selectedItems.size === cartItems.length);
+  // }, [selectedItems, cartItems]);
 
   // Calculate Price Details
-  const calculatePriceDetails = () => {
-    const selectedCartItems = Array.isArray(cartItems)
-      ? cartItems.filter(item => selectedItems.has(item.cart_id))
-      : [];
+  // const calculatePriceDetails = () => {
+  //   const selectedCartItems = Array.isArray(cartItems)
+  //     ? cartItems.filter(item => selectedItems.has(item.cart_id))
+  //     : [];
 
-    const subtotal = selectedCartItems.reduce((sum, item) => {
-      return sum + (parseFloat(item.price) * item.quantity);
-    }, 0);
+  //   const subtotal = selectedCartItems.reduce((sum, item) => {
+  //     return sum + (parseFloat(item.price) * item.quantity);
+  //   }, 0);
 
-    const platformFee = 1; // Fixed platform fee
+  //   const platformFee = 1; // Fixed platform fee
 
-    const discountAmount = selectedCartItems.reduce((sum, item) => {
-      const originalPrice = parseFloat(item.price);
-      const finalPrice = parseFloat(item.discounted_price);
-      return sum + ((originalPrice - finalPrice) * item.quantity);
-    }, 0);
+  //   const discountAmount = selectedCartItems.reduce((sum, item) => {
+  //     const originalPrice = parseFloat(item.price);
+  //     const finalPrice = parseFloat(item.discounted_price);
+  //     return sum + ((originalPrice - finalPrice) * item.quantity);
+  //   }, 0);
 
-    const total = selectedCartItems.reduce((sum, item) => {
-      return sum + (parseFloat(item.discounted_price) * item.quantity);
-    }, 0) + platformFee;
+  //   const total = selectedCartItems.reduce((sum, item) => {
+  //     return sum + (parseFloat(item.discounted_price) * item.quantity);
+  //   }, 0) + platformFee;
 
-    const totalItems = selectedCartItems.reduce((sum, item) => sum + item.quantity, 0);
+  //   const totalItems = selectedCartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-    return {
-      subtotal: subtotal.toFixed(2),
-      platformFee: platformFee.toFixed(2),
-      discountAmount: discountAmount.toFixed(2),
-      total: total.toFixed(2),
-      totalItems,
-    };
-  };
+  //   return {
+  //     subtotal: subtotal.toFixed(2),
+  //     platformFee: platformFee.toFixed(2),
+  //     discountAmount: discountAmount.toFixed(2),
+  //     total: total.toFixed(2),
+  //     totalItems,
+  //   };
+  // };
 
-  const priceDetails = calculatePriceDetails();
+  // const priceDetails = calculatePriceDetails();
 
   // Handle Proceed to Checkout
-  const handleProceedToCheckout = () => {
-    if (selectedItems.size === 0) {
+  const handleProceedToCheckout = async () => {
+    // if (selectedItems.size === 0) {
+    //   showToast({
+    //     message: "Please select at least one item to checkout",
+    //     type: "error",
+    //     duration: 3000,
+    //   });
+    //   return;
+    // }
+
+    setIsLoading(true);
+    try {
+      const response = await CreateCheckoutSession();
+
+      // Get the Stripe session URL from response
+      const checkoutUrl = response?.data?.data?.checkout_url;
+
+      if (checkoutUrl) {
+        // Redirect to Stripe checkout page
+        window.location.href = checkoutUrl;
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (error: any) {
+      console.error("Checkout error:", error);
       showToast({
-        message: "Please select at least one item to checkout",
+        message: error?.response?.data?.error?.message || "Failed to proceed to checkout",
         type: "error",
         duration: 3000,
       });
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    const selectedCartItems = cartItems.filter(item => selectedItems.has(item.id));
-    navigate('/dashboard/checkout', {
-      state: {
-        cartItems: selectedCartItems,
-        priceDetails
-      }
-    });
   };
 
   if (isLoading) {
@@ -235,7 +219,7 @@ const CartPage: React.FC = () => {
               Cart ({cartItems?.length})
             </h1>
 
-            {cartItems.length > 0 && (
+            {/* {cartItems.length > 0 && (
               <label className="flex items-center gap-2 text-sm text-[#A7A6A6] cursor-pointer">
                 <span>Select all</span>
                 <input
@@ -245,7 +229,7 @@ const CartPage: React.FC = () => {
                   className="w-4 h-4 accent-[#7077FE] cursor-pointer"
                 />
               </label>
-            )}
+            )} */}
           </div>
 
           {/* CART ITEMS */}
@@ -286,26 +270,28 @@ const CartPage: React.FC = () => {
                       >
                         {item.product_name}
                       </h2>
-                      <p className="text-gray-500 text-sm">by {item.seller?.shop_name || "Unknown"}</p>
+                      <p className="text-gray-500 text-sm">by {item?.shop_name || "Unknown"}</p>
 
                       <div className="flex items-center flex-wrap gap-3 mt-1 text-sm text-gray-600">
                         <span className="flex items-center">
                           <Video className="w-5 h-5 mr-1 text-black" />
                           {item.category?.name || "Course"}
                         </span>
-                        {/* <span>
-                        {item.product.mood?.icon || "🕊️"} {item.product.mood?.name || "Peaceful"}
-                      </span> */}
-                        {/* <span className="flex items-center gap-1 text-[#7077FE] font-medium">
-                        <Star className="w-4 h-4 text-[#7077FE]" fill="#7077FE" />
-                        {parseFloat(item.product.rating || "0").toFixed(1)} ({item.product.total_reviews || 0})
-                      </span> */}
-                        {/* <span className="flex items-center gap-1 text-sm text-gray-700">
-                        <ClockFading className="w-4 h-4 text-[#7077FE]" />
-                        {item.product.video_details?.duration ||
-                          item.product.music_details?.total_duration ||
-                          "00:00:00"}
-                      </span> */}
+                        <span>
+                          {item.mood?.icon || "🕊️"} {item.mood?.name || "Peaceful"}
+                        </span>
+                        <span className="flex items-center gap-1 text-[#7077FE] font-medium">
+                          <Star className="w-4 h-4 text-[#7077FE]" fill="#7077FE" />
+                          {item?.rating?.average} ({item?.rating?.total_reviews || 0})
+                        </span>
+                        {item.duration && (
+                          <span className="flex items-center gap-1 text-sm text-gray-700">
+                            <ClockFading className="w-4 h-4 text-[#7077FE]" />
+                            {item.duration ||
+                              item.duration ||
+                              "00:00:00"}
+                          </span>
+                        )}
                       </div>
 
                       {/* Price Section */}
@@ -316,7 +302,7 @@ const CartPage: React.FC = () => {
                           </span>
                         )}
                         <span className="text-[#1A1A1A] font-semibold text-[16px]">
-                          {item.item_total}
+                          {item.discounted_price}
                         </span>
                         {item.discount_percentage && (
                           <span className="text-[#7077FE] text-sm">
@@ -347,27 +333,28 @@ const CartPage: React.FC = () => {
                         onClick={() => handleWishlistToggle(item)}
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                       >
-                        {/* <Heart
-                        className={`w-5 h-5 ${item.product.isInWishlist
-                          ? "text-red-500 fill-red-500"
-                          : "text-gray-500"
-                          }`}
-                      /> */}
+                        <Heart
+                          className={`w-5 h-5 ${item.is_in_wishlist
+                            ? "text-red-500 fill-red-500"
+                            : "text-gray-500"
+                            }`}
+                        />
                       </button>
 
                       {/* Select Checkbox */}
-                      <input
+                      {/* <input
                         type="checkbox"
                         checked={selectedItems.has(item.product_id)}
                         onChange={() => handleSelectItem(item.product_id)}
                         className="w-5 h-5 accent-[#7077FE] cursor-pointer"
-                      />
+                      /> */}
                     </div>
                   </div>
                 )
               })}
             </div>
-          )}
+          )
+          }
         </div>
 
         {/* RIGHT: PRICE DETAILS */}
@@ -380,19 +367,19 @@ const CartPage: React.FC = () => {
 
             {/* Box */}
             <div className="bg-[#F9F9F9] shadow-md rounded-xl p-6 pt-10 mt-5">
-              {/* <div className="space-y-3 text-sm text-gray-700">
+              <div className="space-y-3 text-sm text-gray-700">
                 <div className="flex justify-between">
-                  <span>Subtotal ({priceDetails.totalItems})</span>
-                  <span>${priceDetails.subtotal}</span>
+                  <span>Subtotal ({summary.total_products})</span>
+                  <span>${summary.subtotal}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Platform Fee</span>
-                  <span>${priceDetails.platformFee}</span>
+                  <span>${summary.platformFee || 0}</span>
                 </div>
-                {parseFloat(priceDetails.discountAmount) > 0 && (
+                {summary.total_discount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount</span>
-                    <span>- ${priceDetails.discountAmount}</span>
+                    <span>- ${summary.total_discount}</span>
                   </div>
                 )}
 
@@ -400,27 +387,24 @@ const CartPage: React.FC = () => {
 
                 <div className="flex justify-between font-semibold text-[16px] text-[#1A1A1A]">
                   <span>Total</span>
-                  <span>${priceDetails.total}</span>
+                  <span>${summary.total_amount}</span>
                 </div>
-              </div> */}
+              </div>
 
               <button
                 onClick={handleProceedToCheckout}
-                disabled={selectedItems.size === 0}
-                className={`mt-6 w-full py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${selectedItems.size === 0
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-[#7077FE] text-white hover:bg-[#5E65F6]"
-                  }`}
+                // disabled={selectedItems.size === 0}
+                className={`mt-6 w-full py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-[#7077FE] text-white hover:bg-[#5E65F6]`}
               >
                 <ShoppingCart className="w-5 h-5" />
                 Proceed to checkout
               </button>
 
-              {selectedItems.size === 0 && (
+              {/* {selectedItems.size === 0 && (
                 <p className="text-xs text-gray-500 text-center mt-2">
                   Select items to proceed
                 </p>
-              )}
+              )} */}
             </div>
           </div>
         )}

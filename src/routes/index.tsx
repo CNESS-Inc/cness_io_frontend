@@ -106,17 +106,13 @@ import SellerHelp from "../pages/SellerHelp";
 import DashboardFaqs from "../pages/DashboardFaqs";
 import SellerWithdrawal from "../pages/SellerWithdrawal";
 import Wallet from "../pages/Wallet";
-import EditVideoProductPage from "../pages/EditVideoProductPage";
-import EditMusicForm from "../pages/EditAudioProductPage";
 import AudioPreview from "../pages/MusicPreview";
-import EditPodcastForm from "../pages/EditPodcastProductPage";
 import PodcastPreview from "../pages/PodcastPreview";
-import EditEbookForm from "../pages/EditEbookProductPage";
 import EbookPreview from "../pages/EbookPreview";
-import EditCourseForm from "../pages/EditCourseProductPage";
 import CoursePreview from "../pages/CoursePreview";
 import ArtPreview from "../pages/ArtPreview";
-import EditArtsForm from "../pages/EditArtProductPage";
+import EditSellerProductPage from "../pages/EditSellerProductPage";
+import PaymentConfirmation from "../pages/PaymentConfirmation";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -197,10 +193,10 @@ export const router = createBrowserRouter([
         element: <WhyCness />,
       },
 
-        {
-    path: "social",
-    element: <Social />,
-  },
+      {
+        path: "social",
+        element: <Social />,
+      },
       {
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!
@@ -267,9 +263,9 @@ export const router = createBrowserRouter([
           },
 
           {
-              path:"wallet",
-              element:<Wallet />,
-            },
+            path: "wallet",
+            element: <Wallet />,
+          },
           {
             path: "upload-proof",
             element: <UploadProof />,
@@ -348,10 +344,13 @@ export const router = createBrowserRouter([
             element: <Checkout />,
           },
           {
+            path: "market-place/checkout-confirmation",
+            element: <PaymentConfirmation />,
+          },
+          {
             path: "payment-success",
             element: <PaymentSuccess />,
           },
-
           {
             path: "payment-failed",
             element: <PaymentFailed />,
@@ -362,7 +361,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "order-history",
-            element: <OrderHistory />
+            element: <OrderHistory />,
           },
           {
             path: "order-history/:id",
@@ -370,104 +369,84 @@ export const router = createBrowserRouter([
           },
           {
             path: "shops",
-            element: <ShopsList />
+            element: <ShopsList />,
           },
 
           {
             path: "seller-dashboard",
-            element: <VendorDashboard />
+            element: <VendorDashboard />,
           },
 
           {
             path: "createshop",
-            element: <CreateShopForm />
+            element: <CreateShopForm />,
           },
           {
             path: "products",
-            element: <SellerProductList />
+            element: <SellerProductList />,
           },
           {
             path: "products/add-video",
-            element: <AddVideoForm />
+            element: <AddVideoForm />,
           },
           {
             path: "products/add-podcast",
-            element: <AddPodcastsForm />
+            element: <AddPodcastsForm />,
           },
           {
             path: "products/add-ebook",
-            element: <AddEbookForm />
+            element: <AddEbookForm />,
           },
           {
             path: "products/add-music",
-            element: <AddMusicForm />
+            element: <AddMusicForm />,
           },
 
           {
             path: "products/add-course",
-            element: <AddCourseForm />
+            element: <AddCourseForm />,
           },
 
           {
             path: "products/add-arts",
-            element: <AddArtsForm />
+            element: <AddArtsForm />,
           },
           {
-            path: "products/edit-video/:productNo",
-            element: <EditVideoProductPage />
-          },
-          {
-            path: "products/edit-music/:productNo",
-            element: <EditMusicForm />
-          },
-          {
-            path: "products/edit-podcast/:productNo",
-            element: <EditPodcastForm />
-          },
-          {
-            path: "products/edit-ebook/:productNo",
-            element: <EditEbookForm />
-          },
-          {
-            path: "products/edit-course/:productNo",
-            element: <EditCourseForm />
-          },
-          {
-            path: "products/edit-art/:productNo",
-            element: <EditArtsForm />
+            path: "products/edit/:productNo",
+            element: <EditSellerProductPage />,
           },
           {
             path: "products/preview/:productNo",
-            element: <Preview />
+            element: <Preview />,
           },
           {
             path: "products/music-preview/:productNo",
-            element: <AudioPreview />
+            element: <AudioPreview />,
           },
           {
             path: "products/podcast-preview/:productNo",
-            element: <PodcastPreview />
+            element: <PodcastPreview />,
           },
           {
             path: "products/ebook-preview/:productNo",
-            element: <EbookPreview />
+            element: <EbookPreview />,
           },
           {
             path: "products/course-preview/:productNo",
-            element: <CoursePreview />
+            element: <CoursePreview />,
           },
           {
             path: "products/art-preview/:productNo",
-            element: <ArtPreview />
+            element: <ArtPreview />,
           },
 
           {
             path: "orderlist",
-            element: <SellerOrderList />
+            element: <SellerOrderList />,
           },
           {
             path: "seller-sales",
-            element: <SellerSales />
+            element: <SellerSales />,
           },
           {
             path: "seller-help",
@@ -480,13 +459,14 @@ export const router = createBrowserRouter([
 
           {
             path: "seller-sales/withdrawal",
-            element: <SellerWithdrawal />
+            element: <SellerWithdrawal />,
           },
 
           {
             path: "orderlist/:id",
-            element: <SellerOrderDetail />
-          }, {
+            element: <SellerOrderDetail />,
+          },
+          {
             path: "shop-detail/:id",
             element: <ShopDetail />,
           },
@@ -761,7 +741,7 @@ export const router = createBrowserRouter([
       },
     ],
   },*/
- 
+
   {
     path: "/email-verify",
     element: <EmailVerify />,
