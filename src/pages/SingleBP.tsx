@@ -318,6 +318,12 @@ const SingleBP = () => {
                   ›
                 </span>
                 <span className="truncate text-[#8A8A8A]">
+                  {singlepost?.profession_data?.title ? singlepost?.profession_data?.title : singlepost?.interest_data?.name}
+                </span>
+                <span className="text-dark text-[24px] sm:text-[30px] -mt-1.5 mx-1">
+                  ›
+                </span>
+                <span className="truncate text-[#8A8A8A]">
                   {singlepost?.title}
                 </span>
               </div>
@@ -394,9 +400,7 @@ const SingleBP = () => {
             <div className="border-t border-gray-200 pt-6">
               <div className="mb-8">
                 <p className="text-[#7177FE] text-sm font-medium">
-                  {singlepost?.profession_data?.title
-                    ? singlepost?.profession_data?.title
-                    : singlepost?.interest}
+                  {singlepost?.profession_data?.title ? singlepost?.profession_data?.title : singlepost?.interest_data?.name}
                 </p>
                 <h1 className="text-[34px] sm:text-3xl font-bold text-[#000000] mt-1 leading-snug">
                   {singlepost?.title}

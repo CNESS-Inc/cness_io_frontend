@@ -193,10 +193,10 @@ export const router = createBrowserRouter([
         element: <WhyCness />,
       },
 
-        {
-    path: "social",
-    element: <Social />,
-  },
+      {
+        path: "social",
+        element: <Social />,
+      },
       {
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!
@@ -263,9 +263,9 @@ export const router = createBrowserRouter([
           },
 
           {
-              path:"wallet",
-              element:<Wallet />,
-            },
+            path: "wallet",
+            element: <Wallet />,
+          },
           {
             path: "upload-proof",
             element: <UploadProof />,
@@ -361,7 +361,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "order-history",
-            element: <OrderHistory />
+            element: <OrderHistory />,
           },
           {
             path: "order-history/:id",
@@ -369,84 +369,84 @@ export const router = createBrowserRouter([
           },
           {
             path: "shops",
-            element: <ShopsList />
+            element: <ShopsList />,
           },
 
           {
             path: "seller-dashboard",
-            element: <VendorDashboard />
+            element: <VendorDashboard />,
           },
 
           {
             path: "createshop",
-            element: <CreateShopForm />
+            element: <CreateShopForm />,
           },
           {
             path: "products",
-            element: <SellerProductList />
+            element: <SellerProductList />,
           },
           {
             path: "products/add-video",
-            element: <AddVideoForm />
+            element: <AddVideoForm />,
           },
           {
             path: "products/add-podcast",
-            element: <AddPodcastsForm />
+            element: <AddPodcastsForm />,
           },
           {
             path: "products/add-ebook",
-            element: <AddEbookForm />
+            element: <AddEbookForm />,
           },
           {
             path: "products/add-music",
-            element: <AddMusicForm />
+            element: <AddMusicForm />,
           },
 
           {
             path: "products/add-course",
-            element: <AddCourseForm />
+            element: <AddCourseForm />,
           },
 
           {
             path: "products/add-arts",
-            element: <AddArtsForm />
+            element: <AddArtsForm />,
           },
           {
             path: "products/edit/:productNo",
-            element: <EditSellerProductPage />
+            element: <EditSellerProductPage />,
           },
           {
             path: "products/preview/:productNo",
-            element: <Preview />
+            element: <Preview />,
           },
           {
             path: "products/music-preview/:productNo",
-            element: <AudioPreview />
+            element: <AudioPreview />,
           },
           {
             path: "products/podcast-preview/:productNo",
-            element: <PodcastPreview />
+            element: <PodcastPreview />,
           },
           {
             path: "products/ebook-preview/:productNo",
-            element: <EbookPreview />
+            element: <EbookPreview />,
           },
           {
             path: "products/course-preview/:productNo",
-            element: <CoursePreview />
+            element: <CoursePreview />,
           },
           {
             path: "products/art-preview/:productNo",
-            element: <ArtPreview />
+            element: <ArtPreview />,
           },
 
           {
             path: "orderlist",
-            element: <SellerOrderList />
+            element: <SellerOrderList />,
           },
           {
             path: "seller-sales",
-            element: <SellerSales />
+            element: <SellerSales />,
           },
           {
             path: "seller-help",
@@ -459,13 +459,14 @@ export const router = createBrowserRouter([
 
           {
             path: "seller-sales/withdrawal",
-            element: <SellerWithdrawal />
+            element: <SellerWithdrawal />,
           },
 
           {
             path: "orderlist/:id",
-            element: <SellerOrderDetail />
-          }, {
+            element: <SellerOrderDetail />,
+          },
+          {
             path: "shop-detail/:id",
             element: <ShopDetail />,
           },
@@ -740,7 +741,7 @@ export const router = createBrowserRouter([
       },
     ],
   },*/
- 
+
   {
     path: "/email-verify",
     element: <EmailVerify />,
