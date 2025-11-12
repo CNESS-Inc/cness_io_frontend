@@ -2,6 +2,8 @@ import { cn } from "../../../lib/utils";
 import { IoCloseOutline } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import Image from "../../ui/Image";
+import moment from "moment";
+import { useEffect, useState } from "react";
 
 interface Story {
   id: string;
@@ -11,6 +13,7 @@ interface Story {
     initials: string;
   };
   hasNewStory: boolean;
+  createdAt?: Date;
   isViewed: boolean;
 }
 
@@ -19,18 +22,55 @@ interface StorySidebarProps {
   activeStoryId?: string;
   onStorySelect: (storyId: string) => void;
 }
+interface TimeAgoProps {
+  date: string | Date;
+}
 
 export function StorySidebar({
   stories,
   activeStoryId,
   onStorySelect,
 }: StorySidebarProps) {
+  moment.updateLocale("en-short", {
+    relativeTime: {
+      future: "in %s",
+      past: "%s ago",
+      s: "few sec",
+      ss: "%ds",
+      m: "1 min",
+      mm: "%d min",
+      h: "1 hr",
+      hh: "%d hrs",
+      d: "1 day",
+      dd: "%d days",
+      M: "1 mon",
+      MM: "%d mon",
+      y: "1 yr",
+      yy: "%d yrs",
+    },
+  });
+  console.log("🚀 ~ StorySidebar ~ stories:", stories)
   const navigate = useNavigate();
 
   const handleClose = () => {
     navigate('/social');
   };
 
+  const TimeAgo: React.FC<TimeAgoProps> = ({ date }) => {
+    const [timeAgo, setTimeAgo] = useState<string>("");
+
+    const updateTime = () => {
+      setTimeAgo(moment(date).locale("en-short").fromNow());
+    };
+
+    useEffect(() => {
+      updateTime(); // initial render
+      const interval = setInterval(updateTime, 60 * 1000); // update every 1 min
+      return () => clearInterval(interval); // cleanup
+    }, [date]);
+
+    return <span>{timeAgo}</span>;
+  };
   return (
     <div className="w-[465px] bg-card border-r border-border h-screen overflow-y-auto">
       <div className="">
@@ -50,7 +90,7 @@ export function StorySidebar({
             </div>
 
             <div className="button">
-              <button 
+              <button
                 onClick={handleClose}
                 className="w-[35px] h-[35px] rounded-[7px] border-[1px] border-strock border-[#ECEEF2] flex justify-center items-center hover:bg-gray-50 transition-colors"
               >
@@ -86,7 +126,13 @@ export function StorySidebar({
                                         </AvatarFallback>
                                     </Avatar> */}
 
-                  <div className="relative w-[73px] h-[73px]  rounded-full p-[1.83px] bg-gradient-to-r from-[#6340FF] to-[#D748EA]">
+                  <div 
+                   className={cn(
+                    "relative w-[73px] h-[73px]  rounded-full p-[1.83px] bg-gradient-to-r",
+                    story.hasNewStory && !story.isViewed
+                      ? "from-[#6340FF]  to-[#D748EA]"
+                      : "from-[gray]  to-[gray]"
+                  )}>
                     <div className="w-full h-full rounded-full overflow-hidden object-cover bg-white p-[3px]">
                       <img
                         src={story.user.avatar}
@@ -103,11 +149,11 @@ export function StorySidebar({
                 <p className="poppins font-medium text-foreground truncate text-[14px] leading-[100%] align-middle mb-1">
                   {story.user.name}
                 </p>
-                <p className="jakarta font-medium text-foreground truncate text-[14px] leading-[100%] text-[#7077FE] tracking-[0%] align-middle relative pl-2 before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-[#7077FE]">
-                  3 new
-                </p>
+                {story.hasNewStory && !story.isViewed && (<p className="jakarta font-medium text-foreground truncate text-[14px] leading-[100%] text-[#7077FE] tracking-[0%] align-middle relative pl-2 before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-[#7077FE]">
+                  new
+                </p>)}
                 <p className="sans font-normal not-italic text-xs leading-[150%] align-middle tracking-normal text-muted-foreground">
-                  1 hour ago
+                  <TimeAgo date={story.createdAt ? story.createdAt : new Date()} />
                 </p>
               </div>
             </div>

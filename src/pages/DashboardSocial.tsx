@@ -144,6 +144,7 @@ interface Story {
   createdAt: string;
   updatedAt: string;
   video_file: string;
+  thumbnail: string;
   likes_count: number;
   comments_count: number;
   is_viewed: boolean;
@@ -1669,7 +1670,7 @@ export default function SocialTopBar() {
                               }`.trim() || "Unknown User"
                           }
                           title={story.description || "Untitled Story"}
-                          videoSrc={story.video_file || ""}
+                          videoSrc={story?.thumbnail || ""}
                         />
 
                         <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">

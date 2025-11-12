@@ -168,6 +168,7 @@ export const EndPoint = {
   report_post: "/user/posts/report",
   mention_user_profile: "/user/post/comments/getuserprofile",
   story: "/story",
+  story_viewed: "/story/viewed",
   get_front_all_story: "/story/get/front/all",
   story_like: "/story/like",
   story_comment: "/story/comment",
@@ -1214,6 +1215,10 @@ export const GetStory = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story);
 };
+export const PostStoryViewd = (story_id:any) => {
+  let data = {story_id};
+  return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.story_viewed);
+};
 export const GetUserPost = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.user_post);
@@ -1588,6 +1593,7 @@ export const executeAPI = async <T = any,>(
     if (appCatId) {
       headers["x-app-cat-id"] = appCatId;
     }
+    console.log("🚀 ~ executeAPI ~ headers:", headers)
     const response: AxiosResponse<T> = await axios({
       method: method,
       url: API.BaseUrl + endpoint,

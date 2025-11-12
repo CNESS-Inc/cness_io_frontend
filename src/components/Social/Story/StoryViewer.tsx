@@ -50,7 +50,6 @@ export function StoryViewer({
   userId,
   onStoryChange,
 }: StoryViewerProps) {
-  console.log("🚀 ~ StoryViewer ~ hasPrevious:", hasPrevious);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState("");
