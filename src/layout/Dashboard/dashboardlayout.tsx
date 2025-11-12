@@ -103,7 +103,7 @@ const DashboardLayout = () => {
         {!isMobileNavOpen && (
           <button
             onClick={toggleMobileNav}
-            className="hidden md:block fixed top-4 left-4 z-50 p-2 bg-white rounded-full shadow-md cursor-pointer"
+            className="hidden md:block fixed top-4 left-4 z-[100] p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
           >
             <img src={hambur} alt="Menu" className="w-6 h-6" />
           </button>
