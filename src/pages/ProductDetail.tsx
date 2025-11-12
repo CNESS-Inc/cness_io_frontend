@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
 // import cnessicon from '../assets/cnessicon.svg';
 import ProductCard from '../components/MarketPlace/ProductCard';
-import { ChevronDown, ChevronUp, Heart, PlayCircle } from "lucide-react";
+import { ChevronDown, ChevronUp, Heart, PlayCircle, Star } from "lucide-react";
 import { useState, useEffect } from "react";
-import { AddProductToCart, AddProductToWishlist, GetMarketPlaceBuyerProductById, GetMarketPlaceBuyerProducts, RemoveProductToCart, RemoveProductToWishlist } from '../Common/ServerAPI';
+import { AddProductToCart, AddProductToWishlist, GetMarketPlaceBuyerProductById, GetMarketPlaceBuyerProducts, GetProductReviws, RemoveProductToCart, RemoveProductToWishlist } from '../Common/ServerAPI';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { CiFacebook, CiInstagram, CiLinkedin, CiYoutube } from 'react-icons/ci';
 import { RiTwitterXFill } from 'react-icons/ri';
@@ -11,6 +11,7 @@ import { IoLogoTiktok } from 'react-icons/io5';
 import { FaPinterestP } from 'react-icons/fa';
 import { useToast } from '../components/ui/Toast/ToastProvider';
 import { IoMdShareAlt } from 'react-icons/io';
+import ReviewModal from '../components/MarketPlace/ReviewModal';
 
 const socialMediaPlatforms = [
   { key: 'facebook', name: 'Facebook', icon: <CiFacebook size={25} className='text-gray-500' /> },
@@ -35,6 +36,11 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewStats, setReviewStats] = useState<any>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [editingReview, setEditingReview] = useState<any>(null);
+  const [userReview, setUserReview] = useState<any>(null);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -80,12 +86,67 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
     fetchFeaturedProducts();
   }, []);
 
+  useEffect(() => {
+    if (product?.id) {
+      fetchReviews();
+    }
+  }, [product?.id]);
+
+  const fetchReviews = async () => {
+    try {
+      const response = await GetProductReviws(product.id, {
+        page: 1,
+        limit: 10,
+      });
+
+      const reviewsData = response?.data?.data?.reviews || [];
+      const stats = response?.data?.data?.stats || null;
+      const myReview = response?.data?.data?.my_review || null;
+
+      setReviews(reviewsData);
+      setReviewStats(stats);
+      setUserReview(myReview);
+    } catch (error: any) {
+      console.error("Failed to load reviews:", error);
+    }
+  };
+
+  const handleWriteReview = () => {
+    if (userReview) {
+      // User already reviewed - open edit mode
+      setEditingReview(userReview);
+    } else {
+      setEditingReview(null);
+    }
+    setIsReviewModalOpen(true);
+  };
+
+  // const handleDeleteReview = async (reviewId: string) => {
+  //   if (!confirm("Are you sure you want to delete this review?")) return;
+
+  //   try {
+  //     await DeleteBuyerReview(reviewId);
+  //     showToast({
+  //       message: "Review deleted successfully",
+  //       type: "success",
+  //       duration: 2000,
+  //     });
+  //     fetchReviews();
+  //   } catch (error: any) {
+  //     showToast({
+  //       message: "Failed to delete review",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //   }
+  // };
+
   const toggleChapter = (index: number) => {
     setOpenChapter(openChapter === index ? null : index);
   };
 
   // Handle Add to Cart
-   const handleAddToCart = async () => {
+  const handleAddToCart = async () => {
     if (isAddingToCart || !product) return;
 
     setIsAddingToCart(true);
@@ -121,21 +182,25 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   };
 
   // Handle Buy Now
-  const handleBuyNow = async () => {
-    if (!product) return;
+  const handleBuyNow = async (e: React.MouseEvent) => {
+    e.stopPropagation();
 
+    setIsAddingToCart(true);
     try {
       await AddProductToCart({
         product_id: product.id,
         quantity: 1,
       });
-      navigate('/dashboard/checkout');
+      navigate("/dashboard/checkout");
     } catch (error: any) {
+      console.error("Buy now error:", error);
       showToast({
         message: error?.response?.data?.error?.message || "Failed to proceed",
         type: "error",
         duration: 3000,
       });
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -223,34 +288,21 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
   const contentStructure = getContentStructure();
 
-  const ratingData = [
-    { stars: 5, percentage: 60, color: 'bg-[#F8B814]' },
-    { stars: 4, percentage: 20, color: 'bg-[#F8B814]' },
-    { stars: 3, percentage: 10, color: 'bg-[#F8B814]' },
-    { stars: 2, percentage: 7, color: 'bg-[#F8B814]' },
-    { stars: 1, percentage: 2, color: 'bg-[#F8B814]' }
-  ]
-
-  const reviews = [
-    {
-      avatar: 'https://static.codia.ai/image/2025-10-16/e90dgbfC6H.png',
-      name: 'Ava cooper',
-      review: 'Very detailed and practical. Every module has something new to learn. The downloadable files really helped me practice along.',
-      tags: ['Focused', 'Emotional']
-    },
-    {
-      avatar: 'https://static.codia.ai/image/2025-10-16/Csvn95atK4.png',
-      name: 'Ava cooper',
-      review: 'Very detailed and practical. Every module has something new to learn. The files really helped me practice along.',
-      tags: ['Focused', 'Emotional']
-    },
-    {
-      avatar: 'https://static.codia.ai/image/2025-10-16/cajFdMaey3.png',
-      name: 'Ava cooper',
-      review: 'Very detailed and practical. Every module has something new to learn. The files really helped me practice along.',
-      tags: ['Focused', 'Emotional']
-    }
-  ]
+  const ratingData = reviewStats
+    ? [
+      { stars: 5, percentage: reviewStats.five_star_percentage || 0, color: "bg-[#F8B814]" },
+      { stars: 4, percentage: reviewStats.four_star_percentage || 0, color: "bg-[#F8B814]" },
+      { stars: 3, percentage: reviewStats.three_star_percentage || 0, color: "bg-[#F8B814]" },
+      { stars: 2, percentage: reviewStats.two_star_percentage || 0, color: "bg-[#F8B814]" },
+      { stars: 1, percentage: reviewStats.one_star_percentage || 0, color: "bg-[#F8B814]" },
+    ]
+    : [
+      { stars: 5, percentage: 0, color: "bg-[#F8B814]" },
+      { stars: 4, percentage: 0, color: "bg-[#F8B814]" },
+      { stars: 3, percentage: 0, color: "bg-[#F8B814]" },
+      { stars: 2, percentage: 0, color: "bg-[#F8B814]" },
+      { stars: 1, percentage: 0, color: "bg-[#F8B814]" },
+    ];
 
   const details = [
     { icon: 'https://static.codia.ai/image/2025-10-16/wo8469r2jf.png', label: 'Duration', value: '12 hours' },
@@ -670,8 +722,8 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
               {/* Rating Breakdown */}
               <div className="space-y-3 mb-6">
                 {ratingData.map((rating, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-1">
+                  <div key={index} className="flex items-center gap-3">
+                    <div className="flex items-center w-[50px]">
                       <span className="text-blue-500 text-lg">{rating.stars}</span>
                       <img src="https://static.codia.ai/image/2025-10-16/g9soS0qbLX.png" alt="Star" className="w-6 h-6" />
                     </div>
@@ -681,64 +733,92 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                         style={{ width: `${rating.percentage}%` }}
                       ></div>
                     </div>
-                    <span className="text-gray-500 text-lg w-12 text-right">{rating.percentage}%</span>
+                    <span className="text-gray-500 text-lg w-12 text-right">
+                      {rating.percentage.toFixed(0)}%
+                    </span>
                   </div>
                 ))}
               </div>
 
-              <button className="w-full bg-[#7077FE] text-white py-3 rounded-lg font-medium hover:bg-[#7077FE]">
-                Write a review
+              <button
+                onClick={handleWriteReview}
+                className="w-full bg-[#7077FE] text-white py-3 rounded-lg font-medium hover:bg-[#7077FE]">
+                <span>{userReview ? "Edit Your Review" : "Write a Review"}</span>
               </button>
             </div>
 
             {/* Reviews List */}
             <div className="flex-1 space-y-3">
-              {reviews.map((review, index) => (
-                <div key={index} className="border border-gray-200 rounded-xl p-4">
-                  <div className="flex items-start space-x-4 mb-4">
-                    <img
-                      src={review.avatar}
-                      alt={review.name}
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900 mb-1">{review.name}</div>
-                      <p className="text-gray-600 text-sm leading-relaxed">{review.review}</p>
-                    </div>
-                  </div>
-                  <div className="flex space-x-3">
-                    {review.tags.map((tag, tagIndex) => (
-                      <span
-                        key={tagIndex}
-                        className="px-7 py-3 border border-gray-300 rounded-full text-sm text-gray-600 font-['Plus_Jakarta_Sans']"
-                      >
-                        {tag}
-                      </span>
-
-                    ))}
-
-                  </div>
-
+              {reviews.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500 font-[Open_Sans]">
+                    No reviews yet. Be the first to review this product!
+                  </p>
                 </div>
-
-              ))}
-              <div className="flex justify-center mt-4">
-                <button
-                  onClick={() =>
-                    navigate(`/dashboard/product-review/${product.id}`, {
-                      state: { product },
-                    })
-                  }
-                  className="flex justify-center items-center w-[102px] bg-[#7077FE] text-white py-3 rounded-lg font-medium hover:bg-[#5E65F6] transition-colors duration-200"
-                >
-                  View All
-                </button>
-              </div>
-
+              ) : (
+                <>
+                  {reviews.slice(0, 3).map((review, index) => (
+                    <div
+                      key={index}
+                      className="border border-gray-200 rounded-xl p-4"
+                    >
+                      <div className="flex items-start space-x-4 mb-4">
+                        <img
+                          src={
+                            review.user_avatar ||
+                            "https://static.codia.ai/image/2025-10-16/e90dgbfC6H.png"
+                          }
+                          alt={review.user_name}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900 mb-1">
+                            <span className="font-[Poppins]">
+                              {review.name}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                  key={star}
+                                  className={`w-4 h-4 ${star <= review.rating
+                                    ? "fill-[#F8B814] text-[#F8B814]"
+                                    : "text-gray-300"
+                                    }`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <h4 className="font-semibold text-sm text-gray-900 mb-1 font-[Poppins]">
+                            {review.review_title}
+                          </h4>
+                          <p className="text-gray-600 text-sm leading-relaxed font-[Open_Sans]">
+                            {review.review_text}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-2 font-[Open_Sans]">
+                            {new Date(review.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+              {reviews.length > 3 && (
+                <div className="flex justify-center mt-4">
+                  <button
+                    onClick={() =>
+                      navigate(`/dashboard/product-review/${product.id}`, {
+                        state: { product },
+                      })
+                    }
+                    className="flex justify-center items-center w-[102px] bg-[#7077FE] text-white py-3 rounded-lg font-medium hover:bg-[#5E65F6] transition-colors duration-200"
+                  >
+                    View All
+                  </button>
+                </div>
+              )}
             </div>
-
           </div>
-
         </div>
 
         {/* recommended Products Section */}
@@ -748,7 +828,6 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             <h2 className="font-[Poppins] font-semibold text-[20px] leading-[30px] text-[#242E3A] text-center">
               Recommended products
             </h2>
-
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
               {featuredProducts.length > 0 ? (
@@ -786,6 +865,16 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           </div>
         </div>
       </div>
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => {
+          setIsReviewModalOpen(false);
+          setEditingReview(null);
+        }}
+        productId={product?.id}
+        existingReview={editingReview}
+        onSuccess={fetchReviews}
+      />
     </main>
   );
 }

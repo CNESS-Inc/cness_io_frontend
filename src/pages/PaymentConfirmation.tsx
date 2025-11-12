@@ -33,10 +33,9 @@ const PaymentConfirmation: React.FC = () => {
             console.log("Payment confirmation response:", response);
 
             const data = response?.data?.data;
-            const status = data?.status?.toLowerCase();
             const orderId = data?.order_id;
 
-            if (status === "completed" || status === "success") {
+            if (data?.status === "succeeded" || data?.status === "completed") {
                 // Payment successful - navigate to success page
                 navigate("/dashboard/payment-success", {
                     state: {
