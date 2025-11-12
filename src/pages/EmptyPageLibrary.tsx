@@ -355,7 +355,7 @@ const Library: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#FFFFFF]">
 
-      <div className="mx-auto px-4 sm:px-6 py-8 max-w-7xl">
+      <div className="mx-auto px-4 sm:px-6 py-8">
         {/* Header with Search */}
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-[#111827] mb-6">
@@ -425,7 +425,7 @@ const Library: React.FC = () => {
             </div>
           ) : (
             /* Products Grid */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
               {filteredProducts.map((product) => (
                 <LibraryProductCard key={product.product_id} p={product} />
               ))}

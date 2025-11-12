@@ -253,10 +253,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {/* Buy Now Button */}
             <button
               onClick={handleBuyNow}
-              className="relative bg-[#7077FE] text-white pl-4 pr-12 py-2 rounded-full text-xs md:text-sm font-semibold transition-colors flex items-center overflow-hidden group"
+              className="relative bg-[#7077FE] text-white rounded-full text-xs pr-10 px-2 py-2 md:text-sm font-semibold transition-colors flex items-center overflow-hidden group"
             >
               <span>Buy Now</span>
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md transition-transform duration-300 group-hover:-rotate-45">
+              <span className="absolute right-1 top-1/2 -translate-y-1/2 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md transition-transform duration-300 group-hover:-rotate-45">
                 <ArrowRight className="w-4 h-4" stroke="#7077FE" />
               </span>
             </button>
