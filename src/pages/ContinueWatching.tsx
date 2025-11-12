@@ -1,32 +1,94 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Play } from "lucide-react";
 import MarketHeader from "../components/MarketPlace/Buyerheader";
+import { useNavigate } from "react-router-dom";
+import { GetContinueWatchingProductList } from "../Common/ServerAPI";
 
-const THUMBS = [
-  "https://cdn.cness.io/collection1.svg",
-  "https://cdn.cness.io/collection2.svg",
-  "https://cdn.cness.io/collection3.svg",
-];
+type ContinueWatchingProduct = {
+  progress_id: string;
+  product_id: string;
+  product_name: string;
+  thumbnail_url: string;
+  category: {
+    name: string;
+    slug: string;
+  };
+  price: string;
+  final_price: string;
+  progress_percentage: number;
+  is_completed: boolean;
+  last_watched_at: string;
+  current_content: any;
+};
 
-const items = Array.from({ length: 16 }).map((_, i) => ({
-  id: i + 1,
-  src: THUMBS[i % THUMBS.length],
-  title: "Soft guitar moods that heals your inner pain",
-}));
+const ContinueWatchingThumb: React.FC<{
+  product: ContinueWatchingProduct;
+}> = ({ product }) => {
+  const navigate = useNavigate();
 
-const Thumb: React.FC<{ src: string; label?: string }> = ({ src, label }) => (
-  <div className="relative rounded-xl overflow-hidden group border border-gray-200">
-    <img src={src} alt={label || "thumb"} className="w-full h-[160px] object-cover" />
-    <button className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition">
-      <span className="flex items-center gap-2 text-white text-sm font-medium px-3 py-1 bg-black/50 rounded-full">
-        <Play size={16} />
-        Watch
-      </span>
-    </button>
-  </div>
-);
+  return (
+    <div>
+      <div
+        className="relative rounded-t-xl overflow-hidden group cursor-pointer"
+        onClick={() =>
+          navigate(`/dashboard/library/course/${product.product_id}`)
+        }
+      >
+        <img
+          src={
+            product.thumbnail_url ||
+            "https://cdn.cness.io/collection1.svg"
+          }
+          alt={product.product_name}
+          className="w-full h-[150px] object-cover"
+        />
+
+        {/* Play Button Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
+          <div className="w-10 h-10 rounded-full bg-[#7077FEBF] flex items-center justify-center">
+            <Play className="w-5 h-5 text-white fill-white" />
+          </div>
+        </div>
+
+        {/* Progress Bar at Bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-[#D9D9D9]">
+          <div
+            className="h-full bg-[#7077FE] transition-all"
+            style={{ width: `${product.progress_percentage}%` }}
+          ></div>
+        </div>
+
+        {/* Progress Percentage Badge */}
+        {/* <div className="absolute top-2 right-2 bg-[#7077FEBF] text-white text-xs px-2 py-1 rounded-full">
+        {product.progress_percentage}%
+      </div> */}
+      </div>
+      <p className="mt-2 text-[14px] text-[#111827] font-semibold leading-snug line-clamp-2">
+        {product.product_name}
+      </p>
+    </div>
+  );
+};
 
 const ContinueWatching: React.FC = () => {
+  const [continueWatching, setContinueWatching] = useState<
+    ContinueWatchingProduct[]
+  >([]);
+
+  useEffect(() => {
+    fetchContinueWatching();
+  }, []);
+
+  const fetchContinueWatching = async () => {
+    try {
+      const response = await GetContinueWatchingProductList();
+      const data = response?.data?.data;
+      setContinueWatching(data?.continue_watching || []);
+    } catch (error: any) {
+      console.error("Failed to load continue watching:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Marketplace / Library header */}
@@ -37,14 +99,15 @@ const ContinueWatching: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-          {items.map((it) => (
-            <div key={it.id} className="flex flex-col gap-2">
-              <Thumb src={it.src} />
-              <p className="text-[14px] text-[#111827] font-semibold leading-snug line-clamp-2">
-                {it.title}
-              </p>
-            </div>
+          {continueWatching?.map((product) => (
+            <ContinueWatchingThumb
+              key={product.progress_id}
+              product={product}
+            />
           ))}
+          {continueWatching.length === 0 && (
+            <p className="text-gray-500">No courses to continue watching.</p>
+          )}
         </div>
       </div>
     </div>

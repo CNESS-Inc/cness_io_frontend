@@ -248,7 +248,6 @@ const CartPage: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {cartItems?.map((item) => {
-                console.log('itemvfbgfc', item)
                 return (
                   <div
                     key={item.id}
@@ -256,7 +255,7 @@ const CartPage: React.FC = () => {
                   >
                     {/* Product Image */}
                     <img
-                      src={"https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png"}
+                      src={item?.thumbnail_url || "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png"}
                       alt={item.product_name}
                       className="w-[220px] h-[130px] object-cover rounded-lg cursor-pointer"
                       onClick={() => navigate(`/dashboard/product-detail/${item.product_id}`)}
@@ -296,7 +295,7 @@ const CartPage: React.FC = () => {
 
                       {/* Price Section */}
                       <div className="flex items-center gap-2 mt-2">
-                        {item.price && (
+                        {item?.discount_percentage > 0 && (
                           <span className="text-gray-400 line-through text-sm">
                             {item.price}
                           </span>
@@ -304,9 +303,9 @@ const CartPage: React.FC = () => {
                         <span className="text-[#1A1A1A] font-semibold text-[16px]">
                           {item.discounted_price}
                         </span>
-                        {item.discount_percentage && (
+                        {item.discount_percentage > 0 && (
                           <span className="text-[#7077FE] text-sm">
-                            {item.discount_percentage}
+                            ({item.discount_percentage}%)
                           </span>
                         )}
                       </div>

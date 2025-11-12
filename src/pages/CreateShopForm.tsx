@@ -298,7 +298,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     <div>
       {label && (
         <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-4">
-          {label} {required && "*"}
+          {label} {required && <span className='text-red-500'>*</span>}
         </label>
       )}
       <div
@@ -395,8 +395,8 @@ const CreateShopForm: React.FC = () => {
     owner_address: "",
     government_id_document: "",
     shop_name: "",
-    shop_logo: "",
-    shop_banner: "",
+    shop_logo_url: "",
+    shop_banner_url: "",
     about_shop: "",
     why_choose_your_shop: "",
     shop_philosophy: "",
@@ -432,11 +432,13 @@ const CreateShopForm: React.FC = () => {
     if (!formData.owner_date_of_birth) newErrors.owner_date_of_birth = "Date of birth is required";
     if (!formData.owner_mobile_number.trim()) newErrors.owner_mobile_number = "Mobile number is required";
     if (!formData.ssn_or_ein.trim()) newErrors.ssn_or_ein = "SSN/EIN is required";
-    if (!formData.owner_address.trim()) newErrors.owner_address = "Address is required";
+    if (formData.owner_address && formData.owner_address.trim().length < 10) {
+      newErrors.owner_address = "Please enter a more detailed address (e.g., street, city, etc.)";
+    }
     if (!formData.government_id_document) newErrors.government_id_document = "Government ID is required";
     if (!formData.shop_name.trim()) newErrors.shop_name = "Shop name is required";
-    if (!formData.shop_logo) newErrors.shop_logo = "Shop logo is required";
-    if (!formData.shop_banner) newErrors.shop_banner = "Shop banner is required";
+    if (!formData.shop_logo_url) newErrors.shop_logo_url = "Shop logo is required";
+    if (!formData.shop_banner_url) newErrors.shop_banner_url = "Shop banner is required";
     if (!formData.about_shop.trim()) newErrors.about_shop = "About shop is required";
     if (!formData.why_choose_your_shop.trim()) newErrors.why_choose_your_shop = "This field is required";
     if (!formData.shop_philosophy.trim()) newErrors.shop_philosophy = "Shop philosophy is required";
@@ -535,10 +537,10 @@ const CreateShopForm: React.FC = () => {
       if (response?.data?.data) {
         const data = response.data.data;
 
-        if (data.verification_status === "pending") {
-          setIsSubmitted(true);
-          return;
-        }
+        // if (data.verification_status === "pending") {
+        //   setIsSubmitted(true);
+        //   return;
+        // }
 
         if (data.verification_status === "approved") {
           setIsApproved(true);
@@ -553,8 +555,8 @@ const CreateShopForm: React.FC = () => {
           owner_address: data.owner_address || "",
           government_id_document: data.government_id_document || "",
           shop_name: data?.shop?.shop_name || "",
-          shop_logo: data?.shop?.shop_logo || "",
-          shop_banner: data?.shop?.shop_banner || "",
+          shop_logo_url: data?.shop?.shop_logo || "",
+          shop_banner_url: data?.shop?.shop_banner || "",
           about_shop: data?.shop?.about_shop || "",
           why_choose_your_shop: data?.shop?.why_choose_your_shop || "",
           shop_philosophy: data?.shop?.shop_philosophy || "",
@@ -691,7 +693,13 @@ const CreateShopForm: React.FC = () => {
         break;
 
       case "owner_address":
-        if (!valStr) message = "Address is required";
+        if (!valStr) {
+          message = "Address is required";
+        } else if (valStr.length < 10) {
+          message = "Please enter a more detailed address (e.g., street, city, etc.)";
+        } else if (!/\d/.test(valStr) || !/[a-zA-Z]/.test(valStr)) {
+          message = "Address should contain street number and name";
+        }
         break;
 
       case "shop_name":
@@ -1138,7 +1146,7 @@ const CreateShopForm: React.FC = () => {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner Name *</label>
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner Name <span className='text-red-500'>*</span></label>
                     <input
                       type="text"
                       name="owner_full_name"
@@ -1151,7 +1159,7 @@ const CreateShopForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner DOB *</label>
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner DOB <span className='text-red-500'>*</span></label>
                     <div className="flex space-x-2">
                       <DateInput label="MM" value={month} onChange={setMonth} error={dateError} />
                       <DateInput label="DD" value={day} onChange={setDay} error={dateError} />
@@ -1163,7 +1171,7 @@ const CreateShopForm: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner Mobile Number *</label>
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner Mobile Number <span className='text-red-500'>*</span></label>
                     <input
                       type="tel"
                       name="owner_mobile_number"
@@ -1176,7 +1184,7 @@ const CreateShopForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">SSN / EIN *</label>
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">SSN / EIN <span className='text-red-500'>*</span></label>
                     <input
                       type="text"
                       name="ssn_or_ein"
@@ -1191,7 +1199,7 @@ const CreateShopForm: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner Address *</label>
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner Address <span className='text-red-500'>*</span></label>
                     <textarea
                       name="owner_address"
                       value={formData.owner_address}
@@ -1214,7 +1222,7 @@ const CreateShopForm: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Shop Name *</label>
+                  <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Shop Name <span className='text-red-500'>*</span></label>
                   <input
                     type="text"
                     name="shop_name"
@@ -1229,19 +1237,21 @@ const CreateShopForm: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <FileUpload
                     label="Shop Logo"
+                    required
                     recommendation="Recommended 120 X 120 px"
                     fileType="shop-logo"
-                    onUploadSuccess={(url) => setFormData((prev) => ({ ...prev, shop_logo: url }))}
-                    defaultPreview={formData.shop_logo}
-                    error={errors.shop_logo}
+                    onUploadSuccess={(url) => setFormData((prev) => ({ ...prev, shop_logo_url: url }))}
+                    defaultPreview={formData.shop_logo_url}
+                    error={errors.shop_logo_url}
                   />
                   <div className="lg:col-span-2">
                     <FileUpload
                       label="Shop Banner"
+                      required
                       recommendation="Recommended 1128 X 340 px"
                       fileType="shop-banner"
-                      onUploadSuccess={(url) => setFormData((prev) => ({ ...prev, shop_banner: url }))}
-                      defaultPreview={formData.shop_banner}
+                      onUploadSuccess={(url) => setFormData((prev) => ({ ...prev, shop_banner_url: url }))}
+                      defaultPreview={formData.shop_banner_url}
                     />
                   </div>
                 </div>
@@ -1275,7 +1285,7 @@ const CreateShopForm: React.FC = () => {
             >
               <div className="space-y-4">
                 <div>
-                  <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">About Shop *</label>
+                  <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">About Shop <span className='text-red-500'>*</span></label>
                   <textarea
                     value={formData.about_shop}
                     onChange={(e) => handleTextareaChange(e, "about_shop", 300)}
@@ -1291,7 +1301,7 @@ const CreateShopForm: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">Why Choose Your Shop *</label>
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">Why Choose Your Shop <span className='text-red-500'>*</span></label>
                     <textarea
                       value={formData.why_choose_your_shop}
                       onChange={(e) => handleTextareaChange(e, "why_choose_your_shop", 200)}
@@ -1306,7 +1316,7 @@ const CreateShopForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">Shop Philosophy *</label>
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">Shop Philosophy <span className='text-red-500'>*</span></label>
                     <textarea
                       value={formData.shop_philosophy}
                       onChange={(e) => handleTextareaChange(e, "shop_philosophy", 200)}
@@ -1330,7 +1340,7 @@ const CreateShopForm: React.FC = () => {
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
-                  <label className="block font-semibold text-gray-900 mb-2">Shop Based In *</label>
+                  <label className="block font-semibold text-gray-900 mb-2">Shop Based In <span className='text-red-500'>*</span></label>
                   <select
                     value={formData.shop_base_country_id}
                     onChange={(e) =>
@@ -1505,7 +1515,7 @@ const CreateShopForm: React.FC = () => {
                       <div className="space-y-4">
                         <div>
                           <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">
-                            Name
+                            Name *
                           </label>
                           <input
                             type="text"
@@ -1537,7 +1547,7 @@ const CreateShopForm: React.FC = () => {
 
             {/* Store Policies */}
             <FormSection
-              title="Store Policies *"
+              title="Store Policies"
               description="Please review the default policies below. By checking the box, you confirm that you agree to these terms."
             >
               <div className="bg-white border border-gray-200 rounded-xl p-4">
@@ -1585,7 +1595,7 @@ const CreateShopForm: React.FC = () => {
               </div>
             </FormSection>
 
-            {!isApproved ? (
+            {!isApproved && (
               <div className="flex justify-end space-x-4 pt-6">
                 <button
                   type='button'
@@ -1604,7 +1614,8 @@ const CreateShopForm: React.FC = () => {
                   {isLoading ? "Submitting..." : "Submit"}
                 </button>
               </div>
-            ) : (
+            )}
+            {isApproved && (
               <div className="flex justify-end pt-6">
                 <button
                   type='button'

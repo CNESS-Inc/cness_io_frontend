@@ -934,7 +934,7 @@ const AddCourseForm: React.FC = () => {
 
             <div>
               <label className="block font-semibold text-[16px] text-[#242E3A] mb-2">
-                Format
+                Format *
               </label>
               <select
                 name="format"
@@ -970,7 +970,7 @@ const AddCourseForm: React.FC = () => {
                       className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
                     />
                     <p className="text-sm text-[#665B5B] mb-4">
-                      Upload lesson {chapter.id} materials (videos, audios, PDFs, images)
+                      Upload lesson {chapter.id} materials (videos, audios, PDFs, images) *
                     </p>
                   </div>
 

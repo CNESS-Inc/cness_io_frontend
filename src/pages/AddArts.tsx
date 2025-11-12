@@ -503,10 +503,6 @@ const AddArtsForm: React.FC = () => {
       case "overview":
         if (!valStr) message = "Overview is required";
         break;
-      case "duration":
-        if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr))
-          message = "Invalid duration format. Use HH:MM:SS";
-        break;
       default:
         break;
     }
@@ -939,7 +935,7 @@ const AddArtsForm: React.FC = () => {
                       className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
                     />
                     <p className="text-sm text-[#665B5B] mb-4">
-                      Upload artwork files (images, PDFs, etc.)
+                      Upload artwork files (images, PDFs, etc.) *
                     </p>
 
                   </div>

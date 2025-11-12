@@ -298,6 +298,7 @@ export const EndPoint = {
   marketplace_retry_payment: "/marketplace-buyer/retry-payment",
   marketplace_order_details: "/marketplace-buyer/orders",
   marketplace_buyer_library: "/marketplace-buyer/library",
+  marketplace_buyer_continue_watching: "/marketplace-buyer/progress/continue-watching",
 };
 
 // Messaging endpoints
@@ -2138,11 +2139,15 @@ export const RetryPayment = (data: { order_id: string }): ApiResponse => {
 export const GetLibraryrDetails = (params?: {
   page?: number;
   limit?: number;
+  category_slug?: string;
+  sort_by?: string;
 }): ApiResponse => {
   const queryParams = new URLSearchParams();
 
   if (params?.page) queryParams.append("page", params.page.toString());
   if (params?.limit) queryParams.append("limit", params.limit.toString());
+  if (params?.category_slug) queryParams.append("category_slug", params.category_slug.toString());
+  if (params?.sort_by) queryParams.append("sort_by", params.sort_by.toString());
 
   const queryString = queryParams.toString();
   const endpoint = queryString
@@ -2150,6 +2155,14 @@ export const GetLibraryrDetails = (params?: {
     : `${EndPoint.marketplace_buyer_library}`;
 
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
+}
+
+export const GetContinueWatchingProductList = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.marketplace_buyer_continue_watching
+  );
 }
 
 export const GetOrderDetails = (): ApiResponse => {
