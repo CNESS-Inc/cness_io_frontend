@@ -139,14 +139,6 @@ const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
     });
   };
 
-  const handleRateReview = (productName: string) => {
-    showToast({
-      message: `Redirecting to review page for ${productName}...`,
-      type: "info",
-      duration: 2000,
-    });
-  };
-
   const getCategoryIcon = (category: string) => {
     const iconMap: { [key: string]: any } = {
       Video: <Video className="w-4 h-4 text-[#7077FE]" />,
