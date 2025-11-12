@@ -1,10 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CheckCircle, ShoppingCart, Check, WalletCards } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import pay from "../assets/pay.svg";
+import { EmptyProductCart } from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    const emptyCart = async () => {
+      try {
+        await EmptyProductCart(); // empty the cart
+        showToast({
+          message: "Your cart has been cleared successfully.",
+          type: "success",
+          duration: 3000,
+        });
+      } catch (error: any) {
+        showToast({
+          message: error?.response?.data?.error?.message || "Failed to clear your cart.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    };
+
+    emptyCart();
+  }, []);
 
   return (
     <>
