@@ -23,6 +23,7 @@ interface Story {
   userId?: string; // Add userId for sharing
   user: StoryUser;
   hasNewStory: boolean;
+  createdAt?: Date;
   isViewed: boolean;
   content: StoryContent[];
 }
@@ -31,7 +32,6 @@ export function StoriesApp() {
   const [searchParams] = useSearchParams();
   const [activeStoryId, setActiveStoryId] = useState<any>(null);
   const [stories, setStories] = useState<Story[]>([]);
-  console.log("🚀 ~ StoriesApp ~ stories:", stories)
   const [isLoading, setIsLoading] = useState(true);
   
   // Get URL parameters
@@ -42,7 +42,6 @@ export function StoriesApp() {
     (story) => story.id === activeStoryId
   );
   const currentStory = stories[currentStoryIndex];
-  console.log("🚀 ~ StoriesApp ~ currentStory:", currentStory);
 
   const handlePrevious = () => {
     if (currentStoryIndex > 0) {
@@ -76,12 +75,13 @@ export function StoriesApp() {
         },
         hasNewStory: !story.is_viewed, // Use is_viewed instead of is_liked
         isViewed: story.is_viewed || false,
+        createdAt: story.createdAt ? new Date(story.createdAt) : undefined,
         content: [
           {
             id: story.id,
             type: "video", // Assuming all are videos from the API
             url: story.video_file || '',
-            duration: 5000, // Default duration, you might want to calculate this
+            duration: story?.duration || 5000, // Default duration, you might want to calculate this
           },
         ],
       };
@@ -92,7 +92,6 @@ export function StoriesApp() {
     try {
       setIsLoading(true);
       const res = await GetStory();
-      console.log('res--->', res.data.data);
       
       // Add null checks for API response
       if (res?.data?.data && Array.isArray(res.data.data)) {
@@ -101,7 +100,6 @@ export function StoriesApp() {
         // If a specific user is selected, filter stories for that user only
         if (selectedUserId) {
           filteredStories = res.data.data.filter((story: any) => story.user_id === selectedUserId);
-          console.log(`Filtered stories for user ${selectedUserId}:`, filteredStories);
         } else {
           // Group stories by user and get the most recent story per user (for general view)
           filteredStories = groupStoriesByUser(res.data.data);
@@ -180,7 +178,6 @@ export function StoriesApp() {
   const handleStoryChange = () => {
     // This will be called when story changes in StoryViewer
     // Any additional logic can be added here if needed
-    console.log("Story changed in StoryViewer");
   };
 
 
