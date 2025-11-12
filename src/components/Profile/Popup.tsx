@@ -44,6 +44,7 @@ interface Post {
   media: Media;
   images?: string[]; // for multi-image support
   comments?: CommentItem[];
+  body?: any;
 }
 
 type Reply = {
@@ -77,6 +78,7 @@ const PostPopup: React.FC<PopupProps> = ({
   insightsCount,
   collection,
 }) => {
+  console.log("🚀 ~ PostPopup ~ post:", post);
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -504,6 +506,7 @@ const PostPopup: React.FC<PopupProps> = ({
               <span className="text-pink-500 text-lg font-bold">✕</span>
             </button>
           </div>
+          <p className="p-6">{post?.body || "No media available"}</p>
 
           {/* Comments section */}
           <div className="pt-4 lg:pt-8 flex-1 overflow-y-auto space-y-4 w-full px-4 lg:px-6">
