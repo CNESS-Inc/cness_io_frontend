@@ -7,6 +7,7 @@ import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import AIModal from "../components/MarketPlace/AIModal";
 
 interface FormSectionProps {
   title: string;
@@ -85,6 +86,7 @@ const AddMusicForm: React.FC = () => {
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [newHighlight, setNewHighlight] = useState("");
+  const [showAIModal, setShowAIModal] = useState(false);
   const [tracks, setTracks] = useState<any[]>([
     {
       id: 1,
@@ -148,6 +150,15 @@ const AddMusicForm: React.FC = () => {
 
     fetchCategories();
   }, []);
+
+  const handleAIGenerate = (generatedText: string) => {
+    setFormData(prev => ({
+      ...prev,
+      overview: generatedText
+    }));
+
+    setErrors(prev => ({ ...prev, overview: "" }));
+  };
 
   const handleSelectCategory = (category: string) => {
     setShowModal(false); // Close modal first
@@ -1270,6 +1281,12 @@ const AddMusicForm: React.FC = () => {
           </div>
         </div>
       )}
+      <AIModal
+        showModal={showAIModal}
+        setShowModal={setShowAIModal}
+        productType="video"
+        onGenerate={handleAIGenerate}
+      />
     </>
   );
 };

@@ -4,7 +4,7 @@ import FilterSidebar from "../components/MarketPlace/Filter";
 import { Play, Search, ChevronDown, Video, Music, BookOpen, FileAudio, FileText, Palette, Star, Clock } from "lucide-react";
 import filter from "../assets/filter.svg";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { GetContinueWatchingProductList, GetLibraryrDetails } from "../Common/ServerAPI";
+import { GetContinueWatchingProductList, GetLibraryrDetails, GetLibraryrFilters } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import EmptyPageLibrary from "./EmptyPageLibrary";
 
@@ -39,6 +39,7 @@ type LibraryProduct = {
   mood: {
     id: string;
     name: string;
+    icon: string;
     slug: string;
   };
   rating: {
@@ -71,27 +72,6 @@ const CATEGORY_SLUG_MAP: Record<string, string> = {
   eBook: "ebook",
   Art: "art",
   Course: "course",
-};
-
-const SORT_OPTIONS: Record<string, string> = {
-  "Recently Added": "recent",
-  "Newest Arrival": "newest",
-  "Most Popular": "popular",
-  "Price : High to Low": "price_desc",
-  "Price : Low to High": "price_asc",
-};
-
-const handleFilterChange = (filters: any) => {
-  console.log("Filters changed: ", filters);
-};
-
-const demoFilters = {
-  category_slug: "technology",
-  min_price: "100",
-  max_price: "1000",
-  language: "English",
-  duration: "3 months",
-  rating: "4",
 };
 
 const ContinueWatchingThumb: React.FC<{
@@ -192,8 +172,7 @@ const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
         {/* Top meta: category + seller */}
         <div className="flex items-center justify-between text-[12px] mb-2">
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-[#6B7280]">
-            {/* {getCategoryIcon(p.category.name)} */}
-            {p.mood.name}
+            {p.mood.icon} {p.mood.name}
           </span>
           <span className="inline-flex items-center gap-1 text-[#6B7280]">
             <Star size={14} className="text-[#7077FE] fill-[#7077FE]" />
@@ -236,14 +215,23 @@ const Library: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState("Recently Added");
+  const [selectedValue, setSelectedValue] = useState("recently_added");
   const [isOpen, setIsOpen] = useState(false);
 
   const [continueWatching, setContinueWatching] = useState<
     ContinueWatchingProduct[]
   >([]);
   const [libraryProducts, setLibraryProducts] = useState<LibraryProduct[]>([]);
+  const [allLibraryProducts, setAllLibraryProducts] = useState<LibraryProduct[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasLibrary, setHasLibrary] = useState(true);
+  const [libraryFilterOptions, setLibraryFilterOptions] = useState<any>(null);
+  const [appliedFilters, setAppliedFilters] = useState<any>({});
   // const [pagination, setPagination] = useState<any>({});
+
+  useEffect(() => {
+    fetchLibraryFilters();
+  }, []);
 
   useEffect(() => {
     fetchContinueWatching();
@@ -251,7 +239,7 @@ const Library: React.FC = () => {
 
   useEffect(() => {
     fetchLibrary();
-  }, [activeCategory, selected]);
+  }, [activeCategory, selectedValue, appliedFilters]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -262,6 +250,15 @@ const Library: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, [query]);
+
+  const fetchLibraryFilters = async () => {
+    try {
+      const response = await GetLibraryrFilters();
+      setLibraryFilterOptions(response?.data?.data || null);
+    } catch (error: any) {
+      console.error("Failed to load library filters:", error);
+    }
+  };
 
   const fetchContinueWatching = async () => {
     try {
@@ -280,19 +277,27 @@ const Library: React.FC = () => {
         activeCategory === "All"
           ? undefined
           : CATEGORY_SLUG_MAP[activeCategory];
-      const sortValue = SORT_OPTIONS[selected];
 
-      const response = await GetLibraryrDetails({
+      const params: any = {
         page: 1,
         limit: 100,
         category_slug: categorySlug,
-        sort_by: sortValue,
-      });
+        sort_by: selectedValue,
+        ...appliedFilters,
+      };
+
+      const response = await GetLibraryrDetails(params);
 
       const data = response?.data?.data;
       let products = data?.library || [];
 
-      // Client-side search filter
+      // Store all products to check if user truly has empty library
+      if (activeCategory === "All" && !query && Object.keys(appliedFilters).length === 0) {
+        setAllLibraryProducts(products);
+        setHasLibrary(products.length > 0);
+      }
+
+      // Apply search filter
       if (query) {
         products = products.filter((p: LibraryProduct) =>
           p.product_title.toLowerCase().includes(query.toLowerCase())
@@ -300,7 +305,6 @@ const Library: React.FC = () => {
       }
 
       setLibraryProducts(products);
-      // setPagination(data?.pagination || {});
     } catch (error: any) {
       console.error("Failed to load library:", error);
       showToast({
@@ -314,20 +318,35 @@ const Library: React.FC = () => {
   };
 
   const countsByCategory = React.useMemo(() => {
-    const map: Record<string, number> = { All: libraryProducts.length };
+    const map: Record<string, number> = { All: allLibraryProducts.length };
 
     CATEGORY_TABS.forEach((cat) => {
       if (cat === "All") return;
 
-      map[cat] = libraryProducts.filter(
+      map[cat] = allLibraryProducts.filter(
         (p) => p.category.name === cat
       ).length;
     });
 
     return map;
-  }, [libraryProducts]);
+  }, [allLibraryProducts]);
 
-  if (libraryProducts.length === 0) {
+  const handleFilterChange = (filters: any) => {
+    setAppliedFilters(filters);
+    fetchLibrary();
+  };
+
+  const hasActiveFilters = () => {
+    return (
+      query ||
+      activeCategory !== "All" ||
+      Object.keys(appliedFilters).some(
+        (key) => appliedFilters[key] !== undefined && appliedFilters[key] !== ""
+      )
+    );
+  };
+
+  if (!hasLibrary && !isLoading) {
     return <EmptyPageLibrary />;
   }
 
@@ -412,21 +431,22 @@ const Library: React.FC = () => {
                   className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
                 />
               </button>
-              {isOpen && (
+              {isOpen && libraryFilterOptions?.sort_options && (
                 <div className="absolute top-full mt-2 w-full sm:w-60 bg-white border border-[#7077FE] rounded-2xl shadow-lg z-10 p-4 space-y-3">
-                  {Object.keys(SORT_OPTIONS).map((option) => (
+                  {libraryFilterOptions.sort_options.map((option: any) => (
                     <button
-                      key={option}
+                      key={option.value}
                       onClick={() => {
-                        setSelected(option);
+                        setSelected(option.label); // Set display label
+                        setSelectedValue(option.value); // Set API value
                         setIsOpen(false);
                       }}
-                      className={`block w-full text-left font-poppins font-normal text-[16px] leading-[100%] px-2 py-1 rounded-lg transition-colors ${selected === option
+                      className={`block w-full text-left font-poppins font-normal text-[16px] leading-[100%] px-2 py-1 rounded-lg transition-colors ${selected === option.label
                         ? "text-[#7077FE] font-semibold"
                         : "text-gray-700 hover:text-[#7077FE]"
                         }`}
                     >
-                      {option}
+                      {option.label}
                     </button>
                   ))}
                 </div>
@@ -468,11 +488,35 @@ const Library: React.FC = () => {
               </div>
             ) : libraryProducts.length === 0 ? (
               <div className="text-center py-20">
-                <p className="text-gray-500 font-[Open_Sans]">
+                <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                  <Search size={48} className="text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {hasActiveFilters()
+                    ? "No products found"
+                    : "No products in your library"}
+                </h3>
+                <p className="text-gray-500 mb-6 max-w-md mx-auto">
                   {query
-                    ? "No products found matching your search"
-                    : "No products in your library yet"}
+                    ? `No results found for "${query}". Try different keywords.`
+                    : hasActiveFilters()
+                      ? "No products match your current filters. Try adjusting your filters."
+                      : "Start shopping to add products to your library"}
                 </p>
+                {hasActiveFilters() && (
+                  <button
+                    onClick={() => {
+                      setQuery("");
+                      setActiveCategory("All");
+                      setAppliedFilters({});
+                      setSelected("Recently Added");
+                      setSelectedValue("recently_added");
+                    }}
+                    className="bg-[#7077FE] text-white px-6 py-3 rounded-lg hover:bg-[#5E65F6] transition font-medium"
+                  >
+                    Clear All Filters
+                  </button>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
@@ -487,7 +531,20 @@ const Library: React.FC = () => {
 
         {/* Sidebar (right) */}
         <div>
-          <FilterSidebar filters={demoFilters} onFilterChange={handleFilterChange} />
+          <FilterSidebar
+            filters={appliedFilters}
+            onFilterChange={handleFilterChange}
+            customFilterOptions={libraryFilterOptions}
+            filterConfig={{
+              showCategory: true,
+              showPrice: false,
+              showLanguage: true,
+              showDuration: true,
+              showRating: false,
+              showOrderTime: true,
+              showCreatorSearch: true,
+            }}
+          />
         </div>
       </div>
     </div>

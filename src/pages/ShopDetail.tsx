@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import ProductCard from '../components/MarketPlace/ProductCard';
 import ShopCard from '../components/MarketPlace/Shopcard';
-import { GetMarketPlaceShopById, GetMarketPlaceShops } from "../Common/ServerAPI";
+import { CheckMarketPlaceShopFollowStatus, FollowUnfollowMarketPlaceShop, GetMarketPlaceShopById, GetMarketPlaceShopFollowCount, GetMarketPlaceShops } from "../Common/ServerAPI";
 import { useEffect, useState } from "react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { CiFacebook, CiInstagram, CiLinkedin, CiYoutube } from "react-icons/ci";
@@ -30,6 +30,16 @@ const ShopDetail: React.FC = () => {
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [shops, setShops] = useState<any[]>([]);
   const [isLoadingShops, setIsLoadingShops] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      fetchFollowStatus();
+      fetchFollowerCount();
+    }
+  }, [id]);
 
   useEffect(() => {
     const fetchShopDetails = async () => {
@@ -92,6 +102,52 @@ const ShopDetail: React.FC = () => {
       }
     });
     return counts;
+  };
+
+  const fetchFollowStatus = async () => {
+    try {
+      const response = await CheckMarketPlaceShopFollowStatus(id);
+      const data = response?.data?.data;
+      setIsFollowing(data?.is_following || false);
+    } catch (error: any) {
+      console.error("Failed to fetch follow status:", error);
+    }
+  };
+
+  const fetchFollowerCount = async () => {
+    try {
+      const response = await GetMarketPlaceShopFollowCount(id);
+      const data = response?.data?.data;
+      setFollowerCount(data?.follower_count || 0);
+    } catch (error: any) {
+      console.error("Failed to fetch follower count:", error);
+    }
+  };
+
+  const handleFollowToggle = async () => {
+    setIsFollowLoading(true);
+    try {
+      await FollowUnfollowMarketPlaceShop(id);
+
+      const newFollowState = !isFollowing;
+      setIsFollowing(newFollowState);
+
+      setFollowerCount(prev => newFollowState ? prev + 1 : prev - 1);
+
+      showToast({
+        message: newFollowState ? "Successfully followed shop" : "Successfully unfollowed shop",
+        type: "success",
+        duration: 2000,
+      });
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to update follow status",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsFollowLoading(false);
+    }
   };
 
   const categoryCounts = getCategoryCounts();
@@ -236,21 +292,25 @@ const ShopDetail: React.FC = () => {
                     className="w-[18px] h-[18px]"
                   />
                   <span className="font-['open_sans'] text-[12px] text-[#7077FE]">
-                    {shop?.followers || "0"} Followers
+                    {followerCount} Followers
                   </span>
                 </div>
               </div>
             </div>
           </div>
 
-          <button className="bg-[#7077FE] rounded-md px-5 py-[10px] flex items-center gap-[10px] h-12">
+          <button
+            onClick={handleFollowToggle}
+            disabled={isFollowLoading}
+            className="bg-[#7077FE] rounded-md px-5 py-[10px] flex items-center gap-[10px] h-12"
+          >
             <img
               src="https://static.codia.ai/image/2025-10-24/xfP7JzOEXk.png"
               alt="Follow Icon"
               className="w-[22px] h-[22px]"
             />
-            <span className="font-plus-jakarta font-medium text-[16px] leading-[20.16px] text-white">
-              Follow
+            <span className={`font-plus-jakarta font-medium text-[16px] leading-[20.16px] text-white`}>
+              {isFollowLoading ? "Loading..." : isFollowing ? "Following" : "Follow"}
             </span>
           </button>
         </div>
