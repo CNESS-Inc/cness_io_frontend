@@ -331,9 +331,11 @@ export default function SocialTopBar() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
-  const [isAdult, setIsAdult] = useState<Boolean>(
-    localStorage.getItem("isAdult") === "true" ? true : false
-  );
+  // const [isAdult, setIsAdult] = useState<Boolean>(
+  //   localStorage.getItem("isAdult") === "true" ? true : false
+  // );
+  const isAdult = localStorage.getItem("isAdult") === "true" ? true : false
+  console.log("🚀 ~ SocialTopBar ~ isAdult:", isAdult)
   const navigate = useNavigate();
   const { showToast } = useToast();
   const userProfilePicture = localStorage.getItem("profile_picture");
@@ -1168,7 +1170,7 @@ export default function SocialTopBar() {
 
   const MeDetail = async () => {
     if (localStorage.getItem("isAdult") === "true") {
-      setIsAdult(true);
+      // setIsAdult(true);
       return;
     }
     try {
@@ -1178,7 +1180,7 @@ export default function SocialTopBar() {
       }
       const dobString = response?.data?.data?.user?.dob;
       if (!dobString) {
-        setIsAdult(false);
+        // setIsAdult(false);
         return;
       }
 
@@ -1192,13 +1194,13 @@ export default function SocialTopBar() {
       }
 
       if (age >= 18) {
-        setIsAdult(true);
+        // setIsAdult(true);
       } else {
-        setIsAdult(false);
+        // setIsAdult(false);
       }
     } catch (error) {
       console.error("Error fetching me details:", error);
-      setIsAdult(false);
+      // setIsAdult(false);
     }
   };
 
