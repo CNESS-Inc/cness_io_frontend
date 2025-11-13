@@ -13,20 +13,45 @@ interface FilterProps {
     max_duration?: number;
     min_rating?: number;
     max_rating?: number;
+    order_time?: string;
     sort_by?: string;
   };
   onFilterChange: (filters: any) => void;
+  customFilterOptions?: any; // Pass custom filter options from parent
+  filterConfig?: {
+    showCategory?: boolean;
+    showPrice?: boolean;
+    showLanguage?: boolean;
+    showDuration?: boolean;
+    showRating?: boolean;
+    showOrderTime?: boolean;
+    showCreatorSearch?: boolean;
+  };
 }
 
-const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
+const FilterSidebar: React.FC<FilterProps> = ({
+  filters,
+  onFilterChange,
+  customFilterOptions = null,
+  filterConfig = {
+    showCategory: true,
+    showPrice: true,
+    showLanguage: true,
+    showDuration: true,
+    showRating: true,
+    showOrderTime: false,
+    showCreatorSearch: true,
+  }
+}) => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [filterOptions, setFilterOptions] = useState<any>({
     languages: [],
     duration_ranges: [],
-    rating_ranges: [],
+    rating_range: { min: 0, max: 5, step: 0.5 },
     price_ranges: [],
+    order_time_options: [],
     price_min: 0,
     price_max: 1000,
   });
@@ -35,37 +60,36 @@ const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
   const isCategoriesPage = location.pathname === '/dashboard/categories';
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await GetMarketPlaceBuyerCategories();
-        setCategories(response?.data?.data || []);
-      } catch (error) {
-        console.error("Failed to load categories");
+    if (customFilterOptions) {
+      setFilterOptions(customFilterOptions);
+      if (customFilterOptions.categories) {
+        setCategories(customFilterOptions.categories);
       }
-    };
+    } else {
+      fetchDefaultFilters();
+    }
+  }, [customFilterOptions]);
 
-    fetchCategories();
-  }, []);
+  const fetchDefaultFilters = async () => {
+    try {
+      // Fetch categories
+      const categoryResponse = await GetMarketPlaceBuyerCategories();
+      setCategories(categoryResponse?.data?.data || []);
 
-  useEffect(() => {
-    const fetchFilters = async () => {
-      try {
-        const response = await GetMarketPlaceBuyerFilters();
-        setFilterOptions(response?.data?.data || {
-          languages: [],
-          duration_ranges: [],
-          rating_ranges: [],
-          price_ranges: [],
-          price_min: 0,
-          price_max: 1000,
-        });
-      } catch (error) {
-        console.error("Failed to load filters");
-      }
-    };
-
-    fetchFilters();
-  }, []);
+      // Fetch filter options
+      const filterResponse = await GetMarketPlaceBuyerFilters();
+      setFilterOptions(filterResponse?.data?.data || {
+        languages: [],
+        duration_ranges: [],
+        rating_ranges: [],
+        price_ranges: [],
+        price_min: 0,
+        price_max: 1000,
+      });
+    } catch (error) {
+      console.error("Failed to load filters");
+    }
+  };
 
   useEffect(() => {
     setLocalFilters(filters);
@@ -75,6 +99,15 @@ const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
     const newFilters = {
       ...localFilters,
       category_slug: localFilters.category_slug === categorySlug ? "" : categorySlug,
+    };
+    setLocalFilters(newFilters);
+    onFilterChange(newFilters);
+  };
+
+  const handleOrderTimeToggle = (orderTime: string) => {
+    const newFilters = {
+      ...localFilters,
+      order_time: localFilters.order_time === orderTime ? "" : orderTime,
     };
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
@@ -114,15 +147,11 @@ const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
     onFilterChange(newFilters);
   };
 
-  const handleRatingToggle = (ratingRange: any) => {
-    const isRatingSelected =
-      localFilters.min_rating === ratingRange.min &&
-      localFilters.max_rating === ratingRange.max;
-
-    const newFilters = isRatingSelected
-      ? { ...localFilters, min_rating: undefined, max_rating: undefined }
-      : { ...localFilters, min_rating: ratingRange.min, max_rating: ratingRange.max };
-
+  const handleRatingChange = (value: number) => {
+    const newFilters = {
+      ...localFilters,
+      min_rating: localFilters.min_rating === value ? undefined : value,
+    };
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
   };
@@ -130,11 +159,6 @@ const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
   const isDurationSelected = (durationRange: any) => {
     return localFilters.min_duration === durationRange.min &&
       localFilters.max_duration === durationRange.max;
-  };
-
-  const isRatingSelected = (ratingRange: any) => {
-    return localFilters.min_rating === ratingRange.min &&
-      localFilters.max_rating === ratingRange.max;
   };
 
   return (
@@ -188,27 +212,30 @@ const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
         </div>
 
         {/* 📂 Category */}
-        {!isCategoriesPage && (
-          < div className="space-y-2 mb-8">
+        {filterConfig.showCategory && !isCategoriesPage && categories.length > 0 && (
+          <div className="space-y-2 mb-8">
             <h3 className="text-[16px] font-semibold">Category</h3>
-            {categories.map((category) => (
-              <label
-                key={category.slug}
-                className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={localFilters.category_slug === category.slug}
-                  onChange={() => handleCategoryToggle(category.slug)}
-                  className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
-                />
-                <span>{category.name}</span>
-              </label>
-            ))}
+            <div className="max-h-48 overflow-y-auto space-y-2">
+              {categories.map((category) => (
+                <label
+                  key={category.slug}
+                  className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={localFilters.category_slug === category.slug}
+                    onChange={() => handleCategoryToggle(category.slug)}
+                    className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+                  />
+                  <span>{category.name}</span>
+                </label>
+              ))}
+            </div>
           </div>
         )}
 
         {/* 💲 Price */}
+        {filterConfig.showPrice && (
         <div className="space-y-2 mb-8">
           <h3 className="text-[16px] font-[poppins] font-semibold">Price</h3>
           <div className="flex items-center space-x-2">
@@ -260,9 +287,10 @@ const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
             </div>
           )}
         </div>
+        )}
 
         {/* 🌍 Language */}
-        {filterOptions.languages && filterOptions.languages.length > 0 && (
+        {filterConfig.showLanguage && filterOptions.languages && filterOptions.languages.length > 0 && (
           <div className="space-y-2 mb-8">
             <h3 className="text-[16px] font-semibold">Language</h3>
             {filterOptions.languages.map((language: any) => (
@@ -282,8 +310,29 @@ const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
           </div>
         )}
 
+        {/* 🕒 Order Time Filter (for Library) */}
+        {filterConfig.showOrderTime && filterOptions.order_time_options && filterOptions.order_time_options.length > 0 && (
+          <div className="space-y-2 mb-8">
+            <h3 className="text-[16px] font-semibold">Ordered Time</h3>
+            {filterOptions.order_time_options.map((option: any) => (
+              <label
+                key={option.value}
+                className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={localFilters.order_time === option.value}
+                  onChange={() => handleOrderTimeToggle(option.value)}
+                  className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
+                />
+                <span>{option.label}</span>
+              </label>
+            ))}
+          </div>
+        )}
+
         {/* ⏱️ Duration */}
-        {filterOptions.duration_ranges && filterOptions.duration_ranges.length > 0 && (
+        {filterConfig.showDuration && filterOptions.duration_ranges && filterOptions.duration_ranges.length > 0 && (
           <div className="space-y-2 mb-8">
             <h3 className="text-[16px] font-semibold">Duration</h3>
             {filterOptions.duration_ranges.map((duration: any, index: number) => (
@@ -304,21 +353,25 @@ const FilterSidebar: React.FC<FilterProps> = ({ filters, onFilterChange }) => {
         )}
 
         {/* ⭐ Ratings */}
-        {filterOptions.rating_ranges && filterOptions.rating_ranges.length > 0 && (
+        {filterConfig.showRating && filterOptions.rating_range && (
           <div className="space-y-2 mb-8">
             <h3 className="text-[16px] font-semibold">Ratings</h3>
-            {filterOptions.rating_ranges.map((rating: any, index: number) => (
+            {[5, 4, 3, 2, 1].map((rating) => (
               <label
-                key={index}
+                key={rating}
                 className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
               >
                 <input
                   type="checkbox"
-                  checked={isRatingSelected(rating)}
-                  onChange={() => handleRatingToggle(rating)}
+                  checked={localFilters.min_rating === rating}
+                  onChange={() => handleRatingChange(rating)}
                   className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
                 />
-                <span>{rating.label}</span>
+                <span className="flex items-center gap-1">
+                  {rating}
+                  <span className="text-yellow-500">★</span>
+                  <span className="text-gray-500">& above</span>
+                </span>
               </label>
             ))}
           </div>

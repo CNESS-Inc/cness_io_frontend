@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ProductCard from '../components/MarketPlace/ProductCard';
 import { ChevronDown, ChevronUp, Heart, PlayCircle, Star } from "lucide-react";
 import { useState, useEffect } from "react";
-import { AddProductToCart, AddProductToWishlist, GetMarketPlaceBuyerProductById, GetMarketPlaceBuyerProducts, GetProductReviws, RemoveProductToCart, RemoveProductToWishlist } from '../Common/ServerAPI';
+import { AddProductToCart, AddProductToWishlist, BuyerCanReview, BuyerOwnReview, GetMarketPlaceBuyerProductById, GetMarketPlaceBuyerProducts, GetProductReviws, RemoveProductToCart, RemoveProductToWishlist } from '../Common/ServerAPI';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { CiFacebook, CiInstagram, CiLinkedin, CiYoutube } from 'react-icons/ci';
 import { RiTwitterXFill } from 'react-icons/ri';
@@ -39,7 +39,9 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewStats, setReviewStats] = useState<any>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [editingReview, setEditingReview] = useState<any>(null);
+  const [canReview, setCanReview] = useState(false);
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
   const [userReview, setUserReview] = useState<any>(null);
 
   useEffect(() => {
@@ -51,7 +53,8 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         const response = await GetMarketPlaceBuyerProductById(id);
         const productData = response?.data?.data;
         setProduct(productData);
-        setIsLiked(productData?.isInWishlist || false);
+        setIsLiked(productData?.is_in_wishlist || false);
+        setIsCarted(productData?.is_in_cart || false);
       } catch (error: any) {
         showToast({
           message: "Failed to load product details",
@@ -87,38 +90,77 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   }, []);
 
   useEffect(() => {
-    if (product?.id) {
+    if (id) {
+      checkReviewPermissions();
       fetchReviews();
     }
-  }, [product?.id]);
+  }, [id]);
 
-  const fetchReviews = async () => {
+  const checkReviewPermissions = async () => {
     try {
-      const response = await GetProductReviws(product.id, {
-        page: 1,
-        limit: 10,
-      });
+      const response = await BuyerCanReview(id);
+      const data = response?.data?.data;
 
-      const reviewsData = response?.data?.data?.reviews || [];
-      const stats = response?.data?.data?.stats || null;
-      const myReview = response?.data?.data?.my_review || null;
+      setCanReview(data?.can_review || false);
+      setHasPurchased(data?.has_purchased || false);
+      setHasReviewed(data?.has_reviewed || false);
 
-      setReviews(reviewsData);
-      setReviewStats(stats);
-      setUserReview(myReview);
+      // If user has reviewed, fetch their review
+      if (data?.has_reviewed) {
+        await fetchUserReview();
+      }
     } catch (error: any) {
-      console.error("Failed to load reviews:", error);
+      console.error("Failed to check review permissions:", error);
     }
   };
 
-  const handleWriteReview = () => {
-    if (userReview) {
-      // User already reviewed - open edit mode
-      setEditingReview(userReview);
-    } else {
-      setEditingReview(null);
+  const fetchUserReview = async () => {
+    try {
+      const response = await BuyerOwnReview(id);
+      const data = response?.data?.data;
+
+      if (data?.has_reviewed && data?.review) {
+        setUserReview(data.review);
+      }
+    } catch (error: any) {
+      console.error("Failed to fetch user review:", error);
     }
-    setIsReviewModalOpen(true);
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const response = await GetProductReviws(id ? id : '', {
+        page: 1,
+        limit: 3, // Only show 3 reviews on detail page
+      });
+
+      const data = response?.data?.data;
+      const reviewsData = data?.reviews || [];
+      const summary = data?.rating_summary || null;
+
+      setReviews(reviewsData);
+
+      // Calculate review stats from rating summary
+      if (summary) {
+        const distribution = summary.rating_distribution || {};
+        const totalRatings = summary.total_ratings || 0;
+
+        const calculatePercentage = (count: number) =>
+          totalRatings > 0 ? (count / totalRatings) * 100 : 0;
+
+        setReviewStats({
+          average_rating: summary.average_rating,
+          total_reviews: totalRatings,
+          five_star_percentage: calculatePercentage(distribution["5"] || 0),
+          four_star_percentage: calculatePercentage(distribution["4"] || 0),
+          three_star_percentage: calculatePercentage(distribution["3"] || 0),
+          two_star_percentage: calculatePercentage(distribution["2"] || 0),
+          one_star_percentage: calculatePercentage(distribution["1"] || 0),
+        });
+      }
+    } catch (error: any) {
+      console.error("Failed to load reviews:", error);
+    }
   };
 
   // const handleDeleteReview = async (reviewId: string) => {
@@ -140,6 +182,16 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   //     });
   //   }
   // };
+
+  const handleWriteReview = () => {
+    setIsReviewModalOpen(true);
+  };
+
+  const handleViewMyReview = () => {
+    if (userReview) {
+      setIsReviewModalOpen(true);
+    }
+  };
 
   const toggleChapter = (index: number) => {
     setOpenChapter(openChapter === index ? null : index);
@@ -740,11 +792,23 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                 ))}
               </div>
 
-              <button
-                onClick={handleWriteReview}
-                className="w-full bg-[#7077FE] text-white py-3 rounded-lg font-medium hover:bg-[#7077FE]">
-                <span>{userReview ? "Edit Your Review" : "Write a Review"}</span>
-              </button>
+              {!hasPurchased ? (
+                null
+              ) : hasReviewed ? (
+                <button
+                  onClick={handleViewMyReview}
+                  className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition"
+                >
+                  View My Review
+                </button>
+              ) : canReview ? (
+                <button
+                  onClick={handleWriteReview}
+                  className="w-full bg-[#7077FE] text-white py-3 rounded-lg font-medium hover:bg-[#5E65F6] transition"
+                >
+                  Write a Review
+                </button>
+              ) : null}
             </div>
 
             {/* Reviews List */}
@@ -757,25 +821,25 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                 </div>
               ) : (
                 <>
-                  {reviews.slice(0, 3).map((review, index) => (
+                  {reviews.map((review) => (
                     <div
-                      key={index}
+                      key={review.review_id}
                       className="border border-gray-200 rounded-xl p-4"
                     >
                       <div className="flex items-start space-x-4 mb-4">
                         <img
                           src={
-                            review.user_avatar ||
+                            review.user?.profile_picture ||
                             "https://static.codia.ai/image/2025-10-16/e90dgbfC6H.png"
                           }
-                          alt={review.user_name}
+                          alt={review.user?.username}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                         <div className="flex-1">
-                          <div className="font-medium text-gray-900 mb-1">
-                            <span className="font-[Poppins]">
-                              {review.name}
-                            </span>
+                          <div className="flex items-center justify-start gap-1 font-medium text-gray-900 mb-1">
+                            <p className="font-[Poppins]">
+                              {review.user?.username}
+                            </p>
                             <div className="flex items-center gap-1">
                               {[1, 2, 3, 4, 5].map((star) => (
                                 <Star
@@ -794,9 +858,23 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                           <p className="text-gray-600 text-sm leading-relaxed font-[Open_Sans]">
                             {review.review_text}
                           </p>
-                          <p className="text-xs text-gray-400 mt-2 font-[Open_Sans]">
-                            {new Date(review.created_at).toLocaleDateString()}
-                          </p>
+                          <div className="pt-3 flex space-x-3">
+                            {['Focused', 'Emotional'].map((tag, tagIndex) => (
+                              <span
+                                key={tagIndex}
+                                className="px-7 py-3 border border-gray-300 rounded-full text-sm text-gray-600 font-['Plus_Jakarta_Sans']"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                          {/* <p className="text-xs text-gray-400 mt-2 font-[Open_Sans]">
+                            {new Date(review.created_at).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
+                          </p> */}
                         </div>
                       </div>
                     </div>
@@ -848,8 +926,8 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                           duration: product.video_details?.duration || product.music_details?.total_duration || "00:00:00",
                           mood: product?.mood_name,
                           image:
-                          product.thumbnail_url ||
-                          "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
+                            product.thumbnail_url ||
+                            "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
                           category: product.category?.name || "",
                           isLike: product?.is_in_wishlist,
                           isCarted: product?.is_in_cart,
@@ -871,11 +949,14 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         isOpen={isReviewModalOpen}
         onClose={() => {
           setIsReviewModalOpen(false);
-          setEditingReview(null);
         }}
         productId={product?.id}
-        existingReview={editingReview}
-        onSuccess={fetchReviews}
+        onSuccess={() => {
+          checkReviewPermissions();
+          fetchReviews();
+        }}
+        existingReview={hasReviewed ? userReview : null}
+        viewMode={hasReviewed}
       />
     </main>
   );

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Book, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { CreateEbookProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import AIModal from "../components/MarketPlace/AIModal";
 
 interface FormSectionProps {
   title: string;
@@ -85,6 +86,7 @@ const AddEbookForm: React.FC = () => {
     public_id: string;
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
   const [chapters, setChapters] = useState<any[]>([
     {
       id: 1,
@@ -128,6 +130,15 @@ const AddEbookForm: React.FC = () => {
     fetchMoods();
   }, []);
 
+  const handleAIGenerate = (generatedText: string) => {
+    setFormData(prev => ({
+      ...prev,
+      overview: generatedText
+    }));
+
+    setErrors(prev => ({ ...prev, overview: "" }));
+  };
+
   // Breadcrumb category handling
   const handleSelectCategory = (category: string) => {
     setShowModal(false); // Close modal first
@@ -157,7 +168,7 @@ const AddEbookForm: React.FC = () => {
       "application/vnd.amazon.ebook",
       "text/plain",
     ];
-    
+
     if (
       !file.name.match(/\.(pdf|epub|mobi|azw3|txt)$/i) &&
       !validMimeTypes.includes(file.type)
@@ -1211,6 +1222,12 @@ const AddEbookForm: React.FC = () => {
           />
         )
       }
+      <AIModal
+        showModal={showAIModal}
+        setShowModal={setShowAIModal}
+        productType="video"
+        onGenerate={handleAIGenerate}
+      />
     </>
   );
 };

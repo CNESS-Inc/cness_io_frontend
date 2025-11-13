@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { CreatePodcastProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
+import AIModal from "../components/MarketPlace/AIModal";
 
 interface FormSectionProps {
   title: string;
@@ -84,6 +85,7 @@ const AddPodcastForm: React.FC = () => {
     public_id: string;
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
 
   const [formData, setFormData] = useState({
     product_title: "",
@@ -128,6 +130,15 @@ const AddPodcastForm: React.FC = () => {
     };
     fetchData();
   }, []);
+
+  const handleAIGenerate = (generatedText: string) => {
+    setFormData(prev => ({
+      ...prev,
+      overview: generatedText
+    }));
+
+    setErrors(prev => ({ ...prev, overview: "" }));
+  };
 
   const handleSelectCategory = (category: string) => {
     setShowModal(false); // Close modal first
@@ -508,7 +519,7 @@ const AddPodcastForm: React.FC = () => {
       });
       return;
     }
-    
+
     const hasUploadingFiles = episodes.some((ep) =>
       ep.episode_files.some((file: any) => file.isUploading)
     );
@@ -1133,6 +1144,12 @@ const AddPodcastForm: React.FC = () => {
           </div>
         </div>
       )}
+      <AIModal
+        showModal={showAIModal}
+        setShowModal={setShowAIModal}
+        productType="video"
+        onGenerate={handleAIGenerate}
+      />
     </>
   );
 };

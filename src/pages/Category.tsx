@@ -204,7 +204,9 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             >
               <X className="w-6 h-6" />
             </button>
-            <Filter filters={filters} onFilterChange={handleFilterChange} />
+            <Filter 
+            filters={filters} 
+            onFilterChange={handleFilterChange} />
           </div>
         </div>
       )}
