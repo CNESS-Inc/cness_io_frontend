@@ -18,7 +18,7 @@ const DonationModal = ({ setShowDonationModal }: { setShowDonationModal: React.D
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        
+
         <div className="text-center">
           <div className="w-20 h-20 bg-white/20 backdrop-blur rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -197,6 +197,7 @@ const CheckoutPage: React.FC = () => {
   const [isDonationEnabled, setIsDonationEnabled] = useState(false);
   const [donationAmount, setDonationAmount] = useState("");
   const [showDonationModal, setShowDonationModal] = useState(false);
+  const [appliedDonation, setAppliedDonation] = useState<number>(0);
 
   const fetchCartItems = async () => {
     setIsLoading(true);
@@ -311,6 +312,60 @@ const CheckoutPage: React.FC = () => {
     }
   };
 
+  const handleAddDonation = () => {
+    const amount = parseFloat(donationAmount);
+
+    if (!donationAmount.trim()) {
+      showToast({
+        message: "Please enter a donation amount",
+        type: "error",
+        duration: 2000,
+      });
+      return;
+    }
+
+    if (amount <= 0) {
+      showToast({
+        message: "Donation amount must be greater than zero",
+        type: "error",
+        duration: 2000,
+      });
+      return;
+    }
+
+    if (amount > 10000) {
+      showToast({
+        message: "Maximum donation amount is $10,000",
+        type: "error",
+        duration: 2000,
+      });
+      return;
+    }
+
+    setAppliedDonation(amount);
+    showToast({
+      message: `Thank you! $${amount.toFixed(2)} donation added 💙`,
+      type: "success",
+      duration: 3000,
+    });
+  };
+
+  const handleRemoveDonation = () => {
+    setAppliedDonation(0);
+    setDonationAmount("");
+    setIsDonationEnabled(false);
+    showToast({
+      message: "Donation removed",
+      type: "info",
+      duration: 2000,
+    });
+  };
+
+  const calculateFinalTotal = () => {
+    const baseTotal = parseFloat(summary.total_amount || "0");
+    return (baseTotal + appliedDonation).toFixed(2);
+  };
+
   return (
     <div className="w-full mx-auto px-6 py-8">
       {/* ===== Progress Bar ===== */}
@@ -418,11 +473,34 @@ const CheckoutPage: React.FC = () => {
               <span>- ${summary.total_discount}</span>
             </div>
 
+            {appliedDonation > 0 && (
+              <div className="flex justify-between items-center text-[#7077FE] bg-blue-50 -mx-2 px-2 py-2 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-medium">Donation</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold">${appliedDonation.toFixed(2)}</span>
+                  <button
+                    onClick={handleRemoveDonation}
+                    className="text-red-500 hover:text-red-700 p-1"
+                    title="Remove donation"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="border-t border-gray-200 my-3"></div>
 
             <div className="flex justify-between font-semibold text-[16px] text-[#1A1A1A]">
               <span>Total</span>
-              <span>${summary.total_amount || "0.00"}</span>
+              <span>${calculateFinalTotal()}</span>
             </div>
           </div>
 
@@ -436,6 +514,7 @@ const CheckoutPage: React.FC = () => {
                 setIsDonationEnabled(e.target.checked);
                 if (!e.target.checked) {
                   setDonationAmount("");
+                  setAppliedDonation(0);
                 }
               }}
               className="w-4 h-4 mt-0.5 rounded border-gray-300 text-[#7077FE] focus:ring-2 focus:ring-[#7077FE] cursor-pointer"
@@ -452,18 +531,56 @@ const CheckoutPage: React.FC = () => {
           </div>
 
           {/* Donation Amount Field */}
-          {isDonationEnabled && (
-            <div className="mt-2 flex items-center gap-2 ml-6">
-              <span className="text-sm text-gray-600">$</span>
-              <input
-                type="number"
-                min="1"
-                step="0.01"
-                placeholder="Enter donation amount"
-                value={donationAmount}
-                onChange={(e) => setDonationAmount(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#7077FE]"
-              />
+          {isDonationEnabled && appliedDonation === 0 && (
+            <div className="mt-3 ml-6">
+              <div className="flex items-center gap-2">
+                <div className="flex-1 flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-[#7077FE] transition">
+                  <span className="text-sm text-gray-600 pl-3">$</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10000"
+                    step="0.01"
+                    placeholder="Enter amount"
+                    value={donationAmount}
+                    onChange={(e) => setDonationAmount(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleAddDonation();
+                      }
+                    }}
+                    className="flex-1 px-2 py-2 text-sm focus:outline-none"
+                  />
+                </div>
+                <button
+                  onClick={handleAddDonation}
+                  className="bg-[#7077FE] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#5E65F6] transition-colors flex items-center gap-1"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Min: $1 • Max: $10,000
+              </p>
+            </div>
+          )}
+
+          {appliedDonation > 0 && (
+            <div className="mt-3 ml-6 bg-green-50 border border-green-200 rounded-lg p-3 flex items-start gap-2">
+              <svg className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <div className="flex-1">
+                <p className="text-sm text-green-800 font-medium">
+                  Donation Added! 🎉
+                </p>
+                <p className="text-xs text-green-600 mt-0.5">
+                  Thank you for making a difference!
+                </p>
+              </div>
             </div>
           )}
 
