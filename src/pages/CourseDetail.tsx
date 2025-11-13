@@ -96,7 +96,7 @@ function SaveToCollectionsModal({ open, closeModal, collections }: SaveToCollect
           Add new collection
         </button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -139,141 +139,131 @@ export default function CourseDetail() {
 
   return (
     <div className="w-full">
-      <div className="max-w-[1160px] mx-auto px-5">
+      <div className="mx-auto px-5">
         {/* Collections Modal */}
         <SaveToCollectionsModal open={showModal} closeModal={() => setShowModal(false)} collections={collections} />
 
-        {/* Breadcrumbs */}
-        <div className="flex text-[12px] text-slate-500 mt-9">
-          <button onClick={() => navigate("/dashboard/library")} className="font-[poppins] hover:underline">Library</button>
-          <span className="mt-1 mx-2"><IoIosArrowForward /></span>
-          <span className="font-[poppins]">Courses</span>
-          <span className="mt-1 mx-2"><IoIosArrowForward /></span>
-          <span className="text-slate-700" style={{ fontFamily: "Poppins, sans-serif" }}>Soft guitar moods Books</span>
-        </div>
+        {/* Two-column layout starts from breadcrumbs */}
+        <div className="mt-9 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
+          {/* Left column: all soft guitar content */}
+          <div>
+            {/* Breadcrumbs */}
+            <div className="flex text-[14px] font-[Open_Sans] text-slate-500">
+              <button onClick={() => navigate("/dashboard/library")} className="font-[poppins] hover:underline">Library</button>
+              <span className="mt-1 mx-2"><IoIosArrowForward /></span>
+              <span className="font-[Open_Sans]">Courses</span>
+              <span className="mt-1 mx-2"><IoIosArrowForward /></span>
+              <span className="text-slate-700" style={{ fontFamily: "Poppins, sans-serif" }}>Soft guitar moods Books</span>
 
-        {/* Top Info */}
-        <div className="flex items-center space-x-4 text-xs text-gray-600 mt-3">
-          <span className="flex items-center">
-            <span className="mr-1 font-semibold">{mood}</span>
-            <span className="mx-2">•</span>
-          </span>
-          <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
-            <svg className="w-4 h-4 text-[#7077fe] mr-1" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 15l-5.878 3.09L5.8 12.02.924 7.91l6.068-.936L10 2l2.919 4.974 6.067.936-4.876 4.11 1.678 6.07z" />
-            </svg>
-            {demoRating} ({demoReviews} reviews)
-            <span className="mx-2">•</span>
-          </span>
-          <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
-            <LuImagePlus className="w-4 h-4 text-[#7077fe] mr-1" />
-            {purchases.toLocaleString()} purchases
-            <span className="mx-2">•</span>
-          </span>
-          <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
-           <LuGalleryVerticalEnd className="w-4 h-4 text-[#7077fe] mr-1" />
-            {chaptersCount} Chapters
-            <span className="mx-2">•</span>
-          </span>
-          <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
-           <FiCalendar className="w-4 h-4 text-[#7077fe] mr-1" />
-
-            Purchased on <span className="font-semibold ml-1">{purchaseDate}</span>
-          </span>
-        </div>
-
-        {/* Title Row */}
-        <div className="grid items-center grid-cols-2 justify-between mt-3">
-          <h1 className="text-[20px] font-semibold text-slate-900">Soft guitar moods Books</h1>
-          <button
-            className="text-[12px] text-[#7C3AED] hover:text-[#6D28D9] flex float-right items-center gap-1"
-            onClick={() => setShowModal(true)}
-          >
-            Save to Collections
-            <BsBookmarkFill color="#7C3AED" size={16} />
-          </button>
-        </div>
-
-        {/* Hero Area */}
-        <div className="mt-3 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
-          {/* Video */}
-          <div className="rounded-xl overflow-hidden border border-slate-200 bg-black/5">
-            <div className="w-full h-[340px] bg-cover bg-center relative" style={{ backgroundImage: "url('https://cdn.cness.io/video.svg')" }}>
-              <div className="absolute inset-0 bg-black/10" />
-              <button className="absolute left-4 bottom-4 bg-white/80 text-slate-700 text-sm px-3 py-1 rounded-full backdrop-blur-sm">
-                00:19 / 20:00
+            </div>
+            
+            {/* Heading row: title + creator + save button */}
+            <div className="w-full h-[60px] flex items-start justify-between mt-3">
+              <div>
+                <h1 className="text-[20px] font-[Poppins] font-semibold text-slate-900">Soft guitar moods Books</h1>
+                <div className="flex items-center gap-2 mt-1 text-[12px] text-slate-600">
+                  <img src="https://static.codia.ai/image/2025-10-15/i0zSrWRgtO.png" alt="Red Tape" className="w-5 h-5 rounded-full object-cover" />
+                  <span>Red Tape</span>
+                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#7077FE] text-white text-[10px]">✓</span>
+                </div>
+              </div>
+              <button
+                className="text-400 text-[#000000] hover:text-[#000000] font-[Open_Sans] flex items-center gap-3"
+                onClick={() => setShowModal(true)}
+              >
+                Save to Collections
+                <BsBookmarkFill color="#7C3AED" size={16} />
               </button>
             </div>
-          </div>
-          {/* Sidebar */}
-          <aside className="bg-white rounded-xl border border-slate-200 p-4 w-[260px] h-[260px]">
-            <h3 className="text-[20px] font-semibold mb-3">Course Content</h3>
-            <div className="space-y-2">
-              {chapters.map((c, i) => (
-                <div key={c.title} className="border border-slate-200 rounded-lg overflow-hidden mb-2">
-                  <button
-                    className="w-full flex items-center justify-between px-4 py-3 focus:outline-none bg-white"
-                    onClick={() => setOpenChapter(openChapter === i ? -1 : i)}
-                  >
-                    <div>
-                      <div className="text-[15px] text-left font-medium text-slate-800">{c.title}</div>
-                      <div className="text-[12px] text-slate-500">{c.lessonCount} Lessons • {c.duration}</div>
-                    </div>
-                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${openChapter === i ? "rotate-180" : ""}`} />
-                  </button>
-                  {openChapter === i && c.lessons.length > 0 && (
-                    <div className="bg-slate-50 px-2 pb-3 space-y-1">
-                      {c.lessons.map((l) => (
-                        <div key={l.title} className={`flex gap-3 items-center p-2 rounded-lg cursor-pointer border-l-4 ${l.selected ? "bg-violet-100 border-violet-500" : "border-transparent"}`}>
-                          <span className="text-[16px] text-slate-400">{l.type === "video" ? <FaVideo /> : <FaPodcast />}</span>
-                          <div className="flex-1">
-                            <div className={`text-[13px] font-medium leading-5 ${l.selected ? "text-violet-800" : "text-slate-800"}`}>{l.title}</div>
-                            {l.status && <div className="text-[11px] text-slate-400">{l.status}</div>}
-                          </div>
-                          {l.duration && <span className="text-[12px] text-slate-400">{l.duration}</span>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+
+            {/* Top Info */}
+            <div className="flex items-center space-x-4 text-xs text-gray-600 mt-3">
+              <span className="flex items-center">
+                <span className="mr-1 font-semibold">{mood}</span>
+                <span className="mx-2">•</span>
+              </span>
+              <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
+                <svg className="w-4 h-4 text-[#7077fe] mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 15l-5.878 3.09L5.8 12.02.924 7.91l6.068-.936L10 2l2.919 4.974 6.067.936-4.876 4.11 1.678 6.07z" />
+                </svg>
+                {demoRating} ({demoReviews} reviews)
+                <span className="mx-2">•</span>
+              </span>
+              <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
+                <LuImagePlus className="w-4 h-4 text-[#7077fe] mr-1" />
+                {purchases.toLocaleString()} purchases
+                <span className="mx-2">•</span>
+              </span>
+              <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
+               <LuGalleryVerticalEnd className="w-4 h-4 text-[#7077fe] mr-1" />
+                {chaptersCount} Chapters
+                <span className="mx-2">•</span>
+              </span>
+              <span className="flex items-center" style={{ fontFamily: "Poppins, sans-serif" }}>
+               <FiCalendar className="w-4 h-4 text-[#7077fe] mr-1" />
+                Purchased on <span className="font-semibold ml-1">{purchaseDate}</span>
+              </span>
             </div>
-          </aside>
-        </div>
 
-        {/* Tabs */}
-        <nav className="mt-3 grid w-[64%] grid-cols-3" aria-label="Course sections">
-          {tabs.map((tab, idx) => (
-            <button
-              key={tab.name}
-              className={`px-4 py-2 rounded-md text-sm ${activeTab === idx ? "bg-[#7077FE] text-[#ffffff]" : "bg-white border border-slate-200 text-slate-700"}`}
-              onClick={() => setActiveTab(idx)}
-            >
-              {tab.name}
-            </button>
-          ))}
-        </nav>
+            {/* Title Row */}
+            <div className="grid items-center grid-cols-2 justify-between mt-3">
+             
+            
+            </div>
 
-        {/* Tab Content */}
-        <div className="mt-3 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
+            {/* Hero: only image/video, not split */}
+            <div className="mt-3 rounded-xl overflow-hidden border border-slate-200 bg-black/5">
+              <div className="w-full h-[340px] bg-cover bg-center relative" style={{ backgroundImage: "url('https://cdn.cness.io/video.svg')" }}>
+                <div className="absolute inset-0 bg-black/10" />
+                <button className="absolute left-4 bottom-4 bg-white/80 text-slate-700 text-sm px-3 py-1 rounded-full backdrop-blur-sm">
+                  00:19 / 20:00
+                </button>
+              </div>
+            </div>
+
+            {/* Tabs */}
+            <nav className="mt-3 grid w-full grid-cols-3" aria-label="Course sections">
+              {tabs.map((tab, idx) => (
+                <button
+                  key={tab.name}
+                  className={`px-4 py-2 rounded-md text-sm ${activeTab === idx ? "bg-[#7077FE] text-[#ffffff]" : "bg-white border border-slate-200 text-slate-700"}`}
+                  onClick={() => setActiveTab(idx)}
+                >
+                  {tab.name}
+                </button>
+              ))}
+            </nav>
+
+            {/* Tab Content */}
+            <div className="mt-3">
+
           {activeTab === 0 && (
             <div>
               {/* Overview Section */}
-              <h3 className="text-[16px] font-bold mb-2">Overview</h3>
-              <p className="text-[14px] text-slate-700 mb-4">
-                Immerse yourself in smooth, atmospheric beats designed for focus, relaxation, and late-night creativity. Each track blends organic textures with soulful melodies to set the perfect vibe for study sessions or chill moments. Available for streaming and commercial licensing.
-              </p>
-              {/* Highlights Section */}
-              <h4 className="text-[15px] font-semibold mb-2">Highlights:</h4>
-              <ul className="list-disc list-inside mb-4 text-[14px] text-slate-900">
-                <li>20 premium royalty-free tracks</li>
-                <li>High-quality WAV + MP3 downloads</li>
-                <li>License for personal or commercial use</li>
-              </ul>
+              <h3 className=" w-[86px] h-[27px] text-black font-[Poppins] font-semibold text-[18px] opacity-100 mb-2 
+              flex items-center">
+  Overview
+</h3>
+             <p className="font-['Open_Sans'] font-normal text-[16px] leading [10] text-black bg-white w-full max-w-[843px] opacity-100 py-2">
+  Immerse yourself in smooth, atmospheric beats designed for focus, relaxation, and late-night creativity. Each track blends organic textures with soulful melodies to set the perfect vibe for study sessions or chill moments. Available for streaming and commercial licensing.
+</p>
+
+              
+             {/* Highlights Section */}
+<h4 className="w-[86px] h-[27px] pt-4 pb-4 text-black font-[Poppins] font-semibold text-[18px] leading-[1] opacity-100 mb-2 flex items-center">
+  Highlights:
+</h4>
+<ul className="list-disc list-inside mb-4 text-[16px] font-[Poppins] text-slate-900 space-y-2">
+  <li>20 premium royalty-free tracks</li>
+  <li>High-quality WAV + MP3 downloads</li>
+  <li>License for personal or commercial use</li>
+</ul>
+
               {/* Details Section */}
-              <h4 className="text-[15px] font-semibold mb-2">Details:</h4>
+              <h4 className="w-[86px] h-[27px] pt-4 pb-4  text-black font-[Poppins] font-semibold text-[18px] leading-[1] opacity-100 mb-2 
+              flex items-center">Details:</h4>
               <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-y-2 gap-x-6 text-[14px] text-slate-700">
+                <div className="grid grid-cols-2 gap-y-2 gap-x-6 text-[16px] pb-18 font-[Poppins] text-slate-700">
                   <div className="flex items-center gap-2"><FaRegClock className="text-[16px] text-indigo-400" /> <span>Duration</span></div>
                   <div>12 hours</div>
                   <div className="flex items-center gap-2"><FaRegStar className="text-[16px] text-indigo-400" /> <span>Skill Level</span></div>
@@ -295,9 +285,11 @@ export default function CourseDetail() {
               <div className="rounded-xl overflow-hidden border border-slate-200">
                 <img src="https://cdn.cness.io/video1.svg" className="w-full h-[260px] object-cover" alt="Storytelling" />
               </div>
-              <p style={{ fontFamily: "Poppins, sans-serif" }} className="text-[12px] text-slate-600 mt-3">
-                Immerse yourself in smooth, atmospheric beats designed for focus, relaxation, and late-night creativity. Each track blends organic textures with soulful melodies to set the perfect vibe for study sessions or chill moments. Available for streaming and commercial licensing.
-              </p>
+              <p className="font-['Open_Sans'] font-normal text-[16px] leading [10] text-black bg-white w-full max-w-[843px] opacity-100 py-2">
+  Immerse yourself in smooth, atmospheric beats designed for focus, relaxation, and late-night creativity. Each track blends organic textures with soulful melodies to set the perfect vibe for study sessions or chill moments. Available for streaming and commercial licensing.
+</p>
+
+
             </div>
           )}
 
@@ -409,7 +401,47 @@ export default function CourseDetail() {
             </div>
           )}
         </div>
+          </div>
+          {/* Right column: Course Content sidebar */}
+          <aside className="bg-white rounded-xl border border-slate-200 lg:sticky lg:top-4 h-max">
+           
+            <div className="space-y-2">
+                <div className="bg-gray-100 px-3 py-2 rounded-md">
+                    <h3 className="text-[20px] font-[Poppins] p-4 font-semibold">Course Content</h3>
+              </div>
+                 
+              {chapters.map((c, i) => (
+                <div key={c.title} className="border border-slate-200 rounded-lg overflow-hidden mb-2">
+                  <button
+                    className="w-full flex items-center justify-between px-4 py-3 focus:outline-none bg-white"
+                    onClick={() => setOpenChapter(openChapter === i ? -1 : i)}
+                  >
+                    <div>
+                      <div className="text-[15px] font-[Poppins] font-medium text-slate-800">{c.title}</div>
+                      <div className="text-[12px] font-[Poppins] text-slate-500">{c.lessonCount} Lessons • {c.duration}</div>
+                    </div>
+                    <ChevronDown className={`w-4 h-4 font-[Poppins] text-slate-400 transition-transform duration-200 ${openChapter === i ? "rotate-180" : ""}`} />
+                  </button>
+                  {openChapter === i && c.lessons.length > 0 && (
+                    <div className="bg-slate-50 px-2 pb-3 space-y-1">
+                      {c.lessons.map((l) => (
+                        <div key={l.title} className={`flex gap-3 items-center p-2 rounded-lg cursor-pointer border-l-4 ${l.selected ? "bg-violet-100 border-violet-500" : "border-transparent"}`}>
+                          <span className="text-[16px] text-slate-400">{l.type === "video" ? <FaVideo /> : <FaPodcast />}</span>
+                          <div className="flex-1">
+                            <div className={`text-[13px] font-medium leading-5 ${l.selected ? "text-violet-800" : "text-slate-800"}`}>{l.title}</div>
+                            {l.status && <div className="text-[11px] text-slate-400">{l.status}</div>}
+                          </div>
+                          {l.duration && <span className="text-[12px] text-slate-400">{l.duration}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </aside>
       </div>
+    </div>
     </div>
   );
 }
