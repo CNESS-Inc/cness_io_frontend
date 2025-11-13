@@ -58,6 +58,7 @@ const SingleBP = () => {
   useEffect(() => {
     fetchSinglePost(id);
     fetchComments();
+    fetchRelatedBestPractices();
   }, [id]);
 
   const fetchComments = async () => {
@@ -230,7 +231,6 @@ const SingleBP = () => {
   const fetchRelatedBestPractices = async () => {
     try {
       const response = await GetRelatedBestPractices(id);
-      console.log("🚀 ~ fetchRelatedBestPractices ~ response:", response);
       if (response?.data?.data?.rows) {
         setRelatedBestPractices(response.data.data.rows);
       }
@@ -247,6 +247,18 @@ const SingleBP = () => {
   useEffect(() => {
     fetchRelatedBestPractices();
   }, []);
+
+  const slugify = (str: string) => {
+    return str
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-]+/g, "")
+      .replace(/\-\-+/g, "-")
+      .replace(/^-+/, "")
+      .replace(/-+$/, "");
+  };
 
   // const triggerCreditAnimation = (fromElement: HTMLElement, amount = 10) => {
   //   const walletIcon = document.querySelector(
@@ -318,7 +330,9 @@ const SingleBP = () => {
                   ›
                 </span>
                 <span className="truncate text-[#8A8A8A]">
-                  {singlepost?.profession_data?.title ? singlepost?.profession_data?.title : singlepost?.interest_data?.name}
+                  {singlepost?.profession_data?.title
+                    ? singlepost?.profession_data?.title
+                    : singlepost?.interest_data?.name}
                 </span>
                 <span className="text-dark text-[24px] sm:text-[30px] -mt-1.5 mx-1">
                   ›
@@ -400,7 +414,9 @@ const SingleBP = () => {
             <div className="border-t border-gray-200 pt-6">
               <div className="mb-8">
                 <p className="text-[#7177FE] text-sm font-medium">
-                  {singlepost?.profession_data?.title ? singlepost?.profession_data?.title : singlepost?.interest_data?.name}
+                  {singlepost?.profession_data?.title
+                    ? singlepost?.profession_data?.title
+                    : singlepost?.interest_data?.name}
                 </p>
                 <h1 className="text-[34px] sm:text-3xl font-bold text-[#000000] mt-1 leading-snug">
                   {singlepost?.title}
@@ -820,9 +836,13 @@ const SingleBP = () => {
                         <div
                           key={practice.id}
                           className="flex gap-3 items-start p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer"
-                          onClick={() =>
-                            navigate(`/dashboard/bestpractices/${practice.id}`)
-                          }
+                          onClick={() => {
+                            navigate(
+                              `/dashboard/bestpractices/${
+                                practice.id
+                              }/${slugify(practice.title)}`
+                            );
+                          }}
                         >
                           <img
                             src={practice.file || image1}
@@ -833,7 +853,7 @@ const SingleBP = () => {
                             <p className="font-medium text-gray-800 text-[13px] line-clamp-2">
                               {practice.title}
                             </p>
-                            <p className="text-[12px] text-gray-500 mt-1 line-clamp-2">
+                            <p className="text-[12px] text-gray-500 mt-1 line-clamp-2 break-all">
                               {/* Create a text-only version of the description by stripping HTML tags */}
                               {practice.description
                                 ?.replace(/<[^>]*>/g, "")

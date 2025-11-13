@@ -1571,68 +1571,6 @@ export const getFriendsForTagging = (
   );
 };
 
-export const executeAPI = async <T = any,>(
-  method: ApiMethod,
-  data: any,
-  endpoint: string,
-  params?: Record<string, any>
-): ApiResponse<T> => {
-  try {
-    const token = localStorage.getItem("jwt");
-    const isFormData = data instanceof FormData;
-    const requestId = uuidv4();
-    // const requestId = localStorage.getItem("requestId");
-    const appCatId = localStorage.getItem("appCatId");
-    const headers: Record<string, string> = {
-      ...(isFormData ? {} : { "Content-Type": "application/json" }),
-      Authorization: `Bearer ${token || ""}`,
-    };
-
-    if (requestId) {
-      headers["x-request-id"] = requestId;
-    }
-    if (appCatId) {
-      headers["x-app-cat-id"] = appCatId;
-    }
-    console.log("🚀 ~ executeAPI ~ headers:", headers)
-    const response: AxiosResponse<T> = await axios({
-      method: method,
-      url: API.BaseUrl + endpoint,
-      data: data,
-      params: params,
-      headers,
-      ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && {
-        withCredentials: true,
-      }),
-    });
-    const requestIdres = response.headers["x-request-id"];
-    if (requestIdres) {
-      localStorage.setItem("requestId", requestIdres);
-    }
-    const appCatIdres = response.headers["x-app-cat-id"];
-    if (appCatIdres) {
-      localStorage.setItem("appCatId", appCatIdres);
-    }
-
-    // const access_token = response.headers["access_token"];
-
-    // if (access_token != "not-provide") {
-    //   console.log("access token response check sets", true);
-    //   localStorage.setItem("jwt", access_token);
-    // }
-
-    return response.data;
-  } catch (error: any) {
-
-    if (error.response?.data?.error?.statusCode == 401) {
-      localStorage.clear();
-      window.location.href = "/";
-    }
-
-    throw error;
-  }
-};
-
 export const GetProducts = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_products);
 };
@@ -2178,3 +2116,67 @@ export const GetOrderDetails = (): ApiResponse => {
     EndPoint.marketplace_order_details
   );
 }
+
+
+
+export const executeAPI = async <T = any,>(
+  method: ApiMethod,
+  data: any,
+  endpoint: string,
+  params?: Record<string, any>
+): ApiResponse<T> => {
+  try {
+    const token = localStorage.getItem("jwt");
+    const isFormData = data instanceof FormData;
+    const requestId = uuidv4();
+    // const requestId = localStorage.getItem("requestId");
+    const appCatId = localStorage.getItem("appCatId");
+    const headers: Record<string, string> = {
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      Authorization: `Bearer ${token || ""}`,
+    };
+
+    if (requestId) {
+      headers["x-request-id"] = requestId;
+    }
+    if (appCatId) {
+      headers["x-app-cat-id"] = appCatId;
+    }
+    console.log("🚀 ~ executeAPI ~ headers:", headers)
+    const response: AxiosResponse<T> = await axios({
+      method: method,
+      url: API.BaseUrl + endpoint,
+      data: data,
+      params: params,
+      headers,
+      ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && {
+        withCredentials: true,
+      }),
+    });
+    const requestIdres = response.headers["x-request-id"];
+    if (requestIdres) {
+      localStorage.setItem("requestId", requestIdres);
+    }
+    const appCatIdres = response.headers["x-app-cat-id"];
+    if (appCatIdres) {
+      localStorage.setItem("appCatId", appCatIdres);
+    }
+
+    // const access_token = response.headers["access_token"];
+
+    // if (access_token != "not-provide") {
+    //   console.log("access token response check sets", true);
+    //   localStorage.setItem("jwt", access_token);
+    // }
+
+    return response.data;
+  } catch (error: any) {
+
+    // if (error.response?.data?.error?.statusCode == 401) {
+    //   localStorage.clear();
+    //   window.location.href = "/";
+    // }
+
+    throw error;
+  }
+};

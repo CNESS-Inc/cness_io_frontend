@@ -33,10 +33,10 @@ export function StoriesApp() {
   const [activeStoryId, setActiveStoryId] = useState<any>(null);
   const [stories, setStories] = useState<Story[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Get URL parameters
-  const selectedUserId = searchParams.get('user');
-  const selectedStoryId = searchParams.get('story');
+  const selectedUserId = searchParams.get("user");
+  const selectedStoryId = searchParams.get("story");
 
   const currentStoryIndex = stories.findIndex(
     (story) => story.id === activeStoryId
@@ -58,8 +58,8 @@ export function StoriesApp() {
   const transformApiDataToStories = (apiData: any[]): Story[] => {
     return apiData.map((story) => {
       // Get initials from first name and last name with proper null checks
-      const firstName = story.storyuser?.profile?.first_name || '';
-      const lastName = story.storyuser?.profile?.last_name || '';
+      const firstName = story.storyuser?.profile?.first_name || "";
+      const lastName = story.storyuser?.profile?.last_name || "";
       const firstNameInitial = firstName?.[0] || "";
       const lastNameInitial = lastName?.[0] || "";
       const initials = `${firstNameInitial}${lastNameInitial}`.toUpperCase();
@@ -69,9 +69,9 @@ export function StoriesApp() {
         userId: story.user_id, // Add userId for sharing
         is_liked: story.is_liked || false,
         user: {
-          name: `${firstName} ${lastName}`.trim() || 'Unknown User',
-          avatar: story.storyuser?.profile?.profile_picture || '',
-          initials: initials || 'U',
+          name: `${firstName} ${lastName}`.trim() || "Unknown User",
+          avatar: story.storyuser?.profile?.profile_picture || "",
+          initials: initials || "U",
         },
         hasNewStory: !story.is_viewed, // Use is_viewed instead of is_liked
         isViewed: story.is_viewed || false,
@@ -80,7 +80,7 @@ export function StoriesApp() {
           {
             id: story.id,
             type: "video", // Assuming all are videos from the API
-            url: story.video_file || '',
+            url: story.video_file || "",
             duration: story?.duration || 5000, // Default duration, you might want to calculate this
           },
         ],
@@ -92,29 +92,33 @@ export function StoriesApp() {
     try {
       setIsLoading(true);
       const res = await GetStory();
-      
-      // Add null checks for API response
+
       if (res?.data?.data && Array.isArray(res.data.data)) {
         let filteredStories = res.data.data;
-        
+
         // If a specific user is selected, filter stories for that user only
         if (selectedUserId) {
-          filteredStories = res.data.data.filter((story: any) => story.user_id === selectedUserId);
+          filteredStories = res.data.data.filter(
+            (story: any) => story.user_id === selectedUserId
+          );
         } else {
           // Group stories by user and get the most recent story per user (for general view)
           filteredStories = groupStoriesByUser(res.data.data);
         }
-        
+
         const transformedStories = transformApiDataToStories(filteredStories);
         setStories(transformedStories);
-        
-        // Set active story
+
+        // Set active story - ALWAYS start with first story
         if (transformedStories.length > 0) {
-          if (selectedStoryId) {
-            // If specific story is selected, use that
+          // If a specific story is requested via URL, use it
+          if (
+            selectedStoryId &&
+            transformedStories.some((story) => story.id === selectedStoryId)
+          ) {
             setActiveStoryId(selectedStoryId);
           } else {
-            // Otherwise, use the first story
+            // Otherwise start with the first (most recent) story
             setActiveStoryId(transformedStories[0].id);
           }
         }
@@ -133,26 +137,39 @@ export function StoriesApp() {
   // Function to group stories by user and return the most recent story per user
   const groupStoriesByUser = (stories: any[]) => {
     const userStoryMap = new Map();
-    
-    stories.forEach(story => {
+
+    stories.forEach((story) => {
       const userId = story.user_id;
       const existingStory = userStoryMap.get(userId);
-      
+
       // If no story exists for this user, or if current story is more recent
-      if (!existingStory || new Date(story.createdAt) > new Date(existingStory.createdAt)) {
+      if (
+        !existingStory ||
+        new Date(story.createdAt) > new Date(existingStory.createdAt)
+      ) {
         userStoryMap.set(userId, story);
       }
     });
-    
+
     // Convert map values to array and sort by creation date (most recent first)
-    return Array.from(userStoryMap.values()).sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    return Array.from(userStoryMap.values()).sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   };
 
   useEffect(() => {
     GetStoryData();
   }, [selectedUserId, selectedStoryId]);
+
+  useEffect(() => {
+    console.log(
+      "Stories order:",
+      stories.map((s) => ({ id: s.id, createdAt: s.createdAt }))
+    );
+    console.log("Active story ID:", activeStoryId);
+    console.log("Current story index:", currentStoryIndex);
+  }, [stories, activeStoryId, currentStoryIndex]);
 
   const handleLikeClick = async (story: any) => {
     try {
@@ -180,7 +197,6 @@ export function StoriesApp() {
     // Any additional logic can be added here if needed
   };
 
-
   if (isLoading) {
     return (
       <div className="h-screen bg-background flex justify-center items-center">
@@ -194,10 +210,14 @@ export function StoriesApp() {
       <div className="h-screen bg-background flex justify-center items-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-foreground mb-2">
-            {selectedUserId ? "No stories available from this user" : "No stories available"}
+            {selectedUserId
+              ? "No stories available from this user"
+              : "No stories available"}
           </h2>
           <p className="text-muted-foreground">
-            {selectedUserId ? "This user hasn't posted any stories yet." : "Check back later for new stories!"}
+            {selectedUserId
+              ? "This user hasn't posted any stories yet."
+              : "Check back later for new stories!"}
           </p>
         </div>
       </div>
@@ -211,9 +231,9 @@ export function StoriesApp() {
         onStorySelect={setActiveStoryId}
       />
 
-      {currentStory && (
+      {currentStory && stories.length > 0 && (
         <StoryViewer
-        allStories={stories}
+          allStories={stories}
           currentStoryIndex={currentStoryIndex}
           stories={currentStory.content}
           userName={currentStory.user.name}
@@ -222,7 +242,7 @@ export function StoriesApp() {
           onPrevious={handlePrevious}
           onNext={handleNext}
           hasPrevious={currentStoryIndex > 0}
-          timeAgo="1 hour ago" // You might want to calculate this from createdAt
+          timeAgo="1 hour ago"
           hasNext={currentStoryIndex < stories.length - 1}
           onLike={() => handleLikeClick(currentStory)}
           storyId={currentStory.id}
