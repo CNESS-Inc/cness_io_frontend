@@ -296,7 +296,7 @@ export default function CourseDetail() {
          {activeTab === 2 && (
             <div>
               {/* --- Rating Summary (Top) --- */}
-              <div className="w-full mx-auto rounded-lg bg-white p-6 border mb-6 grid grid-cols-2 gap-6">
+              <div className="w-full mx-auto rounded-lg bg-white p-6 shadow mb-6 grid grid-cols-2 gap-6">
                 {/* Main left */}
                 <div className="flex flex-col items-center justify-center">
                   <span className="text-[36px] font-bold leading-none">{avgRating}</span>
@@ -326,7 +326,7 @@ export default function CourseDetail() {
 
 
               {/* --- Review Entry, Tags, and List --- */}
-              <div className="max-w-xl mx-auto p-6 bg-white rounded shadow">
+              <div className="mx-auto p-6 bg-white rounded shadow">
                 <p className="text-sm font-semibold mb-2">Rate the product</p>
                 <div className="flex mb-3">
                   {[1, 2, 3, 4, 5].map((star) => (
