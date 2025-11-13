@@ -674,7 +674,7 @@ const AddPodcastForm: React.FC = () => {
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Thumnail *
+                Thumbnail *
               </label>
               {thumbnailData?.thumbnail_url ? (
                 <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
@@ -764,9 +764,32 @@ const AddPodcastForm: React.FC = () => {
         <FormSection title="Details" description="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Overview *
-              </label>
+            <div className="flex items-center justify-between mb-2">
+                <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
+                  Overview *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowAIModal(true)}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group"
+                >
+                  <svg
+                    className="w-4 h-4 animate-pulse"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium">Generate with AI</span>
+                  <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
+                </button>
+              </div>
               <textarea
                 name="overview"
                 value={formData.overview}
