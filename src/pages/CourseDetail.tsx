@@ -355,7 +355,7 @@ export default function CourseDetail() {
               )}
 
               {activeTab === 'reviews' && (
-                <ReviewsTab productId={id!} />
+                <ReviewsTab productId={id!} show_overall_review={true} show_public_review={true}/>
               )}
             </div>
           </div>

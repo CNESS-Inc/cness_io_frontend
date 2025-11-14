@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Trash2, CheckCircle, CreditCard, ShoppingCart } from "lucide-react";
+import {  CheckCircle, CreditCard, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { CreateCheckoutSession, GetProductCart, RemoveProductToCart } from "../Common/ServerAPI";
@@ -231,24 +231,6 @@ const CheckoutPage: React.FC = () => {
   useEffect(() => {
     fetchCartItems();
   }, []);
-
-  const handleRemoveFromCart = async (productId: string) => {
-    try {
-      await RemoveProductToCart(productId);
-      showToast({
-        message: "Item removed from cart",
-        type: "success",
-        duration: 2000,
-      });
-      fetchCartItems(); // Refresh cart
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message || "Failed to remove item",
-        type: "error",
-        duration: 3000,
-      });
-    }
-  };
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {

@@ -234,7 +234,7 @@ const Library: React.FC = () => {
   const [selectedValue, setSelectedValue] = useState("recently_added");
   const [isOpen, setIsOpen] = useState(false);
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [pagination, setPagination] = useState<any>({});
+  const [setPagination]= useState<any>({});
 
   const [continueWatching, setContinueWatching] = useState<
     ContinueWatchingProduct[]
