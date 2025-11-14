@@ -162,7 +162,6 @@ const AssessmentQuestion: React.FC = () => {
       setActiveModal(null);
       await fetchQuestions()
     } catch (error: any) {
-      console.log("🚀 ~ handleFinalSubmit ~ error:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",

@@ -142,7 +142,6 @@ export default function Login() {
   );
   const [orgFormStep, setOrgFormStep] = useState(1); // 1 = Basic Info, 2 = Questions
   const [personFormStep, setPersonFormStep] = useState(1);
-  console.log("🚀 ~ Login ~ personFormStep:", personFormStep);
 
   const [activeModal, setActiveModal] = useState<
     | "type"
@@ -167,7 +166,6 @@ export default function Login() {
     revenue: "",
     question: [], // Changed from 'question' to 'questions' to match interface
   });
-  console.log("🚀 ~ Login ~ organizationForm:", organizationForm);
   const [personForm, setPersonForm] = useState<PersonForm>({
     first_name: "",
     last_name: "",
@@ -175,7 +173,6 @@ export default function Login() {
     professions: [],
     question: [],
   });
-  console.log("🚀 ~ Login ~ personForm:", personForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subDomain, setsubDomain] = useState<SubDomain[] | null>();
   const [isAnnual, setIsAnnual] = useState(true);
@@ -345,7 +342,6 @@ export default function Login() {
       }
 
       if (setErrors) {
-        console.log("🚀 ~ Login ~ setErrors:", setErrors);
         setOrganizationErrors(newErrors);
       }
       return isValid;
@@ -422,7 +418,6 @@ export default function Login() {
   const handleNextPersonClick = () => {
     // Only validate step 1 fields when clicking next
     const isValid = validateForm(personForm, "person", 1, true);
-    console.log("🚀 ~ handleNextPersonClick ~ isValid:", isValid);
 
     if (isValid) {
       setPersonFormStep(2);
@@ -679,8 +674,7 @@ export default function Login() {
         person_organization_complete: type,
       };
 
-      const response = await AccountDetails(payload);
-      console.log("🚀 ~ handleTypeSelection ~ response:", response);
+      await AccountDetails(payload);
 
       // Handle successful response
       if (type === 2) {
@@ -1140,7 +1134,6 @@ export default function Login() {
 
     try {
       const response = await GoogleLoginDetails(token); // ✅ use your centralized API call
-      console.log("🚀 ~ handleGoogleLoginSuccess ~ response:", response);
       if (response) {
         localStorage.setItem("authenticated", "true");
         localStorage.setItem("jwt", response?.data?.data?.jwt);

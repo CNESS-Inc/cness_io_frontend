@@ -569,7 +569,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     }
     
     setIsSubmitting(true);
-    console.log("🚀 ~ handleOrganizationSubmit ~ organizationForm:", organizationForm)
     try {
       const res = await submitOrganizationDetails(organizationForm);
       localStorage.setItem("person_organization", "2");

@@ -222,7 +222,6 @@ export default function UserProfileView() {
     try {
       const res = await GetFollowBestpractices();
       setFollowBP(res.data.data.rows);
-      console.log("🚀 ~ fetchFollowBestPractices ~ res:", res);
     } catch (error: any) {
       console.error("Error fetching inspiring companies:", error);
       showToast({
@@ -372,7 +371,6 @@ export default function UserProfileView() {
           friend_id: userId,
         };
         const res = await SendConnectionRequest(formattedData);
-        console.log("🚀 ~ handleFriend ~ res:", res);
         showToast({
           message: res?.success?.message,
           type: "success",

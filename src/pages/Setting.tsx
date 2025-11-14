@@ -106,7 +106,6 @@ const Setting = () => {
         setMessage("Password updated successfully.");
       }
     } catch (error:any) {
-      console.log("🚀 ~ handleSubmit ~ error:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",

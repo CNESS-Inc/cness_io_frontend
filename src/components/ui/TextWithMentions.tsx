@@ -18,7 +18,6 @@ const TextWithMentions: React.FC<TextWithMentionsProps> = ({ text, className = "
     // Replace this with your actual API call
     async function fetchTaggedUserIds() {
       const response = await getMentionUserProfile(commentId);
-      console.log("🚀 ~ fetchTaggedUserIds ~ response:", response)
       const userId = response?.data?.data || '';
       setMentionUserIds(userId);
       if (onMentionUserIdsFetched) {
@@ -35,13 +34,12 @@ const TextWithMentions: React.FC<TextWithMentionsProps> = ({ text, className = "
     return parts.map((part, index) => {
       // Check if this part is a mention (odd indices after splitting by @username)
       if (index % 2 === 1) {
-        console.log(mentionUserIds, 'mentionUserIds---mentionUserIds--->')
         return (
           <span
             key={index}
             className="text-blue-600 font-medium bg-blue-50 px-1 rounded"
           >
-            {mentionUserIds ? <a href={`/dashboardxvsdfd/userprofile/${mentionUserIds}`}>@{part}</a> : <span>@{part}</span>}
+            {mentionUserIds ? <a href={`/dashboard/userprofile/${mentionUserIds}`}>@{part}</a> : <span>@{part}</span>}
           
           </span>
         );

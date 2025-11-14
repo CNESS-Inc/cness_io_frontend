@@ -191,6 +191,8 @@ export const EndPoint = {
   googleLogin: "/auth/google-login",
   resendMail: "/auth/resend-verification",
   all_bestPractices: "/best-practice/all",
+  all_bestPractices_by_profession: "/best-practice/profession-wise",
+  all_bestPractices_by_interest: "/best-practice/interest-wise",
   bp: "/best-practice",
   bp_recommended: "/best-practice/recommended",
   bp_related: "/best-practice/related",
@@ -782,6 +784,43 @@ export const GetAllBestPractices = (
     ServerAPI.APIMethod.GET,
     null,
     EndPoint.all_bestPractices,
+    params
+  );
+};
+
+export const GetAllBestPracticesByProfession = (
+  page: number,
+  limit: number,
+  professionId: string,
+  searchText: string
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  params["profession"] = professionId;
+  params["text"] = searchText;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.all_bestPractices_by_profession,
+    params
+  );
+};
+export const GetAllBestPracticesByInterest = (
+  page: number,
+  limit: number,
+  interestId: string,
+  searchText: string
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  params["interest"] = interestId;
+  params["text"] = searchText;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.all_bestPractices_by_interest,
     params
   );
 };
@@ -2142,7 +2181,6 @@ export const executeAPI = async <T = any,>(
     if (appCatId) {
       headers["x-app-cat-id"] = appCatId;
     }
-    console.log("🚀 ~ executeAPI ~ headers:", headers)
     const response: AxiosResponse<T> = await axios({
       method: method,
       url: API.BaseUrl + endpoint,

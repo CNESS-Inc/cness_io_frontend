@@ -78,7 +78,6 @@ const PostPopup: React.FC<PopupProps> = ({
   insightsCount,
   collection,
 }) => {
-  console.log("🚀 ~ PostPopup ~ post:", post);
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
   const [open, setOpen] = useState(false);

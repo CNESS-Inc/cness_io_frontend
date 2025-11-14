@@ -112,6 +112,7 @@ import CoursePreview from "../pages/CoursePreview";
 import ArtPreview from "../pages/ArtPreview";
 import EditSellerProductPage from "../pages/EditSellerProductPage";
 import PaymentConfirmation from "../pages/PaymentConfirmation";
+import BestPracticeSearch from "../pages/BestPracticeSearch";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -651,6 +652,10 @@ export const router = createBrowserRouter([
           {
             path: "bestpractices",
             element: <BestPracticesHub />,
+          },
+          {
+            path: "search-bestpractices",
+            element: <BestPracticeSearch />,
           },
           {
             path: "bestpractices/:id/:slug",

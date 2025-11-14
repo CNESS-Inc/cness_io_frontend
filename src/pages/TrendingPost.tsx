@@ -102,7 +102,6 @@ export default function Trending() {
     try {
       // Pass page parameter correctly to the API
       const res = await GetAllTrendingPost(page);
-      console.log("🚀 ~ getUserPosts ~ res:", res, "Page:", page);
 
       if (res?.data?.data?.rows) {
         const newPosts: Post[] = res.data.data.rows.map((el: any) => {
