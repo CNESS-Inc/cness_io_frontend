@@ -95,7 +95,6 @@ const SingleBP = () => {
   const fetchSinglePost = async (id: any) => {
     try {
       const res = await GetSingleBestPractice(id);
-      console.log("🚀 ~ fetchSinglePost ~ res:", res);
       setCommentCount(res.data?.data?.comments_count);
       setIs_saved(res.data?.data?.is_saved);
       setIsFollowing(res.data?.data?.is_bp_following);

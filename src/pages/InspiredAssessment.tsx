@@ -68,7 +68,6 @@ const InspiredAssessment = () => {
   const [activeModal, setActiveModal] = useState<"price" | null>(null);
   const completed_step = localStorage.getItem("completed_step");
   const [personPricing, setPersonPricing] = useState<any[]>([]);
-  console.log("🚀 ~ InspiredAssessment ~ personPricing:", personPricing);
   const [isAnnual, setIsAnnual] = useState(true);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const navigate = useNavigate();
@@ -368,7 +367,6 @@ const InspiredAssessment = () => {
       }
 
       const res = await submitAssesmentAnswerDetails(payload);
-      console.log("🚀 ~ handleSubmitAllAnswers ~ res:", res);
 
       showToast({
         message: "Answers submitted successfully!",
@@ -438,7 +436,6 @@ const InspiredAssessment = () => {
       }
       console.log("Submission result:", result);
     } catch (error: any) {
-      console.log("🚀 ~ handleSubmitAllAnswers ~ error:", error);
       showToast({
         message:
           error?.response?.data?.error?.message || "Failed to submit answers",
@@ -752,7 +749,6 @@ const InspiredAssessment = () => {
     try {
       setLoading(true);
       const res = await QuestionDetails();
-      console.log("🚀 ~ fetchQuestions ~ res:", res);
 
       if (res?.data?.data?.all_sections) {
         const transformedSections = transformApiData(res.data.data);

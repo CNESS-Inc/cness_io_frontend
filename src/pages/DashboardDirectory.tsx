@@ -126,7 +126,6 @@ export default function DashboardDirectory() {
         page,
         popularPagination.itemsPerPage
       );
-      console.log("🚀 ~ fetchPopularCompany ~ res:", res);
 
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({

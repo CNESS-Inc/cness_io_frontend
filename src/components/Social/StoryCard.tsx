@@ -24,13 +24,11 @@ const StoryCard: React.FC<StoryCardProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleReel = () => {
-    if (userId) {
-      navigate(`/story-design?user=${userId}&story=${id}`);
-    } else {
-      navigate(`/story-design`);
-    }
+const handleReel = () => {
+    // Navigate with both user ID and story ID as query parameters
+    navigate(`/story-design?user=${userId}&story=${id}`);
   };
+
   return (
     <div onClick={() => handleReel()}>
     {/* <div onClick={() => handleReel(id)}> */}

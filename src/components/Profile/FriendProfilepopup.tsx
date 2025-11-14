@@ -73,7 +73,6 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
           GetFollowingFollowersByUserId(friend.id.toString()),
           GetUserPostsByUserId(friend.id.toString()),
         ]);
-      console.log("🚀 ~ fetchFriendData ~ profileResponse:", profileResponse);
 
       setProfileData(profileResponse.data.data);
       setFollowingFollowers(followingResponse.data.data);
@@ -242,7 +241,6 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
           (friend: any) =>
             friend.friend_id === userId || friend.user_id === userId
         );
-        console.log("🚀 ~ checkFriendStatus ~ friendRecord:", friendsList);
         if (friendRecord) {
           // Check the request_status from the database
           const status = friendRecord.request_status;

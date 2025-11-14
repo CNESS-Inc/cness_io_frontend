@@ -1,4 +1,10 @@
-import { AlignCenter, AlignLeft, AlignRight, List, ListOrdered } from "lucide-react";
+import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  List,
+  ListOrdered,
+} from "lucide-react";
 import React, { useRef, useEffect, useState } from "react";
 
 interface CustomRichTextEditorProps {
@@ -65,45 +71,43 @@ const CustomRichTextEditor: React.FC<CustomRichTextEditorProps> = ({
       const inOrderedList = document.queryCommandState("insertOrderedList");
       const inList = inUnorderedList || inOrderedList;
 
-      if (inList && e.shiftKey) {
+      // SHIFT + ENTER  → line break only
+      if (e.shiftKey) {
         e.preventDefault();
+        document.execCommand("insertLineBreak");
+        return;
+      }
 
-        const selection = window.getSelection();
-        if (!selection || selection.rangeCount === 0) return;
+      // ENTER → your full custom logic
+      e.preventDefault();
 
-        const range = selection.getRangeAt(0);
-        const li =
-          range.startContainer instanceof Element
-            ? (range.startContainer as HTMLElement).closest("li")
-            : range.startContainer.parentElement?.closest("li");
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return;
 
-        if (!li) return;
+      const range = selection.getRangeAt(0);
+      const li =
+        range.startContainer instanceof Element
+          ? (range.startContainer as HTMLElement).closest("li")
+          : range.startContainer.parentElement?.closest("li");
 
+      if (inList && li) {
         const liText = li.textContent?.trim() ?? "";
 
         if (liText === "") {
-          // Case 2: Shift+Enter on an empty bullet → remove it and exit list
+          // Remove empty bullet and exit list
           const parentList = li.closest("ul, ol");
           if (parentList) {
-            // Create a new paragraph after the list
             const paragraph = document.createElement("div");
             paragraph.innerHTML = "<br>";
 
-            // Remove the empty bullet before inserting paragraph
             parentList.removeChild(li);
-
-            // Insert new paragraph *after* the list
             parentList.parentNode?.insertBefore(
               paragraph,
               parentList.nextSibling
             );
 
-            // If list becomes empty, remove it entirely
-            if (!parentList.querySelector("li")) {
-              parentList.remove();
-            }
+            if (!parentList.querySelector("li")) parentList.remove();
 
-            // Move caret into the new paragraph
             const newRange = document.createRange();
             newRange.setStart(paragraph, 0);
             newRange.collapse(true);
@@ -111,7 +115,7 @@ const CustomRichTextEditor: React.FC<CustomRichTextEditorProps> = ({
             selection.addRange(newRange);
           }
         } else {
-          // Case 1: Shift+Enter inside a non-empty bullet → add new bullet
+          // Add new bullet
           const newLi = document.createElement("li");
           newLi.innerHTML = "<br>";
 
@@ -119,7 +123,6 @@ const CustomRichTextEditor: React.FC<CustomRichTextEditorProps> = ({
             li.parentNode!.insertBefore(newLi, li.nextSibling);
           else li.parentNode!.appendChild(newLi);
 
-          // Move caret into new bullet
           const newRange = document.createRange();
           newRange.setStart(newLi, 0);
           newRange.collapse(true);
@@ -131,19 +134,8 @@ const CustomRichTextEditor: React.FC<CustomRichTextEditorProps> = ({
         return;
       }
 
-      if (inList) {
-        // Normal Enter (without Shift) → let browser handle it
-        return;
-      }
-
-      // Outside of list
-      if (!e.shiftKey) {
-        e.preventDefault();
-        document.execCommand("insertParagraph", false);
-      } else {
-        e.preventDefault();
-        document.execCommand("insertLineBreak");
-      }
+      // Outside list → insert paragraph
+      document.execCommand("insertParagraph");
     }
 
     // Tab → indent in lists

@@ -134,7 +134,6 @@ export default function SignupForm({
         password: formData.password,
       };
       const response = (await RegisterDetails(payload)) as AuthResponse;
-      console.log("🚀 ~ handleSubmit ~ response:", response);
 
       if (response) {
         setApiMessage(response?.success?.message || "Registration successful");
