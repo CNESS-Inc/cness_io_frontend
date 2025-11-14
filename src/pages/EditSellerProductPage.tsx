@@ -17,9 +17,27 @@ import {
   Sparkles,
 } from "lucide-react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
-import { DeleteArtChapter, DeleteCourseChapter, DeleteEbookChapter, DeleteMusicTrack, DeletPodcastEpisode, GetMarketPlaceMoods, GetPreviewProduct, UpdateArtProduct, UpdateCourseProduct, UpdateEbookProduct, UpdateMusicProduct, UpdatePodcastProduct, UpdateProductStatus, UpdateVideoProduct, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
+import {
+  DeleteArtChapter,
+  DeleteCourseChapter,
+  DeleteEbookChapter,
+  DeleteMusicTrack,
+  DeletPodcastEpisode,
+  GetMarketPlaceMoods,
+  GetPreviewProduct,
+  UpdateArtProduct,
+  UpdateCourseProduct,
+  UpdateEbookProduct,
+  UpdateMusicProduct,
+  UpdatePodcastProduct,
+  UpdateProductStatus,
+  UpdateVideoProduct,
+  UploadProductDocument,
+  UploadProductThumbnail,
+} from "../Common/ServerAPI";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 import AIModal from "../components/MarketPlace/AIModal";
+import CustomRichTextEditor from "../components/sections/bestPractiseHub/CustomRichTextEditor";
 
 // Breadcrumb Component
 const Breadcrumb: React.FC<{ category: string }> = ({ category }) => (
@@ -233,7 +251,7 @@ interface Track {
   id: number;
   track_id?: string;
   title: string;
-  delete_files: any,
+  delete_files: any;
   track_files: TrackFile[];
   order_number: number;
 }
@@ -254,7 +272,7 @@ interface Episode {
   description?: string;
   duration?: string;
   is_free?: boolean;
-  delete_files: any,
+  delete_files: any;
   episode_files: EpisodeFile[];
   order_number: number;
 }
@@ -274,7 +292,7 @@ interface Chapter {
   title: string;
   description?: string;
   is_free?: boolean;
-  delete_files: any,
+  delete_files: any;
   chapter_files: ChapterFile[];
   order_number: number;
 }
@@ -293,7 +311,7 @@ interface Lesson {
   id: number;
   chapter_id?: string;
   title: string;
-  delete_files: any,
+  delete_files: any;
   chapter_files: LessonFile[];
   order_number: number;
 }
@@ -313,7 +331,7 @@ interface Collection {
   title: string;
   description?: string;
   is_free?: boolean;
-  delete_files: any,
+  delete_files: any;
   chapter_files: CollectionFile[];
   order_number: number;
 }
@@ -359,7 +377,7 @@ const EditSellerProductPage: React.FC = () => {
   const [contentItems, setContentItems] = useState<
     (Track | Episode | Chapter | Lesson | Collection)[]
   >([]);
-  console.log('contentItems', contentItems)
+  console.log("contentItems", contentItems);
   const [deletingItems, setDeletingItems] = useState<Set<string>>(new Set());
 
   // Form Data State (dynamic based on category)
@@ -406,9 +424,16 @@ const EditSellerProductPage: React.FC = () => {
           // Common fields
           const commonData: any = {
             product_title: productData.product_title || "",
-            price: parseFloat(productData.original_price || productData.price || "0"),
-            discount_percentage: parseFloat(productData.discount_percentage || "0"),
-            mood_id: category === "ebook" ? productData?.mood?.id || "" : productData.mood_id || "",
+            price: parseFloat(
+              productData.original_price || productData.price || "0"
+            ),
+            discount_percentage: parseFloat(
+              productData.discount_percentage || "0"
+            ),
+            mood_id:
+              category === "ebook"
+                ? productData?.mood?.id || ""
+                : productData.mood_id || "",
             overview: productData.overview || "",
             highlights: productData.highlights || [],
             language: productData.language || "",
@@ -416,14 +441,22 @@ const EditSellerProductPage: React.FC = () => {
 
           // Category-specific fields
           if (category === "video") {
-            commonData.video_url = productData.video_details?.video_files?.[0] || "";
-            commonData.thumbnail_url = productData.video_details?.thumbnail_url || "";
+            commonData.video_url =
+              productData.video_details?.video_files?.[0] || "";
+            commonData.thumbnail_url =
+              productData.video_details?.thumbnail_url || "";
             commonData.duration = productData.video_details?.duration || "";
-            commonData.short_video_url = productData.video_details?.short_preview_video_url || "";
-            commonData.summary = productData.video_details?.summary_of_storytelling || "";
+            commonData.short_video_url =
+              productData.video_details?.short_preview_video_url || "";
+            commonData.summary =
+              productData.video_details?.summary_of_storytelling || "";
 
-            setMainVideoPreview(productData.video_details?.main_video?.thumbnail || "");
-            setShortVideoPreview(productData.video_details?.short_video?.thumbnail || "");
+            setMainVideoPreview(
+              productData.video_details?.main_video?.thumbnail || ""
+            );
+            setShortVideoPreview(
+              productData.video_details?.short_video?.thumbnail || ""
+            );
           } else {
             // Non-video categories have thumbnail
             commonData.thumbnail_url = productData.thumbnail_url || "";
@@ -436,26 +469,41 @@ const EditSellerProductPage: React.FC = () => {
 
             // Music/Podcast specific
             if (category === "music" || category === "podcast") {
-              commonData.total_duration = productData.music_details?.total_duration || productData.podcast_details?.total_duration || "";
-              commonData.format = productData.music_details?.format || productData.podcast_details?.format || "";
-              commonData.theme = productData.music_details?.theme || productData.podcast_details?.theme || "";
-              commonData.sample_track_url = productData.music_details?.sample_track_url || productData.podcast_details?.sample_track_url || "";
-
+              commonData.total_duration =
+                productData.music_details?.total_duration ||
+                productData.podcast_details?.total_duration ||
+                "";
+              commonData.format =
+                productData.music_details?.format ||
+                productData.podcast_details?.format ||
+                "";
+              commonData.theme =
+                productData.music_details?.theme ||
+                productData.podcast_details?.theme ||
+                "";
+              commonData.sample_track_url =
+                productData.music_details?.sample_track_url ||
+                productData.podcast_details?.sample_track_url ||
+                "";
             }
 
             // Ebook specific
             if (category === "ebook") {
               commonData.author = productData.ebook_details?.author || "";
-              commonData.pages = parseInt(productData.ebook_details?.pages || "0");
+              commonData.pages = parseInt(
+                productData.ebook_details?.pages || "0"
+              );
               commonData.format = productData.ebook_details?.format || "";
               commonData.theme = productData.ebook_details?.theme || "";
             }
 
             // Course specific
             if (category === "course") {
-              commonData.storytelling = productData.course_details?.storytelling || "";
+              commonData.storytelling =
+                productData.course_details?.storytelling || "";
               commonData.duration = productData.course_details?.duration || "";
-              commonData.requirements = productData.course_details?.requirements || "";
+              commonData.requirements =
+                productData.course_details?.requirements || "";
               commonData.format = productData.course_details?.format || "video";
               commonData.theme = productData.course_details?.theme || "";
             }
@@ -463,93 +511,129 @@ const EditSellerProductPage: React.FC = () => {
             // Art specific
             if (category === "art") {
               commonData.mediums = productData.arts_details?.mediums || "";
-              commonData.modern_trends = productData.arts_details?.modern_trends || "";
+              commonData.modern_trends =
+                productData.arts_details?.modern_trends || "";
               commonData.theme = productData.arts_details?.theme || "";
             }
 
             // Load content items (tracks, episodes, chapters, lessons, collections)
             let items: any[] = [];
 
-            if (category === "music" && productData.content_items && productData.content_items.length > 0) {
-              items = productData?.content_items?.map((item: any, index: number) => ({
-                id: item.id,
-                track_id: item.id,
-                title: item.title || `Track ${index + 1}`,
-                description: item.description || "",
-                duration: item.duration || "00:00",
-                order_number: item.order_number || index + 1,
-                is_free: item.is_free || false,
-                track_files: item.files?.map((file: any) => ({
-                  file_id: file.id,
-                  url: file.file_url,
-                  title: file.title,
-                  order_number: file.order_number,
-                  file_type: file.file_type,
-                  duration: file.duration,
-                  format: file.format,
-                  is_free: file.is_free,
-                })) || [],
-              }));
-            } else if (category === "podcast" && productData.content_items && productData.content_items.length > 0) {
-              items = productData.content_items.map((item: any, index: number) => ({
-                id: item.id,
-                episode_id: item.id,
-                title: item.title || `Episode ${index + 1}`,
-                description: item.description || "",
-                duration: item.duration || "",
-                order_number: item.order_number || index + 1,
-                is_free: item.is_free || false,
-                episode_files: item.files?.map((file: any) => ({
-                  file_id: file.id,
-                  url: file.url,
-                  title: file.title,
-                  order_number: file.order_number,
-                })) || [],
-              }));
-            } else if (category === "ebook" && productData.content_items && productData.content_items.length > 0) {
-              items = productData.content_items.map((chapter: any, index: number) => ({
-                id: chapter.id,
-                chapter_id: chapter.id,
-                title: chapter.title || `Chapter ${index + 1}`,
-                chapter_files: chapter.files?.map((file: any) => ({
-                  file_id: file.id,
-                  url: file.url,
-                  title: file.title,
-                  order_number: file.order_number,
-                })) || [],
-                description: chapter.description || "",
-                order_number: chapter.order_number || index + 1,
-                is_free: chapter.is_free || false,
-              }));
-            } else if (category === "course" && productData.content_items && productData.content_items.length > 0) {
-              items = productData.content_items.map((lesson: any, index: number) => ({
-                id: lesson.id,
-                chapter_id: lesson.id,
-                title: lesson.title || `Lesson ${index + 1}`,
-                order_number: lesson.order_number || index + 1,
-                chapter_files: lesson.files?.map((file: any) => ({
-                  file_id: file.id,
-                  url: file.url,
-                  title: file.title,
-                  order_number: file.order_number,
-                  file_type: file.file_type || 'video',
-                })) || [],
-              }));
-            } else if (category === "art" && productData.content_items && productData.content_items.length > 0) {
-              items = productData.content_items.map((collection: any, index: number) => ({
-                id: collection.id,
-                chapter_id: collection.id,
-                title: collection.title || `Collection ${index + 1}`,
-                description: collection.description || "",
-                order_number: collection.order_number || index + 1,
-                is_free: collection.is_free || false,
-                chapter_files: collection.files?.map((file: any) => ({
-                  file_id: file.id,
-                  url: file.url,
-                  title: file.title,
-                  order_number: file.order_number,
-                })) || [],
-              }));
+            if (
+              category === "music" &&
+              productData.content_items &&
+              productData.content_items.length > 0
+            ) {
+              items = productData?.content_items?.map(
+                (item: any, index: number) => ({
+                  id: item.id,
+                  track_id: item.id,
+                  title: item.title || `Track ${index + 1}`,
+                  description: item.description || "",
+                  duration: item.duration || "00:00",
+                  order_number: item.order_number || index + 1,
+                  is_free: item.is_free || false,
+                  track_files:
+                    item.files?.map((file: any) => ({
+                      file_id: file.id,
+                      url: file.file_url,
+                      title: file.title,
+                      order_number: file.order_number,
+                      file_type: file.file_type,
+                      duration: file.duration,
+                      format: file.format,
+                      is_free: file.is_free,
+                    })) || [],
+                })
+              );
+            } else if (
+              category === "podcast" &&
+              productData.content_items &&
+              productData.content_items.length > 0
+            ) {
+              items = productData.content_items.map(
+                (item: any, index: number) => ({
+                  id: item.id,
+                  episode_id: item.id,
+                  title: item.title || `Episode ${index + 1}`,
+                  description: item.description || "",
+                  duration: item.duration || "",
+                  order_number: item.order_number || index + 1,
+                  is_free: item.is_free || false,
+                  episode_files:
+                    item.files?.map((file: any) => ({
+                      file_id: file.id,
+                      url: file.url,
+                      title: file.title,
+                      order_number: file.order_number,
+                    })) || [],
+                })
+              );
+            } else if (
+              category === "ebook" &&
+              productData.content_items &&
+              productData.content_items.length > 0
+            ) {
+              items = productData.content_items.map(
+                (chapter: any, index: number) => ({
+                  id: chapter.id,
+                  chapter_id: chapter.id,
+                  title: chapter.title || `Chapter ${index + 1}`,
+                  chapter_files:
+                    chapter.files?.map((file: any) => ({
+                      file_id: file.id,
+                      url: file.url,
+                      title: file.title,
+                      order_number: file.order_number,
+                    })) || [],
+                  description: chapter.description || "",
+                  order_number: chapter.order_number || index + 1,
+                  is_free: chapter.is_free || false,
+                })
+              );
+            } else if (
+              category === "course" &&
+              productData.content_items &&
+              productData.content_items.length > 0
+            ) {
+              items = productData.content_items.map(
+                (lesson: any, index: number) => ({
+                  id: lesson.id,
+                  chapter_id: lesson.id,
+                  title: lesson.title || `Lesson ${index + 1}`,
+                  order_number: lesson.order_number || index + 1,
+                  chapter_files:
+                    lesson.files?.map((file: any) => ({
+                      file_id: file.id,
+                      url: file.url,
+                      title: file.title,
+                      order_number: file.order_number,
+                      file_type: file.file_type || "video",
+                    })) || [],
+                })
+              );
+            } else if (
+              category === "art" &&
+              productData.content_items &&
+              productData.content_items.length > 0
+            ) {
+              items = productData.content_items.map(
+                (collection: any, index: number) => ({
+                  id: collection.id,
+                  chapter_id: collection.id,
+                  title: collection.title || `Collection ${index + 1}`,
+                  description: collection.description || "",
+                  order_number: collection.order_number || index + 1,
+                  is_free: collection.is_free || false,
+                  chapter_files:
+                    collection.files?.map((file: any) => ({
+                      file_id: file.id,
+                      url: file.url,
+                      title: file.title,
+                      order_number: file.order_number,
+                    })) || [],
+                })
+              );
             }
 
             setContentItems(items);
@@ -559,7 +643,9 @@ const EditSellerProductPage: React.FC = () => {
         }
       } catch (error: any) {
         showToast({
-          message: error?.response?.data?.error?.message || "Failed to load product data.",
+          message:
+            error?.response?.data?.error?.message ||
+            "Failed to load product data.",
           type: "error",
           duration: 3000,
         });
@@ -612,12 +698,14 @@ const EditSellerProductPage: React.FC = () => {
   };
 
   const handleRemoveSampleTrack = () => {
-    console.log('Removing sample track');
+    console.log("Removing sample track");
     setSampleTrackUrl("");
   };
 
   // Thumbnail Upload Handler (for non-video categories) - UPLOADS ON CHANGE
-  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleThumbnailUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -667,11 +755,12 @@ const EditSellerProductPage: React.FC = () => {
       });
 
       if (errors.thumbnail_url) {
-        setErrors(prev => ({ ...prev, thumbnail_url: "" }));
+        setErrors((prev) => ({ ...prev, thumbnail_url: "" }));
       }
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to upload thumbnail",
+        message:
+          error?.response?.data?.error?.message || "Failed to upload thumbnail",
         type: "error",
         duration: 3000,
       });
@@ -690,7 +779,9 @@ const EditSellerProductPage: React.FC = () => {
   };
 
   // Main Video Upload Handler (for video category) - UPLOADS ON CHANGE
-  const handleMainVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMainVideoUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -718,9 +809,12 @@ const EditSellerProductPage: React.FC = () => {
 
     try {
       const uploadFormData = new FormData();
-      uploadFormData.append('video', file);
+      uploadFormData.append("video", file);
 
-      const response = await UploadProductDocument('main-video', uploadFormData);
+      const response = await UploadProductDocument(
+        "main-video",
+        uploadFormData
+      );
       const videoData = response?.data?.data?.data;
 
       setFormData((prev: any) => ({
@@ -736,12 +830,14 @@ const EditSellerProductPage: React.FC = () => {
       });
 
       if (errors.video_url) {
-        setErrors(prev => ({ ...prev, video_url: "" }));
+        setErrors((prev) => ({ ...prev, video_url: "" }));
       }
     } catch (error: any) {
       setMainVideoPreview("");
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to upload main video",
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to upload main video",
         type: "error",
         duration: 3000,
       });
@@ -761,7 +857,9 @@ const EditSellerProductPage: React.FC = () => {
   };
 
   // Short Video Upload Handler (for video category) - UPLOADS ON CHANGE
-  const handleShortVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleShortVideoUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -789,9 +887,12 @@ const EditSellerProductPage: React.FC = () => {
 
     try {
       const uploadFormData = new FormData();
-      uploadFormData.append('short_video', file);
+      uploadFormData.append("short_video", file);
 
-      const response = await UploadProductDocument('short-video', uploadFormData);
+      const response = await UploadProductDocument(
+        "short-video",
+        uploadFormData
+      );
       const videoData = response?.data?.data;
 
       setFormData((prev: any) => ({
@@ -807,7 +908,9 @@ const EditSellerProductPage: React.FC = () => {
     } catch (error: any) {
       setShortVideoPreview("");
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to upload short video",
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to upload short video",
         type: "error",
         duration: 3000,
       });
@@ -836,7 +939,14 @@ const EditSellerProductPage: React.FC = () => {
     switch (category) {
       case "music":
       case "podcast":
-        validTypes = ["audio/mpeg", "audio/mp3", "audio/wav", "audio/aac", "audio/flac", "audio/ogg"];
+        validTypes = [
+          "audio/mpeg",
+          "audio/mp3",
+          "audio/wav",
+          "audio/aac",
+          "audio/flac",
+          "audio/ogg",
+        ];
         maxSize = 50 * 1024 * 1024;
         break;
       case "ebook":
@@ -890,11 +1000,21 @@ const EditSellerProductPage: React.FC = () => {
           const fileArray = getFileArray(item);
           return {
             ...item,
-            ...(category === "music" && { track_files: [...fileArray, tempFile] }),
-            ...(category === "podcast" && { episode_files: [...fileArray, tempFile] }),
-            ...(category === "ebook" && { chapter_files: [...fileArray, tempFile] }),
-            ...(category === "course" && { chapter_files: [...fileArray, tempFile] }),
-            ...(category === "art" && { chapter_files: [...fileArray, tempFile] }),
+            ...(category === "music" && {
+              track_files: [...fileArray, tempFile],
+            }),
+            ...(category === "podcast" && {
+              episode_files: [...fileArray, tempFile],
+            }),
+            ...(category === "ebook" && {
+              chapter_files: [...fileArray, tempFile],
+            }),
+            ...(category === "course" && {
+              chapter_files: [...fileArray, tempFile],
+            }),
+            ...(category === "art" && {
+              chapter_files: [...fileArray, tempFile],
+            }),
           };
         }
         return item;
@@ -948,7 +1068,8 @@ const EditSellerProductPage: React.FC = () => {
       } else if (category === "art") {
         uploadedUrl = uploadData?.chapter_file_public_id || "";
       } else {
-        uploadedUrl = uploadData?.data?.document_url || uploadData?.chapter_file_url || "";
+        uploadedUrl =
+          uploadData?.data?.document_url || uploadData?.chapter_file_url || "";
       }
 
       // Update the file with uploaded URL
@@ -959,11 +1080,11 @@ const EditSellerProductPage: React.FC = () => {
             const updatedFiles = fileArray.map((f: any) =>
               f.file === file
                 ? {
-                  ...f,
-                  url: uploadedUrl,
-                  order_number: fileArray.length - 1,
-                  isUploading: false,
-                }
+                    ...f,
+                    url: uploadedUrl,
+                    order_number: fileArray.length - 1,
+                    isUploading: false,
+                  }
                 : f
             );
 
@@ -1014,7 +1135,8 @@ const EditSellerProductPage: React.FC = () => {
       );
 
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to upload file",
+        message:
+          error?.response?.data?.error?.message || "Failed to upload file",
         type: "error",
         duration: 3000,
       });
@@ -1128,11 +1250,13 @@ const EditSellerProductPage: React.FC = () => {
   const deleteFile = (itemId: number, fileId: string) => {
     setContentItems((prevItems) =>
       prevItems.map((item) => {
-        console.log('item.id, itemId', item?.delete_files, itemId)
+        console.log("item.id, itemId", item?.delete_files, itemId);
         if (item.id === itemId) {
           const fileArray = getFileArray(item);
           const deletedFile = fileArray.find((f: any) => f.file_id === fileId);
-          const filteredFiles = fileArray.filter((f: any) => f.file_id !== fileId);
+          const filteredFiles = fileArray.filter(
+            (f: any) => f.file_id !== fileId
+          );
 
           return {
             ...item,
@@ -1142,14 +1266,10 @@ const EditSellerProductPage: React.FC = () => {
             ...(category === "ebook" && { chapter_files: filteredFiles }),
             ...(category === "course" && { chapter_files: filteredFiles }),
             ...(category === "art" && { chapter_files: filteredFiles }),
-            delete_files: [
-              ...(item.delete_files || []),
-              deletedFile?.file_id
-            ]
-
+            delete_files: [...(item.delete_files || []), deletedFile?.file_id],
           };
         }
-        console.log('item', item)
+        console.log("item", item);
         return item;
       })
     );
@@ -1339,7 +1459,9 @@ const EditSellerProductPage: React.FC = () => {
   const handleEditHighlight = (index: number, newValue: string) => {
     setFormData((prev: any) => ({
       ...prev,
-      highlights: prev.highlights.map((h: any, i: number) => (i === index ? newValue : h)),
+      highlights: prev.highlights.map((h: any, i: number) =>
+        i === index ? newValue : h
+      ),
     }));
   };
 
@@ -1362,7 +1484,8 @@ const EditSellerProductPage: React.FC = () => {
       newErrors.discount_percentage =
         "Discount percentage must be between 0 and 100.";
     }
-    if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
+    if (!formData.mood_id.trim())
+      newErrors.mood_id = "Mood Selection is required.";
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
     if (formData.highlights.length === 0) {
@@ -1374,7 +1497,8 @@ const EditSellerProductPage: React.FC = () => {
       if (!formData.video_url && !mainVideoPreview)
         newErrors.video_url = "Main video is required.";
       if (formData.duration && !/^\d{2}:\d{2}:\d{2}$/.test(formData.duration)) {
-        newErrors.duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
+        newErrors.duration =
+          "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
       }
       if (!formData.summary?.trim()) newErrors.summary = "Summary is required.";
     } else {
@@ -1392,8 +1516,9 @@ const EditSellerProductPage: React.FC = () => {
         contentItems.forEach((item, index) => {
           const fileArray = getFileArray(item);
           if (fileArray.length === 0) {
-            newErrors[`item_${index}`] = `Please upload at least one file for ${item.title
-              }`;
+            newErrors[
+              `item_${index}`
+            ] = `Please upload at least one file for ${item.title}`;
           }
         });
       }
@@ -1423,7 +1548,8 @@ const EditSellerProductPage: React.FC = () => {
       }
     }
 
-    if (!formData.language?.trim()) newErrors.language = "Language is required.";
+    if (!formData.language?.trim())
+      newErrors.language = "Language is required.";
 
     setErrors(newErrors);
 
@@ -1452,8 +1578,8 @@ const EditSellerProductPage: React.FC = () => {
       highlights: formData.highlights,
       language: formData.language,
     };
-      console.log('sampleTrackUrl', sampleTrackUrl);
-basePayload.sample_track_url = sampleTrackUrl;
+    console.log("sampleTrackUrl", sampleTrackUrl);
+    basePayload.sample_track_url = sampleTrackUrl;
     // if (sampleTrackUrl) {
     //   basePayload.sample_track_url = sampleTrackUrl;
     // }
@@ -1469,12 +1595,12 @@ basePayload.sample_track_url = sampleTrackUrl;
         short_video_url: formData.short_video_url || "",
       };
     } else if (category === "music") {
-      console.log('contentItems sfdgdf', contentItems);
+      console.log("contentItems sfdgdf", contentItems);
       const tracks = contentItems.map((item: any, index) => ({
         track_id: item.track_id,
         title: item.title,
-        description: '',
-        duration: '',
+        description: "",
+        duration: "",
         order_number: index + 1,
         delete_files: item.delete_files || [],
         track_files: item.track_files
@@ -1506,7 +1632,7 @@ basePayload.sample_track_url = sampleTrackUrl;
         episode_files: item.episode_files
           .filter((f: any) => f.url)
           .map((file: any, fileIndex: number) => ({
-             file_id: file.file_id,
+            file_id: file.file_id,
             url: file.url,
             title: file.title,
             order_number: fileIndex,
@@ -1531,7 +1657,7 @@ basePayload.sample_track_url = sampleTrackUrl;
         chapter_files: item.chapter_files
           .filter((f: any) => f.url)
           .map((file: any, fileIndex: number) => ({
-             file_id: file.file_id,
+            file_id: file.file_id,
             url: file.url,
             title: file.title,
             order_number: fileIndex,
@@ -1555,7 +1681,7 @@ basePayload.sample_track_url = sampleTrackUrl;
         chapter_files: item.chapter_files
           .filter((f: any) => f.url)
           .map((file: any, fileIndex: number) => ({
-             file_id: file.file_id,
+            file_id: file.file_id,
             url: file.url,
             title: file.title,
             order_number: fileIndex + 1,
@@ -1583,7 +1709,7 @@ basePayload.sample_track_url = sampleTrackUrl;
         chapter_files: item.chapter_files
           .filter((f: any) => f.url)
           .map((file: any, fileIndex: number) => ({
-             file_id: file.file_id,
+            file_id: file.file_id,
             url: file.url,
             title: file.title,
             order_number: fileIndex,
@@ -1618,7 +1744,7 @@ basePayload.sample_track_url = sampleTrackUrl;
     try {
       // Prepare the payload
       const payload = preparePayload();
-console.log('payload dfsdfsdsdfsf', payload);
+      console.log("payload dfsdfsdsdfsf", payload);
       // Update product based on category
       let updatePromise;
       switch (category) {
@@ -1663,20 +1789,34 @@ console.log('payload dfsdfsdsdfsf', payload);
       // Navigate based on action
       if (isDraft) {
         // Navigate to preview page for draft
-        if (category === 'video') {
-          navigate(`/dashboard/products/preview/${productId}?category=${category}`);
-        } else if (category === 'music') {
-          navigate(`/dashboard/products/music-preview/${productId}?category=${category}`);
-        } else if (category === 'podcast') {
-          navigate(`/dashboard/products/podcast-preview/${productId}?category=${category}`);
-        } else if (category === 'ebook') {
-          navigate(`/dashboard/products/ebook-preview/${productId}?category=${category}`);
-        } else if (category === 'course') {
-          navigate(`/dashboard/products/course-preview/${productId}?category=${category}`);
-        } else if (category === 'art') {
-          navigate(`/dashboard/products/art-preview/${productId}?category=${category}`);
+        if (category === "video") {
+          navigate(
+            `/dashboard/products/preview/${productId}?category=${category}`
+          );
+        } else if (category === "music") {
+          navigate(
+            `/dashboard/products/music-preview/${productId}?category=${category}`
+          );
+        } else if (category === "podcast") {
+          navigate(
+            `/dashboard/products/podcast-preview/${productId}?category=${category}`
+          );
+        } else if (category === "ebook") {
+          navigate(
+            `/dashboard/products/ebook-preview/${productId}?category=${category}`
+          );
+        } else if (category === "course") {
+          navigate(
+            `/dashboard/products/course-preview/${productId}?category=${category}`
+          );
+        } else if (category === "art") {
+          navigate(
+            `/dashboard/products/art-preview/${productId}?category=${category}`
+          );
         } else {
-          navigate(`/dashboard/products/preview/${productId}?category=${category}`);
+          navigate(
+            `/dashboard/products/preview/${productId}?category=${category}`
+          );
         }
       } else {
         // Navigate to products list for published
@@ -1705,14 +1845,32 @@ console.log('payload dfsdfsdsdfsf', payload);
     );
   }
 
+  const handleOverviewChange = (content: string) => {
+    setFormData((prev: any) => ({ ...prev, overview: content }));
+
+    // Clear error when content is added
+    if (errors.overview && content.replace(/<[^>]*>/g, "").trim()) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.overview;
+        return newErrors;
+      });
+    }
+  };
+
   return (
     <>
-      <div className="min-h-screen py-1 font-poppins" style={{ fontFamily: "Poppins" }}>
+      <div
+        className="min-h-screen py-1 font-poppins"
+        style={{ fontFamily: "Poppins" }}
+      >
         <Breadcrumb category={category} />
         <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
           {/* Basic Info Section */}
           <FormSection
-            title={`Edit ${category.charAt(0).toUpperCase() + category.slice(1)}`}
+            title={`Edit ${
+              category.charAt(0).toUpperCase() + category.slice(1)
+            }`}
             description="Update your digital product details, pricing, and availability on the marketplace."
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -1740,7 +1898,11 @@ console.log('payload dfsdfsdsdfsf', payload);
                 placeholder="Enter discount in %"
                 name="discount_percentage"
                 type="number"
-                value={formData.discount_percentage === 0 ? "" : formData.discount_percentage.toString()}
+                value={
+                  formData.discount_percentage === 0
+                    ? ""
+                    : formData.discount_percentage.toString()
+                }
                 onChange={handleChange}
                 error={errors.discount_percentage}
               />
@@ -1762,7 +1924,9 @@ console.log('payload dfsdfsdsdfsf', payload);
                   ))}
                 </select>
                 {errors.mood_id && (
-                  <span className="text-red-500 text-sm mt-1">{errors.mood_id}</span>
+                  <span className="text-red-500 text-sm mt-1">
+                    {errors.mood_id}
+                  </span>
                 )}
               </div>
             </div>
@@ -1775,7 +1939,11 @@ console.log('payload dfsdfsdsdfsf', payload);
                 </label>
                 {mainVideoPreview ? (
                   <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
-                    <video src={mainVideoPreview} className="w-full h-64 object-cover" controls />
+                    <video
+                      src={mainVideoPreview}
+                      className="w-full h-64 object-cover"
+                      controls
+                    />
                     <button
                       type="button"
                       onClick={handleRemoveMainVideo}
@@ -1786,7 +1954,11 @@ console.log('payload dfsdfsdsdfsf', payload);
                     </button>
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <div className="bg-black bg-opacity-50 rounded-full p-4">
-                        <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          className="w-12 h-12 text-white"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path d="M8 5v14l11-7z" />
                         </svg>
                       </div>
@@ -1794,10 +1966,11 @@ console.log('payload dfsdfsdsdfsf', payload);
                   </div>
                 ) : (
                   <label
-                    className={`relative flex flex-col items-center justify-center h-64 cursor-pointer rounded-lg p-6 text-center transition-all ${isMainVideoUploading
-                      ? "pointer-events-none opacity-70"
-                      : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                      }`}
+                    className={`relative flex flex-col items-center justify-center h-64 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                      isMainVideoUploading
+                        ? "pointer-events-none opacity-70"
+                        : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                    }`}
                   >
                     <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                       <rect
@@ -1824,12 +1997,18 @@ console.log('payload dfsdfsdsdfsf', payload);
                     {isMainVideoUploading ? (
                       <div className="flex flex-col items-center space-y-2">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
-                        <p className="text-sm text-[#7077FE]">Uploading main video...</p>
+                        <p className="text-sm text-[#7077FE]">
+                          Uploading main video...
+                        </p>
                       </div>
                     ) : (
                       <div className="text-center space-y-2">
                         <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
-                          <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+                          <img
+                            src={uploadimg}
+                            alt="Upload"
+                            className="w-6 h-6"
+                          />
                         </div>
                         <p className="text-sm font-[poppins] text-[#242E3A]">
                           Drag & drop or click to upload
@@ -1842,7 +2021,9 @@ console.log('payload dfsdfsdsdfsf', payload);
                   </label>
                 )}
                 {errors.video_url && (
-                  <span className="text-red-500 text-sm mt-1">{errors.video_url}</span>
+                  <span className="text-red-500 text-sm mt-1">
+                    {errors.video_url}
+                  </span>
                 )}
                 {formData.video_url && !mainVideoPreview && (
                   <p className="text-sm text-gray-500 mt-2">
@@ -1893,10 +2074,11 @@ console.log('payload dfsdfsdsdfsf', payload);
                   </div>
                 ) : (
                   <label
-                    className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isThumbnailUploading
-                      ? "pointer-events-none opacity-70"
-                      : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                      }`}
+                    className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                      isThumbnailUploading
+                        ? "pointer-events-none opacity-70"
+                        : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                    }`}
                   >
                     <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                       <rect
@@ -1923,12 +2105,18 @@ console.log('payload dfsdfsdsdfsf', payload);
                     {isThumbnailUploading ? (
                       <div className="flex flex-col items-center space-y-2">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
-                        <p className="text-sm text-[#7077FE]">Uploading thumbnail...</p>
+                        <p className="text-sm text-[#7077FE]">
+                          Uploading thumbnail...
+                        </p>
                       </div>
                     ) : (
                       <div className="text-center space-y-2">
                         <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
-                          <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+                          <img
+                            src={uploadimg}
+                            alt="Upload"
+                            className="w-6 h-6"
+                          />
                         </div>
                         <p className="text-sm font-[poppins] text-[#242E3A]">
                           Drag & drop or click to upload
@@ -1941,15 +2129,21 @@ console.log('payload dfsdfsdsdfsf', payload);
                   </label>
                 )}
                 {errors.thumbnail_url && (
-                  <span className="text-red-500 text-sm mt-1">{errors.thumbnail_url}</span>
+                  <span className="text-red-500 text-sm mt-1">
+                    {errors.thumbnail_url}
+                  </span>
                 )}
               </div>
             )}
           </FormSection>
 
           {/* Details Section - All Categories */}
-          <FormSection title="Details" description="Update detailed information about your product.">
+          <FormSection
+            title="Details"
+            description="Update detailed information about your product."
+          >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Overview - All Categories */}
               {/* Overview - All Categories */}
               <div className={category === "video" ? "" : "lg:col-span-2"}>
                 <div className="flex items-center justify-between mb-2">
@@ -1966,17 +2160,30 @@ console.log('payload dfsdfsdsdfsf', payload);
                     <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
                   </button>
                 </div>
-                <textarea
-                  name="overview"
+
+                <CustomRichTextEditor
                   value={formData.overview}
-                  onChange={handleChange}
+                  onChange={handleOverviewChange}
+                  onBlur={() => {
+                    // Validate on blur
+                    const overviewText = formData.overview
+                      .replace(/<[^>]*>/g, "")
+                      .trim();
+                    if (!overviewText) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        overview: "Overview is required",
+                      }));
+                    }
+                  }}
                   placeholder="Write a detailed overview or click 'Generate with AI'"
-                  className={`w-full ${category === "video" ? "h-32" : "h-32"
-                    } px-3 py-2 border ${errors.overview ? "border-red-500" : "border-gray-200"
-                    } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
+                  error={!!errors.overview}
                 />
+
                 {errors.overview && (
-                  <span className="text-red-500 text-sm mt-1">{errors.overview}</span>
+                  <span className="text-red-500 text-sm mt-1">
+                    {errors.overview}
+                  </span>
                 )}
               </div>
 
@@ -1986,27 +2193,31 @@ console.log('payload dfsdfsdsdfsf', payload);
                   Highlights <span className="text-red-500">*</span> (Max 3)
                 </label>
                 <div className="space-y-3">
-                  {formData?.highlights?.map((highlight: string, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-start gap-2 p-3 border border-gray-200 rounded-md bg-white"
-                    >
-                      <span className="text-[#7077FE] font-bold mt-1">•</span>
-                      <input
-                        type="text"
-                        value={highlight}
-                        onChange={(e) => handleEditHighlight(index, e.target.value)}
-                        className="flex-1 border-none focus:outline-none text-[#242E3A]"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveHighlight(index)}
-                        className="text-red-500 hover:text-red-700"
+                  {formData?.highlights?.map(
+                    (highlight: string, index: number) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-2 p-3 border border-gray-200 rounded-md bg-white"
                       >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
+                        <span className="text-[#7077FE] font-bold mt-1">•</span>
+                        <input
+                          type="text"
+                          value={highlight}
+                          onChange={(e) =>
+                            handleEditHighlight(index, e.target.value)
+                          }
+                          className="flex-1 border-none focus:outline-none text-[#242E3A]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveHighlight(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )
+                  )}
 
                   {formData.highlights.length < 3 && (
                     <div className="flex gap-2">
@@ -2038,7 +2249,9 @@ console.log('payload dfsdfsdsdfsf', payload);
                   </p>
                 </div>
                 {errors.highlights && (
-                  <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>
+                  <span className="text-red-500 text-sm mt-1">
+                    {errors.highlights}
+                  </span>
                 )}
               </div>
 
@@ -2167,7 +2380,11 @@ console.log('payload dfsdfsdsdfsf', payload);
               )}
 
               {/* Music/Podcast/Ebook/Course - Theme */}
-              {(category === "music" || category === "podcast" || category === "ebook" || category === "course" || category === "art") && (
+              {(category === "music" ||
+                category === "podcast" ||
+                category === "ebook" ||
+                category === "course" ||
+                category === "art") && (
                 <InputField
                   label="Theme"
                   placeholder="Describe the theme"
@@ -2219,7 +2436,9 @@ console.log('payload dfsdfsdsdfsf', payload);
                   <option value="Hindi">Hindi</option>
                 </select>
                 {errors.language && (
-                  <span className="text-red-500 text-sm mt-1">{errors.language}</span>
+                  <span className="text-red-500 text-sm mt-1">
+                    {errors.language}
+                  </span>
                 )}
               </div>
 
@@ -2283,7 +2502,10 @@ console.log('payload dfsdfsdsdfsf', payload);
                   </label>
                   {shortVideoPreview ? (
                     <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 h-40">
-                      <video src={shortVideoPreview} className="w-full h-full object-cover" />
+                      <video
+                        src={shortVideoPreview}
+                        className="w-full h-full object-cover"
+                      />
                       <button
                         type="button"
                         onClick={handleRemoveShortVideo}
@@ -2294,7 +2516,11 @@ console.log('payload dfsdfsdsdfsf', payload);
                       </button>
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="bg-black bg-opacity-50 rounded-full p-4">
-                          <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-12 h-12 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path d="M8 5v14l11-7z" />
                           </svg>
                         </div>
@@ -2302,10 +2528,11 @@ console.log('payload dfsdfsdsdfsf', payload);
                     </div>
                   ) : (
                     <label
-                      className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isShortVideoUploading
-                        ? "pointer-events-none opacity-70"
-                        : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                        }`}
+                      className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                        isShortVideoUploading
+                          ? "pointer-events-none opacity-70"
+                          : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                      }`}
                     >
                       <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                         <rect
@@ -2332,7 +2559,9 @@ console.log('payload dfsdfsdsdfsf', payload);
                       {isShortVideoUploading ? (
                         <div className="flex flex-col items-center space-y-2">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
-                          <p className="text-sm text-[#7077FE]">Uploading short video...</p>
+                          <p className="text-sm text-[#7077FE]">
+                            Uploading short video...
+                          </p>
                         </div>
                       ) : (
                         <div className="text-center space-y-2">
@@ -2351,7 +2580,8 @@ console.log('payload dfsdfsdsdfsf', payload);
                   )}
                   {formData.short_video_url && !shortVideoPreview && (
                     <p className="text-sm text-gray-500 mt-2">
-                      Current short video is uploaded. Upload a new one to replace it.
+                      Current short video is uploaded. Upload a new one to
+                      replace it.
                     </p>
                   )}
                 </div>
@@ -2366,11 +2596,14 @@ console.log('payload dfsdfsdsdfsf', payload);
                     value={formData.summary || ""}
                     onChange={handleChange}
                     placeholder="Write a brief description of your storytelling"
-                    className={`w-full h-40 px-3 py-2 border ${errors.summary ? "border-red-500" : "border-gray-200"
-                      } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
+                    className={`w-full h-40 px-3 py-2 border ${
+                      errors.summary ? "border-red-500" : "border-gray-200"
+                    } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
                   />
                   {errors.summary && (
-                    <span className="text-red-500 text-sm mt-1">{errors.summary}</span>
+                    <span className="text-red-500 text-sm mt-1">
+                      {errors.summary}
+                    </span>
                   )}
                 </div>
               </div>
@@ -2384,14 +2617,14 @@ console.log('payload dfsdfsdsdfsf', payload);
                 category === "music"
                   ? "Tracks"
                   : category === "podcast"
-                    ? "Episodes"
-                    : category === "ebook"
-                      ? "Chapters"
-                      : category === "course"
-                        ? "Lessons"
-                        : category === "art"
-                          ? "Collections"
-                          : "Content"
+                  ? "Episodes"
+                  : category === "ebook"
+                  ? "Chapters"
+                  : category === "course"
+                  ? "Lessons"
+                  : category === "art"
+                  ? "Collections"
+                  : "Content"
               }
               description={`Manage your ${category} content`}
             >
@@ -2564,7 +2797,11 @@ console.log('payload dfsdfsdsdfsf', payload);
                         />
                         <div className="text-center space-y-2">
                           <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
-                            <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+                            <img
+                              src={uploadimg}
+                              alt="Upload"
+                              className="w-6 h-6"
+                            />
                           </div>
                           <p className="text-sm font-[poppins] text-[#242E3A]">
                             Drag & drop or click to upload
@@ -2582,127 +2819,140 @@ console.log('payload dfsdfsdsdfsf', payload);
                             No files uploaded yet
                           </div>
                         ) : (
-                          getFileArray(item).map((file: any, fileIndex: number) => (
-                            <div
-                              key={fileIndex}
-                              className="border border-gray-200 rounded-lg p-3 bg-white"
-                            >
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center space-x-2 flex-1">
-                                  {file.isUploading ? (
-                                    <>
-                                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#7077FE]"></div>
-                                      <span className="text-sm text-gray-600">
-                                        Uploading...
-                                      </span>
-                                    </>
-                                  ) : (
-                                    <>
-                                      {getFileIcon(category, file.file_type)}
-                                      {file.isEditing ? (
-                                        <input
-                                          type="text"
-                                          value={file.title}
-                                          onChange={(e) =>
-                                            handleEditFileName(
-                                              item.id,
-                                              file.order_number,
-                                              e.target.value
-                                            )
-                                          }
-                                          className="flex-1 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
-                                          autoFocus
-                                        />
-                                      ) : (
-                                        <p className="text-sm font-medium text-[#242E3A] flex-1 truncate">
-                                          {file.title}
-                                        </p>
-                                      )}
-                                      {file.file_type && (
-                                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-                                          {file.file_type}
+                          getFileArray(item).map(
+                            (file: any, fileIndex: number) => (
+                              <div
+                                key={fileIndex}
+                                className="border border-gray-200 rounded-lg p-3 bg-white"
+                              >
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center space-x-2 flex-1">
+                                    {file.isUploading ? (
+                                      <>
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#7077FE]"></div>
+                                        <span className="text-sm text-gray-600">
+                                          Uploading...
                                         </span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        {getFileIcon(category, file.file_type)}
+                                        {file.isEditing ? (
+                                          <input
+                                            type="text"
+                                            value={file.title}
+                                            onChange={(e) =>
+                                              handleEditFileName(
+                                                item.id,
+                                                file.order_number,
+                                                e.target.value
+                                              )
+                                            }
+                                            className="flex-1 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+                                            autoFocus
+                                          />
+                                        ) : (
+                                          <p className="text-sm font-medium text-[#242E3A] flex-1 truncate">
+                                            {file.title}
+                                          </p>
+                                        )}
+                                        {file.file_type && (
+                                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                                            {file.file_type}
+                                          </span>
+                                        )}
+                                      </>
+                                    )}
+                                  </div>
+
+                                  {!file.isUploading && (
+                                    <div className="flex items-center space-x-2">
+                                      {file.isEditing ? (
+                                        <>
+                                          <input
+                                            type="text"
+                                            value={file.title}
+                                            onChange={
+                                              (e) =>
+                                                handleEditFileName(
+                                                  item.id,
+                                                  file.file_id,
+                                                  e.target.value
+                                                ) // ✅ Pass item.id and file.file_id
+                                            }
+                                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                                          />
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              saveFileName(
+                                                item.id,
+                                                file.file_id
+                                              )
+                                            }
+                                            className="text-[#7077FE] text-sm font-semibold hover:text-[#5E65F6]"
+                                          >
+                                            <Check className="w-5 h-5" />
+                                          </button>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              toggleEditFile(
+                                                item.id,
+                                                file.file_id
+                                              )
+                                            }
+                                            className="text-gray-500 hover:text-[#7077FE] transition-colors"
+                                            title="Edit filename"
+                                          >
+                                            <SquarePen className="w-4 h-4" />
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              deleteFile(item.id, file.file_id)
+                                            }
+                                            className="text-gray-500 hover:text-red-500 transition-colors"
+                                            title="Delete file"
+                                          >
+                                            <Trash2 className="w-4 h-4" />
+                                          </button>
+                                        </>
                                       )}
-                                    </>
+                                    </div>
                                   )}
                                 </div>
 
                                 {!file.isUploading && (
-                                  <div className="flex items-center space-x-2">
-                                    {file.isEditing ? (
-                                      <>
-                                        <input
-                                          type="text"
-                                          value={file.title}
-                                          onChange={(e) =>
-                                            handleEditFileName(item.id, file.file_id, e.target.value) // ✅ Pass item.id and file.file_id
-                                          }
-                                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
-                                        />
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            saveFileName(item.id, file.file_id)
-                                          }
-                                          className="text-[#7077FE] text-sm font-semibold hover:text-[#5E65F6]"
-                                        >
-                                          <Check className="w-5 h-5" />
-                                        </button>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            toggleEditFile(item.id, file.file_id)
-                                          }
-                                          className="text-gray-500 hover:text-[#7077FE] transition-colors"
-                                          title="Edit filename"
-                                        >
-                                          <SquarePen className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            deleteFile(item.id, file.file_id)
-                                          }
-                                          className="text-gray-500 hover:text-red-500 transition-colors"
-                                          title="Delete file"
-                                        >
-                                          <Trash2 className="w-4 h-4" />
-                                        </button>
-                                      </>
-                                    )}
-                                  </div>
+                                  <>
+                                    <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                                      <span>
+                                        {file.file
+                                          ? formatFileSize(file.file.size)
+                                          : "Uploaded"}
+                                      </span>
+                                      <span className="text-green-600 flex items-center gap-1">
+                                        <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                                        Ready
+                                      </span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                      <div
+                                        className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                                        style={{ width: "100%" }}
+                                      ></div>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                      Order: {file.order_number + 1}
+                                    </p>
+                                  </>
                                 )}
                               </div>
-
-                              {!file.isUploading && (
-                                <>
-                                  <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                                    <span>
-                                      {file.file
-                                        ? formatFileSize(file.file.size)
-                                        : "Uploaded"}
-                                    </span>
-                                    <span className="text-green-600 flex items-center gap-1">
-                                      <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
-                                      Ready
-                                    </span>
-                                  </div>
-                                  <div className="w-full bg-gray-200 rounded-full h-1.5">
-                                    <div
-                                      className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
-                                      style={{ width: "100%" }}
-                                    ></div>
-                                  </div>
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    Order: {file.order_number + 1}
-                                  </p>
-                                </>
-                              )}
-                            </div>
-                          ))
+                            )
+                          )
                         )}
                       </div>
                     </div>
@@ -2742,7 +2992,9 @@ console.log('payload dfsdfsdsdfsf', payload);
                 </button>
 
                 {errors.contentItems && (
-                  <p className="text-red-500 text-sm mt-2">{errors.contentItems}</p>
+                  <p className="text-red-500 text-sm mt-2">
+                    {errors.contentItems}
+                  </p>
                 )}
               </div>
             </FormSection>
@@ -2800,7 +3052,8 @@ console.log('payload dfsdfsdsdfsf', payload);
               Discard Changes?
             </h3>
             <p className="text-[14px] text-[#665B5B] font-['Open_Sans'] mb-6">
-              Are you sure you want to discard? All your changes will not be saved.
+              Are you sure you want to discard? All your changes will not be
+              saved.
             </p>
             <div className="flex justify-end gap-3">
               <button
@@ -2825,7 +3078,9 @@ console.log('payload dfsdfsdsdfsf', payload);
       <AIModal
         showModal={showAIModal}
         setShowModal={setShowAIModal}
-        productType={category as "video" | "music" | "course" | "podcast" | "ebook" | "art"}
+        productType={
+          category as "video" | "music" | "course" | "podcast" | "ebook" | "art"
+        }
         onGenerate={handleAIGenerate}
       />
     </>
