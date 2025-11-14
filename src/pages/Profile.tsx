@@ -224,6 +224,7 @@ export default function Profile() {
   const [openFollowers, setopenfollowers] = useState(false);
 
   const [userPosts, setUserPosts] = useState<MyPostProps[]>([]);
+  console.log("🚀 ~ Profile ~ userPosts:", userPosts)
   const [followingUsers, setFollowingUsers] = useState<FollowedUser[]>([]);
   const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
   const [collectionItems, setCollectionItems] = useState<any[]>([]);
@@ -417,6 +418,7 @@ export default function Profile() {
   const fetchUserPosts = async () => {
     try {
       const res = await GetUserPost();
+      console.log("🚀 ~ fetchUserPosts ~ res:", res)
       const transformedPosts = res.data.data.rows.map((item: any) => {
         // Handle multiple images (comma-separated), single image/video, or text-only
         let media = null;
@@ -471,6 +473,7 @@ export default function Profile() {
           user: item.user,
           profile: item.profile,
           date: item.createdAt,
+          product_id: item.product_id,
           // Add more fields if needed
         };
       });

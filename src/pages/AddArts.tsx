@@ -5,9 +5,16 @@ import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
 import { SquarePen, Trash2, Plus, X, Book } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateArtProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
+import {
+  CreateArtProduct,
+  GetMarketPlaceCategories,
+  GetMarketPlaceMoods,
+  UploadProductDocument,
+  UploadProductThumbnail,
+} from "../Common/ServerAPI";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
+import CustomRichTextEditor from "../components/sections/bestPractiseHub/CustomRichTextEditor";
 
 interface FormSectionProps {
   title: string;
@@ -25,7 +32,9 @@ const FormSection: React.FC<FormSectionProps> = ({
       <h2 className="font-[poppins] font-semibold text-[18px] text-[#242E3A] mb-1">
         {title}
       </h2>
-      <p className="font-['Open_Sans'] text-[14px] text-[#665B5B]">{description}</p>
+      <p className="font-['Open_Sans'] text-[14px] text-[#665B5B]">
+        {description}
+      </p>
     </div>
     <div className="bg-white rounded-xl border border-gray-200 p-4">
       {children}
@@ -95,7 +104,7 @@ const AddArtsForm: React.FC = () => {
       chapter_files: [],
       description: "",
       order_number: 1,
-      is_free: false
+      is_free: false,
     },
   ]);
 
@@ -151,26 +160,26 @@ const AddArtsForm: React.FC = () => {
   }, []);
 
   const handleSampleTrackUpload = (sampleId: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       sample_track: sampleId,
     }));
   };
 
   const handleRemoveSampleTrack = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       sample_track: "",
     }));
   };
 
   const handleAIGenerate = (generatedText: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      overview: generatedText
+      overview: generatedText,
     }));
 
-    setErrors(prev => ({ ...prev, overview: "" }));
+    setErrors((prev) => ({ ...prev, overview: "" }));
   };
 
   const handleSelectCategory = (category: string) => {
@@ -191,7 +200,9 @@ const AddArtsForm: React.FC = () => {
     }
   };
 
-  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleThumbnailUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -230,7 +241,7 @@ const AddArtsForm: React.FC = () => {
         public_id: publicId,
       });
 
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         thumbnail_url: thumbnailUrl,
       }));
@@ -242,7 +253,8 @@ const AddArtsForm: React.FC = () => {
       });
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to upload thumbnail",
+        message:
+          error?.response?.data?.error?.message || "Failed to upload thumbnail",
         type: "error",
         duration: 3000,
       });
@@ -255,20 +267,29 @@ const AddArtsForm: React.FC = () => {
 
   const handleRemoveThumbnail = () => {
     setThumbnailData(null);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       image_url: "",
     }));
   };
 
   const handleDeleteChapter = (chapterId: number) => {
-    setChapters(prev => prev.filter(ch => ch.id !== chapterId));
+    setChapters((prev) => prev.filter((ch) => ch.id !== chapterId));
   };
 
   const handleChapterFileUpload = async (chapterId: number, file: File) => {
     if (!file) return;
 
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp', 'application/pdf', 'application/zip'];
+    const validTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/svg+xml",
+      "image/webp",
+      "application/pdf",
+      "application/zip",
+    ];
 
     if (!validTypes.includes(file.type)) {
       showToast({
@@ -300,18 +321,21 @@ const AddArtsForm: React.FC = () => {
       prevChapters.map((chapter) =>
         chapter.id === chapterId
           ? {
-            ...chapter,
-            chapter_files: [...chapter.chapter_files, tempFile],
-          }
+              ...chapter,
+              chapter_files: [...chapter.chapter_files, tempFile],
+            }
           : chapter
       )
     );
 
     try {
       const uploadFormData = new FormData();
-      uploadFormData.append('chapter_file', file);
+      uploadFormData.append("chapter_file", file);
 
-      const response = await UploadProductDocument('art-chapter', uploadFormData);
+      const response = await UploadProductDocument(
+        "art-chapter",
+        uploadFormData
+      );
       const uploadedFileUrl = response?.data?.data?.chapter_file_url;
 
       setChapters((prevChapters) =>
@@ -320,11 +344,11 @@ const AddArtsForm: React.FC = () => {
             const updatedFiles = chapter.chapter_files.map((f: any) =>
               f.file === file
                 ? {
-                  url: uploadedFileUrl,
-                  title: file.name,
-                  order_number: chapter.chapter_files.length,
-                  isUploading: false,
-                }
+                    url: uploadedFileUrl,
+                    title: file.name,
+                    order_number: chapter.chapter_files.length,
+                    isUploading: false,
+                  }
                 : f
             );
             return { ...chapter, chapter_files: updatedFiles };
@@ -349,15 +373,18 @@ const AddArtsForm: React.FC = () => {
         prevChapters.map((chapter) =>
           chapter.id === chapterId
             ? {
-              ...chapter,
-              chapter_files: chapter.chapter_files.filter((f: any) => f.file !== file),
-            }
+                ...chapter,
+                chapter_files: chapter.chapter_files.filter(
+                  (f: any) => f.file !== file
+                ),
+              }
             : chapter
         )
       );
 
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to upload file",
+        message:
+          error?.response?.data?.error?.message || "Failed to upload file",
         type: "error",
         duration: 3000,
       });
@@ -386,7 +413,7 @@ const AddArtsForm: React.FC = () => {
         chapter_files: [],
         description: "",
         order_number: prev.length + 1,
-        is_free: false
+        is_free: false,
       },
     ]);
   };
@@ -396,11 +423,13 @@ const AddArtsForm: React.FC = () => {
       prev.map((chapter) =>
         chapter.id === chapterId
           ? {
-            ...chapter,
-            chapter_files: chapter.chapter_files.map((f: any) =>
-              f.order_number === fileOrderNumber ? { ...f, isEditing: !f.isEditing } : f
-            ),
-          }
+              ...chapter,
+              chapter_files: chapter.chapter_files.map((f: any) =>
+                f.order_number === fileOrderNumber
+                  ? { ...f, isEditing: !f.isEditing }
+                  : f
+              ),
+            }
           : chapter
       )
     );
@@ -415,11 +444,13 @@ const AddArtsForm: React.FC = () => {
       prev.map((chapter) =>
         chapter.id === chapterId
           ? {
-            ...chapter,
-            chapter_files: chapter.chapter_files.map((f: any) =>
-              f.order_number === fileOrderNumber ? { ...f, title: newTitle } : f
-            ),
-          }
+              ...chapter,
+              chapter_files: chapter.chapter_files.map((f: any) =>
+                f.order_number === fileOrderNumber
+                  ? { ...f, title: newTitle }
+                  : f
+              ),
+            }
           : chapter
       )
     );
@@ -430,13 +461,13 @@ const AddArtsForm: React.FC = () => {
       prev.map((chapter) =>
         chapter.id === chapterId
           ? {
-            ...chapter,
-            chapter_files: chapter.chapter_files.map((f: any) =>
-              f.order_number === fileOrderNumber
-                ? { ...f, isEditing: false }
-                : f
-            ),
-          }
+              ...chapter,
+              chapter_files: chapter.chapter_files.map((f: any) =>
+                f.order_number === fileOrderNumber
+                  ? { ...f, isEditing: false }
+                  : f
+              ),
+            }
           : chapter
       )
     );
@@ -447,9 +478,11 @@ const AddArtsForm: React.FC = () => {
       prev.map((chapter) =>
         chapter.id === chapterId
           ? {
-            ...chapter,
-            chapter_files: chapter.chapter_files.filter((f: any) => f.order_number !== fileOrderNumber)
-          }
+              ...chapter,
+              chapter_files: chapter.chapter_files.filter(
+                (f: any) => f.order_number !== fileOrderNumber
+              ),
+            }
           : chapter
       )
     );
@@ -466,7 +499,8 @@ const AddArtsForm: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!formData.product_title.trim()) newErrors.product_title = "Product title is required.";
+    if (!formData.product_title.trim())
+      newErrors.product_title = "Product title is required.";
 
     if (isNaN(formData.price) || formData.price <= 0) {
       newErrors.price = "Price must be a positive number.";
@@ -474,12 +508,18 @@ const AddArtsForm: React.FC = () => {
 
     if (isNaN(formData.discount_percentage)) {
       newErrors.discount_percentage = "Discount percentage must be a number.";
-    } else if (formData.discount_percentage < 0 || formData.discount_percentage > 100) {
-      newErrors.discount_percentage = "Discount percentage must be between 0 and 100.";
+    } else if (
+      formData.discount_percentage < 0 ||
+      formData.discount_percentage > 100
+    ) {
+      newErrors.discount_percentage =
+        "Discount percentage must be between 0 and 100.";
     }
 
-    if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
-    if (!formData.thumbnail_url.trim()) newErrors.thumbnail_url = "Thumbnail is required.";
+    if (!formData.mood_id.trim())
+      newErrors.mood_id = "Mood Selection is required.";
+    if (!formData.thumbnail_url.trim())
+      newErrors.thumbnail_url = "Thumbnail is required.";
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
     if (formData.highlights.length === 0) {
@@ -492,7 +532,9 @@ const AddArtsForm: React.FC = () => {
 
     chapters.forEach((chapter, index) => {
       if (chapter.chapter_files.length === 0) {
-        newErrors[`chapter_${chapter.id}`] = `Collection ${index + 1} must have at least one file.`;
+        newErrors[`chapter_${chapter.id}`] = `Collection ${
+          index + 1
+        } must have at least one file.`;
       }
     });
 
@@ -500,9 +542,12 @@ const AddArtsForm: React.FC = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setTimeout(() => {
-        const firstErrorElement = document.querySelector('.text-red-500');
+        const firstErrorElement = document.querySelector(".text-red-500");
         if (firstErrorElement) {
-          firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstErrorElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
         }
       }, 100);
     }
@@ -519,7 +564,8 @@ const AddArtsForm: React.FC = () => {
         if (!valStr) message = "Podcast title is required";
         break;
       case "price":
-        if (!valStr || parseFloat(valStr) <= 0) message = "Price must be greater than 0";
+        if (!valStr || parseFloat(valStr) <= 0)
+          message = "Price must be greater than 0";
         break;
       case "mood_id":
         if (!valStr) message = "Please select a mood";
@@ -541,7 +587,9 @@ const AddArtsForm: React.FC = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const target = e.target;
     const { name, value } = target;
@@ -591,7 +639,7 @@ const AddArtsForm: React.FC = () => {
       const payload = {
         ...formData,
         thumbnail_url: formData.thumbnail_url,
-        status: isDraft ? 'draft' : 'published',
+        status: isDraft ? "draft" : "published",
         chapters: chapters.map((chapter) => ({
           title: chapter.title,
           chapter_files: chapter.chapter_files.map((file: any) => ({
@@ -621,11 +669,14 @@ const AddArtsForm: React.FC = () => {
       if (isDraft && productId) {
         navigate(`/dashboard/products/art-preview/${productId}?category=art`);
       } else {
-        navigate('/dashboard/products');
+        navigate("/dashboard/products");
       }
     } catch (error: any) {
       showToast({
-        message: error?.message || error?.response?.data?.error?.message || 'Failed to create art product',
+        message:
+          error?.message ||
+          error?.response?.data?.error?.message ||
+          "Failed to create art product",
         type: "error",
         duration: 3000,
       });
@@ -645,29 +696,29 @@ const AddArtsForm: React.FC = () => {
         return;
       }
 
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        highlights: [...prev.highlights, newHighlight.trim()]
+        highlights: [...prev.highlights, newHighlight.trim()],
       }));
       setNewHighlight("");
 
       if (errors.highlights) {
-        setErrors(prev => ({ ...prev, highlights: "" }));
+        setErrors((prev) => ({ ...prev, highlights: "" }));
       }
     }
   };
 
   const handleRemoveHighlight = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      highlights: prev.highlights.filter((_, i) => i !== index)
+      highlights: prev.highlights.filter((_, i) => i !== index),
     }));
   };
 
   const handleEditHighlight = (index: number, newValue: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      highlights: prev.highlights.map((h, i) => i === index ? newValue : h)
+      highlights: prev.highlights.map((h, i) => (i === index ? newValue : h)),
     }));
   };
 
@@ -677,7 +728,23 @@ const AddArtsForm: React.FC = () => {
 
   const confirmDiscard = () => {
     setShowDiscardModal(false);
-    navigate('/dashboard/products');
+    navigate("/dashboard/products");
+  };
+
+  const handleOverviewChange = (data: any) => {
+    const content = typeof data === "string" ? data : data?.content || "";
+    setFormData((prev) => ({
+      ...prev,
+      overview: content,
+    }));
+
+    // Clear error when user starts typing
+    if (errors.overview) {
+      setErrors((prev) => ({
+        ...prev,
+        overview: "",
+      }));
+    }
   };
 
   return (
@@ -715,7 +782,11 @@ const AddArtsForm: React.FC = () => {
               label="Discount in %"
               placeholder="Enter discount in %"
               name="discount_percentage"
-              value={formData.discount_percentage === 0 ? "" : formData.discount_percentage.toString()}
+              value={
+                formData.discount_percentage === 0
+                  ? ""
+                  : formData.discount_percentage.toString()
+              }
               onChange={handleChange}
               error={errors.discount_percentage}
             />
@@ -727,7 +798,8 @@ const AddArtsForm: React.FC = () => {
                 name="mood_id"
                 value={formData.mood_id}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer">
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer"
+              >
                 <option value="">Select Mood</option>
                 {moods?.map((mood: any) => (
                   <option key={mood.id} value={mood.id}>
@@ -735,7 +807,11 @@ const AddArtsForm: React.FC = () => {
                   </option>
                 ))}
               </select>
-              {errors.mood_id && <span className="text-red-500 text-sm mt-1">{errors.mood_id}</span>}
+              {errors.mood_id && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.mood_id}
+                </span>
+              )}
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
@@ -776,8 +852,11 @@ const AddArtsForm: React.FC = () => {
                 </div>
               ) : (
                 <label
-                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isThumbnailUploading ? "pointer-events-none opacity-70" : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                    }`}
+                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                    isThumbnailUploading
+                      ? "pointer-events-none opacity-70"
+                      : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                  }`}
                 >
                   <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                     <rect
@@ -804,7 +883,9 @@ const AddArtsForm: React.FC = () => {
                   {isThumbnailUploading ? (
                     <div className="flex flex-col items-center space-y-2">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
-                      <p className="text-sm text-[#7077FE]">Uploading thumbnail...</p>
+                      <p className="text-sm text-[#7077FE]">
+                        Uploading thumbnail...
+                      </p>
                     </div>
                   ) : (
                     <div className="text-center space-y-2">
@@ -821,7 +902,11 @@ const AddArtsForm: React.FC = () => {
                   )}
                 </label>
               )}
-              {errors.thumbnail_url && <span className="text-red-500 text-sm mt-1">{errors.thumbnail_url}</span>}
+              {errors.thumbnail_url && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.thumbnail_url}
+                </span>
+              )}
             </div>
           </div>
         </FormSection>
@@ -855,28 +940,50 @@ const AddArtsForm: React.FC = () => {
                   <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
                 </button>
               </div>
-              <textarea
-                name="overview"
+
+              {/* Replaced textarea with CustomRichTextEditor */}
+              <CustomRichTextEditor
                 value={formData.overview}
-                onChange={handleChange}
-                placeholder="Describe your artwork"
-                className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
-                required
+                onChange={handleOverviewChange}
+                onBlur={() => {
+                  // Validate on blur
+                  const overviewText = formData.overview
+                    .replace(/<[^>]*>/g, "")
+                    .trim();
+                  if (!overviewText) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      overview: "Overview is required",
+                    }));
+                  }
+                }}
+                placeholder="Describe your artwork..."
+                error={!!errors.overview}
               />
-              {errors.overview && <span className="text-red-500 text-sm mt-1">{errors.overview}</span>}
+              {errors.overview && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.overview}
+                </span>
+              )}
             </div>
+
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
                 Highlights * (Max 5)
               </label>
               <div className="space-y-3">
                 {formData?.highlights?.map((highlight: any, index: number) => (
-                  <div key={index} className="flex items-start gap-2 p-3 border border-gray-200 rounded-md bg-white">
+                  <div
+                    key={index}
+                    className="flex items-start gap-2 p-3 border border-gray-200 rounded-md bg-white"
+                  >
                     <span className="text-[#7077FE] font-bold mt-1">•</span>
                     <input
                       type="text"
                       value={highlight}
-                      onChange={(e) => handleEditHighlight(index, e.target.value)}
+                      onChange={(e) =>
+                        handleEditHighlight(index, e.target.value)
+                      }
                       className="flex-1 border-none focus:outline-none text-[#242E3A]"
                     />
                     <button
@@ -896,7 +1003,7 @@ const AddArtsForm: React.FC = () => {
                       value={newHighlight}
                       onChange={(e) => setNewHighlight(e.target.value)}
                       onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           e.preventDefault();
                           handleAddHighlight();
                         }
@@ -918,7 +1025,11 @@ const AddArtsForm: React.FC = () => {
                   Add up to 5 key highlights about your artwork
                 </p>
               </div>
-              {errors.highlights && <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>}
+              {errors.highlights && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.highlights}
+                </span>
+              )}
             </div>
 
             <InputField
@@ -953,7 +1064,8 @@ const AddArtsForm: React.FC = () => {
                 name="language"
                 value={formData.language}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+              >
                 <option value="">Select Language</option>
                 <option value="English">English</option>
                 <option value="Spanish">Spanish</option>
@@ -990,16 +1102,17 @@ const AddArtsForm: React.FC = () => {
                       value={chapter.title}
                       onChange={(e) => {
                         const newTitle = e.target.value;
-                        setChapters(prev => prev.map(t =>
-                          t.id === chapter.id ? { ...t, title: newTitle } : t
-                        ));
+                        setChapters((prev) =>
+                          prev.map((t) =>
+                            t.id === chapter.id ? { ...t, title: newTitle } : t
+                          )
+                        );
                       }}
                       className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
                     />
                     <p className="text-sm text-[#665B5B] mb-4">
                       Upload artwork files (images, PDFs, etc.) *
                     </p>
-
                   </div>
 
                   {/* Delete Chapter Button */}
@@ -1016,7 +1129,19 @@ const AddArtsForm: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF]">
                     <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
-                      <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none" className="transition-all duration-300 group-hover:stroke-[#7077FE]" />
+                      <rect
+                        x="1"
+                        y="1"
+                        width="calc(100% - 2px)"
+                        height="calc(100% - 2px)"
+                        rx="12"
+                        ry="12"
+                        stroke="#CBD5E1"
+                        strokeWidth="2"
+                        strokeDasharray="6,6"
+                        fill="none"
+                        className="transition-all duration-300 group-hover:stroke-[#7077FE]"
+                      />
                     </svg>
                     <input
                       type="file"
@@ -1044,78 +1169,128 @@ const AddArtsForm: React.FC = () => {
                         No files uploaded yet
                       </div>
                     ) : (
-                      chapter.chapter_files.map((file: any, fileIndex: number) => (
-                        <div key={fileIndex} className="border border-gray-200 rounded-lg p-3 bg-white">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-2 flex-1">
-                              {file.isUploading ? (
-                                <>
-                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#7077FE]"></div>
-                                  <span className="text-sm text-gray-600">Uploading...</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Book className="w-5 h-5 text-[#7077FE]" />
-                                  {file.isEditing ? (
-                                    <input
-                                      type="text"
-                                      value={file.title}
-                                      onChange={(e) => handleEditFileName(chapter.id, file.order_number, e.target.value)}
-                                      className="flex-1 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
-                                      autoFocus
-                                    />
-                                  ) : (
-                                    <p className="text-sm font-medium text-[#242E3A] flex-1 truncate">
-                                      {file.title}
-                                    </p>
-                                  )}
-                                </>
-                              )}
-                            </div>
-                            {!file.isUploading && (
-                              <div className="flex items-center space-x-2">
-                                {file.isEditing ? (
-                                  <button type="button" onClick={() => saveFileName(chapter.id, file.order_number)}
-                                    className="text-[#7077FE] text-sm font-semibold hover:text-[#5E65F6]">
-                                    Save
-                                  </button>
+                      chapter.chapter_files.map(
+                        (file: any, fileIndex: number) => (
+                          <div
+                            key={fileIndex}
+                            className="border border-gray-200 rounded-lg p-3 bg-white"
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center space-x-2 flex-1">
+                                {file.isUploading ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#7077FE]"></div>
+                                    <span className="text-sm text-gray-600">
+                                      Uploading...
+                                    </span>
+                                  </>
                                 ) : (
                                   <>
-                                    <button type="button" onClick={() => toggleEditFile(chapter.id, file.order_number)}
-                                      className="text-gray-500 hover:text-[#7077FE] transition-colors" title="Edit filename">
-                                      <SquarePen className="w-4 h-4" />
-                                    </button>
-                                    <button type="button" onClick={() => deleteFile(chapter.id, file.order_number)}
-                                      className="text-gray-500 hover:text-red-500 transition-colors" title="Delete file">
-                                      <Trash2 className="w-4 h-4" />
-                                    </button>
+                                    <Book className="w-5 h-5 text-[#7077FE]" />
+                                    {file.isEditing ? (
+                                      <input
+                                        type="text"
+                                        value={file.title}
+                                        onChange={(e) =>
+                                          handleEditFileName(
+                                            chapter.id,
+                                            file.order_number,
+                                            e.target.value
+                                          )
+                                        }
+                                        className="flex-1 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+                                        autoFocus
+                                      />
+                                    ) : (
+                                      <p className="text-sm font-medium text-[#242E3A] flex-1 truncate">
+                                        {file.title}
+                                      </p>
+                                    )}
                                   </>
                                 )}
                               </div>
+                              {!file.isUploading && (
+                                <div className="flex items-center space-x-2">
+                                  {file.isEditing ? (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        saveFileName(
+                                          chapter.id,
+                                          file.order_number
+                                        )
+                                      }
+                                      className="text-[#7077FE] text-sm font-semibold hover:text-[#5E65F6]"
+                                    >
+                                      Save
+                                    </button>
+                                  ) : (
+                                    <>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          toggleEditFile(
+                                            chapter.id,
+                                            file.order_number
+                                          )
+                                        }
+                                        className="text-gray-500 hover:text-[#7077FE] transition-colors"
+                                        title="Edit filename"
+                                      >
+                                        <SquarePen className="w-4 h-4" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          deleteFile(
+                                            chapter.id,
+                                            file.order_number
+                                          )
+                                        }
+                                        className="text-gray-500 hover:text-red-500 transition-colors"
+                                        title="Delete file"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            {!file.isUploading && (
+                              <>
+                                <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                                  <span>
+                                    {file.file
+                                      ? formatFileSize(file.file.size)
+                                      : "Uploaded"}
+                                  </span>
+                                  <span className="text-green-600 flex items-center gap-1">
+                                    <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                                    Ready
+                                  </span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                  <div
+                                    className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                                    style={{ width: "100%" }}
+                                  ></div>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  Order: {file.order_number}
+                                </p>
+                              </>
                             )}
                           </div>
-                          {!file.isUploading && (
-                            <>
-                              <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                                <span>{file.file ? formatFileSize(file.file.size) : "Uploaded"}</span>
-                                <span className="text-green-600 flex items-center gap-1">
-                                  <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
-                                  Ready
-                                </span>
-                              </div>
-                              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                                <div className="bg-green-500 h-1.5 rounded-full transition-all duration-300" style={{ width: "100%" }}></div>
-                              </div>
-                              <p className="text-xs text-gray-500 mt-1">Order: {file.order_number}</p>
-                            </>
-                          )}
-                        </div>
-                      ))
+                        )
+                      )
                     )}
                   </div>
                 </div>
                 {errors[`chapter_${chapter.id}`] && (
-                  <p className="text-red-500 text-sm mt-2">{errors[`chapter_${chapter.id}`]}</p>
+                  <p className="text-red-500 text-sm mt-2">
+                    {errors[`chapter_${chapter.id}`]}
+                  </p>
                 )}
               </div>
             ))}
@@ -1125,7 +1300,19 @@ const AddArtsForm: React.FC = () => {
               className="relative w-full rounded-lg py-4 text-[#7077FE] font-medium bg-white cursor-pointer group overflow-hidden transition-all"
             >
               <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
-                <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="10" ry="10" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="6,6" fill="none" className="transition-colors duration-300 group-hover:stroke-[#7077FE]" />
+                <rect
+                  x="1"
+                  y="1"
+                  width="calc(100% - 2px)"
+                  height="calc(100% - 2px)"
+                  rx="10"
+                  ry="10"
+                  stroke="#CBD5E1"
+                  strokeWidth="2"
+                  strokeDasharray="6,6"
+                  fill="none"
+                  className="transition-colors duration-300 group-hover:stroke-[#7077FE]"
+                />
               </svg>
               + Add Collection
             </button>
@@ -1141,7 +1328,8 @@ const AddArtsForm: React.FC = () => {
             type="button"
             onClick={handleDiscard}
             disabled={isLoading}
-            className="px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:text-blue-500 transition-colors disabled:opacity-50">
+            className="px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:text-blue-500 transition-colors disabled:opacity-50"
+          >
             Discard
           </button>
           <button
@@ -1153,10 +1341,11 @@ const AddArtsForm: React.FC = () => {
             {isLoading ? "Saving..." : "Preview"}
           </button>
           <button
-            type='button'
+            type="button"
             onClick={() => handleSubmit(false)}
             disabled={isLoading}
-            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:bg-[#5a60ea] transition-colors disabled:opacity-50">
+            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] hover:bg-[#5a60ea] transition-colors disabled:opacity-50"
+          >
             {isLoading ? "Submitting..." : "Submit"}
           </button>
         </div>
@@ -1172,13 +1361,17 @@ const AddArtsForm: React.FC = () => {
       )}
       {showDiscardModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDiscardModal(false)}></div>
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowDiscardModal(false)}
+          ></div>
           <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-8 w-[450px]">
             <h3 className="text-[20px] font-semibold font-['Poppins'] text-[#242E3A] mb-4">
               Discard Changes?
             </h3>
             <p className="text-[14px] text-[#665B5B] font-['Open_Sans'] mb-6">
-              Are you sure you want to discard? All your changes will not be saved.
+              Are you sure you want to discard? All your changes will not be
+              saved.
             </p>
             <div className="flex justify-end gap-3">
               <button

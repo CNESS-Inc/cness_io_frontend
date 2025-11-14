@@ -9,6 +9,7 @@ import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, Uplo
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
+import CustomRichTextEditor from "../components/sections/bestPractiseHub/CustomRichTextEditor";
 
 interface FormSectionProps {
   title: string;
@@ -751,6 +752,22 @@ const AddMusicForm: React.FC = () => {
     );
   }
 
+  const handleOverviewChange = (data: any) => {
+    const content = typeof data === "string" ? data : data?.content || "";
+    setFormData((prev) => ({
+      ...prev,
+      overview: content,
+    }));
+
+    // Clear error when user starts typing
+    if (errors.overview) {
+      setErrors((prev) => ({
+        ...prev,
+        overview: "",
+      }));
+    }
+  };
+
   return (
     <>
       <Breadcrumb
@@ -929,13 +946,23 @@ const AddMusicForm: React.FC = () => {
                   <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
                 </button>
               </div>
-              <textarea
-                name="overview"
+              
+              {/* Replaced textarea with CustomRichTextEditor */}
+              <CustomRichTextEditor
                 value={formData.overview}
-                onChange={handleChange}
-                placeholder="Describe your track or album"
-                className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
-                required
+                onChange={handleOverviewChange}
+                onBlur={() => {
+                  // Validate on blur
+                  const overviewText = formData.overview.replace(/<[^>]*>/g, '').trim();
+                  if (!overviewText) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      overview: "Overview is required",
+                    }));
+                  }
+                }}
+                placeholder="Describe your artwork, including inspiration, techniques used, and what makes it special..."
+                error={!!errors.overview}
               />
               {errors.overview && <span className="text-red-500 text-sm mt-1">{errors.overview}</span>}
             </div>

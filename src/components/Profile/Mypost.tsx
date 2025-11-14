@@ -3,6 +3,7 @@ import like from "../../assets/like.svg";
 import comment from "../../assets/comment.svg";
 // import repost from "../../assets/repost.svg";
 import { Pen, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 type Media =
   | { type: "image"; src: string; alt?: string }
   | { type: "video"; src: string; poster?: string }
@@ -32,6 +33,7 @@ export type MyPostProps = {
   showFollowButton?: boolean;
   insightsCount?: number;
   reflections?: number;
+  product_id?: string | null;
   onFollowToggle?: () => void;
 };
 function formatCount(count: number) {
@@ -62,8 +64,24 @@ export default function MyPost({
   onViewPost,
   onDeletePost,
   onDeleteSavePost,
+  product_id,
 }: MyPostProps) {
-  // const total = likes + (reflections ?? 0);
+  const navigate = useNavigate(); // Initialize navigate
+
+  const handleViewPost = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    // If product_id exists, redirect to product detail page
+    if (product_id) {
+      navigate(`/dashboard/product-detail/${product_id}`);
+      return;
+    }
+
+    // Otherwise, call the original onViewPost callback
+    onViewPost?.();
+    console.log("View Post clicked");
+  };
+
   return (
     <article
       onClick={onClick}
@@ -141,11 +159,7 @@ export default function MyPost({
         {showOverlay && (
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewPost?.();
-                console.log("View Post clicked");
-              }}
+              onClick={handleViewPost}
               className="w-32 py-2 rounded-full bg-[#7077FE] hover:bg-[#4B51D1] text-white font-medium text-sm shadow"
             >
               {!friend && <Pen className="w-4 h-4 inline-block mr-1" />}
