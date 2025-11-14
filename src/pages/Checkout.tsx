@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {  CheckCircle, CreditCard, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateCheckoutSession, GetProductCart, RemoveProductToCart } from "../Common/ServerAPI";
+import { CreateCheckoutSession, GetProductCart } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 const DonationModal = ({ setShowDonationModal }: { setShowDonationModal: React.Dispatch<React.SetStateAction<boolean>> }) => (
