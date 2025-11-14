@@ -10,6 +10,7 @@ type Collection = {
   slug: string;
   description: string;
   is_public: boolean;
+  sample_product_thumbnail: string;
   thumbnail_url: string;
   product_count: number;
   createdAt: string;
@@ -102,7 +103,7 @@ export default function MyCollections() {
               >
                 <div className="relative overflow-hidden rounded-[10px]  bg-white w-full">
                   <img
-                    src={collection.thumbnail_url || defaultImage}
+                    src={collection.sample_product_thumbnail || defaultImage}
                     alt={collection.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     onError={(e) => {

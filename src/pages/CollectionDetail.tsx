@@ -33,6 +33,7 @@ type CollectionDetail = {
   slug: string;
   description: string;
   is_public: boolean;
+  sample_product_thumbnail: string;
   thumbnail_url: string;
   product_count: number;
   createdAt: string;
@@ -110,7 +111,7 @@ export default function CollectionDetail() {
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-48 h-48 rounded-lg overflow-hidden flex-shrink-0">
             <img
-              src={collection.thumbnail_url || defaultImage}
+              src={ collection.sample_product_thumbnail || collection.thumbnail_url || defaultImage}
               alt={collection.name}
               className="w-full h-full object-cover"
               onError={(e) => {

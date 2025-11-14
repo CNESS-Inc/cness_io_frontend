@@ -134,7 +134,7 @@ const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   };
 
   const handleViewInLibrary = () => {
-    navigate("/dashboard/my-library");
+    navigate("/dashboard/library");
   };
 
   const handleDownloadInvoice = () => {

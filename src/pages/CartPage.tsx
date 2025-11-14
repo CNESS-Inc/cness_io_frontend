@@ -174,7 +174,8 @@ const CartPage: React.FC = () => {
     //   });
     //   return;
     // }
-
+    navigate('/dashboard/checkout');
+    return;
     setIsLoading(true);
     try {
       const response = await CreateCheckoutSession();

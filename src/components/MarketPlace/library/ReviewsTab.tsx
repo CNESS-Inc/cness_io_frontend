@@ -6,9 +6,11 @@ import LoadingSpinner from "../../ui/LoadingSpinner";
 
 interface ReviewsTabProps {
     productId: string;
+    show_public_review: boolean;
+    show_overall_review:boolean
 }
 
-const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId }) => {
+const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId,show_public_review=true,show_overall_review=true }) => {
     const { showToast } = useToast();
 
     const [allReviews, setAllReviews] = useState<any[]>([]);
@@ -229,6 +231,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId }) => {
     return (
         <div>
             {/* --- Rating Summary (Top) --- */}
+            {show_overall_review ?(
             <div className="w-full mx-auto rounded-lg bg-white p-6 shadow mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Main left */}
                 <div className="flex flex-col items-center justify-center">
@@ -266,6 +269,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId }) => {
                     ))}
                 </div>
             </div>
+            ): <div><br/></div>}
 
             {/* --- Review Entry Form --- */}
             <div className="mx-auto p-6 bg-white rounded shadow space-y-6">
@@ -389,6 +393,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId }) => {
                 </button>
 
                 {/* Review List */}
+                {show_public_review &&(
                 <div className="mt-8 pt-8 border-t border-gray-200">
                     <h3 className="text-lg font-semibold mb-4 font-[Poppins]">
                         Customer Reviews ({totalReviews})
@@ -497,6 +502,7 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId }) => {
                         </div>
                     )}
                 </div>
+                )}
             </div>
         </div>
     );
