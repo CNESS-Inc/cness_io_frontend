@@ -7,6 +7,7 @@ import { Video, SquarePen, Trash2, Plus, X, FileText, Music, Image } from "lucid
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { CreateCourseProduct, GetMarketPlaceMoods, GetMarketPlaceCategories, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
 import AIModal from "../components/MarketPlace/AIModal";
+import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 
 interface FormSectionProps {
   title: string;
@@ -104,6 +105,7 @@ const AddCourseForm: React.FC = () => {
     language: "",
     format: "video",
     requirements: "",
+    sample_track: "",
   });
 
   useEffect(() => {
@@ -141,6 +143,20 @@ const AddCourseForm: React.FC = () => {
 
     fetchCategories();
   }, []);
+
+  const handleSampleTrackUpload = (sampleId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: sampleId,
+    }));
+  };
+  
+  const handleRemoveSampleTrack = () => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: "",
+    }));
+  };
 
   const handleAIGenerate = (generatedText: string) => {
     setFormData(prev => ({
@@ -981,6 +997,18 @@ const AddCourseForm: React.FC = () => {
               </select>
             </div>
           </div>
+        </FormSection>
+
+        <FormSection
+          title="Sample Track"
+          description="Upload a preview sample so buyers can experience your content before purchasing."
+        >
+          <SampleTrackUpload
+            productType="video"
+            onUploadSuccess={handleSampleTrackUpload}
+            onRemove={handleRemoveSampleTrack}
+            defaultValue={formData.sample_track}
+          />
         </FormSection>
 
         <FormSection title="Lessons" description="">

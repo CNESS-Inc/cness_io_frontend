@@ -14,9 +14,12 @@ import {
   SquarePen,
   Trash2,
   Check,
+  Sparkles,
 } from "lucide-react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { DeleteArtChapter, DeleteCourseChapter, DeleteEbookChapter, DeleteMusicTrack, DeletPodcastEpisode, GetMarketPlaceMoods, GetPreviewProduct, UpdateArtProduct, UpdateCourseProduct, UpdateEbookProduct, UpdateMusicProduct, UpdatePodcastProduct, UpdateProductStatus, UpdateVideoProduct, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
+import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
+import AIModal from "../components/MarketPlace/AIModal";
 
 // Breadcrumb Component
 const Breadcrumb: React.FC<{ category: string }> = ({ category }) => (
@@ -329,6 +332,9 @@ const EditSellerProductPage: React.FC = () => {
   const [moods, setMoods] = useState<any[]>([]);
   const [newHighlight, setNewHighlight] = useState("");
 
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [sampleTrackUrl, setSampleTrackUrl] = useState("");
+
   // Thumbnail States (for non-video categories)
   const [thumbnailData, setThumbnailData] = useState<{
     thumbnail_url: string;
@@ -578,6 +584,29 @@ const EditSellerProductPage: React.FC = () => {
 
     fetchMoods();
   }, []);
+
+  const handleAIGenerate = (generatedText: string) => {
+    setFormData((prev: any) => ({
+      ...prev,
+      overview: generatedText,
+    }));
+
+    if (errors.overview) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.overview;
+        return newErrors;
+      });
+    }
+  };
+
+  const handleSampleTrackUpload = (sampleUrl: string) => {
+    setSampleTrackUrl(sampleUrl);
+  };
+
+  const handleRemoveSampleTrack = () => {
+    setSampleTrackUrl("");
+  };
 
   // Thumbnail Upload Handler (for non-video categories) - UPLOADS ON CHANGE
   const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1407,6 +1436,10 @@ const EditSellerProductPage: React.FC = () => {
       language: formData.language,
     };
 
+    if (sampleTrackUrl) {
+      basePayload.sample_track = sampleTrackUrl;
+    }
+
     // Category-specific payload preparation
     if (category === "video") {
       return {
@@ -1419,7 +1452,7 @@ const EditSellerProductPage: React.FC = () => {
       };
     } else if (category === "music") {
       const tracks = contentItems.map((item: any, index) => ({
-        track_id: item.track_id, 
+        track_id: item.track_id,
         title: item.title,
         description: '',
         duration: '',
@@ -1895,15 +1928,27 @@ const EditSellerProductPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Overview - All Categories */}
               <div className={category === "video" ? "" : "lg:col-span-2"}>
-                <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                  Overview <span className="text-red-500">*</span>
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
+                    Overview <span className="text-red-500">*</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowAIModal(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group text-sm"
+                  >
+                    <Sparkles className="w-4 h-4 animate-pulse" />
+                    <span className="font-medium">Generate with AI</span>
+                    <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
+                  </button>
+                </div>
                 <textarea
                   name="overview"
                   value={formData.overview}
                   onChange={handleChange}
-                  placeholder="Write a detailed overview"
-                  className={`w-full ${category === "video" ? "h-32" : "h-32"} px-3 py-2 border ${errors.overview ? "border-red-500" : "border-gray-200"
+                  placeholder="Write a detailed overview or click 'Generate with AI'"
+                  className={`w-full ${category === "video" ? "h-32" : "h-32"
+                    } px-3 py-2 border ${errors.overview ? "border-red-500" : "border-gray-200"
                     } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
                 />
                 {errors.overview && (
@@ -2186,6 +2231,18 @@ const EditSellerProductPage: React.FC = () => {
                 </div>
               )}
             </div>
+          </FormSection>
+
+          <FormSection
+            title="Sample Track (Optional)"
+            description="Upload a preview sample so buyers can experience your content before purchasing."
+          >
+            <SampleTrackUpload
+              productType="video"
+              onUploadSuccess={handleSampleTrackUpload}
+              onRemove={handleRemoveSampleTrack}
+              defaultValue={sampleTrackUrl}
+            />
           </FormSection>
 
           {/* Video-specific Storytelling Section */}
@@ -2741,6 +2798,12 @@ const EditSellerProductPage: React.FC = () => {
           </div>
         </div>
       )}
+      <AIModal
+        showModal={showAIModal}
+        setShowModal={setShowAIModal}
+        productType={category as "video" | "music" | "course" | "podcast" | "ebook" | "art"}
+        onGenerate={handleAIGenerate}
+      />
     </>
   );
 };

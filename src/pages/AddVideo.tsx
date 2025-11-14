@@ -9,6 +9,7 @@ import { CreateVideoProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, Uplo
 import { Plus, X } from "lucide-react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import AIModal from "../components/MarketPlace/AIModal";
+import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 
 interface FormSectionProps {
   title: string;
@@ -376,7 +377,22 @@ const AddVideoForm: React.FC = () => {
     short_video_url: "", // short video_id
     summary: "",
     status: "",
+    sample_track: "",
   });
+
+  const handleSampleTrackUpload = (sampleId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: sampleId,
+    }));
+  };
+
+  const handleRemoveSampleTrack = () => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: "",
+    }));
+  };
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -872,6 +888,18 @@ const AddVideoForm: React.FC = () => {
               {errors.summary && <span className="text-red-500 text-sm mt-1">{errors.summary}</span>}
             </div>
           </div>
+        </FormSection>
+
+        <FormSection
+          title="Sample Track"
+          description="Upload a preview sample so buyers can experience your content before purchasing."
+        >
+          <SampleTrackUpload
+            productType="video"
+            onUploadSuccess={handleSampleTrackUpload}
+            onRemove={handleRemoveSampleTrack}
+            defaultValue={formData.sample_track}
+          />
         </FormSection>
 
         {/* Buttons */}

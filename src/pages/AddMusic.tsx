@@ -8,6 +8,7 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import AIModal from "../components/MarketPlace/AIModal";
+import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 
 interface FormSectionProps {
   title: string;
@@ -112,6 +113,7 @@ const AddMusicForm: React.FC = () => {
     format: "",
     status: "",
     thumbnail_url: "",
+    sample_track: "",
   });
 
   useEffect(() => {
@@ -150,6 +152,20 @@ const AddMusicForm: React.FC = () => {
 
     fetchCategories();
   }, []);
+
+  const handleSampleTrackUpload = (sampleId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: sampleId,
+    }));
+  };
+
+  const handleRemoveSampleTrack = () => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: "",
+    }));
+  };
 
   const handleAIGenerate = (generatedText: string) => {
     setFormData(prev => ({
@@ -886,7 +902,7 @@ const AddMusicForm: React.FC = () => {
         <FormSection title="Details" description="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-2">
                 <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
                   Overview *
                 </label>
@@ -1032,6 +1048,18 @@ const AddMusicForm: React.FC = () => {
               {errors.language && <span className="text-red-500 text-sm mt-1">{errors.language}</span>}
             </div>
           </div>
+        </FormSection>
+
+        <FormSection
+          title="Sample Track"
+          description="Upload a preview sample so buyers can experience your content before purchasing."
+        >
+          <SampleTrackUpload
+            productType="video"
+            onUploadSuccess={handleSampleTrackUpload}
+            onRemove={handleRemoveSampleTrack}
+            defaultValue={formData.sample_track}
+          />
         </FormSection>
 
         {/* Uploads Section */}

@@ -156,7 +156,7 @@ const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
 
   return (
     <div
-      onClick={() => navigate(`/dashboard/product-detail/${p.product_id}`)} className="bg-white rounded-[14px] border-[0.5px] border-[#CBD5E1] box-border shadow-sm overflow-hidden">
+      className="bg-white rounded-[14px] border-[0.5px] border-[#CBD5E1] box-border shadow-sm overflow-hidden">
       <div className="relative">
         <img
           src={
@@ -188,7 +188,9 @@ const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
         <div className="mt-1 text-[12px] text-gray-600">  by {p.seller.shop_name}</div>
 
         {/* Watch Now button inside content */}
-        <button className="mt-3 w-full flex items-center justify-center gap-2 bg-[#7077FE] hover:bg-[#5a60ef] text-white text-sm font-medium py-2.5 border border-transparent rounded-[3px] shadow">
+        <button 
+        onClick={() => navigate(`/dashboard/library/course/${p.product_id}`)}
+        className="mt-3 w-full flex items-center justify-center gap-2 bg-[#7077FE] hover:bg-[#5a60ef] text-white text-sm font-medium py-2.5 border border-transparent rounded-[3px] shadow">
           <Play size={20} /> Watch Now
         </button>
 
