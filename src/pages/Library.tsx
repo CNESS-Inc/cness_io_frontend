@@ -4,7 +4,7 @@ import FilterSidebar from "../components/MarketPlace/Filter";
 import { Play, Search, ChevronDown, Video, Music, BookOpen, FileAudio, FileText, Palette, Star, Clock } from "lucide-react";
 import filter from "../assets/filter.svg";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { GetContinueWatchingProductList, GetLibraryrDetails, GetLibraryrFilters } from "../Common/ServerAPI";
+import { GetCollectionList, GetContinueWatchingProductList, GetLibraryrDetails, GetLibraryrFilters } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import EmptyPageLibrary from "./EmptyPageLibrary";
 
@@ -64,7 +64,18 @@ const CATEGORY_TABS = [
   "Course",
 ] as const;
 type Category = (typeof CATEGORY_TABS)[number];
-
+type Collection = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  is_public: boolean;
+  sample_product_thumbnail:string
+  thumbnail_url: string;
+  product_count: number;
+  createdAt: string;
+  updatedAt: string;
+};
 const CATEGORY_SLUG_MAP: Record<string, string> = {
   Video: "video",
   Podcast: "podcast",
@@ -122,21 +133,24 @@ const ContinueWatchingThumb: React.FC<{
     </div>
   );
 };
-
 const CollectionThumb: React.FC<{ src: string; label?: string }> = ({
   src,
   label,
-}) => (
-  <div className="relative rounded-xl overflow-hidden group">
-    <img src={src} alt={label || "collection"} className="w-full h-32 object-cover" />
-    <button className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition">
+}) => {
+  const navigate = useNavigate();
+
+  return(
+  <div className="relative rounded-xl overflow-hidden group"  >
+    <img src={src} alt={"collection"} className="w-full h-32 object-cover" />
+    <button  onClick={()=>navigate(`/dashboard/my-collections/${label}`)} className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition">
       <span className="flex items-center gap-2 text-white text-sm font-medium px-3 py-1 bg-black/50 rounded-full">
         <Play size={16} />
         Watch
       </span>
     </button>
   </div>
-);
+)
+};
 
 const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
   const navigate = useNavigate();
@@ -219,6 +233,8 @@ const Library: React.FC = () => {
   const [selected, setSelected] = useState("Recently Added");
   const [selectedValue, setSelectedValue] = useState("recently_added");
   const [isOpen, setIsOpen] = useState(false);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [pagination, setPagination] = useState<any>({});
 
   const [continueWatching, setContinueWatching] = useState<
     ContinueWatchingProduct[]
@@ -238,7 +254,9 @@ const Library: React.FC = () => {
   useEffect(() => {
     fetchContinueWatching();
   }, []);
-
+  useEffect(() => {
+    fetchCollections();
+  }, []);
   useEffect(() => {
     fetchLibrary();
   }, [activeCategory, selectedValue, appliedFilters]);
@@ -261,7 +279,25 @@ const Library: React.FC = () => {
       console.error("Failed to load library filters:", error);
     }
   };
+  const fetchCollections = async () => {
+    setIsLoading(true);
+    try {
+      const response = await GetCollectionList();
+      const data = response?.data?.data;
 
+      setCollections(data?.collections || []);
+      setPagination(data?.pagination || {});
+    } catch (error: any) {
+      console.error("Failed to load collections:", error);
+      showToast({
+        message: "Failed to load collections",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const fetchContinueWatching = async () => {
     try {
       const response = await GetContinueWatchingProductList();
@@ -388,16 +424,12 @@ const Library: React.FC = () => {
           {/* My Collections */}
           <section>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[16px] sm:text-lg font-semibold text-[#111827]">My Collections</h2>
+              <h2 className="text-[16px] sm:text-lg font-semibold text-[#111827]">My Collectionss</h2>
               <button className="text-[#7077FE] text-sm" onClick={() => navigate('/dashboard/collections')}>View all</button>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
-              {[
-                { label: "Motivated", src: "https://cdn.cness.io/collection1.svg" },
-                { label: "Ebook", src: "https://cdn.cness.io/collection3.svg" },
-                { label: "Yoga", src: "https://cdn.cness.io/collection2.svg" },
-              ].map((c) => (
-                <CollectionThumb key={c.label} src={c.src} label={c.label} />
+              {collections?.map((c) => (
+                <CollectionThumb key={c.name} src={c.sample_product_thumbnail} label={c.id} />
               ))}
             </div>
           </section>

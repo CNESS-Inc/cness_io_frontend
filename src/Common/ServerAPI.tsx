@@ -301,6 +301,7 @@ export const EndPoint = {
   marketplace_checkout_confirm: "/marketplace-buyer/checkout/confirm",
   marketplace_retry_payment: "/marketplace-buyer/retry-payment",
   marketplace_order_details: "/marketplace-buyer/orders",
+  marketplace_order_details_by_order_id: "/marketplace-buyer/orders",
   marketplace_buyer_library: "/marketplace-buyer/library",
 
   // collections apis
@@ -1988,6 +1989,9 @@ export const AddProductToCart = (data: any): ApiResponse => {
 
 export const GetProductCart = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_cart);
+};
+export const GetOrderDetailsByOrdId = (order_id:string) => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}`);
 };
 
 export const RemoveProductToCart = (id: any): ApiResponse => {

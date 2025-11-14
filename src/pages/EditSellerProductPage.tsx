@@ -233,6 +233,7 @@ interface Track {
   id: number;
   track_id?: string;
   title: string;
+  delete_files: any,
   track_files: TrackFile[];
   order_number: number;
 }
@@ -253,6 +254,7 @@ interface Episode {
   description?: string;
   duration?: string;
   is_free?: boolean;
+  delete_files: any,
   episode_files: EpisodeFile[];
   order_number: number;
 }
@@ -272,6 +274,7 @@ interface Chapter {
   title: string;
   description?: string;
   is_free?: boolean;
+  delete_files: any,
   chapter_files: ChapterFile[];
   order_number: number;
 }
@@ -290,6 +293,7 @@ interface Lesson {
   id: number;
   chapter_id?: string;
   title: string;
+  delete_files: any,
   chapter_files: LessonFile[];
   order_number: number;
 }
@@ -309,6 +313,7 @@ interface Collection {
   title: string;
   description?: string;
   is_free?: boolean;
+  delete_files: any,
   chapter_files: CollectionFile[];
   order_number: number;
 }
@@ -434,6 +439,8 @@ const EditSellerProductPage: React.FC = () => {
               commonData.total_duration = productData.music_details?.total_duration || productData.podcast_details?.total_duration || "";
               commonData.format = productData.music_details?.format || productData.podcast_details?.format || "";
               commonData.theme = productData.music_details?.theme || productData.podcast_details?.theme || "";
+              commonData.sample_track_url = productData.music_details?.sample_track_url || productData.podcast_details?.sample_track_url || "";
+
             }
 
             // Ebook specific
@@ -547,7 +554,7 @@ const EditSellerProductPage: React.FC = () => {
 
             setContentItems(items);
           }
-
+          setSampleTrackUrl(commonData?.sample_track_url || "");
           setFormData(commonData);
         }
       } catch (error: any) {
@@ -605,6 +612,7 @@ const EditSellerProductPage: React.FC = () => {
   };
 
   const handleRemoveSampleTrack = () => {
+    console.log('Removing sample track');
     setSampleTrackUrl("");
   };
 
@@ -1120,19 +1128,28 @@ const EditSellerProductPage: React.FC = () => {
   const deleteFile = (itemId: number, fileId: string) => {
     setContentItems((prevItems) =>
       prevItems.map((item) => {
+        console.log('item.id, itemId', item?.delete_files, itemId)
         if (item.id === itemId) {
           const fileArray = getFileArray(item);
+          const deletedFile = fileArray.find((f: any) => f.file_id === fileId);
           const filteredFiles = fileArray.filter((f: any) => f.file_id !== fileId);
 
           return {
             ...item,
+
             ...(category === "music" && { track_files: filteredFiles }),
             ...(category === "podcast" && { episode_files: filteredFiles }),
             ...(category === "ebook" && { chapter_files: filteredFiles }),
             ...(category === "course" && { chapter_files: filteredFiles }),
             ...(category === "art" && { chapter_files: filteredFiles }),
+            delete_files: [
+              ...(item.delete_files || []),
+              deletedFile?.file_id
+            ]
+
           };
         }
+        console.log('item', item)
         return item;
       })
     );
@@ -1435,10 +1452,11 @@ const EditSellerProductPage: React.FC = () => {
       highlights: formData.highlights,
       language: formData.language,
     };
-
-    if (sampleTrackUrl) {
-      basePayload.sample_track = sampleTrackUrl;
-    }
+      console.log('sampleTrackUrl', sampleTrackUrl);
+basePayload.sample_track_url = sampleTrackUrl;
+    // if (sampleTrackUrl) {
+    //   basePayload.sample_track_url = sampleTrackUrl;
+    // }
 
     // Category-specific payload preparation
     if (category === "video") {
@@ -1451,16 +1469,18 @@ const EditSellerProductPage: React.FC = () => {
         short_video_url: formData.short_video_url || "",
       };
     } else if (category === "music") {
+      console.log('contentItems sfdgdf', contentItems);
       const tracks = contentItems.map((item: any, index) => ({
         track_id: item.track_id,
         title: item.title,
         description: '',
         duration: '',
         order_number: index + 1,
-
+        delete_files: item.delete_files || [],
         track_files: item.track_files
           .filter((f: any) => f.url)
           .map((file: any, fileIndex: number) => ({
+            file_id: file.file_id,
             url: file.url,
             title: file.title,
             order_number: fileIndex + 1,
@@ -1486,6 +1506,7 @@ const EditSellerProductPage: React.FC = () => {
         episode_files: item.episode_files
           .filter((f: any) => f.url)
           .map((file: any, fileIndex: number) => ({
+             file_id: file.file_id,
             url: file.url,
             title: file.title,
             order_number: fileIndex,
@@ -1510,6 +1531,7 @@ const EditSellerProductPage: React.FC = () => {
         chapter_files: item.chapter_files
           .filter((f: any) => f.url)
           .map((file: any, fileIndex: number) => ({
+             file_id: file.file_id,
             url: file.url,
             title: file.title,
             order_number: fileIndex,
@@ -1533,6 +1555,7 @@ const EditSellerProductPage: React.FC = () => {
         chapter_files: item.chapter_files
           .filter((f: any) => f.url)
           .map((file: any, fileIndex: number) => ({
+             file_id: file.file_id,
             url: file.url,
             title: file.title,
             order_number: fileIndex + 1,
@@ -1560,6 +1583,7 @@ const EditSellerProductPage: React.FC = () => {
         chapter_files: item.chapter_files
           .filter((f: any) => f.url)
           .map((file: any, fileIndex: number) => ({
+             file_id: file.file_id,
             url: file.url,
             title: file.title,
             order_number: fileIndex,
@@ -1594,7 +1618,7 @@ const EditSellerProductPage: React.FC = () => {
     try {
       // Prepare the payload
       const payload = preparePayload();
-
+console.log('payload dfsdfsdsdfsf', payload);
       // Update product based on category
       let updatePromise;
       switch (category) {
@@ -2238,7 +2262,7 @@ const EditSellerProductPage: React.FC = () => {
             description="Upload a preview sample so buyers can experience your content before purchasing."
           >
             <SampleTrackUpload
-              productType="video"
+              productType="music"
               onUploadSuccess={handleSampleTrackUpload}
               onRemove={handleRemoveSampleTrack}
               defaultValue={sampleTrackUrl}

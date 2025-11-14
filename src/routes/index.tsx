@@ -480,10 +480,6 @@ export const router = createBrowserRouter([
             element: <CartPage />,
           },
           {
-            path: "checkout",
-            element: <Checkout />,
-          },
-          {
             path: "payment-success",
             element: <PaymentSuccess />,
           },

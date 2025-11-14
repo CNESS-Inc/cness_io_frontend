@@ -19,6 +19,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  console.log('products', products)
   const [isLoading, setIsLoading] = useState(false);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
 
@@ -159,7 +160,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                     product={{
                       id: product.id,
                       title: product.product_title,
-                      author: product.seller?.shop_name || "Unknown",
+                      author: product.seller?.shop_name || product.author ||"Unknown",
                       rating: product?.rating?.average,
                       reviews: product?.rating?.total_reviews,
                       currentPrice: product?.discounted_price,
@@ -169,7 +170,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                         product.video_details?.duration ||
                         product.music_details?.total_duration ||
                         "00:00:00",
-                      mood: `${product.mood?.icon || ""} ${product.mood?.name || ""}`,
+                      mood: `${product?.mood_icon || ""} ${product?.mood_name || ""}`,
                       image:
                         product.thumbnail_url ||
                         "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",

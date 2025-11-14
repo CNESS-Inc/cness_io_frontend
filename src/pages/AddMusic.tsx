@@ -113,7 +113,7 @@ const AddMusicForm: React.FC = () => {
     format: "",
     status: "",
     thumbnail_url: "",
-    sample_track: "",
+    sample_track_url: "",
   });
 
   useEffect(() => {
@@ -156,14 +156,14 @@ const AddMusicForm: React.FC = () => {
   const handleSampleTrackUpload = (sampleId: string) => {
     setFormData(prev => ({
       ...prev,
-      sample_track: sampleId,
+      sample_track_url: sampleId,
     }));
   };
 
   const handleRemoveSampleTrack = () => {
     setFormData(prev => ({
       ...prev,
-      sample_track: "",
+      sample_track_url: "",
     }));
   };
 
@@ -664,6 +664,7 @@ const AddMusicForm: React.FC = () => {
         theme: formData.theme,
         format: formData.format,
         thumbnail_url: formData.thumbnail_url,
+        sample_track_url: formData.sample_track_url,
         status: isDraft ? 'draft' : 'published',
         tracks: tracksData,
       };
@@ -1055,10 +1056,10 @@ const AddMusicForm: React.FC = () => {
           description="Upload a preview sample so buyers can experience your content before purchasing."
         >
           <SampleTrackUpload
-            productType="video"
+            productType="music"
             onUploadSuccess={handleSampleTrackUpload}
             onRemove={handleRemoveSampleTrack}
-            defaultValue={formData.sample_track}
+            defaultValue={formData.sample_track_url}
           />
         </FormSection>
 
