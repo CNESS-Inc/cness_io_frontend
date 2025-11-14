@@ -263,6 +263,7 @@ export const EndPoint = {
   get_moods: "/marketplace-product/moods",
   get_preview_product: "/marketplace-product",
   expand_product_overview: "/marketplace-product/ai/expand-overview",
+  generate_signed_url: "/marketplace-product/generate-signed-url",
 
   create_video_product: "/marketplace-product/video",
   update_video_product: "/marketplace-product",
@@ -307,6 +308,7 @@ export const EndPoint = {
 
   // progress apis
   marketplace_buyer_continue_watching: "/marketplace-buyer/progress/continue-watching",
+  marketplace_buyer_progress: "/marketplace-buyer/progress",
 };
 
 // Messaging endpoints
@@ -1681,6 +1683,14 @@ export const ExpandProductOverview = (data: any): ApiResponse => {
   );
 };
 
+export const GenerateSignedUrl = (fileType: string, data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.generate_signed_url}?resource_type=${fileType}`
+  );
+};
+
 export const CreateVideoProduct = (data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -2171,10 +2181,16 @@ export const GetLibraryrDetails = (params?: {
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 }
 
+export const GetLibraryrDetailsById = (id: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_buyer_library}/${id}`);
+}
+
 export const CreateCollectionList = (data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
-    { data },
+    data,
     EndPoint.marketplace_collection_list
   );
 }
@@ -2198,7 +2214,7 @@ export const GetCollectionListById = (id: any): ApiResponse => {
 export const UpdateCollectionList = (id: any, data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.PUT,
-    { data },
+    data,
     `${EndPoint.marketplace_collection_list}/${id}`
   );
 }
@@ -2214,8 +2230,8 @@ export const DeleteCollectionList = (id: any): ApiResponse => {
 export const AddProductToCollection = (cid: any, data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
-    { data },
-    `${EndPoint.marketplace_collection_list}/${cid}`
+    data,
+    `${EndPoint.marketplace_collection_list}/${cid}/products`
   );
 }
 
@@ -2234,6 +2250,27 @@ export const GetContinueWatchingProductList = (): ApiResponse => {
     EndPoint.marketplace_buyer_continue_watching
   );
 }
+export const GetContinueWatchingProductById = (pid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_buyer_progress}/product/${pid}`
+  );
+}
+export const TrackProgressProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.marketplace_buyer_progress}/track`
+  );
+}
+export const MarkAsComplete = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.marketplace_buyer_progress}/complete`
+  );
+}
 
 export const GetOrderDetails = (): ApiResponse => {
   return executeAPI(
@@ -2242,8 +2279,6 @@ export const GetOrderDetails = (): ApiResponse => {
     EndPoint.marketplace_order_details
   );
 }
-
-
 
 export const executeAPI = async <T = any,>(
   method: ApiMethod,
