@@ -13,7 +13,7 @@ const resonanceTags = ["Motivated", "Greatful", "Funny", "Focused", "Emotional"]
 const priceDetails = [
   { label: "Subtotal", value: "$1259", isDiscount: "" },
   { label: "Platform Fee", value: "$01" },
-  { label: "Discount(10%)", value: "-$1260" },
+  { label: "Discount(10%)", value: "-$1260", isDiscount: true },
   { label: "Total", value: "$1260", bold: true }
 ];
 
@@ -153,47 +153,58 @@ export default function ProductSummery() {
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6 mb-4">
-            <div className="font-bold text-gray-900 mb-2">Price Details</div>
-            <div className="space-y-2 mb-4">
-            {priceDetails.map(({ label, value, bold, isDiscount }) => (
+          <div className="bg-[#F9F9F9] rounded-lg shadow p-6 mb-4">
+          <div className="font-bold text-gray-900 mb-2">Price Details</div>
+          <div className="space-y-4 mb-4">
+            {/* Render all rows except Total */}
+            {priceDetails.filter(item => item.label !== "Total").map(({ label, value, bold }) => (
               <div
                 key={label}
                 className={`
                   flex justify-between items-center
                   ${bold ? "text-indigo-700" : "text-gray-700"}
-                  ${isDiscount ? "" : ""}
                 `}
               >
                 <span>{label}</span>
                 <span className="font-semibold">{value}</span>
-                {/* Render border only under Discount row */}
-                {isDiscount && (
-                  <div className="w-full">
-                    <div className="mt-2 mx-auto h-0.5 bg-gray-200 rounded" style={{ width: "75%" }} />
-                  </div>
-                )}
+              </div>
+            ))}
+            {/* Separator line just before Total */}
+            <div className="w-full">
+              <div className="mt-2 mx-auto h-0.5 bg-gray-200 rounded" style={{ width: "100%" }} />
+            </div>
+            {/* Now render the Total row */}
+            {priceDetails.filter(item => item.label === "Total").map(({ label, value, bold }) => (
+              <div
+                key={label}
+                className={`
+                  flex justify-between items-center
+                  ${bold ? "text-indigo-700" : "text-gray-700"}
+                `}
+              >
+                <span>{label}</span>
+                <span className="font-semibold">{value}</span>
               </div>
             ))}
           </div>
 
-            <div className="bg-white rounded-lg px-3 py-3 font-[poppins] flex justify-between items-center font-normal text-gray-800 border border-gray-200">
-              <span>Paid by</span>
-              <span>Strip</span>
-            </div>
-            <button
-              className="w-full mb-2 mt-4 px-4 py-2 bg-[#FFFFFF] text-[#7077FE] rounded shadow flex items-center justify-center gap-2 border"
-              style={{ borderColor: '#7077FE' }}
-            >
-              <Download className="w-5 h-5" />
-              Download invoice
-            </button>
+  <div className="bg-white rounded-lg px-3 py-3 font-[poppins] flex justify-between items-center font-normal text-gray-800 border border-gray-200">
+    <span>Paid by</span>
+    <span>Strip</span>
+  </div>
+  <button
+    className="w-full mb-2 mt-4 px-4 py-2 bg-[#FFFFFF] text-[#7077FE] rounded shadow flex items-center justify-center gap-2 border"
+    style={{ borderColor: '#7077FE' }}
+  >
+    <Download className="w-5 h-5" />
+    Download invoice
+  </button>
+  <button className="w-full px-4 py-2 bg-[#7077FE] text-white rounded shadow hover:bg-[#7077FE] flex items-center justify-center gap-2">
+    <HiArrowUturnLeft className="w-5 h-5" />
+    Return
+  </button>
+</div>
 
-            <button className="w-full px-4 py-2 bg-[#7077FE] text-white rounded shadow hover:bg-[#7077FE] flex items-center justify-center gap-2">
-              <HiArrowUturnLeft className="w-5 h-5" />
-              Return
-            </button>
-          </div>
         </div>
       </div>
     </div>
