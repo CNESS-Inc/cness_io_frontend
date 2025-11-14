@@ -8,6 +8,8 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { CreateVideoProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument } from "../Common/ServerAPI";
 import { Plus, X } from "lucide-react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import AIModal from "../components/MarketPlace/AIModal";
+import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 
 interface FormSectionProps {
   title: string;
@@ -293,6 +295,7 @@ const AddVideoForm: React.FC = () => {
   const [moods, setMoods] = useState<string[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [newHighlight, setNewHighlight] = useState("");
+  const [showAIModal, setShowAIModal] = useState(false);
 
   const [mainVideoData, setMainVideoData] = useState<{
     video_id: string;
@@ -374,7 +377,22 @@ const AddVideoForm: React.FC = () => {
     short_video_url: "", // short video_id
     summary: "",
     status: "",
+    sample_track: "",
   });
+
+  const handleSampleTrackUpload = (sampleId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: sampleId,
+    }));
+  };
+
+  const handleRemoveSampleTrack = () => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: "",
+    }));
+  };
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -532,6 +550,15 @@ const AddVideoForm: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleAIGenerate = (generatedText: string) => {
+    setFormData(prev => ({
+      ...prev,
+      overview: generatedText
+    }));
+
+    setErrors(prev => ({ ...prev, overview: "" }));
   };
 
   const handleAddHighlight = () => {
@@ -713,14 +740,37 @@ const AddVideoForm: React.FC = () => {
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Overview *
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
+                  Overview *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowAIModal(true)}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group"
+                >
+                  <svg
+                    className="w-4 h-4 animate-pulse"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium">Generate with AI</span>
+                  <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
+                </button>
+              </div>
               <textarea
                 name="overview"
                 value={formData.overview}
                 onChange={handleChange}
-                placeholder="Write a brief description of your product"
+                placeholder="Write a brief description of your product or use AI to generate one..."
                 className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
                 required
               />
@@ -840,6 +890,18 @@ const AddVideoForm: React.FC = () => {
           </div>
         </FormSection>
 
+        <FormSection
+          title="Sample Track"
+          description="Upload a preview sample so buyers can experience your content before purchasing."
+        >
+          <SampleTrackUpload
+            productType="video"
+            onUploadSuccess={handleSampleTrackUpload}
+            onRemove={handleRemoveSampleTrack}
+            defaultValue={formData.sample_track}
+          />
+        </FormSection>
+
         {/* Buttons */}
         <div className="flex justify-end space-x-4 pt-6">
           <button
@@ -899,6 +961,12 @@ const AddVideoForm: React.FC = () => {
           </div>
         </div>
       )}
+      <AIModal
+        showModal={showAIModal}
+        setShowModal={setShowAIModal}
+        productType="video"
+        onGenerate={handleAIGenerate}
+      />
     </>
   );
 };

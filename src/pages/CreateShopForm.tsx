@@ -9,6 +9,7 @@ import { FaPinterestP } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/ui/Button';
 import uploadimg from '../assets/upload.svg';
+import { PhoneInput } from 'react-international-phone';
 
 interface FormSectionProps {
   title: string
@@ -386,6 +387,7 @@ const CreateShopForm: React.FC = () => {
   const [country, setCountry] = useState<any>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [selectedLanguage, setSelectedLanguage] = useState<string>("");
+  const [selectedCountry, setSelectedCountry] = useState<any>(null);
 
   const [formData, setFormData] = useState({
     owner_full_name: "",
@@ -425,6 +427,88 @@ const CreateShopForm: React.FC = () => {
     },
   });
 
+  const getSSNValidation = (countryId: string, value: string): string | null => {
+    if (!value.trim()) return "This field is required";
+
+    // Find country from the list
+    const countryData = country?.find((c: any) => c.id === countryId);
+
+    if (!countryData) return null;
+
+    const countryCode = countryData.code?.toUpperCase();
+
+    switch (countryCode) {
+      case "US": // United States - SSN
+        if (!/^\d{3}-\d{2}-\d{4}$/.test(value)) {
+          return "Invalid SSN format. Use XXX-XX-XXXX";
+        }
+        break;
+
+      case "IN": // India - PAN Card
+        if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(value.toUpperCase())) {
+          return "Invalid PAN format. Use ABCDE1234F";
+        }
+        break;
+
+      case "GB": // United Kingdom - National Insurance Number
+        if (!/^[A-Z]{2}[0-9]{6}[A-Z]{1}$/.test(value.toUpperCase())) {
+          return "Invalid NI Number. Use AB123456C";
+        }
+        break;
+
+      case "CA": // Canada - SIN
+        if (!/^\d{3}-\d{3}-\d{3}$/.test(value)) {
+          return "Invalid SIN format. Use XXX-XXX-XXX";
+        }
+        break;
+
+      case "AU": // Australia - TFN
+        if (!/^\d{3}\s\d{3}\s\d{3}$/.test(value) && !/^\d{9}$/.test(value)) {
+          return "Invalid TFN format. Use XXX XXX XXX or XXXXXXXXX";
+        }
+        break;
+
+      case "DE": // Germany - Tax ID
+        if (!/^\d{11}$/.test(value)) {
+          return "Invalid Tax ID. Must be 11 digits";
+        }
+        break;
+
+      case "FR": // France - Tax Number
+        if (!/^\d{13}$/.test(value)) {
+          return "Invalid Tax Number. Must be 13 digits";
+        }
+        break;
+
+      default:
+        if (value.length < 5) {
+          return "Must be at least 5 characters";
+        }
+    }
+
+    return null;
+  };
+
+  const getSSNFieldInfo = (countryId: string) => {
+    const countryData = country?.find((c: any) => c.id === countryId);
+    const countryCode = countryData?.code?.toUpperCase();
+
+    const fieldInfo: { [key: string]: { label: string; placeholder: string } } = {
+      US: { label: "SSN (Social Security Number)", placeholder: "XXX-XX-XXXX" },
+      IN: { label: "PAN Card Number", placeholder: "ABCDE1234F" },
+      GB: { label: "National Insurance Number", placeholder: "AB123456C" },
+      CA: { label: "SIN (Social Insurance Number)", placeholder: "XXX-XXX-XXX" },
+      AU: { label: "TFN (Tax File Number)", placeholder: "XXX XXX XXX" },
+      DE: { label: "Tax ID (Steuer-ID)", placeholder: "12345678901" },
+      FR: { label: "Tax Number (Numéro Fiscal)", placeholder: "1234567890123" },
+    };
+
+    return fieldInfo[countryCode || ""] || {
+      label: "Tax ID / EIN",
+      placeholder: "Enter your tax identification number"
+    };
+  };
+
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
 
@@ -442,7 +526,14 @@ const CreateShopForm: React.FC = () => {
     if (!formData.about_shop.trim()) newErrors.about_shop = "About shop is required";
     if (!formData.why_choose_your_shop.trim()) newErrors.why_choose_your_shop = "This field is required";
     if (!formData.shop_philosophy.trim()) newErrors.shop_philosophy = "Shop philosophy is required";
-    if (!formData.shop_base_country_id) newErrors.shop_base_country_id = "Country is required";
+    if (formData.shop_base_country_id) {
+      const ssnError = getSSNValidation(formData.shop_base_country_id, formData.ssn_or_ein);
+      if (ssnError) {
+        newErrors.ssn_or_ein = ssnError;
+      }
+    } else {
+      newErrors.ssn_or_ein = "Please select a country first";
+    }
 
     if (formData.owner_mobile_number && !/^\+?[\d\s-()]+$/.test(formData.owner_mobile_number)) {
       newErrors.owner_mobile_number = "Invalid mobile number format";
@@ -451,6 +542,12 @@ const CreateShopForm: React.FC = () => {
     if (formData.ssn_or_ein && !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn_or_ein)) {
       newErrors.ssn_or_ein = "Invalid format. Use XXX-XX-XXXX";
     }
+
+    const allPoliciesChecked = policies.every(policy => policy.checked);
+    if (!allPoliciesChecked) {
+      newErrors.store_policies = "You must agree to all store policies to proceed";
+    }
+
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
@@ -537,10 +634,10 @@ const CreateShopForm: React.FC = () => {
       if (response?.data?.data) {
         const data = response.data.data;
 
-        // if (data.verification_status === "pending") {
-        //   setIsSubmitted(true);
-        //   return;
-        // }
+        if (data.verification_status === "pending") {
+          setIsSubmitted(true);
+          return;
+        }
 
         if (data.verification_status === "approved") {
           setIsApproved(true);
@@ -685,10 +782,10 @@ const CreateShopForm: React.FC = () => {
         break;
 
       case "ssn_or_ein":
-        if (!valStr) {
-          message = "SSN/EIN is required";
-        } else if (!/^\d{3}-\d{2}-\d{4}$/.test(valStr)) {
-          message = "Invalid format. Use XXX-XX-XXXX";
+        if (formData.shop_base_country_id) {
+          message = getSSNValidation(formData.shop_base_country_id, value) || "";
+        } else {
+          message = "Please select a country first";
         }
         break;
 
@@ -719,7 +816,15 @@ const CreateShopForm: React.FC = () => {
         break;
 
       case "shop_base_country_id":
-        if (!valStr) message = "Country is required";
+        if (!valStr) {
+          message = "Country is required";
+        } else {
+          // Clear SSN error when country changes
+          setErrors(prev => ({ ...prev, ssn_or_ein: "" }));
+          // Find and set selected country
+          const selected = country?.find((c: any) => c.id === value);
+          setSelectedCountry(selected);
+        }
         break;
 
       default:
@@ -1171,29 +1276,58 @@ const CreateShopForm: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner Mobile Number <span className='text-red-500'>*</span></label>
-                    <input
-                      type="tel"
-                      name="owner_mobile_number"
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">
+                      Owner Mobile Number <span className='text-red-500'>*</span>
+                    </label>
+                    <PhoneInput
                       value={formData.owner_mobile_number}
-                      onChange={handleChange}
-                      placeholder="+1234567890"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      onChange={(value) => {
+                        setFormData(prev => ({ ...prev, owner_mobile_number: value }));
+
+                        // Validation
+                        const digits = value.replace(/\D/g, "");
+                        let message = "";
+                        if (digits.length < 7) {
+                          message = "Phone number must have at least 7 digits";
+                        }
+                        setErrors(prev => ({ ...prev, owner_mobile_number: message }));
+                      }}
+                      defaultCountry={selectedCountry?.code?.toLowerCase() || "us"}
+                      forceDialCode
+                      placeholder="Enter phone number"
+                      className={`w-full border ${errors.owner_mobile_number ? 'border-red-500' : 'border-gray-200'} rounded-md`}
+                      inputClassName="w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                      countrySelectorStyleProps={{
+                        buttonClassName: "border-r border-gray-200 px-3",
+                        dropdownStyleProps: {
+                          className: "z-50"
+                        }
+                      }}
                     />
                     {errors.owner_mobile_number && <p className="text-red-500 text-sm mt-1">{errors.owner_mobile_number}</p>}
                   </div>
 
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">SSN / EIN <span className='text-red-500'>*</span></label>
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">
+                      {getSSNFieldInfo(formData.shop_base_country_id).label} <span className='text-red-500'>*</span>
+                    </label>
                     <input
                       type="text"
                       name="ssn_or_ein"
                       value={formData.ssn_or_ein}
                       onChange={handleChange}
-                      placeholder="XXX-XX-XXXX"
+                      placeholder={getSSNFieldInfo(formData.shop_base_country_id).placeholder}
                       className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
+                    {!formData.shop_base_country_id && (
+                      <p className="text-gray-500 text-xs mt-1">Please select a country first</p>
+                    )}
                     {errors.ssn_or_ein && <p className="text-red-500 text-sm mt-1">{errors.ssn_or_ein}</p>}
+                    {formData.shop_base_country_id && (
+                      <p className="text-gray-500 text-xs mt-1">
+                        Format: {getSSNFieldInfo(formData.shop_base_country_id).placeholder}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -1590,7 +1724,12 @@ const CreateShopForm: React.FC = () => {
                   ))}
                 </div>
                 {errors.store_policies && (
-                  <p className="text-red-500 text-sm mt-4">{errors.store_policies}</p>
+                  <p className="text-red-500 text-sm mt-4 flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    {errors.store_policies}
+                  </p>
                 )}
               </div>
             </FormSection>

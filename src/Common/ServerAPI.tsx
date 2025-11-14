@@ -264,6 +264,8 @@ export const EndPoint = {
   get_categories: "/marketplace-product/product-categories",
   get_moods: "/marketplace-product/moods",
   get_preview_product: "/marketplace-product",
+  expand_product_overview: "/marketplace-product/ai/expand-overview",
+  generate_signed_url: "/marketplace-product/generate-signed-url",
 
   create_video_product: "/marketplace-product/video",
   update_video_product: "/marketplace-product",
@@ -289,7 +291,8 @@ export const EndPoint = {
   marketplace_wishlist: "/marketplace-buyer/wishlist",
   marketplace_cart: "/marketplace-buyer/cart",
 
-  get_shop_list: "/marketplace-buyer/shops",
+  marketplace_shop_list: "/marketplace-buyer/shops",
+  marketplace_followed_list: "/marketplace-buyer/my-followed-shops",
 
   // reviews apis
   marketplace_buyer_review: "/marketplace-buyer/reviews",
@@ -300,8 +303,15 @@ export const EndPoint = {
   marketplace_checkout_confirm: "/marketplace-buyer/checkout/confirm",
   marketplace_retry_payment: "/marketplace-buyer/retry-payment",
   marketplace_order_details: "/marketplace-buyer/orders",
+  marketplace_order_details_by_order_id: "/marketplace-buyer/orders",
   marketplace_buyer_library: "/marketplace-buyer/library",
+
+  // collections apis
+  marketplace_collection_list: "/marketplace-buyer/collections",
+
+  // progress apis
   marketplace_buyer_continue_watching: "/marketplace-buyer/progress/continue-watching",
+  marketplace_buyer_progress: "/marketplace-buyer/progress",
 };
 
 // Messaging endpoints
@@ -1255,8 +1265,8 @@ export const GetStory = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story);
 };
-export const PostStoryViewd = (story_id:any) => {
-  let data = {story_id};
+export const PostStoryViewd = (story_id: any) => {
+  let data = { story_id };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.story_viewed);
 };
 export const GetUserPost = () => {
@@ -1705,6 +1715,22 @@ export const GetPreviewProduct = (category: any, id: any) => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_preview_product}/${category}/${id}`);
 };
 
+export const ExpandProductOverview = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.expand_product_overview
+  );
+};
+
+export const GenerateSignedUrl = (fileType: string, data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.generate_signed_url}?resource_type=${fileType}`
+  );
+};
+
 export const CreateVideoProduct = (data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -2003,6 +2029,9 @@ export const AddProductToCart = (data: any): ApiResponse => {
 export const GetProductCart = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_cart);
 };
+export const GetOrderDetailsByOrdId = (order_id:string) => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}`);
+};
 
 export const RemoveProductToCart = (id: any): ApiResponse => {
   return executeAPI(
@@ -2037,14 +2066,46 @@ export const GetMarketPlaceShops = (params?: {
 
   const queryString = queryParams.toString();
   const endpoint = queryString
-    ? `${EndPoint.get_shop_list}?${queryString}`
-    : EndPoint.get_shop_list;
+    ? `${EndPoint.marketplace_shop_list}?${queryString}`
+    : EndPoint.marketplace_shop_list;
 
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 };
 
 export const GetMarketPlaceShopById = (id: any) => {
-  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_shop_list}/${id}`);
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_shop_list}/${id}`);
+};
+
+export const FollowUnfollowMarketPlaceShop = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    {},
+    `${EndPoint.marketplace_shop_list}/${id}/follow`
+  );
+};
+
+export const GetFollowedMarketPlaceShop = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.marketplace_followed_list
+  );
+};
+
+export const CheckMarketPlaceShopFollowStatus = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_shop_list}/${id}/follow-status`
+  );
+};
+
+export const GetMarketPlaceShopFollowCount = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_shop_list}/${id}/follower-count`
+  );
 };
 
 export const CreateBuyerReview = (data: any): ApiResponse => {
@@ -2079,6 +2140,22 @@ export const DeleteBuyerReview = (id: any): ApiResponse => {
   );
 };
 
+export const BuyerCanReview = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_get_product_review}/${id}/can-review`
+  );
+};
+
+export const BuyerOwnReview = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_get_product_review}/${id}/my-review`
+  );
+};
+
 export const GetProductReviws = (
   productId: string,
   params?: {
@@ -2093,8 +2170,8 @@ export const GetProductReviws = (
 
   const queryString = queryParams.toString();
   const endpoint = queryString
-    ? `${EndPoint.marketplace_get_product_review}/${productId}?${queryString}`
-    : `${EndPoint.marketplace_get_product_review}/${productId}`;
+    ? `${EndPoint.marketplace_get_product_review}/${productId}/reviews?${queryString}`
+    : `${EndPoint.marketplace_get_product_review}/${productId}/reviews`;
 
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 };
@@ -2119,6 +2196,13 @@ export const RetryPayment = (data: { order_id: string }): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.marketplace_retry_payment);
 };
 
+export const GetLibraryrFilters = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_buyer_library}/filters/options`);
+}
+
 export const GetLibraryrDetails = (params?: {
   page?: number;
   limit?: number;
@@ -2140,11 +2224,94 @@ export const GetLibraryrDetails = (params?: {
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 }
 
+export const GetLibraryrDetailsById = (id: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_buyer_library}/${id}`);
+}
+
+export const CreateCollectionList = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.marketplace_collection_list
+  );
+}
+
+export const GetCollectionList = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.marketplace_collection_list
+  );
+}
+
+export const GetCollectionListById = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_collection_list}/${id}`
+  );
+}
+
+export const UpdateCollectionList = (id: any, data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    data,
+    `${EndPoint.marketplace_collection_list}/${id}`
+  );
+}
+
+export const DeleteCollectionList = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.marketplace_collection_list}/${id}`
+  );
+}
+
+export const AddProductToCollection = (cid: any, data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.marketplace_collection_list}/${cid}/products`
+  );
+}
+
+export const RemoveProductToCollection = (cid: any, pid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.marketplace_collection_list}/${cid}/products/${pid}`
+  );
+}
+
 export const GetContinueWatchingProductList = (): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.GET,
     {},
     EndPoint.marketplace_buyer_continue_watching
+  );
+}
+export const GetContinueWatchingProductById = (pid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_buyer_progress}/product/${pid}`
+  );
+}
+export const TrackProgressProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.marketplace_buyer_progress}/track`
+  );
+}
+export const MarkAsComplete = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.marketplace_buyer_progress}/complete`
   );
 }
 
@@ -2155,8 +2322,6 @@ export const GetOrderDetails = (): ApiResponse => {
     EndPoint.marketplace_order_details
   );
 }
-
-
 
 export const executeAPI = async <T = any,>(
   method: ApiMethod,

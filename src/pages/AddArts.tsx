@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { SquarePen, Trash2, Plus, X, Book } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { CreateArtProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
+import AIModal from "../components/MarketPlace/AIModal";
+import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 
 interface FormSectionProps {
   title: string;
@@ -84,6 +86,7 @@ const AddArtsForm: React.FC = () => {
     public_id: string;
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
 
   const [chapters, setChapters] = useState<any[]>([
     {
@@ -108,6 +111,7 @@ const AddArtsForm: React.FC = () => {
     theme: "",
     mediums: "",
     modern_trends: "",
+    sample_track: "",
   });
 
   useEffect(() => {
@@ -145,6 +149,29 @@ const AddArtsForm: React.FC = () => {
 
     fetchCategories();
   }, []);
+
+  const handleSampleTrackUpload = (sampleId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: sampleId,
+    }));
+  };
+
+  const handleRemoveSampleTrack = () => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: "",
+    }));
+  };
+
+  const handleAIGenerate = (generatedText: string) => {
+    setFormData(prev => ({
+      ...prev,
+      overview: generatedText
+    }));
+
+    setErrors(prev => ({ ...prev, overview: "" }));
+  };
 
   const handleSelectCategory = (category: string) => {
     setShowModal(false); // Close modal first
@@ -712,7 +739,7 @@ const AddArtsForm: React.FC = () => {
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Thumnail *
+                Thumbnail *
               </label>
               {thumbnailData?.thumbnail_url ? (
                 <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
@@ -802,9 +829,32 @@ const AddArtsForm: React.FC = () => {
         <FormSection title="Details" description="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Overview *
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
+                  Overview *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowAIModal(true)}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group"
+                >
+                  <svg
+                    className="w-4 h-4 animate-pulse"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium">Generate with AI</span>
+                  <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
+                </button>
+              </div>
               <textarea
                 name="overview"
                 value={formData.overview}
@@ -912,6 +962,18 @@ const AddArtsForm: React.FC = () => {
               </select>
             </div>
           </div>
+        </FormSection>
+
+        <FormSection
+          title="Sample Track"
+          description="Upload a preview sample so buyers can experience your content before purchasing."
+        >
+          <SampleTrackUpload
+            productType="video"
+            onUploadSuccess={handleSampleTrackUpload}
+            onRemove={handleRemoveSampleTrack}
+            defaultValue={formData.sample_track}
+          />
         </FormSection>
 
         <FormSection title="Collections" description="">
@@ -1135,6 +1197,12 @@ const AddArtsForm: React.FC = () => {
           </div>
         </div>
       )}
+      <AIModal
+        showModal={showAIModal}
+        setShowModal={setShowAIModal}
+        productType="video"
+        onGenerate={handleAIGenerate}
+      />
     </>
   );
 };

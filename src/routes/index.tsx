@@ -113,6 +113,7 @@ import ArtPreview from "../pages/ArtPreview";
 import EditSellerProductPage from "../pages/EditSellerProductPage";
 import PaymentConfirmation from "../pages/PaymentConfirmation";
 import BestPracticeSearch from "../pages/BestPracticeSearch";
+import CollectionDetail from "../pages/CollectionDetail";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -211,10 +212,6 @@ export const router = createBrowserRouter([
             element: <ScoreResult />,
           },
           {
-            path: "collections",
-            element: <MyCollections />,
-          },
-          {
             path: "MyCollection/:id",
             element: <Mycollectionview />,
           },
@@ -298,6 +295,14 @@ export const router = createBrowserRouter([
           {
             path: "market-place",
             element: <MarketPlaceNew />,
+          },
+          {
+            path: "collections",
+            element: <MyCollections />,
+          },
+          {
+            path: "my-collections/:id",
+            element: <CollectionDetail />,
           },
           {
             path: "library",
@@ -474,10 +479,6 @@ export const router = createBrowserRouter([
           {
             path: "cart",
             element: <CartPage />,
-          },
-          {
-            path: "checkout",
-            element: <Checkout />,
           },
           {
             path: "payment-success",

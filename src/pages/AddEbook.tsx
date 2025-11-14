@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { Book, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { CreateEbookProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import AIModal from "../components/MarketPlace/AIModal";
+import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 
 interface FormSectionProps {
   title: string;
@@ -85,6 +87,7 @@ const AddEbookForm: React.FC = () => {
     public_id: string;
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
   const [chapters, setChapters] = useState<any[]>([
     {
       id: 1,
@@ -109,6 +112,7 @@ const AddEbookForm: React.FC = () => {
     theme: "",
     format: "",
     thumbnail_url: "",
+    sample_track: "",
   });
 
   useEffect(() => {
@@ -127,6 +131,29 @@ const AddEbookForm: React.FC = () => {
 
     fetchMoods();
   }, []);
+
+  const handleSampleTrackUpload = (sampleId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: sampleId,
+    }));
+  };
+
+  const handleRemoveSampleTrack = () => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: "",
+    }));
+  };
+
+  const handleAIGenerate = (generatedText: string) => {
+    setFormData(prev => ({
+      ...prev,
+      overview: generatedText
+    }));
+
+    setErrors(prev => ({ ...prev, overview: "" }));
+  };
 
   // Breadcrumb category handling
   const handleSelectCategory = (category: string) => {
@@ -157,7 +184,7 @@ const AddEbookForm: React.FC = () => {
       "application/vnd.amazon.ebook",
       "text/plain",
     ];
-    
+
     if (
       !file.name.match(/\.(pdf|epub|mobi|azw3|txt)$/i) &&
       !validMimeTypes.includes(file.type)
@@ -835,9 +862,32 @@ const AddEbookForm: React.FC = () => {
         <FormSection title="Details" description="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Overview *
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
+                  Overview *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowAIModal(true)}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group"
+                >
+                  <svg
+                    className="w-4 h-4 animate-pulse"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium">Generate with AI</span>
+                  <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
+                </button>
+              </div>
               <textarea
                 name="overview"
                 value={formData.overview}
@@ -965,6 +1015,18 @@ const AddEbookForm: React.FC = () => {
               {errors.language && <span className="text-red-500 text-sm mt-1">{errors.language}</span>}
             </div>
           </div>
+        </FormSection>
+
+        <FormSection
+          title="Sample Track"
+          description="Upload a preview sample so buyers can experience your content before purchasing."
+        >
+          <SampleTrackUpload
+            productType="video"
+            onUploadSuccess={handleSampleTrackUpload}
+            onRemove={handleRemoveSampleTrack}
+            defaultValue={formData.sample_track}
+          />
         </FormSection>
 
         {/* Uploads Section */}
@@ -1211,6 +1273,12 @@ const AddEbookForm: React.FC = () => {
           />
         )
       }
+      <AIModal
+        showModal={showAIModal}
+        setShowModal={setShowAIModal}
+        productType="video"
+        onGenerate={handleAIGenerate}
+      />
     </>
   );
 };

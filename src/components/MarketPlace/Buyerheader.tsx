@@ -26,7 +26,7 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
     { name: "Home", path: "/dashboard/market-place", icon: Mhome },
     { name: "Categories", path: "/dashboard/categories" },
     { name: "Shops", path: "/dashboard/shops" },
-    // { name: "My Collections", path: "/dashboard/collections" },
+    { name: "My Collections", path: "/dashboard/collections" },
     { name: "Library", path: "/dashboard/library" },
     { name: "Order History", path: "/dashboard/order-history" },
     { name: "FAQs", path: "/dashboard/faqs" },

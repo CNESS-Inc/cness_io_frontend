@@ -28,6 +28,12 @@ type OrderItem = {
   product_thumbnail: string | null;
   category: string;
   shop_name: string;
+  mood: {
+    id: string;
+    name: string;
+    // icon: string;
+    slug: string;
+  };
   shop_logo: string | null;
   quantity: number;
   price: string;
@@ -128,7 +134,7 @@ const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   };
 
   const handleViewInLibrary = () => {
-    navigate("/dashboard/my-library");
+    navigate("/dashboard/library");
   };
 
   const handleDownloadInvoice = () => {
@@ -311,7 +317,9 @@ const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                                   {getCategoryIcon(item.category)}
                                   {item.category}
                                 </span>
-                                {/* <span>{order.mood}</span> */}
+                                <span>
+                                  {/* {item.mood.icon} */}
+                                  {item.mood.name}</span>
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-4 h-4 text-[#7077FE]" />
                                   Purchased on <strong> {new Date(
@@ -342,7 +350,7 @@ const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                             </button>
 
                             <button
-                              onClick={() => navigate(`/dashboard/order-history/${order.order_id}`)} 
+                              onClick={() => navigate(`/dashboard/order-history/${order.order_id}`)}
                               className="text-[#7077FE] text-[14px] font-[Plus_Jakarta_Sans] font-medium hover:underline">
                               Rate or leave review
                             </button>
