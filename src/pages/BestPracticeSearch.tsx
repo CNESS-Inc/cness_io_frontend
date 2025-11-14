@@ -4,11 +4,11 @@ import "../App.css";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   CreateBestPractice,
-  GetAllBestPracticesByProfession,
-  GetAllBestPracticesByInterest,
+  GetAllBestPractices,
   //GetAllFormDetails,
   LikeBestpractices,
   SaveBestpractices,
+  GetSaveBestpractices,
   GetValidProfessionalDetails,
   GetInterestsDetails,
   SendBpFollowRequest,
@@ -57,7 +57,6 @@ type Company = {
   isCertified?: boolean;
   save?: number;
   is_bp_following?: boolean;
-  is_saved?: boolean;
 };
 
 type PaginationData = {
@@ -72,7 +71,7 @@ type Profession = {
   title: string;
 };
 
-export default function BestPracticesHub() {
+export default function BestPracticeSearch() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { showToast } = useToast();
@@ -129,40 +128,7 @@ export default function BestPracticesHub() {
   );
 
   const isMobile = useMediaQuery("(max-width: 640px)");
-
-  // State for separate best practices lists
-  const [bestPracticesProfession, setBestPracticesProfession] = useState<
-    Company[]
-  >([]);
-  console.log(
-    "🚀 ~ BestPracticesHub ~ bestPracticesProfession:",
-    bestPracticesProfession
-  );
-  const [bestPracticesInterest, setBestPracticesInterest] = useState<Company[]>(
-    []
-  );
-
-  // Separate pagination states
-  const [paginationProfession, setPaginationProfession] =
-    useState<PaginationData>({
-      currentPage: 1,
-      totalPages: 1,
-      totalItems: 0,
-      itemsPerPage: 10,
-    });
-
-  const [paginationInterest, setPaginationInterest] = useState<PaginationData>({
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    itemsPerPage: 10,
-  });
-
-  // Separate loading states
-  const [isLoading, setIsLoading] = useState({
-    profession: false,
-    interest: false,
-  });
+  const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
 
   // Update selectedDomainText when profession data is loaded or query params change
   useEffect(() => {
@@ -171,30 +137,34 @@ export default function BestPracticesHub() {
     }
   }, [profession, searchParams]);
 
-  const toggleSave = async (id: string, section: "profession" | "interest") => {
+  // Fetch saved best practices and store in variable
+  useEffect(() => {
+    const fetchSavedBestPractices = async () => {
+      try {
+        const res = await GetSaveBestpractices();
+        const savedIds =
+          res?.data?.data?.rows.map((item: any) => item.id) || [];
+        setSavedItems(new Set(savedIds));
+      } catch (error) {
+        setSavedItems(new Set());
+      }
+    };
+    fetchSavedBestPractices();
+  }, []);
+
+  const toggleSave = async (id: string) => {
     try {
       const data = { post_id: id };
       await SaveBestpractices(data);
-
-      // Update the specific best practice in the appropriate state
-      if (section === "profession") {
-        setBestPracticesProfession((prev) =>
-          prev.map((practice) =>
-            practice.id === id
-              ? { ...practice, is_saved: !practice.is_saved }
-              : practice
-          )
-        );
-      } else {
-        setBestPracticesInterest((prev) =>
-          prev.map((practice) =>
-            practice.id === id
-              ? { ...practice, is_saved: !practice.is_saved }
-              : practice
-          )
-        );
-      }
-
+      setSavedItems((prev) => {
+        const updated = new Set(prev);
+        if (updated.has(id)) {
+          updated.delete(id);
+        } else {
+          updated.add(id);
+        }
+        return updated;
+      });
       showToast({
         message: "Saved!",
         type: "success",
@@ -219,9 +189,20 @@ export default function BestPracticesHub() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Pagination states
+  const [pagination, setPagination] = useState<PaginationData>({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10,
+  });
+  const [bestPractices, setBestPractices] = useState<Company[]>([]);
   const [expandedDescriptions, _setExpandedDescriptions] = useState<
     Record<string, boolean>
   >({});
+  const [isLoading, setIsLoading] = useState({
+    popular: false,
+  });
 
   useEffect(() => {
     if (!measureRef.current) return;
@@ -258,6 +239,26 @@ export default function BestPracticesHub() {
     setSearchParams(params);
   };
 
+  // const handleFilterChange = async (
+  //   e: React.ChangeEvent<HTMLSelectElement>
+  // ) => {
+  //   const id = e.target.value;
+  //   const type = e.target.options[e.target.selectedIndex].dataset.type as
+  //     | "profession"
+  //     | "interest"
+  //     | "";
+
+  //   setSelectedFilter({ id, type });
+
+  //   const selectedText = e.target.options[e.target.selectedIndex].text;
+  //   setSelectedDomainText(selectedText);
+
+  //   // Update query params with profession title
+  //   updateQueryParams(id, searchText);
+
+  //   await fetchBestPractices(1, id, type, searchText);
+  // };
+
   const fetchProfession = async () => {
     try {
       const res = await GetValidProfessionalDetails();
@@ -286,21 +287,22 @@ export default function BestPracticesHub() {
     }
   };
 
-  // Fetch best practices by profession
-  const fetchBestPracticesByProfession = async (
+  const fetchBestPractices = async (
     page: number = 1,
-    professionId: string = "",
+    id: string = "",
+    type: "profession" | "interest" | "" = "",
     searchText: string = ""
   ) => {
-    setIsLoading((prev) => ({ ...prev, profession: true }));
+    setIsLoading((prev) => ({ ...prev, popular: true }));
     try {
-      const res = await GetAllBestPracticesByProfession(
+      const res = await GetAllBestPractices(
         page,
-        paginationProfession.itemsPerPage,
-        professionId,
+        pagination.itemsPerPage,
+        type === "profession" ? id : "",
+        type === "interest" ? id : "",
         searchText
       );
-      console.log("Best practices by profession:", res.data.data.rows);
+      console.log("res.data.data.rowsfghghggg", res.data.data.rows);
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map(
           (practice: any) => ({
@@ -322,11 +324,10 @@ export default function BestPracticesHub() {
             isLiked: practice.is_liked || false,
             commentsCount: practice.total_comment_count || 0,
             is_bp_following: practice.is_bp_following || false,
-            is_saved: practice.is_saved || false,
           })
         );
-        setBestPracticesProfession(transformedCompanies);
-        setPaginationProfession((prev: PaginationData) => ({
+        setBestPractices(transformedCompanies);
+        setPagination((prev: PaginationData) => ({
           ...prev,
           currentPage: page,
           totalPages: Math.ceil(res.data.data.count / prev.itemsPerPage),
@@ -334,73 +335,14 @@ export default function BestPracticesHub() {
         }));
       }
     } catch (error: any) {
-      console.error("Error fetching best practices by profession:", error);
+      console.error("Error fetching inspiring companies:", error);
       showToast({
         message: error?.response?.data?.error?.message,
         type: "error",
         duration: 5000,
       });
     } finally {
-      setIsLoading((prev) => ({ ...prev, profession: false }));
-    }
-  };
-
-  // Fetch best practices by interest
-  const fetchBestPracticesByInterest = async (
-    page: number = 1,
-    interestId: string = "",
-    searchText: string = ""
-  ) => {
-    setIsLoading((prev) => ({ ...prev, interest: true }));
-    try {
-      const res = await GetAllBestPracticesByInterest(
-        page,
-        paginationInterest.itemsPerPage,
-        interestId,
-        searchText
-      );
-      console.log("Best practices by interest:", res.data.data.rows);
-      if (res?.data?.data) {
-        const transformedCompanies = res.data.data.rows.map(
-          (practice: any) => ({
-            id: practice.id,
-            title: practice.title,
-            description: practice.description,
-            file: practice.file,
-            profession: practice.profession_data?.title || "General",
-            interest: practice.interest_data?.name || "",
-            user: {
-              username: practice.user?.username || "Anonymous",
-              profilePicture:
-                practice.profile?.profile_picture || iconMap["aspcompany1"],
-              firstName: practice.profile?.first_name || "",
-              lastName: practice.profile?.last_name || "",
-            },
-            followersCount: practice.followers_count || 0,
-            likesCount: practice.likes_count || 0,
-            isLiked: practice.is_liked || false,
-            commentsCount: practice.total_comment_count || 0,
-            is_bp_following: practice.is_bp_following || false,
-            is_saved: practice.is_saved || false,
-          })
-        );
-        setBestPracticesInterest(transformedCompanies);
-        setPaginationInterest((prev: PaginationData) => ({
-          ...prev,
-          currentPage: page,
-          totalPages: Math.ceil(res.data.data.count / prev.itemsPerPage),
-          totalItems: res.data.data.count,
-        }));
-      }
-    } catch (error: any) {
-      console.error("Error fetching best practices by interest:", error);
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    } finally {
-      setIsLoading((prev) => ({ ...prev, interest: false }));
+      setIsLoading((prev) => ({ ...prev, popular: false }));
     }
   };
 
@@ -432,13 +374,12 @@ export default function BestPracticesHub() {
       });
 
       // Fetch data with initial params
-      if (initialProfessionId) {
-        fetchBestPracticesByProfession(1, initialProfessionId, initialSearch);
-      } else {
-        // If no specific filter, fetch both
-        fetchBestPracticesByProfession(1, "", initialSearch);
-        fetchBestPracticesByInterest(1, "", initialSearch);
-      }
+      fetchBestPractices(
+        1,
+        initialProfessionId,
+        initialProfessionId ? "profession" : "",
+        initialSearch
+      );
     };
 
     initializeFilter();
@@ -459,7 +400,7 @@ export default function BestPracticesHub() {
 
         // Refetch data with the correct profession ID
         const search = searchParams.get("search") || "";
-        fetchBestPracticesByProfession(1, professionId, search);
+        fetchBestPractices(1, professionId, "profession", search);
       }
     }
   }, [profession, searchParams]);
@@ -468,34 +409,7 @@ export default function BestPracticesHub() {
     // Update query params
     updateQueryParams(selectedFilter.id, searchText);
 
-    // Get the domain slug based on filter type
-    let domainSlug = "";
-
-    if (selectedFilter.type === "profession") {
-      const professionItem = profession.find((p) => p.id === selectedFilter.id);
-      domainSlug = professionItem
-        ? encodeURIComponent(professionItem.title)
-        : "";
-    } else if (selectedFilter.type === "interest") {
-      const interestItem = interest.find((i) => i.id === selectedFilter.id);
-      domainSlug = interestItem ? encodeURIComponent(interestItem.name) : "";
-    }
-
-    const searchQuery = encodeURIComponent(searchText);
-
-    // Redirect based on filter type
-    if (selectedFilter.type === "profession") {
-      navigate(
-        `/dashboard/search-bestpractices?search=${searchQuery}&profession=${domainSlug}`
-      );
-    } else if (selectedFilter.type === "interest") {
-      navigate(
-        `/dashboard/search-bestpractices?search=${searchQuery}&interest=${domainSlug}`
-      );
-    } else {
-      // If no filter selected, redirect with only search query
-      navigate(`/dashboard/search-bestpractices?search=${searchQuery}`);
-    }
+    fetchBestPractices(1, selectedFilter.id, selectedFilter.type, searchText);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -572,11 +486,7 @@ export default function BestPracticesHub() {
     }));
   };
 
-  const handleLike = async (
-    id: string,
-    index: Number,
-    section: "profession" | "interest"
-  ) => {
+  const handleLike = async (id: string, index: Number) => {
     try {
       let data = {
         post_id: id,
@@ -585,35 +495,19 @@ export default function BestPracticesHub() {
 
       const message = response?.success?.message || "";
 
-      if (section === "profession") {
-        setBestPracticesProfession((prev) =>
-          prev.map((item, i) => {
-            if (i !== index) return item;
+      setBestPractices((prev) =>
+        prev.map((item, i) => {
+          if (i !== index) return item;
 
-            const currentLikes = Number(item.likesCount) || 0;
-            const isLiked = message.includes("Liked!");
-            const newLikes = message.includes("Unliked")
-              ? Math.max(currentLikes - 1, 0)
-              : currentLikes + 1;
+          const currentLikes = Number(item.likesCount) || 0;
+          const isLiked = message.includes("Liked!");
+          const newLikes = message.includes("Unliked")
+            ? Math.max(currentLikes - 1, 0)
+            : currentLikes + 1;
 
-            return { ...item, likesCount: newLikes, isLiked: isLiked };
-          })
-        );
-      } else {
-        setBestPracticesInterest((prev) =>
-          prev.map((item, i) => {
-            if (i !== index) return item;
-
-            const currentLikes = Number(item.likesCount) || 0;
-            const isLiked = message.includes("Liked!");
-            const newLikes = message.includes("Unliked")
-              ? Math.max(currentLikes - 1, 0)
-              : currentLikes + 1;
-
-            return { ...item, likesCount: newLikes, isLiked: isLiked };
-          })
-        );
-      }
+          return { ...item, likesCount: newLikes, isLiked: isLiked };
+        })
+      );
 
       showToast({
         message: message,
@@ -667,9 +561,7 @@ export default function BestPracticesHub() {
       });
 
       closeModal();
-      // Refetch both sections after creating new practice
-      fetchBestPracticesByProfession(1, "", "");
-      fetchBestPracticesByInterest(1, "", "");
+      await fetchBestPractices();
       setActiveModal(null);
     } catch (error: any) {
       console.error("Error creating best practice:", error);
@@ -714,35 +606,20 @@ export default function BestPracticesHub() {
     }
   };
 
-  const toggleFollow = async (
-    id: string,
-    section: "profession" | "interest"
-  ) => {
+  const toggleFollow = async (id: string) => {
     try {
       const res = await SendBpFollowRequest({ bp_id: id });
 
       if (res?.success?.statusCode === 200) {
         const isFollowing = res?.data?.data !== null;
-
-        if (section === "profession") {
-          setBestPracticesProfession((prev) =>
-            prev.map((practice) => {
-              if (practice.id === id) {
-                return { ...practice, is_bp_following: isFollowing };
-              }
-              return practice;
-            })
-          );
-        } else {
-          setBestPracticesInterest((prev) =>
-            prev.map((practice) => {
-              if (practice.id === id) {
-                return { ...practice, is_bp_following: isFollowing };
-              }
-              return practice;
-            })
-          );
-        }
+        setBestPractices((prev) =>
+          prev.map((practice) => {
+            if (practice.id === id) {
+              return { ...practice, is_bp_following: isFollowing };
+            }
+            return practice;
+          })
+        );
 
         showToast({
           message: isFollowing
@@ -778,9 +655,8 @@ export default function BestPracticesHub() {
     // Update query params
     updateQueryParams("", searchText);
 
-    // Redirect with only search query (no domain filter)
-    const searchQuery = encodeURIComponent(searchText);
-    navigate(`/dashboard/search-bestpractices?search=${searchQuery}`);
+    // Fetch data
+    fetchBestPractices(1, "", "", searchText);
   };
 
   const handleFilterSelect = (
@@ -796,23 +672,8 @@ export default function BestPracticesHub() {
     // Update query params
     updateQueryParams(id, searchText);
 
-    // Get the domain slug based on filter type
-    let domainSlug = encodeURIComponent(title);
-    const searchQuery = encodeURIComponent(searchText);
-
-    // Redirect based on filter type
-    if (type === "profession") {
-      navigate(
-        `/dashboard/search-bestpractices?search=${searchQuery}&profession=${domainSlug}`
-      );
-    } else if (type === "interest") {
-      navigate(
-        `/dashboard/search-bestpractices?search=${searchQuery}&interest=${domainSlug}`
-      );
-    } else {
-      // If no filter selected, redirect with only search query
-      navigate(`/dashboard/search-bestpractices?search=${searchQuery}`);
-    }
+    // Fetch data
+    fetchBestPractices(1, id, type, searchText);
   };
 
   return (
@@ -1017,14 +878,14 @@ export default function BestPracticesHub() {
         </section>
       </div>
 
-      {/* Best Practices for Profession Section */}
+      {/* Rest of the component remains the same */}
       <section className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">
         <div className="w-full mx-auto ">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
             {(selectedFilter.id || searchText) && (
               <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-                Best practices for Profession
-                {/* {selectedFilter.id && (
+                Best Practices For{" "}
+                {selectedFilter.id && (
                   <span className="text-[#7077FE] ml-1 font-semibold">
                     "
                     {selectedFilter.type === "profession"
@@ -1042,13 +903,13 @@ export default function BestPracticesHub() {
                       "{searchText.trim()}"
                     </span>
                   </>
-                )} */}
+                )}
               </h4>
             )}
 
             {!selectedFilter.id && !searchText && (
               <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-                Best practices for Profession
+                Popular Best Practices
               </h4>
             )}
 
@@ -1057,13 +918,13 @@ export default function BestPracticesHub() {
             </div>
           </div>
 
-          {isLoading.profession ? (
+          {isLoading.popular ? (
             <div className="flex justify-center py-10">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
-          ) : bestPracticesProfession.length > 0 ? (
+          ) : bestPractices.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
-              {bestPracticesProfession?.map((company, index) => {
+              {bestPractices?.map((company, index) => {
                 return (
                   <div
                     key={company.id}
@@ -1145,9 +1006,7 @@ export default function BestPracticesHub() {
                             alignSelf: "flex-start", // 👈 forces pill to left
                           }}
                         >
-                          {company.profession
-                            ? company.profession
-                            : company.interest}
+                          {company.profession ? company.profession : company.interest}
                         </span>
                         <div className="w-full flex justify-between items-center gap-3">
                           <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
@@ -1159,7 +1018,7 @@ export default function BestPracticesHub() {
                                 className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  toggleFollow(company.id, "profession");
+                                  toggleFollow(company.id);
                                 }}
                               >
                                 + Follow
@@ -1169,7 +1028,7 @@ export default function BestPracticesHub() {
                                 className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  toggleFollow(company.id, "profession");
+                                  toggleFollow(company.id);
                                 }}
                               >
                                 Following
@@ -1206,7 +1065,7 @@ export default function BestPracticesHub() {
                             className="flex items-center gap-1 cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleLike(company.id, index, "profession");
+                              handleLike(company.id, index);
                             }}
                           >
                             <img
@@ -1231,17 +1090,23 @@ export default function BestPracticesHub() {
                           className="cursor-pointer mb-2"
                           onClick={(e) => {
                             e.stopPropagation();
-                            toggleSave(company.id, "profession"); // or "interest" for the other section
+                            toggleSave(company.id);
                           }}
                         >
                           <div className="flex items-center gap-2 cursor-pointer">
                             <Bookmark
                               className="w-5 h-5 transition-all duration-200"
-                              fill={company.is_saved ? "#72DBF2" : "none"}
-                              stroke={company.is_saved ? "#72DBF2" : "#4338CA"}
+                              fill={
+                                savedItems.has(company.id) ? "#72DBF2" : "none"
+                              }
+                              stroke={
+                                savedItems.has(company.id)
+                                  ? "#72DBF2"
+                                  : "#4338CA"
+                              }
                             />
                             <span className="text-sm font-normal text-gray-700">
-                              {company.is_saved ? "Saved" : "Save"}
+                              {savedItems.has(company.id) ? "Saved" : "Save"}
                             </span>
                           </div>
                         </div>
@@ -1253,26 +1118,24 @@ export default function BestPracticesHub() {
             </div>
           ) : (
             <p className="text-gray-500 py-10 text-center">
-              No Best Practices found for Profession.
+              No Best Practices found.
             </p>
           )}
 
-          {paginationProfession.totalPages > 1 && (
+          {pagination.totalPages > 1 && (
             <div className="mt-6 sm:mt-8">
               <div className="flex justify-center">
                 <nav className="inline-flex rounded-md shadow-sm -space-x-px text-xs sm:text-sm">
                   <button
                     onClick={() =>
-                      fetchBestPracticesByProfession(
-                        paginationProfession.currentPage - 1,
+                      fetchBestPractices(
+                        pagination.currentPage - 1,
                         selectedFilter.id,
+                        selectedFilter.type,
                         searchText
                       )
                     }
-                    disabled={
-                      paginationProfession.currentPage === 1 ||
-                      isLoading.profession
-                    }
+                    disabled={pagination.currentPage === 1 || isLoading.popular}
                     className="px-2 sm:px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                   >
                     «
@@ -1282,15 +1145,16 @@ export default function BestPracticesHub() {
                     <>
                       <button
                         onClick={() =>
-                          fetchBestPracticesByProfession(
+                          fetchBestPractices(
                             1,
                             selectedFilter.id,
+                            selectedFilter.type,
                             searchText
                           )
                         }
-                        disabled={isLoading.profession}
+                        disabled={isLoading.popular}
                         className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          1 === paginationProfession.currentPage
+                          1 === pagination.currentPage
                             ? "bg-indigo-500 text-white"
                             : "bg-white text-gray-700 hover:bg-gray-100"
                         }`}
@@ -1298,7 +1162,7 @@ export default function BestPracticesHub() {
                         1
                       </button>
 
-                      {paginationProfession.currentPage > 3 && (
+                      {pagination.currentPage > 3 && (
                         <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
                           ...
                         </span>
@@ -1307,27 +1171,25 @@ export default function BestPracticesHub() {
                   )}
 
                   {[
-                    paginationProfession.currentPage - 1,
-                    paginationProfession.currentPage,
-                    paginationProfession.currentPage + 1,
+                    pagination.currentPage - 1,
+                    pagination.currentPage,
+                    pagination.currentPage + 1,
                   ]
-                    .filter(
-                      (page) =>
-                        page > 1 && page < paginationProfession.totalPages
-                    )
+                    .filter((page) => page > 1 && page < pagination.totalPages)
                     .map((page) => (
                       <button
                         key={page}
                         onClick={() =>
-                          fetchBestPracticesByProfession(
+                          fetchBestPractices(
                             page,
                             selectedFilter.id,
+                            selectedFilter.type,
                             searchText
                           )
                         }
-                        disabled={isLoading.profession}
+                        disabled={isLoading.popular}
                         className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          page === paginationProfession.currentPage
+                          page === pagination.currentPage
                             ? "bg-indigo-500 text-white"
                             : "bg-white text-gray-700 hover:bg-gray-100"
                         }`}
@@ -1338,31 +1200,30 @@ export default function BestPracticesHub() {
 
                   {!isMobile && (
                     <>
-                      {paginationProfession.currentPage <
-                        paginationProfession.totalPages - 2 && (
+                      {pagination.currentPage < pagination.totalPages - 2 && (
                         <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
                           ...
                         </span>
                       )}
 
-                      {paginationProfession.totalPages > 1 && (
+                      {pagination.totalPages > 1 && (
                         <button
                           onClick={() =>
-                            fetchBestPracticesByProfession(
-                              paginationProfession.totalPages,
+                            fetchBestPractices(
+                              pagination.totalPages,
                               selectedFilter.id,
+                              selectedFilter.type,
                               searchText
                             )
                           }
-                          disabled={isLoading.profession}
+                          disabled={isLoading.popular}
                           className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                            paginationProfession.totalPages ===
-                            paginationProfession.currentPage
+                            pagination.totalPages === pagination.currentPage
                               ? "bg-indigo-500 text-white"
                               : "bg-white text-gray-700 hover:bg-gray-100"
                           }`}
                         >
-                          {paginationProfession.totalPages}
+                          {pagination.totalPages}
                         </button>
                       )}
                     </>
@@ -1370,387 +1231,16 @@ export default function BestPracticesHub() {
 
                   <button
                     onClick={() =>
-                      fetchBestPracticesByProfession(
-                        paginationProfession.currentPage + 1,
+                      fetchBestPractices(
+                        pagination.currentPage + 1,
                         selectedFilter.id,
+                        selectedFilter.type,
                         searchText
                       )
                     }
                     disabled={
-                      paginationProfession.currentPage ===
-                        paginationProfession.totalPages || isLoading.profession
-                    }
-                    className="px-2 sm:px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
-                  >
-                    »
-                  </button>
-                </nav>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Best Practices for Interest Section */}
-      <section className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">
-        <div className="w-full mx-auto ">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-            {(selectedFilter.id || searchText) && (
-              <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-                Best Practices For Interest
-                {/* {selectedFilter.id && (
-                  <span className="text-[#7077FE] ml-1 font-semibold">
-                    "
-                    {selectedFilter.type === "profession"
-                      ? profession.find((p) => p.id === selectedFilter.id)
-                          ?.title
-                      : interest.find((i: any) => i.id === selectedFilter.id)
-                          ?.name}
-                    "
-                  </span>
-                )}
-                {searchText?.trim() && (
-                  <>
-                    {selectedFilter.id ? " and " : " "}
-                    <span className="text-[#7077FE] font-semibold">
-                      "{searchText.trim()}"
-                    </span>
-                  </>
-                )} */}
-              </h4>
-            )}
-
-            {!selectedFilter.id && !searchText && (
-              <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-                Best practices for Interest
-              </h4>
-            )}
-
-            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-              {/* Certification and Sort dropdowns commented out */}
-            </div>
-          </div>
-
-          {isLoading.interest ? (
-            <div className="flex justify-center py-10">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
-            </div>
-          ) : bestPracticesInterest.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
-              {bestPracticesInterest?.map((company, index) => {
-                return (
-                  <div
-                    key={company.id}
-                    className="relative bg-white w-full h-full flex flex-col cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
-                    onClick={() =>
-                      navigate(
-                        `/dashboard/bestpractices/${company.id}/${slugify(
-                          company.title
-                        )}`,
-                        {
-                          state: {
-                            likesCount: company.likesCount,
-                            isLiked: company.isLiked,
-                          },
-                        }
-                      )
-                    }
-                  >
-                    {/* Card content remains the same */}
-                    <CardHeader className="px-4 pt-4 pb-0 relative z-0">
-                      <div className="flex items-start gap-1 pr-12">
-                        <img
-                          src={
-                            !company?.user?.profilePicture ||
-                            company?.user?.profilePicture === "null" ||
-                            company?.user?.profilePicture === "undefined" ||
-                            !company?.user?.profilePicture.startsWith("http") ||
-                            company?.user?.profilePicture ===
-                              "http://localhost:5026/file/"
-                              ? "/profile.jpg"
-                              : company?.user?.profilePicture
-                          }
-                          alt={company.user.username}
-                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/profile.png";
-                          }}
-                        />
-                        <div>
-                          <CardTitle className="text-sm font-semibold">
-                            {company.user.firstName} {company.user.lastName}
-                          </CardTitle>
-                          <CardDescription className="text-xs text-gray-500">
-                            @{company.user.username}
-                          </CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <div className="h-full flex flex-col justify-between items-scretch px-4 pt-4 pb-0 relative z-0">
-                      <div className="">
-                        <div className="relative rounded-xl overflow-hidden mb-3 ">
-                          {company.file && (
-                            <>
-                              <img
-                                src={
-                                  !company.file ||
-                                  company.file === "null" ||
-                                  company.file === "undefined" ||
-                                  !company.file.startsWith("http") ||
-                                  company.file === "http://localhost:5026/file/"
-                                    ? "/profile.jpg"
-                                    : company.file
-                                }
-                                alt={company.title}
-                                className="w-full h-40 sm:h-48 object-cover"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src =
-                                    iconMap["companycard1"];
-                                }}
-                              />
-                            </>
-                          )}
-                        </div>
-                        <span
-                          className="absolute top-6 left-6 text-[12px] inline-flex items-center justify-center mb-3 rounded-full px-3 py-2 leading-none font-medium bg-[#F3F3F3] text-[#8A8A8A]"
-                          style={{
-                            fontFamily: "Poppins, sans-serif",
-                            alignSelf: "flex-start", // 👈 forces pill to left
-                          }}
-                        >
-                          {company.profession
-                            ? company.profession
-                            : company.interest}
-                        </span>
-                        <div className="w-full flex justify-between items-center gap-3">
-                          <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
-                            {company.title}
-                          </h3>
-                          <div>
-                            {!company.is_bp_following ? (
-                              <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleFollow(company.id, "interest");
-                                }}
-                              >
-                                + Follow
-                              </button>
-                            ) : (
-                              <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleFollow(company.id, "interest");
-                                }}
-                              >
-                                Following
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                        <p className="text-sm font-semibold text-gray-900">
-                          Overview
-                        </p>
-
-                        <p className="text-sm text-gray-600 leading-snug wrap-break-word whitespace-pre-line">
-                          <span
-                            dangerouslySetInnerHTML={{
-                              __html: DOMPurify.sanitize(
-                                expandedDescriptions[company.id]
-                                  ? company.description
-                                  : truncateText(company.description, 100)
-                              ),
-                            }}
-                          />
-                          {company.description.length > 100 && (
-                            <span className="text-purple-600 underline cursor-pointer ml-1">
-                              {expandedDescriptions[company.id]
-                                ? "Read Less"
-                                : "Read More"}
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                      <div className="flex items-end justify-between px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600 ">
-                        <div className="flex items-center space-x-6 mb-2">
-                          <span
-                            className="flex items-center gap-1 cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleLike(company.id, index, "interest");
-                            }}
-                          >
-                            <img
-                              src={like}
-                              alt="Like Icon"
-                              className="w-5 h-5"
-                            />
-                            <span>{company.likesCount || 0}</span>
-                          </span>
-
-                          <span className="flex items-center gap-1">
-                            <img
-                              src={comment}
-                              alt="Comment Icon"
-                              className="w-5 h-5"
-                            />
-                            <span>{company.commentsCount || 0}</span>
-                          </span>
-                        </div>
-
-                        <div
-                          className="cursor-pointer mb-2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleSave(company.id, "interest"); // or "interest" for the other section
-                          }}
-                        >
-                          <div className="flex items-center gap-2 cursor-pointer">
-                            <Bookmark
-                              className="w-5 h-5 transition-all duration-200"
-                              fill={company.is_saved ? "#72DBF2" : "none"}
-                              stroke={company.is_saved ? "#72DBF2" : "#4338CA"}
-                            />
-                            <span className="text-sm font-normal text-gray-700">
-                              {company.is_saved ? "Saved" : "Save"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="text-gray-500 py-10 text-center">
-              No Best Practices found for Interest.
-            </p>
-          )}
-
-          {paginationInterest.totalPages > 1 && (
-            <div className="mt-6 sm:mt-8">
-              <div className="flex justify-center">
-                <nav className="inline-flex rounded-md shadow-sm -space-x-px text-xs sm:text-sm">
-                  <button
-                    onClick={() =>
-                      fetchBestPracticesByInterest(
-                        paginationInterest.currentPage - 1,
-                        selectedFilter.id,
-                        searchText
-                      )
-                    }
-                    disabled={
-                      paginationInterest.currentPage === 1 || isLoading.interest
-                    }
-                    className="px-2 sm:px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
-                  >
-                    «
-                  </button>
-
-                  {!isMobile && (
-                    <>
-                      <button
-                        onClick={() =>
-                          fetchBestPracticesByInterest(
-                            1,
-                            selectedFilter.id,
-                            searchText
-                          )
-                        }
-                        disabled={isLoading.interest}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          1 === paginationInterest.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
-                      >
-                        1
-                      </button>
-
-                      {paginationInterest.currentPage > 3 && (
-                        <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
-                          ...
-                        </span>
-                      )}
-                    </>
-                  )}
-
-                  {[
-                    paginationInterest.currentPage - 1,
-                    paginationInterest.currentPage,
-                    paginationInterest.currentPage + 1,
-                  ]
-                    .filter(
-                      (page) => page > 1 && page < paginationInterest.totalPages
-                    )
-                    .map((page) => (
-                      <button
-                        key={page}
-                        onClick={() =>
-                          fetchBestPracticesByInterest(
-                            page,
-                            selectedFilter.id,
-                            searchText
-                          )
-                        }
-                        disabled={isLoading.interest}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          page === paginationInterest.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
-
-                  {!isMobile && (
-                    <>
-                      {paginationInterest.currentPage <
-                        paginationInterest.totalPages - 2 && (
-                        <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
-                          ...
-                        </span>
-                      )}
-
-                      {paginationInterest.totalPages > 1 && (
-                        <button
-                          onClick={() =>
-                            fetchBestPracticesByInterest(
-                              paginationInterest.totalPages,
-                              selectedFilter.id,
-                              searchText
-                            )
-                          }
-                          disabled={isLoading.interest}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                            paginationInterest.totalPages ===
-                            paginationInterest.currentPage
-                              ? "bg-indigo-500 text-white"
-                              : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
-                        >
-                          {paginationInterest.totalPages}
-                        </button>
-                      )}
-                    </>
-                  )}
-
-                  <button
-                    onClick={() =>
-                      fetchBestPracticesByInterest(
-                        paginationInterest.currentPage + 1,
-                        selectedFilter.id,
-                        searchText
-                      )
-                    }
-                    disabled={
-                      paginationInterest.currentPage ===
-                        paginationInterest.totalPages || isLoading.interest
+                      pagination.currentPage === pagination.totalPages ||
+                      isLoading.popular
                     }
                     className="px-2 sm:px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                   >

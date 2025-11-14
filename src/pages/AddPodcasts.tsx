@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { CreatePodcastProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
+import AIModal from "../components/MarketPlace/AIModal";
+import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 
 interface FormSectionProps {
   title: string;
@@ -84,6 +86,7 @@ const AddPodcastForm: React.FC = () => {
     public_id: string;
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
 
   const [formData, setFormData] = useState({
     product_title: "",
@@ -98,6 +101,7 @@ const AddPodcastForm: React.FC = () => {
     theme: "",
     format: "",
     status: "",
+    sample_track: "",
   });
 
   const [episodes, setEpisodes] = useState<any[]>([
@@ -128,6 +132,29 @@ const AddPodcastForm: React.FC = () => {
     };
     fetchData();
   }, []);
+
+  const handleSampleTrackUpload = (sampleId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: sampleId,
+    }));
+  };
+
+  const handleRemoveSampleTrack = () => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track: "",
+    }));
+  };
+
+  const handleAIGenerate = (generatedText: string) => {
+    setFormData(prev => ({
+      ...prev,
+      overview: generatedText
+    }));
+
+    setErrors(prev => ({ ...prev, overview: "" }));
+  };
 
   const handleSelectCategory = (category: string) => {
     setShowModal(false); // Close modal first
@@ -282,15 +309,6 @@ const AddPodcastForm: React.FC = () => {
       case "total_duration":
         if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr))
           message = "Invalid duration format. Use HH:MM:SS";
-        break;
-      case "language":
-        if (!valStr) message = "Language is required";
-        break;
-      case "theme":
-        if (!valStr) message = "Theme is required";
-        break;
-      case "format":
-        if (!valStr) message = "Format is required";
         break;
       default:
         break;
@@ -517,7 +535,7 @@ const AddPodcastForm: React.FC = () => {
       });
       return;
     }
-    
+
     const hasUploadingFiles = episodes.some((ep) =>
       ep.episode_files.some((file: any) => file.isUploading)
     );
@@ -672,7 +690,7 @@ const AddPodcastForm: React.FC = () => {
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Thumnail *
+                Thumbnail *
               </label>
               {thumbnailData?.thumbnail_url ? (
                 <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
@@ -762,9 +780,32 @@ const AddPodcastForm: React.FC = () => {
         <FormSection title="Details" description="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Overview *
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
+                  Overview *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowAIModal(true)}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group"
+                >
+                  <svg
+                    className="w-4 h-4 animate-pulse"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium">Generate with AI</span>
+                  <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
+                </button>
+              </div>
               <textarea
                 name="overview"
                 value={formData.overview}
@@ -850,7 +891,7 @@ const AddPodcastForm: React.FC = () => {
 
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Format
+                Format *
               </label>
               <select
                 name="format"
@@ -886,6 +927,18 @@ const AddPodcastForm: React.FC = () => {
           </div>
         </FormSection>
 
+        <FormSection
+          title="Sample Track"
+          description="Upload a preview sample so buyers can experience your content before purchasing."
+        >
+          <SampleTrackUpload
+            productType="video"
+            onUploadSuccess={handleSampleTrackUpload}
+            onRemove={handleRemoveSampleTrack}
+            defaultValue={formData.sample_track}
+          />
+        </FormSection>
+
         <FormSection title="Episodes" description="">
           <div className="space-y-6">
             {episodes.map((episode, episodeIndex) => (
@@ -904,7 +957,7 @@ const AddPodcastForm: React.FC = () => {
                       className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
                     />
                     <p className="text-sm text-[#665B5B]">
-                      Upload episode {episodeIndex + 1} audios
+                      Upload episode {episodeIndex + 1} audios *
                     </p>
                   </div>
 
@@ -1142,6 +1195,12 @@ const AddPodcastForm: React.FC = () => {
           </div>
         </div>
       )}
+      <AIModal
+        showModal={showAIModal}
+        setShowModal={setShowAIModal}
+        productType="video"
+        onGenerate={handleAIGenerate}
+      />
     </>
   );
 };

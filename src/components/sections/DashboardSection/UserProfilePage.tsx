@@ -784,6 +784,7 @@ const UserProfilePage = () => {
       localStorage.setItem("name", userData?.name);
       localStorage.setItem("main_name", userData?.main_name);
       localStorage.setItem("margaret_name", userData?.margaret_name);
+      localStorage.setItem("margaret_name", userData?.margaret_name);
     } catch (error: any) {
       clearTimeout(timeoutId);
       showToast({
@@ -969,7 +970,7 @@ const UserProfilePage = () => {
       localStorage.setItem("main_name", response?.data?.data?.user.main_name);
 
       let isAdult = false;
-      const dobString = response?.data?.data?.dob;
+      const dobString = response?.data?.data?.user?.dob;
       const dob = new Date(dobString);
       const today = new Date();
 
@@ -984,8 +985,7 @@ const UserProfilePage = () => {
       } else {
         isAdult = false;
       }
-
-      localStorage.setItem("is_adult", JSON.stringify(isAdult));
+      localStorage.setItem("isAdult", response?.data?.data?.user?.is_adult ? response?.data?.data?.user?.is_adult : JSON.stringify(isAdult));
       localStorage.setItem(
         "margaret_name",
         response?.data?.data?.user.margaret_name

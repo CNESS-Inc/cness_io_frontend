@@ -191,6 +191,8 @@ export const EndPoint = {
   googleLogin: "/auth/google-login",
   resendMail: "/auth/resend-verification",
   all_bestPractices: "/best-practice/all",
+  all_bestPractices_by_profession: "/best-practice/profession-wise",
+  all_bestPractices_by_interest: "/best-practice/interest-wise",
   bp: "/best-practice",
   bp_recommended: "/best-practice/recommended",
   bp_related: "/best-practice/related",
@@ -262,6 +264,8 @@ export const EndPoint = {
   get_categories: "/marketplace-product/product-categories",
   get_moods: "/marketplace-product/moods",
   get_preview_product: "/marketplace-product",
+  expand_product_overview: "/marketplace-product/ai/expand-overview",
+  generate_signed_url: "/marketplace-product/generate-signed-url",
 
   create_video_product: "/marketplace-product/video",
   update_video_product: "/marketplace-product",
@@ -287,7 +291,8 @@ export const EndPoint = {
   marketplace_wishlist: "/marketplace-buyer/wishlist",
   marketplace_cart: "/marketplace-buyer/cart",
 
-  get_shop_list: "/marketplace-buyer/shops",
+  marketplace_shop_list: "/marketplace-buyer/shops",
+  marketplace_followed_list: "/marketplace-buyer/my-followed-shops",
 
   // reviews apis
   marketplace_buyer_review: "/marketplace-buyer/reviews",
@@ -298,7 +303,15 @@ export const EndPoint = {
   marketplace_checkout_confirm: "/marketplace-buyer/checkout/confirm",
   marketplace_retry_payment: "/marketplace-buyer/retry-payment",
   marketplace_order_details: "/marketplace-buyer/orders",
+  marketplace_order_details_by_order_id: "/marketplace-buyer/orders",
   marketplace_buyer_library: "/marketplace-buyer/library",
+
+  // collections apis
+  marketplace_collection_list: "/marketplace-buyer/collections",
+
+  // progress apis
+  marketplace_buyer_continue_watching: "/marketplace-buyer/progress/continue-watching",
+  marketplace_buyer_progress: "/marketplace-buyer/progress",
 };
 
 // Messaging endpoints
@@ -784,6 +797,43 @@ export const GetAllBestPractices = (
     params
   );
 };
+
+export const GetAllBestPracticesByProfession = (
+  page: number,
+  limit: number,
+  professionId: string,
+  searchText: string
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  params["profession"] = professionId;
+  params["text"] = searchText;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.all_bestPractices_by_profession,
+    params
+  );
+};
+export const GetAllBestPracticesByInterest = (
+  page: number,
+  limit: number,
+  interestId: string,
+  searchText: string
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  params["interest"] = interestId;
+  params["text"] = searchText;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.all_bestPractices_by_interest,
+    params
+  );
+};
 export const DeleteBestPractices = (id: number): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.DELETE, {}, `${EndPoint.bp}/${id}`);
 };
@@ -1215,8 +1265,8 @@ export const GetStory = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story);
 };
-export const PostStoryViewd = (story_id:any) => {
-  let data = {story_id};
+export const PostStoryViewd = (story_id: any) => {
+  let data = { story_id };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.story_viewed);
 };
 export const GetUserPost = () => {
@@ -1570,68 +1620,6 @@ export const getFriendsForTagging = (
   );
 };
 
-export const executeAPI = async <T = any,>(
-  method: ApiMethod,
-  data: any,
-  endpoint: string,
-  params?: Record<string, any>
-): ApiResponse<T> => {
-  try {
-    const token = localStorage.getItem("jwt");
-    const isFormData = data instanceof FormData;
-    const requestId = uuidv4();
-    // const requestId = localStorage.getItem("requestId");
-    const appCatId = localStorage.getItem("appCatId");
-    const headers: Record<string, string> = {
-      ...(isFormData ? {} : { "Content-Type": "application/json" }),
-      Authorization: `Bearer ${token || ""}`,
-    };
-
-    if (requestId) {
-      headers["x-request-id"] = requestId;
-    }
-    if (appCatId) {
-      headers["x-app-cat-id"] = appCatId;
-    }
-    console.log("🚀 ~ executeAPI ~ headers:", headers)
-    const response: AxiosResponse<T> = await axios({
-      method: method,
-      url: API.BaseUrl + endpoint,
-      data: data,
-      params: params,
-      headers,
-      ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && {
-        withCredentials: true,
-      }),
-    });
-    const requestIdres = response.headers["x-request-id"];
-    if (requestIdres) {
-      localStorage.setItem("requestId", requestIdres);
-    }
-    const appCatIdres = response.headers["x-app-cat-id"];
-    if (appCatIdres) {
-      localStorage.setItem("appCatId", appCatIdres);
-    }
-
-    // const access_token = response.headers["access_token"];
-
-    // if (access_token != "not-provide") {
-    //   console.log("access token response check sets", true);
-    //   localStorage.setItem("jwt", access_token);
-    // }
-
-    return response.data;
-  } catch (error: any) {
-
-    if (error.response?.data?.error?.statusCode == 401) {
-      localStorage.clear();
-      window.location.href = "/";
-    }
-
-    throw error;
-  }
-};
-
 export const GetProducts = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_products);
 };
@@ -1725,6 +1713,22 @@ export const GetMarketPlaceMoods = () => {
 
 export const GetPreviewProduct = (category: any, id: any) => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_preview_product}/${category}/${id}`);
+};
+
+export const ExpandProductOverview = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.expand_product_overview
+  );
+};
+
+export const GenerateSignedUrl = (fileType: string, data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.generate_signed_url}?resource_type=${fileType}`
+  );
 };
 
 export const CreateVideoProduct = (data: any): ApiResponse => {
@@ -2025,6 +2029,9 @@ export const AddProductToCart = (data: any): ApiResponse => {
 export const GetProductCart = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_cart);
 };
+export const GetOrderDetailsByOrdId = (order_id:string) => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}`);
+};
 
 export const RemoveProductToCart = (id: any): ApiResponse => {
   return executeAPI(
@@ -2059,14 +2066,46 @@ export const GetMarketPlaceShops = (params?: {
 
   const queryString = queryParams.toString();
   const endpoint = queryString
-    ? `${EndPoint.get_shop_list}?${queryString}`
-    : EndPoint.get_shop_list;
+    ? `${EndPoint.marketplace_shop_list}?${queryString}`
+    : EndPoint.marketplace_shop_list;
 
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 };
 
 export const GetMarketPlaceShopById = (id: any) => {
-  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.get_shop_list}/${id}`);
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_shop_list}/${id}`);
+};
+
+export const FollowUnfollowMarketPlaceShop = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    {},
+    `${EndPoint.marketplace_shop_list}/${id}/follow`
+  );
+};
+
+export const GetFollowedMarketPlaceShop = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.marketplace_followed_list
+  );
+};
+
+export const CheckMarketPlaceShopFollowStatus = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_shop_list}/${id}/follow-status`
+  );
+};
+
+export const GetMarketPlaceShopFollowCount = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_shop_list}/${id}/follower-count`
+  );
 };
 
 export const CreateBuyerReview = (data: any): ApiResponse => {
@@ -2101,6 +2140,22 @@ export const DeleteBuyerReview = (id: any): ApiResponse => {
   );
 };
 
+export const BuyerCanReview = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_get_product_review}/${id}/can-review`
+  );
+};
+
+export const BuyerOwnReview = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_get_product_review}/${id}/my-review`
+  );
+};
+
 export const GetProductReviws = (
   productId: string,
   params?: {
@@ -2115,8 +2170,8 @@ export const GetProductReviws = (
 
   const queryString = queryParams.toString();
   const endpoint = queryString
-    ? `${EndPoint.marketplace_get_product_review}/${productId}?${queryString}`
-    : `${EndPoint.marketplace_get_product_review}/${productId}`;
+    ? `${EndPoint.marketplace_get_product_review}/${productId}/reviews?${queryString}`
+    : `${EndPoint.marketplace_get_product_review}/${productId}/reviews`;
 
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 };
@@ -2141,14 +2196,25 @@ export const RetryPayment = (data: { order_id: string }): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.marketplace_retry_payment);
 };
 
+export const GetLibraryrFilters = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_buyer_library}/filters/options`);
+}
+
 export const GetLibraryrDetails = (params?: {
   page?: number;
   limit?: number;
+  category_slug?: string;
+  sort_by?: string;
 }): ApiResponse => {
   const queryParams = new URLSearchParams();
 
   if (params?.page) queryParams.append("page", params.page.toString());
   if (params?.limit) queryParams.append("limit", params.limit.toString());
+  if (params?.category_slug) queryParams.append("category_slug", params.category_slug.toString());
+  if (params?.sort_by) queryParams.append("sort_by", params.sort_by.toString());
 
   const queryString = queryParams.toString();
   const endpoint = queryString
@@ -2158,6 +2224,97 @@ export const GetLibraryrDetails = (params?: {
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 }
 
+export const GetLibraryrDetailsById = (id: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_buyer_library}/${id}`);
+}
+
+export const CreateCollectionList = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.marketplace_collection_list
+  );
+}
+
+export const GetCollectionList = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.marketplace_collection_list
+  );
+}
+
+export const GetCollectionListById = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_collection_list}/${id}`
+  );
+}
+
+export const UpdateCollectionList = (id: any, data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    data,
+    `${EndPoint.marketplace_collection_list}/${id}`
+  );
+}
+
+export const DeleteCollectionList = (id: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.marketplace_collection_list}/${id}`
+  );
+}
+
+export const AddProductToCollection = (cid: any, data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.marketplace_collection_list}/${cid}/products`
+  );
+}
+
+export const RemoveProductToCollection = (cid: any, pid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.marketplace_collection_list}/${cid}/products/${pid}`
+  );
+}
+
+export const GetContinueWatchingProductList = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.marketplace_buyer_continue_watching
+  );
+}
+export const GetContinueWatchingProductById = (pid: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.marketplace_buyer_progress}/product/${pid}`
+  );
+}
+export const TrackProgressProduct = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.marketplace_buyer_progress}/track`
+  );
+}
+export const MarkAsComplete = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    `${EndPoint.marketplace_buyer_progress}/complete`
+  );
+}
+
 export const GetOrderDetails = (): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.GET,
@@ -2165,3 +2322,64 @@ export const GetOrderDetails = (): ApiResponse => {
     EndPoint.marketplace_order_details
   );
 }
+
+export const executeAPI = async <T = any,>(
+  method: ApiMethod,
+  data: any,
+  endpoint: string,
+  params?: Record<string, any>
+): ApiResponse<T> => {
+  try {
+    const token = localStorage.getItem("jwt");
+    const isFormData = data instanceof FormData;
+    const requestId = uuidv4();
+    // const requestId = localStorage.getItem("requestId");
+    const appCatId = localStorage.getItem("appCatId");
+    const headers: Record<string, string> = {
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      Authorization: `Bearer ${token || ""}`,
+    };
+
+    if (requestId) {
+      headers["x-request-id"] = requestId;
+    }
+    if (appCatId) {
+      headers["x-app-cat-id"] = appCatId;
+    }
+    const response: AxiosResponse<T> = await axios({
+      method: method,
+      url: API.BaseUrl + endpoint,
+      data: data,
+      params: params,
+      headers,
+      ...(API.BaseUrl.trim().toLowerCase().startsWith("https://") && {
+        withCredentials: true,
+      }),
+    });
+    const requestIdres = response.headers["x-request-id"];
+    if (requestIdres) {
+      localStorage.setItem("requestId", requestIdres);
+    }
+    const appCatIdres = response.headers["x-app-cat-id"];
+    if (appCatIdres) {
+      localStorage.setItem("appCatId", appCatIdres);
+    }
+
+    // const access_token = response.headers["access_token"];
+
+    // if (access_token != "not-provide") {
+    //   console.log("access token response check sets", true);
+    //   localStorage.setItem("jwt", access_token);
+    // }
+
+    return response.data;
+  } catch (error: any) {
+
+    // if (error.response?.data?.error?.statusCode == 401) {
+    //   localStorage.clear();
+    //   window.location.href = "/";
+    // }
+
+    throw error;
+  }
+};

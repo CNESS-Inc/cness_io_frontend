@@ -7,6 +7,8 @@ import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import AIModal from "../components/MarketPlace/AIModal";
+import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 
 interface FormSectionProps {
   title: string;
@@ -85,6 +87,7 @@ const AddMusicForm: React.FC = () => {
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [newHighlight, setNewHighlight] = useState("");
+  const [showAIModal, setShowAIModal] = useState(false);
   const [tracks, setTracks] = useState<any[]>([
     {
       id: 1,
@@ -110,6 +113,7 @@ const AddMusicForm: React.FC = () => {
     format: "",
     status: "",
     thumbnail_url: "",
+    sample_track_url: "",
   });
 
   useEffect(() => {
@@ -148,6 +152,29 @@ const AddMusicForm: React.FC = () => {
 
     fetchCategories();
   }, []);
+
+  const handleSampleTrackUpload = (sampleId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track_url: sampleId,
+    }));
+  };
+
+  const handleRemoveSampleTrack = () => {
+    setFormData(prev => ({
+      ...prev,
+      sample_track_url: "",
+    }));
+  };
+
+  const handleAIGenerate = (generatedText: string) => {
+    setFormData(prev => ({
+      ...prev,
+      overview: generatedText
+    }));
+
+    setErrors(prev => ({ ...prev, overview: "" }));
+  };
 
   const handleSelectCategory = (category: string) => {
     setShowModal(false); // Close modal first
@@ -419,7 +446,7 @@ const AddMusicForm: React.FC = () => {
         const discount = parseFloat(value);
         if (value === "" || isNaN(discount)) {
           message = "Discount percentage must be a number";
-        } else if (discount < 0 || discount > 100) {
+        } else if (discount <= 0 || discount >= 100) {
           message = "Discount percentage must be between 0 and 100";
         }
         break;
@@ -637,6 +664,7 @@ const AddMusicForm: React.FC = () => {
         theme: formData.theme,
         format: formData.format,
         thumbnail_url: formData.thumbnail_url,
+        sample_track_url: formData.sample_track_url,
         status: isDraft ? 'draft' : 'published',
         tracks: tracksData,
       };
@@ -784,7 +812,7 @@ const AddMusicForm: React.FC = () => {
 
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Thumnail *
+                Thumbnail *
               </label>
               {thumbnailData?.thumbnail_url ? (
                 <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
@@ -875,9 +903,32 @@ const AddMusicForm: React.FC = () => {
         <FormSection title="Details" description="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
-              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Overview *
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
+                  Overview *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowAIModal(true)}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group"
+                >
+                  <svg
+                    className="w-4 h-4 animate-pulse"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium">Generate with AI</span>
+                  <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
+                </button>
+              </div>
               <textarea
                 name="overview"
                 value={formData.overview}
@@ -964,7 +1015,7 @@ const AddMusicForm: React.FC = () => {
             {/* Format dropdown */}
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Format
+                Format *
               </label>
               <select
                 name="format"
@@ -1000,6 +1051,18 @@ const AddMusicForm: React.FC = () => {
           </div>
         </FormSection>
 
+        <FormSection
+          title="Sample Track"
+          description="Upload a preview sample so buyers can experience your content before purchasing."
+        >
+          <SampleTrackUpload
+            productType="music"
+            onUploadSuccess={handleSampleTrackUpload}
+            onRemove={handleRemoveSampleTrack}
+            defaultValue={formData.sample_track_url}
+          />
+        </FormSection>
+
         {/* Uploads Section */}
         <FormSection title="Uploads" description="">
           <div className="space-y-6">
@@ -1022,7 +1085,7 @@ const AddMusicForm: React.FC = () => {
                       className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
                     />
                     <p className="text-sm text-[#665B5B]">
-                      Upload track {trackIndex + 1} audio files
+                      Upload track {trackIndex + 1} audio files *
                     </p>
                   </div>
 
@@ -1270,6 +1333,12 @@ const AddMusicForm: React.FC = () => {
           </div>
         </div>
       )}
+      <AIModal
+        showModal={showAIModal}
+        setShowModal={setShowAIModal}
+        productType="video"
+        onGenerate={handleAIGenerate}
+      />
     </>
   );
 };

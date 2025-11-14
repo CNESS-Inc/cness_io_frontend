@@ -78,7 +78,6 @@ const PostPopup: React.FC<PopupProps> = ({
   insightsCount,
   collection,
 }) => {
-  console.log("🚀 ~ PostPopup ~ post:", post);
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -305,195 +304,211 @@ const PostPopup: React.FC<PopupProps> = ({
     throw new Error("Function not implemented.");
   }
 
+   const shouldShowMediaSection = 
+    post?.media?.type === "image" || 
+    post?.media?.type === "video";
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-      <div className="flex flex-col lg:flex-row justify-between bg-black h-[90vh] lg:h-[80vh] w-full max-w-7xl mx-4 xl:mx-auto">
-        {/* Left side - media */}
-        <div className="flex-1 lg:basis-[60%] min-w-0 flex h-full">
-          <div className="bg-black rounded-2xl p-2 sm:p-4 lg:p-6 w-full flex h-full">
-            <div className="bg-white rounded-xl w-full flex flex-col p-3 sm:p-5 shadow-sm">
-              <div className="relative flex items-start justify-between mb-4">
-                <div>
-                  <h5 className="text-gray-800 font-medium">Posted On</h5>
-                  <p className="text-xs md:text-sm text-gray-400">
-                    {post?.date ? new Date(post.date).toLocaleString() : "—"}
-                  </p>
-                </div>
-
-                {/* Dots button */}
-                <div className="flex items-center gap-2">
-                  <button
-                    className="flex items-center justify-center w-9 h-9 rounded-xl bg-white shadow-sm shadow-gray-200/60 hover:shadow-xl hover:scale-[1.03] active:scale-100 transition"
-                    onClick={() => setOpen(!open)}
-                  >
-                    <BsThreeDots className="text-gray-800" />
-                  </button>
-                  <button
-                    onClick={onClose}
-                    className="visible lg:invisible w-8 h-8 flex lg:hidden items-center justify-center rounded-lg hover:bg-gray-100 transition shadow-sm"
-                  >
-                    <span className="text-pink-500 text-lg font-bold">✕</span>
-                  </button>
-                </div>
-                {open && (
-                  <div className="absolute right-0 top-10 mt-2 w-56 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden z-50">
-                    {/* Header with close */}
-                    <div className="flex items-center justify-between px-4 py-4 bg-[rgba(137,122,255,0.1)]">
-                      <button
-                        className="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm shadow-gray-200/60 hover:shadow-xl hover:scale-[1.03] active:scale-100 transition"
-                        onClick={() => setOpen(!open)}
-                      >
-                        <BsThreeDots className="text-gray-800" />
-                      </button>
-                      <button
-                        onClick={() => setOpen(false)}
-                        className="text-pink-500"
-                      >
-                        <FiX size={18} />
-                      </button>
-                    </div>
-
-                    {/* Menu items */}
-                    <div className="px-3 py-3 flex flex-col">
-                      {!collection && (
-                        <>
-                          <button
-                            className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0] transition-colors duration-200 w-full text-left"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onDeletePost?.();
-                              setOpen(false);
-                            }}
-                            aria-label="Delete post"
-                          >
-                            <FiTrash2 className="text-red-500" />
-                            Delete
-                          </button>
-                          <button
-                            className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0] transition-colors duration-200 w-full text-left"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onEditPost?.(); // Add your edit handler
-                              setOpen(false);
-                            }}
-                            aria-label="Edit post"
-                          >
-                            <FiEdit2 className="text-green-500" />
-                            Edit
-                          </button>
-                        </>
-                      )}
-                      <button
-                        className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0]"
-                        onClick={() => {
-                          copyPostLink(
-                            `${window.location.origin}/post/${post.id}`,
-                            (msg) =>
-                              showToast({
-                                type: "success",
-                                message: msg,
-                                duration: 2000,
-                              }),
-                            (msg) =>
-                              showToast({
-                                type: "error",
-                                message: msg,
-                                duration: 2000,
-                              })
-                          );
-                        }}
-                      >
-                        <FiLink2 className="text-red-500" /> Copy Link
-                      </button>
-                      <button
-                        className="relative flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50"
-                        onClick={() => toggleMenu(post.id, "share")}
-                      >
-                        <FiSend className="text-blue-500" /> Share to..
-                        {openMenu.postId === post.id &&
-                          openMenu.type === "share" && (
-                            <SharePopup
-                              isOpen={true}
-                              onClose={() => toggleMenu(post.id, "share")}
-                              url={buildShareUrl(urldata)} // you already have urldata in this file
-                              position="top"
-                            />
-                          )}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Media area */}
-              <div className="relative flex-1 min-h-[200px] sm:min-h-[280px] rounded-lg overflow-hidden bg-gray-50">
-                {Array.isArray(images) && images.length > 0 ? (
-                  <>
-                    <img
-                      src={images[currentImage]}
-                      alt={post?.media?.alt || ""}
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-
-                    {/* Gallery controls */}
-                    {images.length > 1 && (
-                      <>
-                        <button
-                          onClick={handlePrev}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xl bg-white/80 backdrop-blur hover:bg-white transition shadow"
-                          aria-label="Previous"
-                        >
-                          &#8592;
-                        </button>
-                        <button
-                          onClick={handleNext}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xl bg-white/80 backdrop-blur hover:bg-white transition shadow"
-                          aria-label="Next"
-                        >
-                          &#8594;
-                        </button>
-                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
-                          {images.map((_, idx) => (
-                            <span
-                              key={idx}
-                              className={`inline-block w-2 h-2 rounded-full ${
-                                idx === currentImage
-                                  ? "bg-gray-800"
-                                  : "bg-gray-300"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </>
-                ) : post?.media?.type === "image" ? (
-                  <img
-                    src={post.media.src}
-                    alt={post.media.alt || ""}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                ) : post?.media?.type === "video" ? (
-                  <video
-                    src={post.media.src}
-                    poster={post.media.poster || "/default-video-thumbnail.jpg"}
-                    controls
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center p-6">
-                    <p className="text-gray-600 text-sm">
-                      {post?.media?.src || "No media available"}
+      <div
+        className={`flex flex-col lg:flex-row rounded-2xl justify-between bg-black h-[90vh] lg:h-[80vh] w-full max-w-7xl mx-4 xl:mx-auto ${
+          !shouldShowMediaSection ? "lg:max-w-2xl!" : ""
+        }`}
+      >
+        {/* Left side - media (conditionally rendered) */}
+        {shouldShowMediaSection && (
+          <div className="flex-1 lg:basis-[60%] min-w-0 flex h-full">
+            <div className="bg-black rounded-2xl p-2 sm:p-4 lg:p-6 w-full flex h-full">
+              <div className="bg-white rounded-xl w-full flex flex-col p-3 sm:p-5 shadow-sm">
+                <div className="relative flex items-start justify-between mb-4">
+                  <div>
+                    <h5 className="text-gray-800 font-medium">Posted On</h5>
+                    <p className="text-xs md:text-sm text-gray-400">
+                      {post?.date ? new Date(post.date).toLocaleString() : "—"}
                     </p>
                   </div>
-                )}
+
+                  {/* Dots button */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="flex items-center justify-center w-9 h-9 rounded-xl bg-white shadow-sm shadow-gray-200/60 hover:shadow-xl hover:scale-[1.03] active:scale-100 transition"
+                      onClick={() => setOpen(!open)}
+                    >
+                      <BsThreeDots className="text-gray-800" />
+                    </button>
+                    <button
+                      onClick={onClose}
+                      className="visible lg:invisible w-8 h-8 flex lg:hidden items-center justify-center rounded-lg hover:bg-gray-100 transition shadow-sm"
+                    >
+                      <span className="text-pink-500 text-lg font-bold">✕</span>
+                    </button>
+                  </div>
+                  {open && (
+                    <div className="absolute right-0 top-10 mt-2 w-56 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden z-50">
+                      {/* Header with close */}
+                      <div className="flex items-center justify-between px-4 py-4 bg-[rgba(137,122,255,0.1)]">
+                        <button
+                          className="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm shadow-gray-200/60 hover:shadow-xl hover:scale-[1.03] active:scale-100 transition"
+                          onClick={() => setOpen(!open)}
+                        >
+                          <BsThreeDots className="text-gray-800" />
+                        </button>
+                        <button
+                          onClick={() => setOpen(false)}
+                          className="text-pink-500"
+                        >
+                          <FiX size={18} />
+                        </button>
+                      </div>
+
+                      {/* Menu items */}
+                      <div className="px-3 py-3 flex flex-col">
+                        {!collection && (
+                          <>
+                            <button
+                              className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0] transition-colors duration-200 w-full text-left"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDeletePost?.();
+                                setOpen(false);
+                              }}
+                              aria-label="Delete post"
+                            >
+                              <FiTrash2 className="text-red-500" />
+                              Delete
+                            </button>
+                            <button
+                              className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0] transition-colors duration-200 w-full text-left"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onEditPost?.();
+                                setOpen(false);
+                              }}
+                              aria-label="Edit post"
+                            >
+                              <FiEdit2 className="text-green-500" />
+                              Edit
+                            </button>
+                          </>
+                        )}
+                        <button
+                          className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0]"
+                          onClick={() => {
+                            copyPostLink(
+                              `${window.location.origin}/post/${post.id}`,
+                              (msg) =>
+                                showToast({
+                                  type: "success",
+                                  message: msg,
+                                  duration: 2000,
+                                }),
+                              (msg) =>
+                                showToast({
+                                  type: "error",
+                                  message: msg,
+                                  duration: 2000,
+                                })
+                            );
+                          }}
+                        >
+                          <FiLink2 className="text-red-500" /> Copy Link
+                        </button>
+                        <button
+                          className="relative flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50"
+                          onClick={() => toggleMenu(post.id, "share")}
+                        >
+                          <FiSend className="text-blue-500" /> Share to..
+                          {openMenu.postId === post.id &&
+                            openMenu.type === "share" && (
+                              <SharePopup
+                                isOpen={true}
+                                onClose={() => toggleMenu(post.id, "share")}
+                                url={buildShareUrl(urldata)}
+                                position="top"
+                              />
+                            )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Media area */}
+                <div className="relative flex-1 min-h-[200px] sm:min-h-[280px] rounded-lg overflow-hidden bg-gray-50">
+                  {Array.isArray(images) && images.length > 0 ? (
+                    <>
+                      <img
+                        src={images[currentImage]}
+                        alt={post?.media?.alt || ""}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+
+                      {/* Gallery controls */}
+                      {images.length > 1 && (
+                        <>
+                          <button
+                            onClick={handlePrev}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xl bg-white/80 backdrop-blur hover:bg-white transition shadow"
+                            aria-label="Previous"
+                          >
+                            &#8592;
+                          </button>
+                          <button
+                            onClick={handleNext}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xl bg-white/80 backdrop-blur hover:bg-white transition shadow"
+                            aria-label="Next"
+                          >
+                            &#8594;
+                          </button>
+                          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
+                            {images.map((_, idx) => (
+                              <span
+                                key={idx}
+                                className={`inline-block w-2 h-2 rounded-full ${
+                                  idx === currentImage
+                                    ? "bg-gray-800"
+                                    : "bg-gray-300"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  ) : post?.media?.type === "image" ? (
+                    <img
+                      src={post.media.src}
+                      alt={post.media.alt || ""}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  ) : post?.media?.type === "video" ? (
+                    <video
+                      src={post.media.src}
+                      poster={
+                        post.media.poster || "/default-video-thumbnail.jpg"
+                      }
+                      controls
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center p-6">
+                      <p className="text-gray-600 text-sm">
+                        {post?.media?.src || "No media available"}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Right side - comments */}
-        <div className="w-full lg:w-[40%] flex flex-col bg-white pb-6 overflow-y-auto border-t lg:border-l lg:border-t-0 border-[#E5E7EB] h-full">
+        <div
+          className={`w-full ${
+            shouldShowMediaSection ? "lg:w-[40%] rounded-r-2xl" : "lg:w-full rounded-2xl"
+          } flex flex-col bg-white pb-6 overflow-y-auto border-t lg:border-l lg:border-t-0 border-[#E5E7EB] h-full`}
+        >
           {/* Close button */}
           <div className="flex items-center justify-between border-b border-gray-200 px-4 py-4 mx-4 lg:mx-6">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -508,8 +523,9 @@ const PostPopup: React.FC<PopupProps> = ({
           </div>
           <p className="p-6">{post?.body || "No media available"}</p>
 
-          {/* Comments section */}
+          {/* Rest of your comments section remains the same */}
           <div className="pt-4 lg:pt-8 flex-1 overflow-y-auto space-y-4 w-full px-4 lg:px-6">
+            {/* ... existing comments code ... */}
             {isCommentsLoading ? (
               <div className="flex items-center justify-center py-6">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500"></div>
@@ -521,12 +537,13 @@ const PostPopup: React.FC<PopupProps> = ({
             ) : (
               comments.map((comment) => (
                 <div key={comment.id} className="flex flex-col gap-3 w-full">
+                  {/* ... existing comment rendering ... */}
                   <div className="flex items-center justify-between">
                     <div className="flex justify-start items-center gap-2">
                       <img
                         src={comment.profile.profile_picture || "/profile.png"}
                         alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
-                        className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                        className="w-10 h-10 rounded-full object-cover shrink-0"
                       />
                       <span className="text-sm font-semibold text-gray-900">
                         {comment.profile.first_name} {comment.profile.last_name}
@@ -604,7 +621,7 @@ const PostPopup: React.FC<PopupProps> = ({
                                 reply.profile.profile_picture || "/profile.png"
                               }
                               alt={`${reply.profile.first_name} ${reply.profile.last_name}`}
-                              className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                              className="w-8 h-8 rounded-full object-cover shrink-0"
                             />
                             <div className="flex items-center justify-between w-full">
                               <div className="flex items-baseline gap-2">
@@ -612,7 +629,7 @@ const PostPopup: React.FC<PopupProps> = ({
                                   {reply.profile.first_name}{" "}
                                   {reply.profile.last_name}
                                 </span>
-                                <p className="text-sm break-words">
+                                <p className="text-sm wrap-break-word">
                                   {reply.text}
                                 </p>
                               </div>

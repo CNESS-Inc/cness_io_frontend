@@ -24,13 +24,11 @@ const StoryCard: React.FC<StoryCardProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleReel = () => {
-    if (userId) {
-      navigate(`/story-design?user=${userId}&story=${id}`);
-    } else {
-      navigate(`/story-design`);
-    }
+const handleReel = () => {
+    // Navigate with both user ID and story ID as query parameters
+    navigate(`/story-design?user=${userId}&story=${id}`);
   };
+
   return (
     <div onClick={() => handleReel()}>
     {/* <div onClick={() => handleReel(id)}> */}
@@ -51,7 +49,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
             Your browser does not support the video tag.
           </video> */}
         </LazyLoadComponent>
-      <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-black/30 to-black/20 animate-shimmer"></div>
+      <div className="absolute inset-0 bg-linear-to-r from-black/20 via-black/30 to-black/20 animate-shimmer"></div>
         <div className="absolute bottom-0 left-0 w-full p-4">
           <h3 className="text-white text-xs font-semibold mb-2">{title}</h3>
           <div className="flex items-center">

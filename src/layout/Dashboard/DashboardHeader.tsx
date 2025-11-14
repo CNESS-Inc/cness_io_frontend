@@ -241,7 +241,6 @@ const DashboardHeader = ({
   const getNotification = async () => {
     try {
       const res = await GetUserNotification();
-      console.log("🚀 ~ getNotification ~ res:", res);
 
       if (res?.data?.data) {
         // Get first 10 notifications from the API response

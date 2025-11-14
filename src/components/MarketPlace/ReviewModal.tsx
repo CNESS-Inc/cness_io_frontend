@@ -1,27 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { X, Star } from "lucide-react";
-import { CreateBuyerReview, UpdateBuyerReview } from "../../Common/ServerAPI";
+import { CreateBuyerReview } from "../../Common/ServerAPI";
 import { useToast } from "../ui/Toast/ToastProvider";
 
 interface ReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   productId: string;
-  existingReview?: {
-    review_id: string;
-    rating: number;
-    review_title: string;
-    review_text: string;
-  } | null;
   onSuccess: () => void;
+  existingReview?: any | null;
+  viewMode?: boolean;
 }
 
 const ReviewModal: React.FC<ReviewModalProps> = ({
   isOpen,
   onClose,
   productId,
-  existingReview,
   onSuccess,
+  existingReview = null,
+  viewMode = false,
 }) => {
   const { showToast } = useToast();
   const [rating, setRating] = useState(0);
@@ -30,21 +27,35 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
   const [reviewText, setReviewText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Populate form if editing existing review
   useEffect(() => {
-    if (existingReview) {
-      setRating(existingReview.rating);
-      setReviewTitle(existingReview.review_title);
-      setReviewText(existingReview.review_text);
+    if (existingReview && viewMode) {
+      setRating(existingReview.rating || 0);
+      setReviewTitle(existingReview.review_title || "");
+      setReviewText(existingReview.review_text || "");
     } else {
-      setRating(0);
-      setReviewTitle("");
-      setReviewText("");
+      resetForm();
     }
-  }, [existingReview, isOpen]);
+  }, [existingReview, viewMode, isOpen]);
+
+  const resetForm = () => {
+    setRating(0);
+    setHoveredRating(0);
+    setReviewTitle("");
+    setReviewText("");
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (viewMode) {
+      handleClose();
+      return;
+    }
 
     if (rating === 0) {
       showToast({
@@ -66,34 +77,20 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
 
     setIsSubmitting(true);
     try {
-      if (existingReview) {
-        // Update existing review
-        await UpdateBuyerReview({
-          review_id: existingReview.review_id,
-          rating,
-          review_title: reviewTitle,
-          review_text: reviewText,
-        });
-        showToast({
-          message: "Review updated successfully!",
-          type: "success",
-          duration: 2000,
-        });
-      } else {
-        // Create new review
-        await CreateBuyerReview({
-          product_id: productId,
-          rating,
-          review_title: reviewTitle,
-          review_text: reviewText,
-        });
-        showToast({
-          message: "Review submitted successfully!",
-          type: "success",
-          duration: 2000,
-        });
-      }
+      await CreateBuyerReview({
+        product_id: productId,
+        rating,
+        review_title: reviewTitle,
+        review_text: reviewText,
+      });
 
+      showToast({
+        message: "Review submitted successfully!",
+        type: "success",
+        duration: 2000,
+      });
+
+      resetForm();
       onSuccess();
       onClose();
     } catch (error: any) {
@@ -117,7 +114,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="font-[Poppins] font-semibold text-[20px] text-[#1A1A1A]">
-            {existingReview ? "Edit Your Review" : "Write a Review"}
+            {viewMode ? "Your Review" : "Write a Review"}
           </h2>
           <button
             onClick={onClose}
@@ -132,24 +129,25 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
           {/* Rating Stars */}
           <div>
             <label className="block font-[Poppins] font-medium text-sm text-[#1A1A1A] mb-2">
-              Your Rating <span className="text-red-500">*</span>
+              Your Rating {!viewMode && <span className="text-red-500">*</span>}
             </label>
             <div className="flex items-center gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   type="button"
-                  onClick={() => setRating(star)}
-                  onMouseEnter={() => setHoveredRating(star)}
-                  onMouseLeave={() => setHoveredRating(0)}
-                  className="transition-transform hover:scale-110"
+                  onClick={() => !viewMode && setRating(star)}
+                  onMouseEnter={() => !viewMode && setHoveredRating(star)}
+                  onMouseLeave={() => !viewMode && setHoveredRating(0)}
+                  className={`transition-transform ${!viewMode ? "hover:scale-110 cursor-pointer" : "cursor-default"
+                    }`}
+                  disabled={viewMode}
                 >
                   <Star
-                    className={`w-8 h-8 ${
-                      star <= (hoveredRating || rating)
+                    className={`w-8 h-8 ${star <= (viewMode ? rating : hoveredRating || rating)
                         ? "fill-[#F8B814] text-[#F8B814]"
                         : "text-gray-300"
-                    }`}
+                      }`}
                   />
                 </button>
               ))}
@@ -164,7 +162,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
           {/* Review Title */}
           <div>
             <label className="block font-[Poppins] font-medium text-sm text-[#1A1A1A] mb-2">
-              Review Title <span className="text-red-500">*</span>
+              Review Title {!viewMode && <span className="text-red-500">*</span>}
             </label>
             <input
               type="text"
@@ -172,17 +170,23 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
               onChange={(e) => setReviewTitle(e.target.value)}
               placeholder="e.g., Amazing product!"
               maxLength={100}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#7077FE] font-[Open_Sans] text-sm"
+              readOnly={viewMode}
+              className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none ${viewMode
+                  ? "bg-gray-50 cursor-default"
+                  : "focus:border-[#7077FE]"
+                } font-[Open_Sans] text-sm`}
             />
-            <p className="text-xs text-gray-500 mt-1 font-[Open_Sans]">
-              {reviewTitle.length}/100 characters
-            </p>
+            {!viewMode && (
+              <p className="text-xs text-gray-500 mt-1 font-[Open_Sans]">
+                {reviewTitle.length}/100 characters
+              </p>
+            )}
           </div>
 
           {/* Review Text */}
           <div>
             <label className="block font-[Poppins] font-medium text-sm text-[#1A1A1A] mb-2">
-              Your Review <span className="text-red-500">*</span>
+              Your Review {!viewMode && <span className="text-red-500">*</span>}
             </label>
             <textarea
               value={reviewText}
@@ -190,37 +194,50 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
               placeholder="Share your experience with this product..."
               rows={5}
               maxLength={500}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#7077FE] font-[Open_Sans] text-sm resize-none"
+              readOnly={viewMode}
+              className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none ${viewMode
+                  ? "bg-gray-50 cursor-default"
+                  : "focus:border-[#7077FE]"
+                } font-[Open_Sans] text-sm resize-none`}
             />
-            <p className="text-xs text-gray-500 mt-1 font-[Open_Sans]">
-              {reviewText.length}/500 characters
-            </p>
+            {!viewMode && (
+              <p className="text-xs text-gray-500 mt-1 font-[Open_Sans]">
+                {reviewText.length}/500 characters
+              </p>
+            )}
           </div>
 
           {/* Buttons */}
           <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg font-[Plus_Jakarta_Sans] font-medium text-sm text-gray-700 hover:bg-gray-50 transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting || rating === 0}
-              className={`flex-1 px-4 py-3 rounded-lg font-[Plus_Jakarta_Sans] font-medium text-sm text-white transition ${
-                isSubmitting || rating === 0
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-[#7077FE] hover:bg-[#5E65F6]"
-              }`}
-            >
-              {isSubmitting
-                ? "Submitting..."
-                : existingReview
-                ? "Update Review"
-                : "Submit Review"}
-            </button>
+            {viewMode ? (
+              <button
+                type="button"
+                onClick={handleClose}
+                className="w-full px-4 py-3 bg-[#7077FE] text-white rounded-lg font-[Plus_Jakarta_Sans] font-medium text-sm hover:bg-[#5E65F6] transition"
+              >
+                Close
+              </button>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg font-[Plus_Jakarta_Sans] font-medium text-sm text-gray-700 hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting || rating === 0}
+                  className={`flex-1 px-4 py-3 rounded-lg font-[Plus_Jakarta_Sans] font-medium text-sm text-white transition ${isSubmitting || rating === 0
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-[#7077FE] hover:bg-[#5E65F6]"
+                    }`}
+                >
+                  {isSubmitting ? "Submitting..." : "Submit Review"}
+                </button>
+              </>
+            )}
           </div>
         </form>
       </div>

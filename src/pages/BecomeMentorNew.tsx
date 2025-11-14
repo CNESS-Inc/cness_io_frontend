@@ -398,7 +398,6 @@ const BecomeMentor = () => {
         await fetchSubmit()
       }
     } catch (error: any) {
-      console.log("🚀 ~ handleSubmit ~ error:", error);
       showToast({
         message: error.response.data.error.message,
         type: "error",
@@ -412,7 +411,6 @@ const BecomeMentor = () => {
   const fetchSubmit = async () => {
     try {
       const res = await isMentorOrPartner();
-      console.log("🚀 ~ fetchSubmit ~ res:", res);
       setHasSubmittedMentorForm(res.data.data.mentor_form);
     } catch (error: any) {
       showToast({

@@ -212,8 +212,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
-              }`}
+            className={`w-full h-full transition-opacity duration-500 ${
+              index === current ? "block" : "hidden"
+            }`}
           >
             {item.type === "image" ? (
               <img
@@ -265,8 +266,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
-                }`}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                idx === current ? "bg-indigo-500" : "bg-gray-300"
+              }`}
             ></button>
           ))}
         </div>
@@ -331,9 +333,10 @@ export default function SocialTopBar() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
-  const [isAdult, setIsAdult] = useState<Boolean>(
-    localStorage.getItem("isAdult") === "true" ? true : false
-  );
+  // const [isAdult, setIsAdult] = useState<Boolean>(
+  //   localStorage.getItem("isAdult") === "true" ? true : false
+  // );
+  const isAdult = localStorage.getItem("isAdult") === "true" ? true : false;
   const navigate = useNavigate();
   const { showToast } = useToast();
   const userProfilePicture = localStorage.getItem("profile_picture");
@@ -480,7 +483,6 @@ export default function SocialTopBar() {
           (friend: any) =>
             friend.friend_id === userId || friend.user_id === userId
         );
-        console.log("🚀 ~ checkFriendStatus ~ friendRecord:", friendRecord);
         if (friendRecord) {
           // Check the request_status from the database
           const status = friendRecord.request_status;
@@ -568,7 +570,7 @@ export default function SocialTopBar() {
         // Get the first image URL if available, or use profile picture as fallback
         const firstImageUrl =
           item.file &&
-            item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
+          item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
             ? item.file.split(",")[0].trim()
             : item.profile.profile_picture;
 
@@ -828,7 +830,6 @@ export default function SocialTopBar() {
 
     try {
       const response = await AddPost(formData);
-      console.log("🚀 ~ handleSubmitPost ~ response:", response);
 
       if (response) {
         showToast({
@@ -989,9 +990,10 @@ export default function SocialTopBar() {
       const res = await GetStory();
       // Add validation for API response structure
       if (res?.data?.data && Array.isArray(res.data.data)) {
-        // Group stories by user and get the most recent story per user
-        const groupedStories = groupStoriesByUser(res.data.data);
-        setStoriesData(groupedStories);
+        // Use stories directly without grouping
+        const allStories = res.data.data;
+        // const allStories = groupStoriesByUser(res.data.data);
+        setStoriesData(allStories);
       } else {
         console.warn("Invalid stories API response structure:", res);
         setStoriesData([]);
@@ -1002,36 +1004,36 @@ export default function SocialTopBar() {
     }
   };
 
-  // Function to group stories by user and return the most recent story per user
-  const groupStoriesByUser = (stories: any[]) => {
-    const userStoryMap = new Map();
-    const userStoryCounts = new Map();
+  // // Function to group stories by user and return the most recent story per user
+  // const groupStoriesByUser = (stories: any[]) => {
+  //   const userStoryMap = new Map();
+  //   const userStoryCounts = new Map();
 
-    stories.forEach((story) => {
-      const userId = story.user_id;
-      const existingStory = userStoryMap.get(userId);
+  //   stories.forEach((story) => {
+  //     const userId = story.user_id;
+  //     const existingStory = userStoryMap.get(userId);
 
-      // Count total stories per user
-      userStoryCounts.set(userId, (userStoryCounts.get(userId) || 0) + 1);
+  //     // Count total stories per user
+  //     userStoryCounts.set(userId, (userStoryCounts.get(userId) || 0) + 1);
 
-      // If no story exists for this user, or if current story is more recent
-      if (
-        !existingStory ||
-        new Date(story.createdAt) > new Date(existingStory.createdAt)
-      ) {
-        userStoryMap.set(userId, {
-          ...story,
-          totalStoriesCount: userStoryCounts.get(userId),
-        });
-      }
-    });
+  //     // If no story exists for this user, or if current story is more recent
+  //     if (
+  //       !existingStory ||
+  //       new Date(story.createdAt) > new Date(existingStory.createdAt)
+  //     ) {
+  //       userStoryMap.set(userId, {
+  //         ...story,
+  //         totalStoriesCount: userStoryCounts.get(userId),
+  //       });
+  //     }
+  //   });
 
-    // Convert map values to array and sort by creation date (most recent first)
-    return Array.from(userStoryMap.values()).sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-  };
+  //   // Convert map values to array and sort by creation date (most recent first)
+  //   return Array.from(userStoryMap.values()).sort(
+  //     (a, b) =>
+  //       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  //   );
+  // };
 
   const openPostPopup = () => {
     setShowPopup(true);
@@ -1082,12 +1084,12 @@ export default function SocialTopBar() {
         prevPosts.map((post) =>
           post.id === postId
             ? {
-              ...post,
-              is_liked: !post.is_liked,
-              likes_count: post.is_liked
-                ? post.likes_count - 1
-                : post.likes_count + 1,
-            }
+                ...post,
+                is_liked: !post.is_liked,
+                likes_count: post.is_liked
+                  ? post.likes_count - 1
+                  : post.likes_count + 1,
+              }
             : post
         )
       );
@@ -1168,7 +1170,7 @@ export default function SocialTopBar() {
 
   const MeDetail = async () => {
     if (localStorage.getItem("isAdult") === "true") {
-      setIsAdult(true);
+      // setIsAdult(true);
       return;
     }
     try {
@@ -1178,7 +1180,7 @@ export default function SocialTopBar() {
       }
       const dobString = response?.data?.data?.user?.dob;
       if (!dobString) {
-        setIsAdult(false);
+        // setIsAdult(false);
         return;
       }
 
@@ -1192,13 +1194,13 @@ export default function SocialTopBar() {
       }
 
       if (age >= 18) {
-        setIsAdult(true);
+        // setIsAdult(true);
       } else {
-        setIsAdult(false);
+        // setIsAdult(false);
       }
     } catch (error) {
       console.error("Error fetching me details:", error);
-      setIsAdult(false);
+      // setIsAdult(false);
     }
   };
 
@@ -1518,9 +1520,9 @@ export default function SocialTopBar() {
                         <img
                           src={
                             !userProfilePicture ||
-                              userProfilePicture === "null" ||
-                              userProfilePicture === "undefined" ||
-                              !userProfilePicture.startsWith("http")
+                            userProfilePicture === "null" ||
+                            userProfilePicture === "undefined" ||
+                            !userProfilePicture.startsWith("http")
                               ? "/profile.png"
                               : userProfilePicture
                           }
@@ -1663,11 +1665,14 @@ export default function SocialTopBar() {
                           id={story.id}
                           userId={story.user_id}
                           userIcon={
-                            story.storyuser?.profile?.profile_picture || ""
+                            story.storyuser?.profile?.profile_picture
+                              ? story.storyuser?.profile?.profile_picture
+                              : "/profile.png"
                           }
                           userName={
-                            `${story.storyuser?.profile?.first_name || ""} ${story.storyuser?.profile?.last_name || ""
-                              }`.trim() || "Unknown User"
+                            `${story.storyuser?.profile?.first_name || ""} ${
+                              story.storyuser?.profile?.last_name || ""
+                            }`.trim() || "Unknown User"
                           }
                           title={story.description || "Untitled Story"}
                           videoSrc={story?.thumbnail || ""}
@@ -1677,12 +1682,16 @@ export default function SocialTopBar() {
                           <div className="relative">
                             <img
                               src={
-                                story.storyuser?.profile?.profile_picture || ""
+                                story.storyuser?.profile?.profile_picture
+                                  ? story.storyuser?.profile?.profile_picture
+                                  : "/profile.png"
                               }
                               alt={
-                                `${story.storyuser?.profile?.first_name || ""
-                                  } ${story.storyuser?.profile?.last_name || ""
-                                  }`.trim() || "Unknown User"
+                                `${
+                                  story.storyuser?.profile?.first_name || ""
+                                } ${
+                                  story.storyuser?.profile?.last_name || ""
+                                }`.trim() || "Unknown User"
                               }
                               className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
                               onError={(e) => {
@@ -1724,9 +1733,9 @@ export default function SocialTopBar() {
                             <img
                               src={
                                 !post.profile.profile_picture ||
-                                  post.profile.profile_picture === "null" ||
-                                  post.profile.profile_picture === "undefined" ||
-                                  !post.profile.profile_picture.startsWith("http")
+                                post.profile.profile_picture === "null" ||
+                                post.profile.profile_picture === "undefined" ||
+                                !post.profile.profile_picture.startsWith("http")
                                   ? "/profile.png"
                                   : post.profile.profile_picture
                               }
@@ -1769,13 +1778,14 @@ export default function SocialTopBar() {
                               onClick={() => handleConnect(post.user_id)}
                               disabled={connectingUsers[post.user_id] || false}
                               className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px]
-                              ${getFriendStatus(post.user_id) === "connected"
+                              ${
+                                getFriendStatus(post.user_id) === "connected"
                                   ? "bg-gray-400 text-white cursor-not-allowed"
                                   : getFriendStatus(post.user_id) ===
                                     "requested"
-                                    ? "bg-gray-400 text-white" // Remove cursor-not-allowed to make it clickable
-                                    : "bg-white text-black shadow-md"
-                                }`}
+                                  ? "bg-gray-400 text-white" // Remove cursor-not-allowed to make it clickable
+                                  : "bg-white text-black shadow-md"
+                              }`}
                             >
                               <span className="flex items-center gap-1 text-[#0B3449]">
                                 <img
@@ -1787,20 +1797,21 @@ export default function SocialTopBar() {
                                   ? "Loading..."
                                   : getFriendStatus(post.user_id) ===
                                     "connected"
-                                    ? "Connected"
-                                    : getFriendStatus(post.user_id) ===
-                                      "requested"
-                                      ? "Requested" // This will now change back to "Connect" when clicked again
-                                      : "Connect"}
+                                  ? "Connected"
+                                  : getFriendStatus(post.user_id) ===
+                                    "requested"
+                                  ? "Requested" // This will now change back to "Connect" when clicked again
+                                  : "Connect"}
                               </span>
                             </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(post.user_id)}
                               className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${post.if_following
-                                  ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
-                                  : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
+                                ${
+                                  post.if_following
+                                    ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
+                                    : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
                                 }`}
                             >
                               {post.if_following ? (
@@ -1855,8 +1866,8 @@ export default function SocialTopBar() {
                                             ? "Loading..."
                                             : getFriendStatus(post.user_id) ===
                                               "requested"
-                                              ? "Requested" // This will now change back to "Connect" when clicked again
-                                              : "Connect"}
+                                            ? "Requested" // This will now change back to "Connect" when clicked again
+                                            : "Connect"}
                                         </button>
                                       </li>
                                       <li>
@@ -1989,12 +2000,12 @@ export default function SocialTopBar() {
                       <div className="mt-3 md:mt-4">
                         <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
                           {expandedPosts[post.id] ||
-                            post?.content?.length <= CONTENT_LIMIT
+                          post?.content?.length <= CONTENT_LIMIT
                             ? post.content
                             : `${post?.content?.substring(
-                              0,
-                              CONTENT_LIMIT
-                            )}...`}
+                                0,
+                                CONTENT_LIMIT
+                              )}...`}
                           {post?.content?.length > CONTENT_LIMIT && (
                             <button
                               onClick={() => toggleExpand(post.id)}
@@ -2104,8 +2115,9 @@ export default function SocialTopBar() {
                         <button
                           onClick={(e) => handleLike(post.id, e)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${isLoading ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${
+                            isLoading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
                         >
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6 shrink-0"
@@ -2113,8 +2125,9 @@ export default function SocialTopBar() {
                             stroke={post.is_liked ? "#7077FE" : "#000"}
                           />
                           <span
-                            className={`hidden sm:flex ${post.is_liked ? "text-[#7077FE]" : "text-black"
-                              }`}
+                            className={`hidden sm:flex ${
+                              post.is_liked ? "text-[#7077FE]" : "text-black"
+                            }`}
                           >
                             Appreciate
                           </span>
@@ -2132,10 +2145,11 @@ export default function SocialTopBar() {
                             setSelectedPostId(post.id);
                             setShowCommentBox(true);
                           }}
-                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${selectedPostId === post.id
-                            ? "text-[#7077FE]"
-                            : "text-black"
-                            }`}
+                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${
+                            selectedPostId === post.id
+                              ? "text-[#7077FE]"
+                              : "text-black"
+                          }`}
                         >
                           <MessageSquare
                             className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
@@ -2147,10 +2161,11 @@ export default function SocialTopBar() {
                             }
                           />{" "}
                           <span
-                            className={`hidden sm:flex ${selectedPostId === post.id
-                              ? "#7077FE"
-                              : "text-black"
-                              }`}
+                            className={`hidden sm:flex ${
+                              selectedPostId === post.id
+                                ? "#7077FE"
+                                : "text-black"
+                            }`}
                           >
                             Reflections
                           </span>
@@ -2273,7 +2288,11 @@ export default function SocialTopBar() {
           )}
 
           <div
-            className={`fixed lg:static top-0 right-0 h-full lg:h-auto w-[280px] sm:w-[320px] lg:w-[25%] max-w-[90vw] lg:max-w-none bg-white lg:bg-transparent shadow-xl lg:shadow-none transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0 p-3' : 'translate-x-full lg:translate-x-0'} z-50 lg:z-auto overflow-y-auto pt-0 flex flex-col gap-4`}
+            className={`fixed lg:static top-0 right-0 h-full lg:h-auto w-[280px] sm:w-[320px] lg:w-[25%] max-w-[90vw] lg:max-w-none bg-white lg:bg-transparent shadow-xl lg:shadow-none transform transition-transform duration-300 ease-in-out ${
+              isSidebarOpen
+                ? "translate-x-0 p-3"
+                : "translate-x-full lg:translate-x-0"
+            } z-50 lg:z-auto overflow-y-auto pt-0 flex flex-col gap-4`}
           >
             {/* Close button for mobile */}
             <div className="lg:hidden flex justify-between items-center px-4 pb-4 border-b border-gray-200 sticky top-0 bg-white z-10 pt-4">
@@ -2321,7 +2340,8 @@ export default function SocialTopBar() {
                   }}
                   className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
                 >
-                  <img src={Collection} className="w-5 h-5" alt="" /> My Collection
+                  <img src={Collection} className="w-5 h-5" alt="" /> My
+                  Collection
                 </li>
                 <li
                   onClick={() => {
@@ -2330,7 +2350,8 @@ export default function SocialTopBar() {
                   }}
                   className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-0 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
                 >
-                  <img src={people} className="w-5 h-5" alt="" /> People you follow
+                  <img src={people} className="w-5 h-5" alt="" /> People you
+                  follow
                 </li>
               </ul>
             </div>
@@ -2447,9 +2468,9 @@ export default function SocialTopBar() {
                     <img
                       src={
                         !userInfo?.profile_picture ||
-                          userInfo?.profile_picture === "null" ||
-                          userInfo?.profile_picture === "undefined" ||
-                          !userInfo?.profile_picture.startsWith("http")
+                        userInfo?.profile_picture === "null" ||
+                        userInfo?.profile_picture === "undefined" ||
+                        !userInfo?.profile_picture.startsWith("http")
                           ? "/profile.png"
                           : userInfo?.profile_picture
                       }
@@ -2616,15 +2637,22 @@ export default function SocialTopBar() {
                     <div className="relative w-80 mr-3" ref={topicDropdownRef}>
                       <button
                         type="button"
-                        onClick={() => setIsTopicDropdownOpen(!isTopicDropdownOpen)}
+                        onClick={() =>
+                          setIsTopicDropdownOpen(!isTopicDropdownOpen)
+                        }
                         className="w-full p-2 border border-[#ECEEF2] text-sm rounded-md outline-none focus:border-[#7077FE] bg-white text-left flex justify-between items-center"
                       >
-                        <span className={selectedTopic ? "text-black" : "text-gray-500"}>
+                        <span
+                          className={
+                            selectedTopic ? "text-black" : "text-gray-500"
+                          }
+                        >
                           {getSelectedTopicName()}
                         </span>
                         <svg
-                          className={`w-4 h-4 transition-transform ${isTopicDropdownOpen ? "rotate-180" : ""
-                            }`}
+                          className={`w-4 h-4 transition-transform ${
+                            isTopicDropdownOpen ? "rotate-180" : ""
+                          }`}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -2644,7 +2672,9 @@ export default function SocialTopBar() {
                             <input
                               type="text"
                               value={topicSearchQuery}
-                              onChange={(e) => setTopicSearchQuery(e.target.value)}
+                              onChange={(e) =>
+                                setTopicSearchQuery(e.target.value)
+                              }
                               placeholder="Search topics..."
                               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md outline-none focus:border-[#7077FE]"
                               onClick={(e) => e.stopPropagation()}
@@ -2662,10 +2692,11 @@ export default function SocialTopBar() {
                                     setIsTopicDropdownOpen(false);
                                     setTopicSearchQuery("");
                                   }}
-                                  className={`w-full text-left px-4 py-2 text-sm hover:bg-[#7077FE]/10 transition-colors ${selectedTopic === topic.id
+                                  className={`w-full text-left px-4 py-2 text-sm hover:bg-[#7077FE]/10 transition-colors ${
+                                    selectedTopic === topic.id
                                       ? "bg-[#7077FE]/20 text-[#7077FE] font-medium"
                                       : "text-gray-700"
-                                    }`}
+                                  }`}
                                 >
                                   {topic.topic_name}
                                 </button>
@@ -2684,10 +2715,11 @@ export default function SocialTopBar() {
                                   setIsTopicDropdownOpen(false);
                                   setTopicSearchQuery("");
                                 }}
-                                className={`w-full text-left px-4 py-2 text-sm border-t border-[#ECEEF2] hover:bg-[#7077FE]/10 transition-colors ${selectedTopic === "999999"
+                                className={`w-full text-left px-4 py-2 text-sm border-t border-[#ECEEF2] hover:bg-[#7077FE]/10 transition-colors ${
+                                  selectedTopic === "999999"
                                     ? "bg-[#7077FE]/20 text-[#7077FE] font-medium"
                                     : "text-gray-700"
-                                  }`}
+                                }`}
                               >
                                 Other
                               </button>

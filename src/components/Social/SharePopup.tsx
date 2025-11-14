@@ -7,6 +7,7 @@ import {
 } from "react-share";
 import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import { MdContentCopy } from "react-icons/md";
+import { useParams } from "react-router";
 
 interface SharePopupProps {
   isOpen: boolean;
@@ -23,8 +24,8 @@ const SharePopup: React.FC<SharePopupProps> = ({
   position = "bottom",
   className = "",
 }) => {
-  const myid = localStorage.getItem("Id");
-  const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
+  const {id} = useParams();
+  const urldata = `${window.location.origin}/directory/user-profile/${id}`;
   const [visible, setVisible] = useState(isOpen);
   const [copy, setCopy] = useState<Boolean>(false);
   const popupRef = useRef<HTMLDivElement>(null);

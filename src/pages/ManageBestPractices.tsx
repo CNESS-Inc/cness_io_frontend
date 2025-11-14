@@ -321,6 +321,17 @@ const Managebestpractices = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate that at least one of profession or interest is provided
+    if (!currentPractice?.profession_data?.id && !currentPractice?.interest) {
+      showToast({
+        message: "Please provide either a profession or an interest",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -328,7 +339,12 @@ const Managebestpractices = () => {
         // For edit mode, send as FormData to include file
         const formData = new FormData();
         formData.append("id", currentPractice.id);
-        formData.append("profession", currentPractice?.profession_data?.id);
+
+        // Append profession if available
+        if (currentPractice?.profession_data?.id) {
+          formData.append("profession", currentPractice.profession_data.id);
+        }
+
         formData.append("title", currentPractice.title);
         formData.append("description", currentPractice.description);
         formData.append("tags", JSON.stringify(tags));
@@ -338,7 +354,7 @@ const Managebestpractices = () => {
           formData.append("file", currentPractice.file);
         }
 
-        // If interest exists, append it
+        // Append interest if available
         if (currentPractice.interest) {
           formData.append("interest", currentPractice.interest);
         }
