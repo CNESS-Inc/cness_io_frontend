@@ -1,117 +1,100 @@
 import cloud from "../../../assets/cloud-add.svg";
 import Button from "../../ui/Button";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+// import { CKEditor } from "@ckeditor/ckeditor5-react";
+// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useState, useEffect } from "react";
+import CustomRichTextEditor from "./CustomRichTextEditor";
 
 // Base64 upload adapter
-class Base64UploadAdapter {
-  private loader: any;
-  private reader: FileReader;
+// class Base64UploadAdapter {
+//   private loader: any;
+//   private reader: FileReader;
 
-  constructor(loader: any) {
-    this.loader = loader;
-    this.reader = new FileReader();
-  }
+//   constructor(loader: any) {
+//     this.loader = loader;
+//     this.reader = new FileReader();
+//   }
 
-  upload() {
-    return new Promise((resolve, reject) => {
-      this.reader.addEventListener("load", () => {
-        resolve({ default: this.reader.result });
-      });
-      this.reader.addEventListener("error", (err) => reject(err));
-      this.reader.addEventListener("abort", () => reject());
-      this.loader.file.then((file: File) => {
-        this.reader.readAsDataURL(file);
-      });
-    });
-  }
+//   upload() {
+//     return new Promise((resolve, reject) => {
+//       this.reader.addEventListener("load", () => {
+//         resolve({ default: this.reader.result });
+//       });
+//       this.reader.addEventListener("error", (err) => reject(err));
+//       this.reader.addEventListener("abort", () => reject());
+//       this.loader.file.then((file: File) => {
+//         this.reader.readAsDataURL(file);
+//       });
+//     });
+//   }
 
-  abort() {
-    this.reader.abort();
-  }
-}
+//   abort() {
+//     this.reader.abort();
+//   }
+// }
 
-function Base64UploadAdapterPlugin(editor: any) {
-  editor.plugins.get("FileRepository").createUploadAdapter = (loader: any) => {
-    return new Base64UploadAdapter(loader);
-  };
-}
+// function Base64UploadAdapterPlugin(editor: any) {
+//   editor.plugins.get("FileRepository").createUploadAdapter = (loader: any) => {
+//     return new Base64UploadAdapter(loader);
+//   };
+// }
 
-const editorConfig = {
-  extraPlugins: [Base64UploadAdapterPlugin],
-  toolbar: {
-    items: [
-      "heading",
-      "|",
-      "bold",
-      "italic",
-      "underline",
-      "strikethrough",
-      "subscript",
-      "superscript",
-      "code",
-      "|",
-      "fontSize",
-      "fontFamily",
-      "fontColor",
-      "fontBackgroundColor",
-      "|",
-      "alignment",
-      "|",
-      "link",
-      "insertImage",
-      "mediaEmbed",
-      "insertTable",
-      "blockQuote",
-      "codeBlock",
-      "|",
-      "bulletedList",
-      "numberedList",
-      "todoList",
-      "|",
-      "outdent",
-      "indent",
-      "|",
-      "specialCharacters",
-      "horizontalLine",
-      "|",
-      "removeFormat",
-      "highlight",
-      "|",
-      "undo",
-      "redo",
-    ],
-  },
-  fontFamily: {
-    options: [
-      "default",
-      "Arial, Helvetica, sans-serif",
-      "Courier New, Courier, monospace",
-      "Georgia, serif",
-      "Times New Roman, Times, serif",
-      "Trebuchet MS, Helvetica, sans-serif",
-      "Verdana, Geneva, sans-serif",
-    ],
-  },
-  fontSize: {
-    options: [10, 12, 14, "default", 18, 20, 22, 24],
-  },
-  placeholder: "Add your description here...",
-  link: {
-    addTargetToExternalLinks: true,
-    defaultProtocol: "https://",
-  },
-  image: {
-    toolbar: [
-      "imageTextAlternative",
-      "toggleImageCaption",
-      "imageStyle:inline",
-      "imageStyle:block",
-      "imageStyle:side",
-    ],
-  },
-};
+// const editorConfig = {
+//   extraPlugins: [Base64UploadAdapterPlugin],
+//   toolbar: {
+//     items: [
+//       "bold",
+//       "italic",
+//       "underline",
+//       "strikethrough",
+//       "|",
+//       "fontSize",
+//       "fontFamily",
+//       "fontColor",
+//       "fontBackgroundColor",
+//       "|",
+//       "alignment",
+//       "|",
+//       "link",
+//       "insertTable",
+//       "blockQuote",
+//       "|",
+//       "bulletedList",
+//       "numberedList",
+//       "|",
+//       "undo",
+//       "redo",
+//     ],
+//   },
+//   fontFamily: {
+//     options: [
+//       "default",
+//       "Arial, Helvetica, sans-serif",
+//       "Courier New, Courier, monospace",
+//       "Georgia, serif",
+//       "Times New Roman, Times, serif",
+//       "Trebuchet MS, Helvetica, sans-serif",
+//       "Verdana, Geneva, sans-serif",
+//     ],
+//   },
+//   fontSize: {
+//     options: [10, 12, 14, "default", 18, 20, 22, 24],
+//   },
+//   placeholder: "Add your description here...",
+//   link: {
+//     addTargetToExternalLinks: true,
+//     defaultProtocol: "https://",
+//   },
+//   image: {
+//     toolbar: [
+//       "imageTextAlternative",
+//       "toggleImageCaption",
+//       "imageStyle:inline",
+//       "imageStyle:block",
+//       "imageStyle:side",
+//     ],
+//   },
+// };
 
 interface AddBestPracticeModalProps {
   open: boolean;
@@ -168,7 +151,9 @@ export default function AddBestPracticeModal({
   handleSubmit,
   isSubmitting,
 }: AddBestPracticeModalProps) {
-  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
+    {}
+  );
   const [touched, setTouched] = useState({
     title: false,
     file: false,
@@ -181,12 +166,12 @@ export default function AddBestPracticeModal({
   useEffect(() => {
     if (open) {
       setValidationErrors({});
-      setTouched({ 
-        title: false, 
-        file: false, 
-        description: false, 
+      setTouched({
+        title: false,
+        file: false,
+        description: false,
         interestOrProfession: false,
-        tags: false 
+        tags: false,
       });
     }
   }, [open]);
@@ -196,10 +181,12 @@ export default function AddBestPracticeModal({
     switch (name) {
       case "title":
         if (!value.trim()) return "Title is required";
-        if (value.trim().length < 3) return "Title must be at least 3 characters long";
-        if (value.trim().length > 100) return "Title must be less than 100 characters";
+        if (value.trim().length < 3)
+          return "Title must be at least 3 characters long";
+        if (value.trim().length > 100)
+          return "Title must be less than 100 characters";
         return undefined;
-      
+
       case "file":
         if (!value) return "Image is required";
         if (value) {
@@ -214,35 +201,39 @@ export default function AddBestPracticeModal({
           }
         }
         return undefined;
-      
+
       case "description":
         // Remove HTML tags and check for actual content
         const textContent = value.replace(/<[^>]*>/g, "").trim();
         if (!textContent) return "Description is required";
-        if (textContent.length < 10) return "Description must be at least 10 characters long";
-        if (textContent.length > 5000) return "Description must be less than 5000 characters";
+        if (textContent.length < 10)
+          return "Description must be at least 10 characters long";
+        if (textContent.length > 5000)
+          return "Description must be less than 5000 characters";
         return undefined;
-      
+
       case "interestOrProfession":
         // Check if at least one of interest or profession is selected
         if (!newPractice.interest.trim() && !newPractice.profession.trim()) {
           return "Please select either an Interest or a Profession";
         }
         return undefined;
-      
+
       case "tags":
         if (tags.length === 0) return "At least one tag is required";
         if (tags.length > 10) return "Maximum 10 tags allowed";
         // Validate individual tags
         for (const tag of tags) {
-          if (tag.length < 2) return "Each tag must be at least 2 characters long";
-          if (tag.length > 20) return "Each tag must be less than 20 characters";
+          if (tag.length < 2)
+            return "Each tag must be at least 2 characters long";
+          if (tag.length > 20)
+            return "Each tag must be less than 20 characters";
           if (!/^[a-zA-Z0-9\s\-_]+$/.test(tag)) {
             return "Tags can only contain letters, numbers, spaces, hyphens, and underscores";
           }
         }
         return undefined;
-      
+
       default:
         return undefined;
     }
@@ -250,7 +241,7 @@ export default function AddBestPracticeModal({
 
   const validateForm = (): boolean => {
     const errors: ValidationErrors = {};
-    
+
     errors.title = validateField("title", newPractice.title);
     errors.file = validateField("file", newPractice.file);
     errors.description = validateField("description", newPractice.description);
@@ -269,71 +260,81 @@ export default function AddBestPracticeModal({
   // Enhanced handleSubmit with validation
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // Mark all fields as touched
-    setTouched({ 
-      title: true, 
-      file: true, 
-      description: true, 
+    setTouched({
+      title: true,
+      file: true,
+      description: true,
       interestOrProfession: true,
-      tags: true 
+      tags: true,
     });
-    
+
     if (validateForm()) {
       handleSubmit(e);
     } else {
       // Scroll to first error
       const firstErrorElement = document.querySelector('[data-error="true"]');
       if (firstErrorElement) {
-        firstErrorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        firstErrorElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
       }
     }
   };
 
   // Enhanced handleInputChange with validation
   const handleInputChangeWithValidation = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     handleInputChange(e);
-    
+
     // Validate field on change if it's been touched
     const fieldName = e.target.name;
     if (touched[fieldName as keyof typeof touched]) {
       const error = validateField(fieldName, e.target.value);
-      setValidationErrors(prev => ({
+      setValidationErrors((prev) => ({
         ...prev,
-        [fieldName]: error
+        [fieldName]: error,
       }));
     }
 
     // If interest or profession changes, validate the interestOrProfession field
-    if ((fieldName === "interest" || fieldName === "profession") && touched.interestOrProfession) {
+    if (
+      (fieldName === "interest" || fieldName === "profession") &&
+      touched.interestOrProfession
+    ) {
       const error = validateField("interestOrProfession", null);
-      setValidationErrors(prev => ({
+      setValidationErrors((prev) => ({
         ...prev,
-        interestOrProfession: error
+        interestOrProfession: error,
       }));
     }
   };
 
   // Enhanced handleFileChange with validation
-  const handleFileChangeWithValidation = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChangeWithValidation = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     handleFileChange(e);
-    
+
     if (touched.file) {
       const file = e.target.files?.[0];
       const error = validateField("file", file);
-      setValidationErrors(prev => ({
+      setValidationErrors((prev) => ({
         ...prev,
-        file: error
+        file: error,
       }));
     }
   };
 
   // Handle blur events for validation
   const handleBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
-    
+    setTouched((prev) => ({ ...prev, [field]: true }));
+
     let value: any;
     switch (field) {
       case "title":
@@ -352,11 +353,11 @@ export default function AddBestPracticeModal({
       default:
         return;
     }
-    
+
     const error = validateField(field, value);
-    setValidationErrors(prev => ({
+    setValidationErrors((prev) => ({
       ...prev,
-      [field]: error
+      [field]: error,
     }));
   };
 
@@ -383,7 +384,7 @@ export default function AddBestPracticeModal({
     if (imagePreviewUrl) {
       URL.revokeObjectURL(imagePreviewUrl);
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -409,9 +410,11 @@ export default function AddBestPracticeModal({
         {/* Upload Section - Conditionally render based on whether file is selected */}
         {!newPractice.file ? (
           // Original upload section when no file is selected
-          <div 
+          <div
             className={`mt-2 text-center py-6 px-4 rounded-[26px] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer mb-4 ${
-              validationErrors.file ? 'border-red-500 bg-red-50' : 'border-[#CBD0DC]'
+              validationErrors.file
+                ? "border-red-500 bg-red-50"
+                : "border-[#CBD0DC]"
             }`}
             data-error={!!validationErrors.file}
           >
@@ -442,14 +445,16 @@ export default function AddBestPracticeModal({
               </label>
             </div>
             {validationErrors.file && (
-              <p className="text-red-600 text-sm mt-2">{validationErrors.file}</p>
+              <p className="text-red-600 text-sm mt-2">
+                {validationErrors.file}
+              </p>
             )}
           </div>
         ) : (
           // Image preview section when file is selected - Takes full upload section
-          <div 
+          <div
             className={`mt-2 rounded-[26px] border-2 border-dashed mb-4 relative overflow-hidden ${
-              validationErrors.file ? 'border-red-500' : 'border-[#CBD0DC]'
+              validationErrors.file ? "border-red-500" : "border-[#CBD0DC]"
             }`}
             data-error={!!validationErrors.file}
           >
@@ -488,7 +493,9 @@ export default function AddBestPracticeModal({
               </div>
             )}
             {validationErrors.file && (
-              <p className="text-red-600 text-sm mt-2 p-2 bg-red-50">{validationErrors.file}</p>
+              <p className="text-red-600 text-sm mt-2 p-2 bg-red-50">
+                {validationErrors.file}
+              </p>
             )}
           </div>
         )}
@@ -508,7 +515,10 @@ export default function AddBestPracticeModal({
           {/* Title + Interest */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-[5px]">
-              <label htmlFor="title" className="block text-[15px] font-normal text-black">
+              <label
+                htmlFor="title"
+                className="block text-[15px] font-normal text-black"
+              >
                 Title of Best Practice <span className="text-red-600">*</span>
               </label>
               <input
@@ -520,7 +530,9 @@ export default function AddBestPracticeModal({
                 onBlur={() => handleBlur("title")}
                 placeholder="Enter Title"
                 className={`w-full px-[10px] py-3 border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm ${
-                  validationErrors.title ? 'border-red-500 bg-red-50' : 'border-[#CBD0DC]'
+                  validationErrors.title
+                    ? "border-red-500 bg-red-50"
+                    : "border-[#CBD0DC]"
                 }`}
                 required
                 data-error={!!validationErrors.title}
@@ -531,7 +543,10 @@ export default function AddBestPracticeModal({
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <label htmlFor="interest" className="block text-[15px] font-normal text-black">
+              <label
+                htmlFor="interest"
+                className="block text-[15px] font-normal text-black"
+              >
                 Interest
               </label>
               <select
@@ -541,7 +556,9 @@ export default function AddBestPracticeModal({
                 onChange={handleInputChangeWithValidation}
                 onBlur={() => handleBlur("interestOrProfession")}
                 className={`w-full px-[10px] py-3 border rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                  validationErrors.interestOrProfession ? 'border-red-500 bg-red-50' : 'border-[#CBD0DC]'
+                  validationErrors.interestOrProfession
+                    ? "border-red-500 bg-red-50"
+                    : "border-[#CBD0DC]"
                 }`}
                 data-error={!!validationErrors.interestOrProfession}
               >
@@ -558,7 +575,10 @@ export default function AddBestPracticeModal({
           {/* Profession + Tags */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-[5px]">
-              <label htmlFor="profession" className="block text-[15px] font-normal text-black">
+              <label
+                htmlFor="profession"
+                className="block text-[15px] font-normal text-black"
+              >
                 Profession
               </label>
               <select
@@ -568,7 +588,9 @@ export default function AddBestPracticeModal({
                 onChange={handleInputChangeWithValidation}
                 onBlur={() => handleBlur("interestOrProfession")}
                 className={`w-full px-[10px] py-3 border rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                  validationErrors.interestOrProfession ? 'border-red-500 bg-red-50' : 'border-[#CBD0DC]'
+                  validationErrors.interestOrProfession
+                    ? "border-red-500 bg-red-50"
+                    : "border-[#CBD0DC]"
                 }`}
                 data-error={!!validationErrors.interestOrProfession}
               >
@@ -580,17 +602,24 @@ export default function AddBestPracticeModal({
                 ))}
               </select>
               {validationErrors.interestOrProfession && (
-                <p className="text-red-600 text-sm">{validationErrors.interestOrProfession}</p>
+                <p className="text-red-600 text-sm">
+                  {validationErrors.interestOrProfession}
+                </p>
               )}
             </div>
 
             <div className="flex flex-col gap-[5px]">
-              <label htmlFor="tags" className="block text-[15px] font-normal text-black">
+              <label
+                htmlFor="tags"
+                className="block text-[15px] font-normal text-black"
+              >
                 Tags <span className="text-red-600">*</span>
               </label>
-              <div 
+              <div
                 className={`w-full border bg-white px-3 py-2 rounded ${
-                  validationErrors.tags ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  validationErrors.tags
+                    ? "border-red-500 bg-red-50"
+                    : "border-gray-300"
                 }`}
                 data-error={!!validationErrors.tags}
               >
@@ -615,13 +644,15 @@ export default function AddBestPracticeModal({
                   id="tags"
                   type="text"
                   className={`w-full text-sm bg-white focus:outline-none ${
-                    validationErrors.tags ? 'placeholder-red-300' : 'placeholder-gray-400'
+                    validationErrors.tags
+                      ? "placeholder-red-300"
+                      : "placeholder-gray-400"
                   }`}
                   placeholder="Add tags (e.g. therapy, online, free-consult)"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={handleTagKeyDown}
-                  onBlur={() => setTouched(prev => ({ ...prev, tags: true }))}
+                  onBlur={() => setTouched((prev) => ({ ...prev, tags: true }))}
                 />
               </div>
               {validationErrors.tags && (
@@ -632,42 +663,46 @@ export default function AddBestPracticeModal({
 
           {/* Description */}
           <div className="flex flex-col gap-[5px]">
-            <label htmlFor="description" className="block text-[15px] font-normal text-black">
+            <label
+              htmlFor="description"
+              className="block text-[15px] font-normal text-black"
+            >
               Description <span className="text-red-600">*</span>
             </label>
-            <div 
+            <div
               className={`ckeditor-container ${
-                validationErrors.description ? 'border border-red-500 rounded' : ''
+                validationErrors.description
+                  ? "border border-red-500 rounded"
+                  : ""
               }`}
               data-error={!!validationErrors.description}
             >
-              <CKEditor
-                editor={ClassicEditor as any}
-                config={editorConfig}
-                data={newPractice.description}
-                onChange={(_event, editor) => {
-                  const data = editor.getData();
+              <CustomRichTextEditor
+                value={newPractice.description}
+                onChange={(data: any) => {
                   handleInputChange({
                     target: {
                       name: "description",
                       value: data,
                     },
                   } as React.ChangeEvent<HTMLTextAreaElement>);
-                  
-                  // Validate description if touched
                   if (touched.description) {
                     const error = validateField("description", data);
-                    setValidationErrors(prev => ({
+                    setValidationErrors((prev) => ({
                       ...prev,
-                      description: error
+                      description: error,
                     }));
                   }
                 }}
                 onBlur={() => handleBlur("description")}
+                placeholder="Add your description here..."
+                error={!!validationErrors.description}
               />
             </div>
             {validationErrors.description && (
-              <p className="text-red-600 text-sm">{validationErrors.description}</p>
+              <p className="text-red-600 text-sm">
+                {validationErrors.description}
+              </p>
             )}
           </div>
 

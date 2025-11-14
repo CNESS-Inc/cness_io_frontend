@@ -340,7 +340,6 @@ export default function SocialFeed() {
           (friend: any) =>
             friend.friend_id === userId || friend.user_id === userId
         );
-        console.log("🚀 ~ checkFriendStatus ~ friendRecord:", friendRecord);
         if (friendRecord) {
           // Check the request_status from the database
           const status = friendRecord.request_status;

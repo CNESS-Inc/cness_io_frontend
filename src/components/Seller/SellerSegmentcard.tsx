@@ -265,8 +265,7 @@ export function GreetingBar({
   >(null);
   const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<any[]>([]);
-  const [user, setUser] = useState<any | null>(null);
-  console.log("🚀 ~ GreetingBar ~ user:", user);
+  // const [user, setUser] = useState<any | null>(null);
   const [readlineQuestion, setReadlineQuestion] = useState([]);
   const { showToast } = useToast();
   const [domains, setDomains] = useState([]);
@@ -577,7 +576,6 @@ export function GreetingBar({
       }
 
       if (setErrors) {
-        console.log("🚀 ~ Login ~ setErrors:", setErrors);
         setOrganizationErrors(newErrors);
       }
       return isValid;
@@ -725,7 +723,7 @@ export function GreetingBar({
     try {
       const response: any = await DashboardDetails();
       if (response?.data?.data) {
-        setUser(response.data.data);
+        // setUser(response.data.data);
         localStorage.setItem("name", response.data.data?.name);
       }
     } catch (error: any) {
@@ -2420,7 +2418,6 @@ export function CertificationCard({
   upgradeCtaLabel?: string;
   onUpgrade?: () => void;
 }) {
-  console.log("🚀 ~ CertificationCard ~ activeLevel:", activeLevel);
   const [slide, setSlide] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   const [showiInterestModal, setShowInterestModal] = useState(false);

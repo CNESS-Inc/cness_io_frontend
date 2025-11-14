@@ -42,7 +42,6 @@ interface Errors {
 export default function UserProfileView() {
   const { id } = useParams();
   const [userDetails, setUserDetails] = useState<any>();
-  console.log("🚀 ~ UserProfileView ~ userDetails:", userDetails);
   const [activeModal, setActiveModal] = useState<"rating" | null>(null);
   const [expandedDescriptions, setExpandedDescriptions] = useState<
     Record<string, boolean>
@@ -83,8 +82,6 @@ export default function UserProfileView() {
   const [ratingPercentage, setratingPercentage] = useState<any>();
   const [userReviewData, setUserReviewData] = useState<any>([]);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  console.log("🚀 ~ UserProfileView ~ showLoginPrompt:", showLoginPrompt);
-
   const [breakdowns, setBreakdowns] = useState<Record<string, number>>({});
 
   // State for errors

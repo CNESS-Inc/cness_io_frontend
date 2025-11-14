@@ -68,7 +68,6 @@ import Premium from "../pages/Premium";
 import WhyCness from "../pages/WhyCness";
 import MyCollections from "../pages/MyCollections";
 import Library from "../pages/Library";
-import EmptyPageLibrary from "../pages/EmptyPageLibrary";
 import ContinueWatching from "../pages/ContinueWatching";
 //import SellerDashboard from "../pages/SellerDashboard";
 import UserPublicProfile from "../pages/UserPublicProfile";
@@ -113,6 +112,8 @@ import CoursePreview from "../pages/CoursePreview";
 import ArtPreview from "../pages/ArtPreview";
 import EditSellerProductPage from "../pages/EditSellerProductPage";
 import PaymentConfirmation from "../pages/PaymentConfirmation";
+import BestPracticeSearch from "../pages/BestPracticeSearch";
+import CollectionDetail from "../pages/CollectionDetail";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -211,10 +212,6 @@ export const router = createBrowserRouter([
             element: <ScoreResult />,
           },
           {
-            path: "collections",
-            element: <MyCollections />,
-          },
-          {
             path: "MyCollection/:id",
             element: <Mycollectionview />,
           },
@@ -300,11 +297,15 @@ export const router = createBrowserRouter([
             element: <MarketPlaceNew />,
           },
           {
-            path: "library",
-            element: <EmptyPageLibrary />,
+            path: "collections",
+            element: <MyCollections />,
           },
           {
-            path: "my-library",
+            path: "my-collections/:id",
+            element: <CollectionDetail />,
+          },
+          {
+            path: "library",
             element: <Library />,
           },
           {
@@ -480,10 +481,6 @@ export const router = createBrowserRouter([
             element: <CartPage />,
           },
           {
-            path: "checkout",
-            element: <Checkout />,
-          },
-          {
             path: "payment-success",
             element: <PaymentSuccess />,
           },
@@ -656,6 +653,10 @@ export const router = createBrowserRouter([
           {
             path: "bestpractices",
             element: <BestPracticesHub />,
+          },
+          {
+            path: "search-bestpractices",
+            element: <BestPracticeSearch />,
           },
           {
             path: "bestpractices/:id/:slug",

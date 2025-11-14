@@ -92,7 +92,6 @@ export default function DashboardSection() {
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [isAnnual, setIsAnnual] = useState(true);
   const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
-  console.log("🚀 ~ DashboardSection ~ personPricing:", personPricing)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
@@ -111,7 +110,6 @@ export default function DashboardSection() {
     question: [],
   });
   const [user, setUser] = useState<any | null>(null);
-  console.log("🚀 ~ DashboardSection ~ user:", user);
   const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
     domain_id: "",
     sub_domain_id: "",

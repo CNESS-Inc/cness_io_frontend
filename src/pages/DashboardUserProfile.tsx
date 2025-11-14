@@ -40,7 +40,6 @@ interface Errors {
 export default function DashboardUserProfile() {
   const { id } = useParams();
   const [userDetails, setUserDetails] = useState<any>();
-  console.log("🚀 ~ DashboardUserProfile ~ userDetails:", userDetails);
   const [activeModal, setActiveModal] = useState<"rating" | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
 
@@ -201,8 +200,7 @@ export default function DashboardUserProfile() {
         // Reset form on success
         setReviewText("");
         setBreakdowns({});
-        const res = await fetchRatingDetails();
-        console.log("🚀 ~ handleSubmit ~ res:", res);
+        await fetchRatingDetails();
         setAvgRating(parseFloat(response?.data?.data?.average));
         setUserDetails({ ...userDetails, is_rated: true });
       } catch (error: any) {
@@ -1179,7 +1177,6 @@ export default function DashboardUserProfile() {
               {breakDown?.map((item: any, index: number) => {
                 const breakdownKey =
                   item.breakdown_name as keyof typeof breakdowns;
-                console.log("🚀 ~ breakdownKey:", breakdownKey);
                 const errorKey =
                   item.breakdown_name as keyof typeof errors.breakdowns;
 

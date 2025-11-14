@@ -68,7 +68,6 @@ export default function DirectoryPage() {
   });
 
   const [popularCompanies, setPopularCompanies] = useState<Company[]>([]);
-  console.log("🚀 ~ DirectoryPage ~ popularCompanies:", popularCompanies);
   const [aspiringCompanies, setAspiringCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState({
     popular: false,

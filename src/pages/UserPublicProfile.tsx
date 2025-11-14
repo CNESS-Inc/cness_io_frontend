@@ -12,6 +12,7 @@ import bio from "../assets/bio.svg";
 import education from "../assets/education.svg";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { iconMap } from "../assets/icons";
+import SignupModel from "../components/OnBoarding/Signup";
 import {
   UnFriend,
   // GetUserProfileDetails,
@@ -128,6 +129,16 @@ export default function UserProfileView() {
     isOpen: boolean;
     practiceId: string | null;
   }>({ isOpen: false, practiceId: null });
+  const [openSignup, setOpenSignup] = useState(false);
+
+  const token = localStorage.getItem("jwt");
+
+  useEffect(() => {
+    if (token) {
+      navigate(`/dashboard/userprofile/${id}`);
+    }
+  }, [navigate]);
+
   const truncateText = (text: string, maxLength: number): string => {
     if (!text) return "";
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
@@ -211,7 +222,6 @@ export default function UserProfileView() {
     try {
       const res = await GetFollowBestpractices();
       setFollowBP(res.data.data.rows);
-      console.log("🚀 ~ fetchFollowBestPractices ~ res:", res);
     } catch (error: any) {
       console.error("Error fetching inspiring companies:", error);
       showToast({
@@ -222,18 +232,23 @@ export default function UserProfileView() {
     }
   };
 
+  useEffect(() => {}, []);
   useEffect(() => {
-    fetchMineBestPractices();
-    fetchFollowBestPractices();
+    if (token) {
+      fetchMineBestPractices();
+      fetchFollowBestPractices();
+    }
   }, [activeTab === "best"]);
 
   useEffect(() => {
     fetchUserDetails();
-    // fetchPublicUserDetails();
-    // fetchAllBestPractises();
-    // fetchFollowBestPractises();
-    fetchProfession();
-    fetchIntrusts();
+    if (token) {
+      // fetchPublicUserDetails();
+      // fetchAllBestPractises();
+      // fetchFollowBestPractises();
+      fetchProfession();
+      fetchIntrusts();
+    }
   }, []);
 
   const fetchProfession = async () => {
@@ -356,7 +371,6 @@ export default function UserProfileView() {
           friend_id: userId,
         };
         const res = await SendConnectionRequest(formattedData);
-        console.log("🚀 ~ handleFriend ~ res:", res);
         showToast({
           message: res?.success?.message,
           type: "success",
@@ -889,7 +903,14 @@ export default function UserProfileView() {
               <div className="pt-4 pb-10 space-y-2 border-b border-[#E5E5E5]">
                 {!isOwnProfile && (
                   <button
-                    onClick={() => handleFollow(userDetails?.user_id)}
+                    // onClick={() => handleFollow(userDetails?.user_id)}
+                    onClick={() => {
+                      if (token) {
+                        handleFollow(userDetails?.user_id);
+                      } else {
+                        setOpenSignup(true);
+                      }
+                    }}
                     className={`w-full h-9 rounded-full 
                     bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
                     font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
@@ -920,9 +941,16 @@ export default function UserProfileView() {
                     {userDetails?.reciver_request_status === "PENDING" ? (
                       <div className="flex gap-2">
                         <button
-                          onClick={() =>
-                            handleAcceptRequest(userDetails?.user_id)
-                          }
+                          // onClick={() =>
+                          //   handleAcceptRequest(userDetails?.user_id)
+                          // }
+                          onClick={() => {
+                            if (token) {
+                              handleAcceptRequest(userDetails?.user_id);
+                            } else {
+                              setOpenSignup(true);
+                            }
+                          }}
                           className="flex-1 h-9 rounded-full bg-green-500 
                             font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
                             text-white flex items-center justify-center gap-2 hover:bg-green-600"
@@ -931,9 +959,16 @@ export default function UserProfileView() {
                           Accept
                         </button>
                         <button
-                          onClick={() =>
-                            handleRejectRequest(userDetails?.user_id)
-                          }
+                          // onClick={() =>
+                          //   handleRejectRequest(userDetails?.user_id)
+                          // }
+                          onClick={() => {
+                            if (token) {
+                              handleRejectRequest(userDetails?.user_id);
+                            } else {
+                              setOpenSignup(true);
+                            }
+                          }}
                           className="flex-1 h-9 rounded-full bg-red-500 
                             font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
                             text-white flex items-center justify-center gap-2 hover:bg-red-600"
@@ -945,7 +980,14 @@ export default function UserProfileView() {
                     ) : (
                       /* Show regular Connect/Requested/Connected button for other cases */
                       <button
-                        onClick={() => handleFriend(userDetails?.user_id)}
+                        // onClick={() => handleFriend(userDetails?.user_id)}
+                        onClick={() => {
+                          if (token) {
+                            handleFriend(userDetails?.user_id);
+                          } else {
+                            setOpenSignup(true);
+                          }
+                        }}
                         disabled={userDetails?.user_id === loggedInUserID}
                         className={`w-full h-9 rounded-full border border-[#ECEEF2] 
                           font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
@@ -977,7 +1019,14 @@ export default function UserProfileView() {
 
                 <div className="relative">
                   <button
-                    onClick={handleShareToggle}
+                    // onClick={handleShareToggle}
+                    onClick={() => {
+                      if (token) {
+                        handleShareToggle();
+                      } else {
+                        setOpenSignup(true);
+                      }
+                    }}
                     className="w-full h-9 rounded-full border border-[#ECEEF2] 
              font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
              text-[#0B3449] flex items-center justify-center gap-2"
@@ -1840,7 +1889,14 @@ export default function UserProfileView() {
                   <PrimaryButton
                     className="mt-6 px-6 py-2 rounded-lg whitespace-nowrap shrink-0
                       !justify-center border border-gray-300 text-gray-600 hover:bg-gray-50"
-                    onClick={() => navigate("/dashboard/bestpractices")}
+                    // onClick={() => navigate("/dashboard/bestpractices")}
+                    onClick={() => {
+                      if (token) {
+                        navigate("/dashboard/bestpractices");
+                      } else {
+                        setOpenSignup(true);
+                      }
+                    }}
                   >
                     Explore Best Practices Hub
                   </PrimaryButton>
@@ -1946,6 +2002,8 @@ export default function UserProfileView() {
           </div>
         </div>
       </Modal>
+
+      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
     </div>
   );
 }

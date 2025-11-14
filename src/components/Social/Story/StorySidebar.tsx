@@ -49,7 +49,6 @@ export function StorySidebar({
       yy: "%d yrs",
     },
   });
-  console.log("🚀 ~ StorySidebar ~ stories:", stories)
   const navigate = useNavigate();
 
   const handleClose = () => {
@@ -135,7 +134,7 @@ export function StorySidebar({
                   )}>
                     <div className="w-full h-full rounded-full overflow-hidden object-cover bg-white p-[3px]">
                       <img
-                        src={story.user.avatar}
+                        src={story.user.avatar ? story.user.avatar : "/profile.png"}
                         alt="User Avatar"
                         className="w-full h-full rounded-full object-cover bg-white"
                       />

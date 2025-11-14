@@ -176,7 +176,6 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
   // Helper function to get badge image based on card title and user's current badge level
   const getBadgeImage = (cardTitle: string) => {
     const userBadgeLevel = data?.badge?.level;
-    console.log("🚀 ~ getBadgeImage ~ userBadgeLevel:", userBadgeLevel);
 
     // If user has no badge (null or undefined)
     if (!userBadgeLevel) {
@@ -229,13 +228,6 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
     const userBadgeLevel = data?.badge?.level;
     const isAssessmentSubmitted = data?.is_assessment_submited;
     const isSubmittedByHead = data?.is_submitted_by_head;
-
-    console.log("🚀 ~ getCardState ~ userBadgeLevel:", userBadgeLevel);
-    console.log(
-      "🚀 ~ getCardState ~ isAssessmentSubmitted:",
-      isAssessmentSubmitted
-    );
-    console.log("🚀 ~ getCardState ~ isSubmittedByHead:", isSubmittedByHead);
 
     // If user has no badge at all - FIRST TIME USER
     if (!userBadgeLevel) {
@@ -356,13 +348,6 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
 
   // Only disable upgrades for other cards if user has no badge and Aspired is selected
   const isUpgradeDisabled = isFirstTimeUser;
-
-  console.log("🚀 ~ CertificationPlans ~ hasNoBadge:", hasNoBadge);
-  console.log("🚀 ~ CertificationPlans ~ isFirstTimeUser:", isFirstTimeUser);
-  console.log(
-    "🚀 ~ CertificationPlans ~ isUpgradeDisabled:",
-    isUpgradeDisabled
-  );
 
   return (
     <section className="w-full mt-10">

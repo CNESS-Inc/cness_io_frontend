@@ -39,7 +39,8 @@ const TextWithMentions: React.FC<TextWithMentionsProps> = ({ text, className = "
             key={index}
             className="text-blue-600 font-medium bg-blue-50 px-1 rounded"
           >
-          <a href={`/dashboard/userprofile/${mentionUserIds}`}>@{part}</a>
+            {mentionUserIds ? <a href={`/dashboard/userprofile/${mentionUserIds}`}>@{part}</a> : <span>@{part}</span>}
+          
           </span>
         );
       }

@@ -137,7 +137,6 @@ export default function SellerDashboard() {
   const [_loadingBestPractices, setLoadingBestPractices] = useState(false);
   const [directoryItems, setDirectoryItems] = useState<any[]>([]);
   const [friendRequests, setFriendRequests] = useState<any[]>([]);
-  console.log("🚀 ~ SellerDashboard ~ friendRequests:", friendRequests)
   const [suggestion, setFriendSuggestion] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -209,9 +208,6 @@ export default function SellerDashboard() {
     setLoadingBestPractices(true);
     try {
       const response = await GetRecommendedBestPractices();
-      console.log("🚀 ~ fetchRecommendedBestPractices ~ response:", response);
-
-      console.log("response.data.data.rows", response.data.data.rows);
       if (response?.data?.data?.rows) {
         // Transform the API response to match the expected BestPracticeItem format
         const transformedData: BestPracticeItem[] = response.data.data.rows.map(
@@ -241,7 +237,6 @@ export default function SellerDashboard() {
   const fetchPopularCompany = async (page: number = 1) => {
     try {
       const res = await GetPopularCompanyDetails(page, 3);
-      console.log("🚀 ~ fetchPopularCompany ~ res:", res);
 
       if (res?.data?.data?.rows) {
         const transformedData: any[] = res.data.data.rows.map((item: any) => ({
@@ -280,7 +275,6 @@ export default function SellerDashboard() {
   const fetchFriendRequests = async () => {
     try {
       const response = await GetFriendRequest();
-      console.log("🚀 ~ fetchFriendRequests ~ response:", response)
       const formattedRequests = response.data.data.rows.map((item: any) => ({
         id: item?.friend_user?.id,
         name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
@@ -296,7 +290,6 @@ export default function SellerDashboard() {
   const fetchFriendSuggestions = async () => {
     try {
       const response = await GetFriendSuggestions();
-      console.log("🚀 ~ fetchFriendSuggestions ~ response:", response)
       const formattedRequests = response.data.data.rows.map((item: any) => ({
         id: item.id,
         name: `${item.profile.first_name} ${item.profile.last_name}`,

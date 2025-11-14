@@ -37,7 +37,6 @@ const AssessmentCertification = () => {
     try {
       const response = await GetCertificationDetails();
       const res = response?.data?.data || [];
-      console.log("🚀 ~ fetchCertificationDetails ~ res:", res);
       setCertifications(res);
     } catch (error: any) {
       showToast({

@@ -1,126 +1,6 @@
 import cloud from "../../../assets/cloud-add.svg";
 import Button from "../../ui/Button";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-
-// Base64 upload adapter (same as in AddBestPracticeModal)
-class Base64UploadAdapter {
-  private loader: any;
-  private reader: FileReader;
-
-  constructor(loader: any) {
-    this.loader = loader;
-    this.reader = new FileReader();
-  }
-
-  upload() {
-    return new Promise((resolve, reject) => {
-      this.reader.addEventListener('load', () => {
-        resolve({ default: this.reader.result });
-      });
-
-      this.reader.addEventListener('error', err => {
-        reject(err);
-      });
-
-      this.reader.addEventListener('abort', () => {
-        reject();
-      });
-
-      this.loader.file.then((file: File) => {
-        this.reader.readAsDataURL(file);
-      });
-    });
-  }
-
-  abort() {
-    this.reader.abort();
-  }
-}
-
-function Base64UploadAdapterPlugin(editor: any) {
-  editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
-    return new Base64UploadAdapter(loader);
-  };
-}
-
-const editorConfig = {
-  extraPlugins: [Base64UploadAdapterPlugin],
-  toolbar: {
-    items: [
-      "heading",
-      "|",
-      "bold",
-      "italic",
-      "underline",
-      "strikethrough",
-      "subscript",
-      "superscript",
-      "code",
-      "|",
-      "fontSize",
-      "fontFamily",
-      "fontColor",
-      "fontBackgroundColor",
-      "|",
-      "alignment",
-      "|",
-      "link",
-      "insertImage",
-      "mediaEmbed",
-      "insertTable",
-      "blockQuote",
-      "codeBlock",
-      "|",
-      "bulletedList",
-      "numberedList",
-      "todoList",
-      "|",
-      "outdent",
-      "indent",
-      "|",
-      "specialCharacters",
-      "horizontalLine",
-      "|",
-      "removeFormat",
-      "highlight",
-      "|",
-      "undo",
-      "redo",
-    ],
-    shouldNotGroupWhenFull: false,
-  },
-  fontFamily: {
-    options: [
-      "default",
-      "Arial, Helvetica, sans-serif",
-      "Courier New, Courier, monospace",
-      "Georgia, serif",
-      "Times New Roman, Times, serif",
-      "Trebuchet MS, Helvetica, sans-serif",
-      "Verdana, Geneva, sans-serif",
-    ],
-    supportAllValues: true,
-  },
-  fontSize: {
-    options: [10, 12, 14, "default", 18, 20, 22, 24],
-    supportAllValues: true,
-  },
-  placeholder: "Add your description here...",
-  link: {
-    addTargetToExternalLinks: true,
-    defaultProtocol: "https://",
-  },
-  image: {
-    toolbar: [
-      'imageTextAlternative',
-      'toggleImageCaption',
-      'imageStyle:inline',
-      'imageStyle:block',
-      'imageStyle:side'
-    ]
-  }
-};
+import CustomRichTextEditor from "./CustomRichTextEditor";
 
 interface EditBestPracticeModalProps {
   open: boolean;
@@ -180,6 +60,62 @@ export default function EditBestPracticeModal({
     if (currentPractice?.file && typeof currentPractice.file !== 'string') {
       URL.revokeObjectURL(imagePreviewUrl!);
     }
+  };
+
+  // Get the current profession value - handle both possible data structures
+  const getCurrentProfessionValue = () => {
+    if (!currentPractice) return "";
+    
+    // If profession_data exists, use its id
+    if (currentPractice.profession_data?.id) {
+      return currentPractice.profession_data.id;
+    }
+    
+    // If profession exists as a string/id, use it directly
+    if (currentPractice.profession) {
+      return currentPractice.profession;
+    }
+    
+    return "";
+  };
+
+  // Handle profession change
+  const handleProfessionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedProfessionId = e.target.value;
+    const selectedProfession = profession.find(prof => prof.id === selectedProfessionId);
+    
+    setCurrentPractice({
+      ...currentPractice,
+      profession: selectedProfessionId,
+      profession_data: selectedProfession || null,
+    });
+  };
+
+  // Handle interest change
+  const handleInterestChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedInterestId = e.target.value;
+    const selectedInterest = interest.find(int => int.id === selectedInterestId);
+    
+    setCurrentPractice({
+      ...currentPractice,
+      interest: selectedInterestId,
+      interest_data: selectedInterest || null,
+    });
+  };
+
+  // Get current interest value
+  const getCurrentInterestValue = () => {
+    if (!currentPractice) return "";
+    
+    if (currentPractice.interest_data?.id) {
+      return currentPractice.interest_data.id;
+    }
+    
+    if (currentPractice.interest) {
+      return currentPractice.interest;
+    }
+    
+    return "";
   };
 
   if (!open) return null;
@@ -276,10 +212,10 @@ export default function EditBestPracticeModal({
         {/* Form */}
         <form onSubmit={handleSubmit}
         onKeyDown={(e) => {
-            // Allow Enter key inside CKEditor only
+            // Allow Enter key inside rich text editor only
             const target = e.target as HTMLElement;
-            if (target.closest(".ck") && e.key === "Enter") {
-              return; // Let CKEditor handle Enter
+            if (target.closest(".custom-rich-text-editor") && e.key === "Enter") {
+              return; // Let rich text editor handle Enter
             }
 
             // Prevent Enter from submitting in text fields
@@ -323,16 +259,11 @@ export default function EditBestPracticeModal({
               </label>
               <select
                 id="interest"
-                value={currentPractice?.interest || ""}
-                onChange={(e) =>
-                  setCurrentPractice({
-                    ...currentPractice,
-                    interest: e.target.value,
-                  })
-                }
+                value={getCurrentInterestValue()}
+                onChange={handleInterestChange}
                 className={`w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
                 focus:ring-2 focus:ring-indigo-500 text-sm font-normal
-                ${currentPractice?.interest ? "text-black" : "text-[#6E7179]"}`}
+                ${getCurrentInterestValue() ? "text-black" : "text-[#6E7179]"}`}
               >
                 <option value="">Select your Interest</option>
                 {interest.map((cat) => (
@@ -357,16 +288,11 @@ export default function EditBestPracticeModal({
               <div className="relative">
                 <select
                   id="profession"
-                  value={currentPractice?.profession_data?.id || ""}
-                  onChange={(e) =>
-                    setCurrentPractice({
-                      ...currentPractice,
-                      profession: e.target.value,
-                    })
-                  }
+                  value={getCurrentProfessionValue()}
+                  onChange={handleProfessionChange}
                   className={`w-full appearance-none px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none 
          focus:ring-2 focus:ring-indigo-500 text-sm font-normal
-         ${currentPractice?.profession_data ? "text-black" : "text-[#6E7179]"}`}
+         ${getCurrentProfessionValue() ? "text-black" : "text-[#6E7179]"}`}
                 >
                   <option value="">Select your Profession</option>
                   {profession.map((prof) => (
@@ -434,7 +360,7 @@ export default function EditBestPracticeModal({
             </div>
           </div>
 
-          {/* Description with CKEditor */}
+          {/* Description with CustomRichTextEditor */}
           <div className="flex flex-col gap-[5px]">
             <label
               htmlFor="description"
@@ -442,18 +368,16 @@ export default function EditBestPracticeModal({
             >
               Description <span className="text-red-600">*</span>
             </label>
-            <div className="ckeditor-container">
-              <CKEditor
-                editor={ClassicEditor as any}
-                config={editorConfig}
-                data={currentPractice?.description || ""}
-                onChange={(_event, editor) => {
-                  const data = editor.getData();
+            <div className="custom-rich-text-editor">
+              <CustomRichTextEditor
+                value={currentPractice?.description || ""}
+                onChange={(data: string) => {
                   setCurrentPractice({
                     ...currentPractice,
                     description: data,
                   });
                 }}
+                placeholder="Add your description here..."
               />
             </div>
           </div>

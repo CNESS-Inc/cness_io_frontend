@@ -192,7 +192,6 @@ export default function Signingup() {
         referral_code: formData.referralCode,
       };
       const response = (await RegisterDetails(payload)) as AuthResponse;
-      console.log("🚀 ~ handleSubmit ~ response:", response);
 
       if (response) {
         setApiMessage(response?.success?.message || "Registration successful");
