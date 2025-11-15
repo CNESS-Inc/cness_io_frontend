@@ -64,7 +64,7 @@ const DashboardNavbar = ({
     {
       id: "dashboard",
       icon: <img src={iconMap["home"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Home / Dashboard",
+      label: "Home",
       active: true,
       path: "/dashboard",
     },
@@ -144,13 +144,13 @@ const DashboardNavbar = ({
       children: [
         { label: "Feed", path: "/dashboard/feed" },
         { label: "Profile", path: "/dashboard/Profile" },
-        { label: "My Connections", path: "/dashboard/MyConnection" },
+        { label: "Connections", path: "/dashboard/MyConnection" },
       ],
     },
     {
       id: "marketplace",
       icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Marketplace",
+      label: "Marketplace (Beta)",
       active: true,
       path: "/dashboard/marketplace",
     },
@@ -287,7 +287,7 @@ const DashboardNavbar = ({
                 }
                 // onClick={toggleMobileNav}
               >
-                My True Profile
+                Profile
               </NavLink>
               <NavLink
                 to="/dashboard/user-profile"

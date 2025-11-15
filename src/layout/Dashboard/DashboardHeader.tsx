@@ -224,7 +224,8 @@ const DashboardHeader = ({
       const response = await LogOut();
 
       if (response) {
-        localStorage.clear();
+localStorage.setItem("hasLoggedBefore", "false");
+localStorage.clear();
         toggleMobileNav();
         navigate("/");
       }

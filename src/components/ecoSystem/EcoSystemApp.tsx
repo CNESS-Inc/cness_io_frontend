@@ -38,7 +38,7 @@ const rightCards = [
       "Validate Their Conscious Identity",
       "Set Up A Storefront With Digital Goods And Services",
       "Be Listed In A Professional Directory That Increases Visibility",
-      "Access Structured Learning And Mentorship Pxathways",
+      "Access Structured Learning And Mentorship Pathways",
       "Track Earnings And User Engagement Via Dashboards",
     ],
     button: "Join now",
@@ -71,7 +71,7 @@ const rightCards = [
     title: "CNESS",
     info: "(Mobile App)",
     subtitle: "Ecosystem — in your pocket.",
-    description:"Stay connected wherever you are. Join conscious circles, share your journey, and soon buy or sell meaningful products in a built-in marketplace — all from your phone.",
+    description:"Stay connected wherever you are. Join conscious circles, share your journey, and soon buy  meaningful products in a built-in marketplace — all from your phone.",
     list: [
       "Conscious Profile: A Digital Reflection Of One’s Values And Intent",
       "Moments: Thoughtful, Bite-Sized Posts For Sharing Experiences",
@@ -120,7 +120,7 @@ export default function EcoSystemApp() {
     const id = setInterval(() => {
       step = (step + 1) % order.length;
       setActiveCard(order[step]);
-    }, 10000);
+    }, 20000);
     return () => clearInterval(id);
   }, [autoPlay, activeCard, isSmallScreen]);
 
