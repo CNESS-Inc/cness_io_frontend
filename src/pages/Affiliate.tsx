@@ -21,6 +21,7 @@ import Button from "../components/ui/Button";
 import Select from "react-select";
 import Modal from "../components/ui/Modal";
 import AddPaymentMethodModal from "../components/affiliate/AddPaymentMethodModal";
+import { HelpCircle } from "lucide-react";
 
 interface ReferredUser {
   user_id: string;
@@ -490,14 +491,28 @@ export default function Affiliate() {
         <div className="w-full h-full flex flex-col gap-3">
           <div className="flex flex-col gap-[24px] p-[24px] rounded-xl bg-white">
             <div className="flex flex-col gap-3">
-              <h3 className="text-2xl font-semibold font-['Poppins',Helvetica] bg-[linear-gradient(90deg,#6340FF_0%,#D748EA_100%)] bg-clip-text text-transparent">
-                Your Affiliate
-              </h3>
-              <p className="text-base font-normal text-[#7A7A7A] font-['Open_Sans',Helvetica]">
-                Monitor your affiliate income and handle your withdrawals
-                efficiently.
-              </p>
-            </div>
+  <div className="flex items-center gap-2">
+    <h3 className="text-2xl font-semibold font-['Poppins',Helvetica] bg-[linear-gradient(90deg,#6340FF_0%,#D748EA_100%)] bg-clip-text text-transparent">
+      Your Affiliate
+    </h3>
+
+    {/* Tooltip Wrapper */}
+    <div className="relative group cursor-pointer">
+      <HelpCircle className="h-5 w-5 text-gray-400 hover:text-gray-700" />
+
+      {/* Tooltip Content */}
+      <div className="absolute left-1/2 -translate-x-1/2 mt-4 hidden group-hover:block 
+                      whitespace-nowrap bg-gray-900 text-white text-sm py-2 px-3 rounded shadow-lg z-10">
+Share CNESS with others and enjoy a 10% reward 
+<br></br>each time your referred users make a platform fee.
+      </div>
+    </div>
+  </div>
+
+  <p className="text-base font-normal text-[#7A7A7A] font-['Open_Sans',Helvetica]">
+    Monitor your affiliate income and handle your withdrawals efficiently.
+  </p>
+</div>
             <div className="flex w-full h-full gap-3">
               <div className="flex flex-col gap-6 relative w-full md:w-[55%] py-[24px] px-[32px] bg-[linear-gradient(96.64deg,#7077FE_0%,#CE8FFB_79.88%,#FFF2C0_158.59%)] border border-[#ECEEF2] rounded-xl">
                 <img
