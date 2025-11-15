@@ -167,7 +167,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
     const date = new Date(timestamp);
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
+
     if (diffInHours < 1) {
       const diffInMinutes = Math.floor(diffInHours * 60);
       return `${diffInMinutes}m ago`;
@@ -222,10 +222,10 @@ const CollectionList = ({ items }: { items: any[] }) => {
 
   const handleFollow = async (userId: string) => {
     try {
-       const formattedData = {
+      const formattedData = {
         following_id: userId,
       };
-      const response:any = await SendFollowRequest(formattedData);
+      const response: any = await SendFollowRequest(formattedData);
       if (response.success) {
         setCollectionItems(prevItems =>
           prevItems.map(item =>
@@ -240,7 +240,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
               : item
           )
         );
-        
+
         showToast({
           type: "success",
           message: response.message || "Follow status updated",
@@ -260,11 +260,11 @@ const CollectionList = ({ items }: { items: any[] }) => {
   const handleConnect = async (userId: string) => {
     try {
       setConnectingUsers(prev => ({ ...prev, [userId]: true }));
-      
+
       const response = await SendConnectionRequest(userId);
       if (response.success) {
-        setFriendStatus((prev:any) => ({ ...prev, [userId]: "requested" }));
-        
+        setFriendStatus((prev: any) => ({ ...prev, [userId]: "requested" }));
+
         showToast({
           type: "success",
           message: "Connection request sent successfully",
@@ -292,7 +292,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
     const isOutsideAllMenus = Object.values(menuRef.current).every(
       ref => !ref?.contains(target)
     );
-    
+
     if (isOutsideAllMenus) {
       setOpenMenu({ postId: null, type: null });
     }
@@ -345,27 +345,27 @@ const CollectionList = ({ items }: { items: any[] }) => {
           {/* Header */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 md:gap-3">
-           <Link
-  to={`/dashboard/userprofile/${item.originalData.profile.user_id}`}
-  className="flex-shrink-0"
->
-  <img
-    src={
-      item.originalData.profile.profile_picture &&
-      item.originalData.profile.profile_picture !== "null" &&
-      item.originalData.profile.profile_picture !== "undefined" &&
-      item.originalData.profile.profile_picture.trim() !== ""
-        ? item.originalData.profile.profile_picture
-        : defaultProfile
-    }
-    alt={`${item.originalData.profile.first_name} ${item.originalData.profile.last_name}`}
-    className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
-    onError={(e) => {
-      const target = e.target as HTMLImageElement;
-      target.src = defaultProfile;
-    }}
-  />
-</Link>
+              <Link
+                to={`/dashboard/userprofile/${item.originalData.profile.user_id}`}
+                className="flex-shrink-0"
+              >
+                <img
+                  src={
+                    item.originalData.profile.profile_picture &&
+                      item.originalData.profile.profile_picture !== "null" &&
+                      item.originalData.profile.profile_picture !== "undefined" &&
+                      item.originalData.profile.profile_picture.trim() !== ""
+                      ? item.originalData.profile.profile_picture
+                      : defaultProfile
+                  }
+                  alt={`${item.originalData.profile.first_name} ${item.originalData.profile.last_name}`}
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = defaultProfile;
+                  }}
+                />
+              </Link>
 
               <div>
                 <p className="font-semibold text-sm md:text-base text-black">
@@ -397,10 +397,9 @@ const CollectionList = ({ items }: { items: any[] }) => {
                   onClick={() => handleConnect(item.originalData.user.id)}
                   disabled={connectingUsers[item.originalData.user.id] || false}
                   className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
-                    ${
-                      getFriendStatus(item.originalData.user.id) === "connected"
-                        ? "bg-gray-400 text-white cursor-not-allowed"
-                        : getFriendStatus(item.originalData.user.id) === "requested"
+                    ${getFriendStatus(item.originalData.user.id) === "connected"
+                      ? "bg-gray-400 text-white cursor-not-allowed"
+                      : getFriendStatus(item.originalData.user.id) === "requested"
                         ? "bg-gray-400 text-white cursor-not-allowed"
                         : "bg-white text-black shadow-md"
                     }`}
@@ -414,26 +413,25 @@ const CollectionList = ({ items }: { items: any[] }) => {
                     {connectingUsers[item.originalData.user.id]
                       ? "Loading..."
                       : getFriendStatus(item.originalData.user.id) === "connected"
-                      ? "Connected"
-                      : getFriendStatus(item.originalData.user.id) === "requested"
-                      ? "Requested"
-                      : "Connect"}
+                        ? "Connected"
+                        : getFriendStatus(item.originalData.user.id) === "requested"
+                          ? "Requested"
+                          : "Connect"}
                   </span>
                 </button>
-                
+
                 {/* Follow Button */}
                 <button
                   onClick={() => handleFollow(item.originalData.user.id)}
                   className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                    ${
-                      item.originalData.if_following
-                        ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
-                        : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
+                    ${item.originalData.if_following
+                      ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
+                      : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
                     }`}
                 >
                   {item.originalData.if_following ? (
                     <>
-                      <TrendingUp className="w-5 h-5 text-[#7077FE]" /> 
+                      <TrendingUp className="w-5 h-5 text-[#7077FE]" />
                       Resonating
                     </>
                   ) : (
@@ -475,8 +473,8 @@ const CollectionList = ({ items }: { items: any[] }) => {
                             {connectingUsers[item.originalData.user.id]
                               ? "Loading..."
                               : getFriendStatus(item.originalData.user.id) === "requested"
-                              ? "Requested"
-                              : "Connect"}
+                                ? "Requested"
+                                : "Connect"}
                           </button>
                         </li>
                         <li>
