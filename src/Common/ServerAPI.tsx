@@ -265,6 +265,7 @@ export const EndPoint = {
   get_moods: "/marketplace-product/moods",
   get_preview_product: "/marketplace-product",
   expand_product_overview: "/marketplace-product/ai/expand-overview",
+  improve_product_overview: "/marketplace-product/ai/improve-overview",
   generate_signed_url: "/marketplace-product/generate-signed-url",
 
   create_video_product: "/marketplace-product/video",
@@ -1720,6 +1721,14 @@ export const ExpandProductOverview = (data: any): ApiResponse => {
     ServerAPI.APIMethod.POST,
     data,
     EndPoint.expand_product_overview
+  );
+};
+
+export const ImproveProductOverview = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.improve_product_overview
   );
 };
 
