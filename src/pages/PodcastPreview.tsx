@@ -64,9 +64,7 @@ const PodcastPreview = () => {
         duration: 3000,
       });
 
-      setTimeout(() => {
-        navigate('/dashboard/products');
-      }, 1500);
+      navigate('/dashboard/products');
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message || "Failed to submit product.",

@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { useToast } from "../ui/Toast/ToastProvider";
-import { ExpandProductOverview } from "../../Common/ServerAPI";
+import { ExpandProductOverview, ImproveProductOverview } from "../../Common/ServerAPI";
 
 interface AIModalProps {
   showModal: boolean;
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
-  productType: "video" | "music" | "course" | "podcast" | "ebook" | "art";
+  productType?: "video" | "music" | "course" | "podcast" | "ebook" | "art";
   onGenerate: (generatedText: string) => void;
+  isFreeType?: boolean;
 }
 
 const AIModal: React.FC<AIModalProps> = ({
@@ -15,6 +16,7 @@ const AIModal: React.FC<AIModalProps> = ({
   setShowModal,
   productType,
   onGenerate,
+  isFreeType = false,
 }) => {
   const { showToast } = useToast();
   const [aiShortText, setAiShortText] = useState("");
@@ -29,15 +31,20 @@ const AIModal: React.FC<AIModalProps> = ({
       });
       return;
     }
-
+  
     setIsGenerating(true);
     try {
-      const response = await ExpandProductOverview({
-        short_text: aiShortText.trim(),
-        product_type: productType,
-      });
+      let response;
+      if (isFreeType) {
+        response = await ImproveProductOverview({ overview: aiShortText.trim() });
+      } else {
+        response = await ExpandProductOverview({
+          short_text: aiShortText.trim(),
+          product_type: productType,  
+        });
+      }
 
-      const expandedText = response?.data?.data?.expanded_overview_plain;
+      const expandedText = isFreeType ? response?.data?.data?.improved_overview_plain : response?.data?.data?.expanded_text_plain;
 
       if (expandedText) {
         onGenerate(expandedText);
@@ -126,19 +133,18 @@ const AIModal: React.FC<AIModalProps> = ({
             <textarea
               value={aiShortText}
               onChange={(e) => setAiShortText(e.target.value)}
-              placeholder={`e.g., ${
-                productType === "video"
-                  ? "Learn guitar in 30 days"
-                  : productType === "music"
+              placeholder={`e.g., ${productType === "video"
+                ? "Learn guitar in 30 days"
+                : productType === "music"
                   ? "Relaxing piano music for meditation"
                   : productType === "course"
-                  ? "Complete web development course"
-                  : productType === "podcast"
-                  ? "Weekly tech news and interviews"
-                  : productType === "ebook"
-                  ? "Guide to financial independence"
-                  : "Beautiful landscape photography"
-              }`}
+                    ? "Complete web development course"
+                    : productType === "podcast"
+                      ? "Weekly tech news and interviews"
+                      : productType === "ebook"
+                        ? "Guide to financial independence"
+                        : "Beautiful landscape photography"
+                }`}
               className="w-full h-24 px-3 py-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent"
               disabled={isGenerating}
               maxLength={200}

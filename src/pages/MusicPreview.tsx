@@ -64,9 +64,7 @@ const AudioPreview = () => {
         duration: 3000,
       });
 
-      setTimeout(() => {
-        navigate('/dashboard/products');
-      }, 1500);
+      navigate('/dashboard/products');
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message || "Failed to submit product.",
@@ -162,9 +160,11 @@ const AudioPreview = () => {
       {/* Overview Section */}
       <div className="bg-white rounded-xl shadow-md w-full p-6 mb-8">
         <h3 className="font-semibold text-lg mb-3" style={{ fontFamily: "Poppins" }}>Overview</h3>
-        <p className="mb-4 text-gray-700" style={{ fontFamily: "Poppins" }}>
-          {data.overview}
-        </p>
+        <div
+          className="mb-4 text-gray-700 rich-html"
+          style={{ fontFamily: "Poppins" }}
+          dangerouslySetInnerHTML={{ __html: String(data?.overview ?? "") }}
+        />
         {data.highlights && data.highlights.length > 0 && (
           <>
             <h4 className="font-semibold mb-2">Highlights:</h4>

@@ -378,6 +378,13 @@ const AddCourseForm: React.FC = () => {
       newErrors.highlights = "At least one highlight is required.";
     }
 
+    if (formData.duration) {
+      if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.duration)) {
+        newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
+      }
+    }
+    if (!formData.duration.trim()) newErrors.total_duration = "Duration is required.";
+
     if (chapters.length === 0) {
       newErrors.chapters = "At least one lesson is required.";
     }
@@ -423,6 +430,7 @@ const AddCourseForm: React.FC = () => {
         if (!valStr) message = "Overview is required";
         break;
       case "duration":
+        if (!valStr) message = "Duration is required";
         if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr))
           message = "Invalid duration format. Use HH:MM:SS";
         break;

@@ -384,8 +384,7 @@ const AddMusicForm: React.FC = () => {
         newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
       }
     }
-
-    // Remove duration validation
+    if (!formData.total_duration.trim()) newErrors.total_duration = "Duration is required.";
 
     const validFormats = ["MP3", "AAC", "WAV", "FLAC", "OGG"];
     if (!formData.format || !validFormats.includes(formData.format.toUpperCase())) {
@@ -473,6 +472,7 @@ const AddMusicForm: React.FC = () => {
         break;
 
       case "total_duration":
+        if (!valStr) message = "Duration is required";
         if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr)) message = "Invalid duration format. Use HH:MM:SS";
         break;
 

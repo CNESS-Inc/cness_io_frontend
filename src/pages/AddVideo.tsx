@@ -419,6 +419,7 @@ const AddVideoForm: React.FC = () => {
         newErrors.duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
       }
     }
+    if (!formData.duration.trim()) newErrors.duration = "Duration is required.";
 
     if (!formData.summary.trim()) newErrors.summary = "Summary is required.";
 
@@ -489,6 +490,7 @@ const AddVideoForm: React.FC = () => {
         break;
 
       case "duration":
+        if (!valStr) message = "Duration is required";
         if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr)) message = "Invalid duration format. Use HH:MM:SS";
         break;
 
