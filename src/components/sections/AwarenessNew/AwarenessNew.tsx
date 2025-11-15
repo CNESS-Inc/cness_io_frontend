@@ -185,14 +185,14 @@ style={{ height: "240px" }}
               ))}
             </Swiper>
 
-<div className="flex flex-col md:flex-row items-center justify-between max-w-[600px] w-full mx-auto mt-10 gap-6 md:gap-4">
+<div className="flex flex-col md:flex-row items-center justify-between max-w-[700px] w-full mx-auto mt-10 gap-6 md:gap-4">
               <p className="lg:w-8/12 md:w-5/12 w-full font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424]">
                 Showcase your products in our conscious
-                <br />
+            
                 Marketplace, connect with the right
-                <br />
+           
                 Audience, and grow your business in a
-                <br />
+         
                 Purpose-driven ecosystem.
               </p>
 <div className="flex justify-center md:justify-end w-full md:w-auto mt-4 md:mt-0">
@@ -227,8 +227,8 @@ style={{ height: "240px" }}
           className="lg:text-[32px] md:text-[32px] text-[23px] font-medium bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3 text-center community-heading"
         >
-          Connect with the trustworthy. Work with the <br />
-          Reliable. Grow with the Dependable.
+          Connect with the trustworthy.<br />
+           Work with the Reliable. Grow with the Dependable.
         </h3>
         <p className="font-['Open_Sans'] mt-2 lg:text-[16px] md:text-[16px] text-[16px] font-[300] text-[#494949] leading-[24px] text-center">
           On CNESS, every profile, product, and organization is aligned with

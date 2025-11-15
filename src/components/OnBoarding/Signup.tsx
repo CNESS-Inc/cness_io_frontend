@@ -32,6 +32,7 @@ interface FormErrors {
   confirmPassword?: string;
   referralCode?: string;
   recaptcha?: string;
+   consent?: string; 
 }
 interface FormErrorsl {
   email?: string;
@@ -295,6 +296,7 @@ export default function SignupModal({
     password: "",
     confirmPassword: "",
     referralCode: "",
+     consent: false,
   });
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [personErrors, setPersonErrors] = useState<FormErrorsl>({});
@@ -357,6 +359,7 @@ export default function SignupModal({
     email: string;
     password: string;
     confirmPassword: string;
+     consent: boolean;
   }) => {
     const newErrors: FormErrors = {};
 
@@ -404,7 +407,9 @@ export default function SignupModal({
     if (!recaptchaValue) {
       newErrors.recaptcha = "Please verify you're not a robot";
     }
-
+if (!formData.consent) {
+  newErrors.consent = "You must agree to the Terms & Conditions";
+}
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -455,6 +460,7 @@ export default function SignupModal({
       password: form.password.value.trim(),
       confirmPassword: form.confirmPassword.value.trim(),
       referralCode: form.referralCode.value.trim(),
+      consent: registerForm.consent, 
     };
 
     const isValid = validateForms(formData);
@@ -1155,7 +1161,7 @@ export default function SignupModal({
             {/* Referral Code */}
             <div className="mb-0 w-[100%]">
               <label className="block">
-                <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+                <span className="block mb-1 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
                   Referral code (optional)
                 </span>
                 <input
@@ -1199,7 +1205,7 @@ export default function SignupModal({
                 />
                 {(errors.recaptcha ||
                   (recaptchaTouched && !recaptchaValue)) && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-1 text-[10px] text-red-600">
                     Please complete reCAPTCHA
                   </p>
                 )}
@@ -1211,10 +1217,39 @@ export default function SignupModal({
             <p className="text-sm text-red-600 mb-0">{registerError}</p>
           )}
 
+          {/* Consent Checkbox */}
+<div className="flex items-start gap-2">
+  <input
+    type="checkbox"
+    id="consent"
+    name="consent"
+    checked={registerForm.consent || false}
+    onChange={(e) =>
+      setRegisterForm((prev) => ({ ...prev, consent: e.target.checked }))
+    }
+    className="mt-0.5 w-4 h-4"
+  />
+
+  <label htmlFor="consent" className="text-[12px] text-gray-700 font-openSans">
+    I agree to the{" "}
+    <a href="/terms" target="_blank" className="text-purple-600 underline">
+      Terms & Conditions
+    </a>{" "}
+    and{" "}
+    <a href="/privacy" target="_blank" className="text-purple-600 underline">
+      Privacy Policy
+    </a>.
+  </label>
+</div>
+
+{errors.consent && (
+  <p className="text-[10px] text-red-600">{errors.consent}</p>
+)}
+
           {/* Submit */}
           <button
             type="submit"
-            className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[42px] text-white text-[14px] shadow-md hover:opacity-95"
+            className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[42px] text-white text-[14px] shadow-md hover:opacity-95 -mt-2"
             disabled={registerLoading || !recaptchaValue}
           >
             {registerLoading ? "Signing Up..." : "Sign Up"}
