@@ -154,6 +154,8 @@ const AddPodcastForm: React.FC = () => {
     }));
 
     setErrors(prev => ({ ...prev, overview: "" }));
+
+    handleAIGenerate
   };
 
   const handleSelectCategory = (category: string) => {

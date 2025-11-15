@@ -417,13 +417,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
               <img
                 src={uploadimg}
                 alt="upload"
-                className={`w-10 h-10 text-gray-400 transition-all duration-300 mt-8`}
+                className={`${fileType === 'team-member-image' ? 'w-5 h-5' : 'w-10 h-10' } text-gray-400 transition-all duration-300 mt-8`}
               />
               {isUploading ? (
                 <p className="text-primary">Uploading...</p>
               ) : (
                 <>
-                  <p className="font-[poppins] text-[16px] text-[#242E3A]">
+                  <p className={`font-[poppins] ${fileType === 'team-member-image' ? 'text-xs' : 'text-[16px]' } text-[#242E3A]`}>
                     {description || "Drag & drop or click to upload"}
                   </p>
                   {recommendation && (
@@ -1009,6 +1009,7 @@ const CreateShopForm: React.FC = () => {
       }
     }
     setCurrentAIField("");
+    setShowAIModal(false);
   };
 
   const getAvailablePlatforms = () => {
