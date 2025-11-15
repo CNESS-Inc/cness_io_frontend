@@ -24,6 +24,8 @@ import Button from "../components/ui/Button";
 import uploadimg from "../assets/upload.svg";
 import { PhoneInput } from "react-international-phone";
 import CustomRichTextEditor from "../components/sections/bestPractiseHub/CustomRichTextEditor";
+import AIModal from "../components/MarketPlace/AIModal";
+import { Sparkles } from "lucide-react";
 
 interface FormSectionProps {
   title: string;
@@ -122,9 +124,8 @@ const DateInput: React.FC<DateInputProps> = ({
         value={value}
         placeholder={label}
         onChange={handleChange}
-        className={`${label === "YYYY" ? "w-20" : "w-14"} px-3 py-2 border ${
-          error ? "border-red-500" : "border-gray-200"
-        } rounded-md text-center focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
+        className={`${label === "YYYY" ? "w-20" : "w-14"} px-3 py-2 border ${error ? "border-red-500" : "border-gray-200"
+          } rounded-md text-center focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
         maxLength={label === "YYYY" ? 4 : 2}
       />
     </div>
@@ -358,11 +359,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`relative border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer ${
-          isDragging
-            ? "border-primary bg-primary/5"
-            : "border-dashed border-[#CBD5E1]"
-        } ${className}`}
+        className={`relative border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer ${isDragging
+          ? "border-primary bg-primary/5"
+          : "border-dashed border-[#CBD5E1]"
+          } ${className}`}
         style={{
           borderStyle: "dashed",
           borderWidth: "3px",
@@ -376,11 +376,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
             <img
               src={preview}
               alt="Preview"
-              className={`${
-                fileType === "team-member-image"
-                  ? "w-[90px] h-[90px]"
-                  : "w-[140px] h-[140px]"
-              } object-cover rounded-lg`}
+              className={`${fileType === "team-member-image"
+                ? "w-[90px] h-[90px]"
+                : "w-[140px] h-[140px]"
+                } object-cover rounded-lg`}
             />
             <button
               type="button"
@@ -418,13 +417,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
               <img
                 src={uploadimg}
                 alt="upload"
-                className={`w-10 h-10 text-gray-400 transition-all duration-300 mt-8`}
+                className={`${fileType === 'team-member-image' ? 'w-5 h-5' : 'w-10 h-10' } text-gray-400 transition-all duration-300 mt-8`}
               />
               {isUploading ? (
                 <p className="text-primary">Uploading...</p>
               ) : (
                 <>
-                  <p className="font-[poppins] text-[16px] text-[#242E3A]">
+                  <p className={`font-[poppins] ${fileType === 'team-member-image' ? 'text-xs' : 'text-[16px]' } text-[#242E3A]`}>
                     {description || "Drag & drop or click to upload"}
                   </p>
                   {recommendation && (
@@ -459,6 +458,8 @@ const CreateShopForm: React.FC = () => {
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [selectedLanguage, setSelectedLanguage] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<any>(null);
+  const [currentAIField, setCurrentAIField] = useState<string>("");
+  const [showAIModal, setShowAIModal] = useState(false);
 
   const [formData, setFormData] = useState({
     owner_full_name: "",
@@ -571,24 +572,24 @@ const CreateShopForm: React.FC = () => {
     const countryCode = countryData?.code?.toUpperCase();
 
     const fieldInfo: { [key: string]: { label: string; placeholder: string } } =
-      {
-        US: {
-          label: "SSN (Social Security Number)",
-          placeholder: "XXX-XX-XXXX",
-        },
-        IN: { label: "PAN Card Number", placeholder: "ABCDE1234F" },
-        GB: { label: "National Insurance Number", placeholder: "AB123456C" },
-        CA: {
-          label: "SIN (Social Insurance Number)",
-          placeholder: "XXX-XXX-XXX",
-        },
-        AU: { label: "TFN (Tax File Number)", placeholder: "XXX XXX XXX" },
-        DE: { label: "Tax ID (Steuer-ID)", placeholder: "12345678901" },
-        FR: {
-          label: "Tax Number (Numéro Fiscal)",
-          placeholder: "1234567890123",
-        },
-      };
+    {
+      US: {
+        label: "SSN (Social Security Number)",
+        placeholder: "XXX-XX-XXXX",
+      },
+      IN: { label: "PAN Card Number", placeholder: "ABCDE1234F" },
+      GB: { label: "National Insurance Number", placeholder: "AB123456C" },
+      CA: {
+        label: "SIN (Social Insurance Number)",
+        placeholder: "XXX-XXX-XXX",
+      },
+      AU: { label: "TFN (Tax File Number)", placeholder: "XXX XXX XXX" },
+      DE: { label: "Tax ID (Steuer-ID)", placeholder: "12345678901" },
+      FR: {
+        label: "Tax Number (Numéro Fiscal)",
+        placeholder: "1234567890123",
+      },
+    };
 
     return (
       fieldInfo[countryCode || ""] || {
@@ -754,7 +755,6 @@ const CreateShopForm: React.FC = () => {
 
         if (data.verification_status === "approved") {
           setIsApproved(true);
-          return;
         }
 
         setFormData({
@@ -968,6 +968,48 @@ const CreateShopForm: React.FC = () => {
     }
 
     setErrors((prev) => ({ ...prev, [name]: message }));
+  };
+
+  const handleAIGenerate = (generatedText: string) => {
+    if (currentAIField === "about_shop") {
+      setFormData((prev: any) => ({
+        ...prev,
+        about_shop: generatedText,
+      }));
+      if (errors.about_shop) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.about_shop;
+          return newErrors;
+        });
+      }
+    } else if (currentAIField === "why_choose_your_shop") {
+      setFormData((prev: any) => ({
+        ...prev,
+        why_choose_your_shop: generatedText,
+      }));
+      if (errors.why_choose_your_shop) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.why_choose_your_shop;
+          return newErrors;
+        });
+      }
+    } else if (currentAIField === "shop_philosophy") {
+      setFormData((prev: any) => ({
+        ...prev,
+        shop_philosophy: generatedText,
+      }));
+      if (errors.shop_philosophy) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.shop_philosophy;
+          return newErrors;
+        });
+      }
+    }
+    setCurrentAIField("");
+    setShowAIModal(false);
   };
 
   const getAvailablePlatforms = () => {
@@ -1477,26 +1519,25 @@ const CreateShopForm: React.FC = () => {
                         }));
 
                         // Validation
-                        const digits = value.replace(/\D/g, "");
-                        let message = "";
-                        if (digits.length < 7) {
-                          message = "Phone number must have at least 7 digits";
-                        }
-                        setErrors((prev) => ({
-                          ...prev,
-                          owner_mobile_number: message,
-                        }));
+                        // const digits = value.replace(/\D/g, "");
+                        // let message = "";
+                        // if (digits.length < 7) {
+                        //   message = "Phone number must have at least 7 digits";
+                        // }
+                        // setErrors((prev) => ({
+                        //   ...prev,
+                        //   owner_mobile_number: message,
+                        // }));
                       }}
                       defaultCountry={
                         selectedCountry?.code?.toLowerCase() || "us"
                       }
                       forceDialCode
                       placeholder="Enter phone number"
-                      className={`w-full border ${
-                        errors.owner_mobile_number
-                          ? "border-red-500"
-                          : "border-gray-200"
-                      } rounded-md`}
+                      className={`w-full border ${errors.owner_mobile_number
+                        ? "border-red-500"
+                        : "border-gray-200"
+                        } rounded-md`}
                       inputClassName="w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                       countrySelectorStyleProps={{
                         buttonClassName: "border-r border-gray-200 px-3",
@@ -1663,9 +1704,24 @@ const CreateShopForm: React.FC = () => {
             >
               <div className="space-y-4">
                 <div>
-                  <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                    About Shop <span className="text-red-500">*</span>
-                  </label>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                      About Shop <span className="text-red-500">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCurrentAIField("about_shop");
+                        setShowAIModal(true);
+                      }}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group text-sm"
+                    >
+                      <Sparkles className="w-4 h-4 animate-pulse" />
+                      <span className="font-medium">Generate with AI</span>
+                      <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
+                    </button>
+                  </div>
+
                   <CustomRichTextEditor
                     value={formData.about_shop}
                     onChange={(data: any) => {
@@ -1693,21 +1749,31 @@ const CreateShopForm: React.FC = () => {
                   />
                   <div className="flex justify-between items-center mt-2">
                     {errors.about_shop && (
-                      <p className="text-red-500 text-sm">
-                        {errors.about_shop}
-                      </p>
+                      <p className="text-red-500 text-sm">{errors.about_shop}</p>
                     )}
                     <p className="text-gray-500 text-sm ml-auto">
-                      {formData.about_shop?.length || 0}/300
+                      {formData.about_shop?.replace(/<[^>]*>/g, "").length || 0}/500
                     </p>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                      Why Choose Your Shop{" "}
-                      <span className="text-red-500">*</span>
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
+                        Why Choose Your Shop <span className="text-red-500">*</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCurrentAIField("why_choose_your_shop");
+                          setShowAIModal(true);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 text-xs font-medium"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Generate with AI</span>
+                      </button>
+                    </div>
                     <CustomRichTextEditor
                       value={formData.why_choose_your_shop}
                       onChange={(data: any) => {
@@ -1745,15 +1811,28 @@ const CreateShopForm: React.FC = () => {
                         </p>
                       )}
                       <p className="text-gray-500 text-sm ml-auto">
-                        {formData.why_choose_your_shop?.length || 0}/200
+                        {formData.why_choose_your_shop?.replace(/<[^>]*>/g, "").length || 0}/300
                       </p>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                      Shop Philosophy <span className="text-red-500">*</span>
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
+                        Shop Philosophy <span className="text-red-500">*</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCurrentAIField("shop_philosophy");
+                          setShowAIModal(true);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 text-xs font-medium"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Generate with AI</span>
+                      </button>
+                    </div>
                     <CustomRichTextEditor
                       value={formData.shop_philosophy}
                       onChange={(data: any) => {
@@ -1786,12 +1865,10 @@ const CreateShopForm: React.FC = () => {
                     />
                     <div className="flex justify-between items-center mt-2">
                       {errors.shop_philosophy && (
-                        <p className="text-red-500 text-sm">
-                          {errors.shop_philosophy}
-                        </p>
+                        <p className="text-red-500 text-sm">{errors.shop_philosophy}</p>
                       )}
                       <p className="text-gray-500 text-sm ml-auto">
-                        {formData.shop_philosophy?.length || 0}/200
+                        {formData.shop_philosophy?.replace(/<[^>]*>/g, "").length || 0}/300
                       </p>
                     </div>
                   </div>
@@ -1906,11 +1983,10 @@ const CreateShopForm: React.FC = () => {
                   {selectedPlatform && (
                     <input
                       type="url"
-                      placeholder={`Enter ${
-                        socialMediaPlatforms.find(
-                          (p) => p.key === selectedPlatform
-                        )?.name
-                      } URL`}
+                      placeholder={`Enter ${socialMediaPlatforms.find(
+                        (p) => p.key === selectedPlatform
+                      )?.name
+                        } URL`}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && e.currentTarget.value.trim()) {
                           handleAddSocialLink(
@@ -1970,11 +2046,10 @@ const CreateShopForm: React.FC = () => {
                   <button
                     onClick={handleAddTeamMember}
                     disabled={formData.team_members?.length >= 4}
-                    className={`px-5 py-3 rounded-lg font-jakarta font-medium transition-colors ${
-                      formData.team_members?.length >= 4
-                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        : "bg-[#7077FE] text-white hover:bg-[#5A61E8]"
-                    }`}
+                    className={`px-5 py-3 rounded-lg font-jakarta font-medium transition-colors ${formData.team_members?.length >= 4
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-[#7077FE] text-white hover:bg-[#5A61E8]"
+                      }`}
                   >
                     Add members
                   </button>
@@ -2083,11 +2158,10 @@ const CreateShopForm: React.FC = () => {
                       onClick={() => togglePolicy(index)}
                     >
                       <div
-                        className={`w-6 h-6 rounded border flex items-center justify-center flex-shrink-0 transition-colors duration-200 cursor-pointer ${
-                          policy.checked
-                            ? "bg-[#7077FE] border-[#7077FE]"
-                            : "border-[#7077FE]"
-                        }`}
+                        className={`w-6 h-6 rounded border flex items-center justify-center flex-shrink-0 transition-colors duration-200 cursor-pointer ${policy.checked
+                          ? "bg-[#7077FE] border-[#7077FE]"
+                          : "border-[#7077FE]"
+                          }`}
                       >
                         {policy.checked && (
                           <svg
@@ -2204,6 +2278,12 @@ const CreateShopForm: React.FC = () => {
           </div>
         </div>
       )}
+      <AIModal
+        isFreeType={true}
+        showModal={showAIModal}
+        setShowModal={setShowAIModal}
+        onGenerate={handleAIGenerate}
+      />
     </>
   );
 };

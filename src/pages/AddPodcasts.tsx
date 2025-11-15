@@ -154,6 +154,8 @@ const AddPodcastForm: React.FC = () => {
     }));
 
     setErrors(prev => ({ ...prev, overview: "" }));
+
+    handleAIGenerate
   };
 
   const handleSelectCategory = (category: string) => {
@@ -262,6 +264,12 @@ const AddPodcastForm: React.FC = () => {
     if (!formData.language.trim()) newErrors.language = "Language is required";
     if (!formData.theme.trim()) newErrors.theme = "Theme is required";
     if (!formData.format.trim()) newErrors.format = "Format is required";
+    if (formData.total_duration) {
+      if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)) {
+        newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
+      }
+    }
+    if (!formData.total_duration.trim()) newErrors.total_duration = "Duration is required.";
 
     episodes.forEach((episode, index) => {
       if (episode.episode_files.length === 0) {
@@ -307,6 +315,7 @@ const AddPodcastForm: React.FC = () => {
         if (!valStr) message = "Overview is required";
         break;
       case "total_duration":
+        if (!valStr) message = "Duration is required";
         if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr))
           message = "Invalid duration format. Use HH:MM:SS";
         break;

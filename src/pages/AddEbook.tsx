@@ -153,6 +153,8 @@ const AddEbookForm: React.FC = () => {
     }));
 
     setErrors(prev => ({ ...prev, overview: "" }));
+
+    handleAIGenerate
   };
 
   // Breadcrumb category handling

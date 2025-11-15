@@ -1080,11 +1080,11 @@ const EditSellerProductPage: React.FC = () => {
             const updatedFiles = fileArray.map((f: any) =>
               f.file === file
                 ? {
-                    ...f,
-                    url: uploadedUrl,
-                    order_number: fileArray.length - 1,
-                    isUploading: false,
-                  }
+                  ...f,
+                  url: uploadedUrl,
+                  order_number: fileArray.length - 1,
+                  isUploading: false,
+                }
                 : f
             );
 
@@ -1868,9 +1868,8 @@ const EditSellerProductPage: React.FC = () => {
         <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
           {/* Basic Info Section */}
           <FormSection
-            title={`Edit ${
-              category.charAt(0).toUpperCase() + category.slice(1)
-            }`}
+            title={`Edit ${category.charAt(0).toUpperCase() + category.slice(1)
+              }`}
             description="Update your digital product details, pricing, and availability on the marketplace."
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -1966,11 +1965,10 @@ const EditSellerProductPage: React.FC = () => {
                   </div>
                 ) : (
                   <label
-                    className={`relative flex flex-col items-center justify-center h-64 cursor-pointer rounded-lg p-6 text-center transition-all ${
-                      isMainVideoUploading
+                    className={`relative flex flex-col items-center justify-center h-64 cursor-pointer rounded-lg p-6 text-center transition-all ${isMainVideoUploading
                         ? "pointer-events-none opacity-70"
                         : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                    }`}
+                      }`}
                   >
                     <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                       <rect
@@ -2074,11 +2072,10 @@ const EditSellerProductPage: React.FC = () => {
                   </div>
                 ) : (
                   <label
-                    className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
-                      isThumbnailUploading
+                    className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isThumbnailUploading
                         ? "pointer-events-none opacity-70"
                         : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                    }`}
+                      }`}
                   >
                     <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                       <rect
@@ -2385,15 +2382,15 @@ const EditSellerProductPage: React.FC = () => {
                 category === "ebook" ||
                 category === "course" ||
                 category === "art") && (
-                <InputField
-                  label="Theme"
-                  placeholder="Describe the theme"
-                  name="theme"
-                  value={formData.theme || ""}
-                  onChange={handleChange}
-                  error={errors.theme}
-                />
-              )}
+                  <InputField
+                    label="Theme"
+                    placeholder="Describe the theme"
+                    name="theme"
+                    value={formData.theme || ""}
+                    onChange={handleChange}
+                    error={errors.theme}
+                  />
+                )}
 
               {/* Art - Mediums */}
               {category === "art" && (
@@ -2528,11 +2525,10 @@ const EditSellerProductPage: React.FC = () => {
                     </div>
                   ) : (
                     <label
-                      className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
-                        isShortVideoUploading
+                      className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isShortVideoUploading
                           ? "pointer-events-none opacity-70"
                           : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                      }`}
+                        }`}
                     >
                       <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                         <rect
@@ -2596,9 +2592,8 @@ const EditSellerProductPage: React.FC = () => {
                     value={formData.summary || ""}
                     onChange={handleChange}
                     placeholder="Write a brief description of your storytelling"
-                    className={`w-full h-40 px-3 py-2 border ${
-                      errors.summary ? "border-red-500" : "border-gray-200"
-                    } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
+                    className={`w-full h-40 px-3 py-2 border ${errors.summary ? "border-red-500" : "border-gray-200"
+                      } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
                   />
                   {errors.summary && (
                     <span className="text-red-500 text-sm mt-1">
@@ -2617,14 +2612,14 @@ const EditSellerProductPage: React.FC = () => {
                 category === "music"
                   ? "Tracks"
                   : category === "podcast"
-                  ? "Episodes"
-                  : category === "ebook"
-                  ? "Chapters"
-                  : category === "course"
-                  ? "Lessons"
-                  : category === "art"
-                  ? "Collections"
-                  : "Content"
+                    ? "Episodes"
+                    : category === "ebook"
+                      ? "Chapters"
+                      : category === "course"
+                        ? "Lessons"
+                        : category === "art"
+                          ? "Collections"
+                          : "Content"
               }
               description={`Manage your ${category} content`}
             >
@@ -2841,12 +2836,13 @@ const EditSellerProductPage: React.FC = () => {
                                           <input
                                             type="text"
                                             value={file.title}
-                                            onChange={(e) =>
-                                              handleEditFileName(
-                                                item.id,
-                                                file.order_number,
-                                                e.target.value
-                                              )
+                                            onChange={
+                                              (e) =>
+                                                handleEditFileName(
+                                                  item.id,
+                                                  file.file_id,
+                                                  e.target.value
+                                                ) // ✅ Pass item.id and file.file_id
                                             }
                                             className="flex-1 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
                                             autoFocus
@@ -2869,7 +2865,7 @@ const EditSellerProductPage: React.FC = () => {
                                     <div className="flex items-center space-x-2">
                                       {file.isEditing ? (
                                         <>
-                                          <input
+                                          {/* <input
                                             type="text"
                                             value={file.title}
                                             onChange={
@@ -2881,7 +2877,7 @@ const EditSellerProductPage: React.FC = () => {
                                                 ) // ✅ Pass item.id and file.file_id
                                             }
                                             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
-                                          />
+                                          /> */}
                                           <button
                                             type="button"
                                             onClick={() =>
