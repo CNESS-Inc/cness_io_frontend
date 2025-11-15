@@ -561,6 +561,7 @@ const AddVideoForm: React.FC = () => {
     }));
 
     setErrors(prev => ({ ...prev, overview: "" }));
+    setShowAIModal(false);
   };
 
   const handleAddHighlight = () => {

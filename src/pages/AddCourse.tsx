@@ -165,6 +165,7 @@ const AddCourseForm: React.FC = () => {
     }));
 
     setErrors(prev => ({ ...prev, overview: "" }));
+    setShowAIModal(false);
   };
 
   const handleSelectCategory = (category: string) => {

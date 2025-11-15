@@ -31,7 +31,7 @@ const AIModal: React.FC<AIModalProps> = ({
       });
       return;
     }
-  
+
     setIsGenerating(true);
     try {
       let response;
@@ -40,15 +40,16 @@ const AIModal: React.FC<AIModalProps> = ({
       } else {
         response = await ExpandProductOverview({
           short_text: aiShortText.trim(),
-          product_type: productType,  
+          product_type: productType,
         });
       }
 
-      const expandedText = isFreeType ? response?.data?.data?.improved_overview_plain : response?.data?.data?.expanded_text_plain;
+      const expandedText = isFreeType
+        ? response?.data?.data?.improved_overview_plain
+        : response?.data?.data?.expanded_overview_plain;
 
       if (expandedText) {
         onGenerate(expandedText);
-        setShowModal(false);
         setAiShortText("");
 
         showToast({
@@ -56,6 +57,10 @@ const AIModal: React.FC<AIModalProps> = ({
           type: "success",
           duration: 3000,
         });
+
+        setTimeout(() => {
+          setShowModal(false);
+        }, 100);
       }
     } catch (error: any) {
       showToast({
