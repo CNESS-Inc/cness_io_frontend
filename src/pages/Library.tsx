@@ -234,7 +234,6 @@ const Library: React.FC = () => {
   const [selectedValue, setSelectedValue] = useState("recently_added");
   const [isOpen, setIsOpen] = useState(false);
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [setPagination]= useState<any>({});
 
   const [continueWatching, setContinueWatching] = useState<
     ContinueWatchingProduct[]
@@ -253,10 +252,9 @@ const Library: React.FC = () => {
 
   useEffect(() => {
     fetchContinueWatching();
-  }, []);
-  useEffect(() => {
     fetchCollections();
   }, []);
+
   useEffect(() => {
     fetchLibrary();
   }, [activeCategory, selectedValue, appliedFilters]);
@@ -279,6 +277,7 @@ const Library: React.FC = () => {
       console.error("Failed to load library filters:", error);
     }
   };
+
   const fetchCollections = async () => {
     setIsLoading(true);
     try {
@@ -286,9 +285,7 @@ const Library: React.FC = () => {
       const data = response?.data?.data;
 
       setCollections(data?.collections || []);
-      setPagination(data?.pagination || {});
     } catch (error: any) {
-      console.error("Failed to load collections:", error);
       showToast({
         message: "Failed to load collections",
         type: "error",
@@ -298,6 +295,7 @@ const Library: React.FC = () => {
       setIsLoading(false);
     }
   };
+
   const fetchContinueWatching = async () => {
     try {
       const response = await GetContinueWatchingProductList();
