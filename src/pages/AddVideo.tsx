@@ -60,7 +60,7 @@ const InputField: React.FC<InputFieldProps> = ({
 }) => (
   <div className="flex flex-col">
     <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-      {label}
+      {label} {required && <span className="text-red-500">*</span>}
     </label>
     <input
       type={type}
@@ -77,6 +77,7 @@ const InputField: React.FC<InputFieldProps> = ({
 
 interface FileUploadProps {
   label?: string;
+  required?: boolean;
   description: string;
   fileType: 'main-video' | 'short-video';
   onUploadSuccess?: (videoId: string, thumbnailUrl: string, videoUrl: string) => void;
@@ -87,6 +88,7 @@ interface FileUploadProps {
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
+  required = false,
   label,
   description,
   fileType,
@@ -190,7 +192,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     <div>
       {label && (
         <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-          {label}
+          {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
       <div
@@ -678,7 +680,7 @@ const AddVideoForm: React.FC = () => {
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <InputField
-              label="Product Title *"
+              label="Product Title"
               placeholder="Enter your title"
               name="product_title"
               value={formData.product_title}
@@ -687,7 +689,7 @@ const AddVideoForm: React.FC = () => {
               required
             />
             <InputField
-              label="Price *"
+              label="Price"
               placeholder="Enter the $ amount"
               name="price"
               value={formData.price === 0 ? "" : formData.price.toString()}
@@ -705,7 +707,7 @@ const AddVideoForm: React.FC = () => {
             />
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Mood *
+                Mood <span className="text-red-500">*</span>
               </label>
               <select
                 name="mood_id"
@@ -725,7 +727,8 @@ const AddVideoForm: React.FC = () => {
 
           <div className="mt-8">
             <FileUpload
-              label="Upload Video *"
+              label="Upload Video"
+              required
               description="Drag & drop or click to upload"
               fileType="main-video"
               onUploadSuccess={handleMainVideoUpload}
@@ -745,7 +748,7 @@ const AddVideoForm: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
-                  Overview *
+                  Overview <span className="text-red-500">*</span>
                 </label>
                 <button
                   type="button"
@@ -781,7 +784,7 @@ const AddVideoForm: React.FC = () => {
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Highlights * (Max 3)
+                Highlights <span className="text-red-500">*</span> (Max 3)
               </label>
               <div className="space-y-3">
                 {formData.highlights.map((highlight, index) => (
@@ -836,6 +839,7 @@ const AddVideoForm: React.FC = () => {
             </div>
             <InputField
               label="Duration (HH:MM:SS)"
+              required
               placeholder="e.g., 01:10:00"
               name="duration"
               value={formData.duration}
@@ -878,7 +882,7 @@ const AddVideoForm: React.FC = () => {
             />
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Summary of the video *
+                Summary of the video <span className="text-red-500">*</span>
               </label>
               <textarea
                 name="summary"

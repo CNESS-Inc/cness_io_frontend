@@ -5,12 +5,9 @@ import {
   GetCountryDetails,
   GetSellerShop,
   GetUserScoreResult,
-  RemoveAllExtraBanner,
   RemoveSellerDocument,
-  RemoveSpecificExtraBanner,
   RemoveTeamMember,
   RemoveTeamMemberImage,
-  SaveExtraBanners,
   UpdateSellerShop,
   UploadSellerDocument,
 } from "../Common/ServerAPI";
@@ -417,13 +414,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
               <img
                 src={uploadimg}
                 alt="upload"
-                className={`${fileType === 'team-member-image' ? 'w-5 h-5' : 'w-10 h-10' } text-gray-400 transition-all duration-300 mt-8`}
+                className={`${fileType === 'team-member-image' ? 'w-5 h-5' : 'w-10 h-10'} text-gray-400 transition-all duration-300 mt-8`}
               />
               {isUploading ? (
                 <p className="text-primary">Uploading...</p>
               ) : (
                 <>
-                  <p className={`font-[poppins] ${fileType === 'team-member-image' ? 'text-xs' : 'text-[16px]' } text-[#242E3A]`}>
+                  <p className={`font-[poppins] ${fileType === 'team-member-image' ? 'text-xs' : 'text-[16px]'} text-[#242E3A]`}>
                     {description || "Drag & drop or click to upload"}
                   </p>
                   {recommendation && (
@@ -485,6 +482,7 @@ const CreateShopForm: React.FC = () => {
       linkedin_url: "",
       pinterest_url: "",
     },
+    extra_banner_urls: [""],
     team_members: [] as Array<{
       id?: string;
       name: string;
@@ -682,17 +680,17 @@ const CreateShopForm: React.FC = () => {
       title: "Terms & Conditions",
       description:
         "Using this shop means you agree to our terms and conditions",
-      checked: false,
+      checked: true,
     },
     {
       title: "Licensing & usage",
       description: "Products include standard and commercial usage rights",
-      checked: false,
+      checked: true,
     },
     {
       title: "Refund Policy",
       description: "Refunds available within 12 hours of purchase",
-      checked: false,
+      checked: true,
     },
   ]);
 
@@ -781,6 +779,7 @@ const CreateShopForm: React.FC = () => {
             linkedin_url: data?.shop?.social_links?.linkedin_url || "",
             pinterest_url: data?.shop?.social_links?.pinterest_url || "",
           },
+          extra_banner_urls: data?.shop?.extra_banners || [""],
           // Load team members with IDs
           team_members:
             data?.shop?.team_members?.map((member: any) => ({
@@ -801,21 +800,14 @@ const CreateShopForm: React.FC = () => {
         });
 
         // Load extra banners with IDs
-        if (
-          data?.shop?.extra_banners &&
-          Array.isArray(data.shop.extra_banners)
-        ) {
-          const bannerData = data.shop.extra_banners.map((b: any) => ({
-            id: b.id,
-            url: b.banner_url || "",
-          }));
-
+        if (data?.shop?.extra_banners && Array.isArray(data.shop.extra_banners)) {
           const newBanners = [{ url: "" }, { url: "" }, { url: "" }];
-          bannerData.forEach(
-            (banner: { id?: string; url: string }, idx: number) => {
-              if (idx < 3) newBanners[idx] = banner;
+
+          data.shop.extra_banners.forEach((banner: any, idx: number) => {
+            if (idx < 3 && banner.banner_url) {
+              newBanners[idx] = { url: banner.banner_url };
             }
-          );
+          });
           setExtraBanners(newBanners);
         }
 
@@ -1225,112 +1217,130 @@ const CreateShopForm: React.FC = () => {
       return;
     }
 
-    if (banner.id) {
-      try {
-        await RemoveSpecificExtraBanner(banner.id);
+    const newBanners = [...extraBanners];
+    newBanners[index] = { url: "" };
+    setExtraBanners(newBanners);
+  
+    showToast({
+      message: "Banner removed. Save draft or submit to apply changes.",
+      type: "success",
+      duration: 3000,
+    });
 
-        const newBanners = [...extraBanners];
-        newBanners[index] = { url: "" };
-        setExtraBanners(newBanners);
+    // if (banner.id) {
+    //   try {
+    //     await RemoveSpecificExtraBanner(banner.id);
 
-        showToast({
-          message: "Banner removed successfully",
-          type: "success",
-          duration: 3000,
-        });
-      } catch (error: any) {
-        showToast({
-          message:
-            error?.response?.data?.error?.message || "Failed to remove banner",
-          type: "error",
-          duration: 3000,
-        });
-      }
-    } else {
-      // clear from state
-      const newBanners = [...extraBanners];
-      newBanners[index] = { url: "" };
-      setExtraBanners(newBanners);
-    }
+    //     const newBanners = [...extraBanners];
+    //     newBanners[index] = { url: "" };
+    //     setExtraBanners(newBanners);
+
+    //     showToast({
+    //       message: "Banner removed successfully",
+    //       type: "success",
+    //       duration: 3000,
+    //     });
+    //   } catch (error: any) {
+    //     showToast({
+    //       message:
+    //         error?.response?.data?.error?.message || "Failed to remove banner",
+    //       type: "error",
+    //       duration: 3000,
+    //     });
+    //   }
+    // } else {
+    //   // clear from state
+    //   const newBanners = [...extraBanners];
+    //   newBanners[index] = { url: "" };
+    //   setExtraBanners(newBanners);
+    // }
   };
 
-  const handleSaveExtraBanners = async () => {
-    const validBanners = extraBanners.filter(
-      (banner) => typeof banner.url === "string" && banner.url.trim() !== ""
-    );
+  // const handleSaveExtraBanners = async () => {
+  //   const validBanners = extraBanners.filter(
+  //     (banner) => typeof banner.url === "string" && banner.url.trim() !== ""
+  //   );
 
-    // remove all
-    if (validBanners.length === 0) {
-      try {
-        await RemoveAllExtraBanner();
-        return;
-      } catch (error: any) {
-        console.log("No banners to remove or already removed");
-        return;
-      }
-    }
+  //   // remove all
+  //   if (validBanners.length === 0) {
+  //     try {
+  //       await RemoveAllExtraBanner();
+  //       return;
+  //     } catch (error: any) {
+  //       console.log("No banners to remove or already removed");
+  //       return;
+  //     }
+  //   }
 
-    const payload = {
-      banner_urls: validBanners.map((b) => b.url),
-    };
+  //   const payload = {
+  //     banner_urls: validBanners.map((b) => b.url),
+  //   };
 
-    try {
-      const response = await SaveExtraBanners(payload);
+  //   try {
+  //     const response = await SaveExtraBanners(payload);
 
-      // Update state with IDs from response
-      if (response?.data?.data && Array.isArray(response.data.data)) {
-        const savedBanners = response.data.data;
-        const newBanners = [
-          { id: "", url: "" },
-          { id: "", url: "" },
-          { id: "", url: "" },
-        ];
+  //     // Update state with IDs from response
+  //     if (response?.data?.data && Array.isArray(response.data.data)) {
+  //       const savedBanners = response.data.data;
+  //       const newBanners = [
+  //         { id: "", url: "" },
+  //         { id: "", url: "" },
+  //         { id: "", url: "" },
+  //       ];
 
-        savedBanners.forEach((banner: any, idx: number) => {
-          if (idx < 3) {
-            newBanners[idx] = {
-              id: banner.id,
-              url: banner.banner_url,
-            };
-          }
-        });
+  //       savedBanners.forEach((banner: any, idx: number) => {
+  //         if (idx < 3) {
+  //           newBanners[idx] = {
+  //             id: banner.id,
+  //             url: banner.banner_url,
+  //           };
+  //         }
+  //       });
 
-        setExtraBanners(newBanners);
-      }
+  //       setExtraBanners(newBanners);
+  //     }
 
-      showToast({
-        message: "Banners saved successfully",
-        type: "success",
-        duration: 3000,
-      });
-    } catch (error: any) {
-      showToast({
-        message:
-          error?.response?.data?.error?.message || "Failed to save banners",
-        type: "error",
-        duration: 3000,
-      });
-    }
-  };
+  //     showToast({
+  //       message: "Banners saved successfully",
+  //       type: "success",
+  //       duration: 3000,
+  //     });
+  //   } catch (error: any) {
+  //     showToast({
+  //       message:
+  //         error?.response?.data?.error?.message || "Failed to save banners",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //   }
+  // };
 
   const handleSaveDraft = async () => {
     setIsLoading(true);
     try {
-      await handleSaveExtraBanners();
+      // await handleSaveExtraBanners();
+      const validBannerUrls = extraBanners
+        .filter((banner) => banner.url && banner.url.trim() !== "")
+        .map((banner) => banner.url);
+
       const { status, ...payloadWithoutStatus } = formData as any;
+
+      const payload = {
+        ...payloadWithoutStatus,
+        extra_banner_urls: validBannerUrls,
+      };
 
       if (isApproved) {
         // update if seller approved
-        await UpdateSellerShop(payloadWithoutStatus);
+        await UpdateSellerShop(payload);
       } else {
         // create if not approved
-        const payload = { ...payloadWithoutStatus, status: "draft" };
-        await CreateSellerShop(payload);
+        const draftPayload = { ...payload, status: "draft" };
+        await CreateSellerShop(draftPayload);
       }
 
+      loadShopData();
       setErrors({});
-
-      await loadShopData();
 
       showToast({
         message: "Draft saved successfully",
@@ -1361,18 +1371,26 @@ const CreateShopForm: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await handleSaveExtraBanners();
-      if (isApproved) {
-        const { status, ...payloadWithoutStatus } = formData as any;
-        await UpdateSellerShop(payloadWithoutStatus);
+      const validBannerUrls = extraBanners
+      .filter((banner) => banner.url && banner.url.trim() !== "")
+      .map((banner) => banner.url);
 
+      const payloadWithBanners = {
+        ...formData,
+        extra_banner_urls: validBannerUrls,
+      };
+
+      if (isApproved) {
+        const { status, ...payloadWithoutStatus } = payloadWithBanners as any;
+        await UpdateSellerShop(payloadWithoutStatus);
+  
         showToast({
           message: "Shop updated successfully",
           type: "success",
           duration: 3000,
         });
       } else {
-        const payload = { ...formData, status: "submitted" };
+        const payload = { ...payloadWithBanners, status: "submitted" };
         await CreateSellerShop(payload);
         setIsSubmitted(true);
 
@@ -1382,7 +1400,7 @@ const CreateShopForm: React.FC = () => {
           duration: 3000,
         });
       }
-
+      loadShopData();
       setErrors({});
     } catch (error: any) {
       showToast({

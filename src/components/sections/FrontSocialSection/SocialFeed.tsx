@@ -1461,7 +1461,7 @@ export default function SocialFeed() {
             <div className="w-full border-t border-[#C8C8C8] my-4"></div>
             <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 px-4">
               {/* Replace with actual trending topics */}
-              {topics.map((topic, index) => (
+              {topics?.slice(0, 10)?.map((topic, index) => (
                 <li
                   key={index}
                   onClick={() => setOpenSignup(true)}
