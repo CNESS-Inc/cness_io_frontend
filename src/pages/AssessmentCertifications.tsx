@@ -293,8 +293,7 @@ const AssessmentCertification = () => {
 
             <ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] text-[#1E1E1E] space-y-2 mb-6">
               <li>
-                Complete your True Profile (photo, bio, contact, profession,
-                interests)
+                Complete these True Profile fields (First & Last Name, Profession, Date of Birth, Phone Number, Email, and Country)
               </li>
               <li>Select 5 Conscious Values you aspire to follow</li>
             </ol>
@@ -351,17 +350,14 @@ const AssessmentCertification = () => {
                 desc: "Start selling and grow your business on our marketplace.",
               },
               {
-                title: "Aspiring Creator directory visibility",
+                title: "Directory Listing",
                 desc: "Get discovered by showcasing your profile in our directory.",
               },
               {
-                title: "Feed visibility boost",
-                desc: "Increase your content reach and get noticed in the feed.",
+                title: "Aspiring badge",
+                desc: "Let your conscious intent shine out into the world.",
               },
-              {
-                title: "Community participation",
-                desc: "Join discussions and connect with like-minded members.",
-              },
+            
             ].map((item, i) => (
               <div
                 key={i}
@@ -427,7 +423,7 @@ const AssessmentCertification = () => {
               Inspired Certification
             </h3>
             <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-3">
-              Start your conscious journey
+             Unlock the next tier of recognition and capability.
             </p>
           </div>
         </div>
@@ -439,7 +435,7 @@ const AssessmentCertification = () => {
           {/* Left Section */}
           <div>
             <h4 className="font-[poppins] font-semibold text-[34px] leading-[140%] tracking-[0] text[#000000] mb-3">
-              Get Your Inspired Certification in 1 Step
+            Earn your Inspired Certification in one simple step.
             </h4>
 
             <ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-2 mb-6">
@@ -492,23 +488,23 @@ const AssessmentCertification = () => {
         {/* Footer Info */}
         <div className="mt-10">
           <h5 className="font-[poppins] font-semibold text-[20px] leading-[100%] tracking-[0] text[#000000] mb-4">
-            Unlocks Trust, Growth, and Purpose
+           What you will gain with Inspired certification
           </h5>
 
           <div className="grid md:grid-cols-4 gap-4">
             {[
               {
                 title: "Premium Directory visibility",
-                desc: "Start selling and grow your business on our marketplace.",
+                desc: "Gain enhanced visibility in the premium directory",
               },
-              {
-                title: "Ability to Create Circles",
-                desc: "build your own conscious community",
-              },
-              {
-                title: "Eligibility for",
-                desc: "Featured stories, collaborations, and partner projects",
-              },
+              //{
+                //title: "Ability to Create Circles",
+               // desc: "build your own conscious community",
+              //},
+              //{
+              //  title: "Eligibility for",
+              //  desc: "Featured stories, collaborations, and partner projects",
+              //},
             ].map((item, i) => (
               <div
                 key={i}
