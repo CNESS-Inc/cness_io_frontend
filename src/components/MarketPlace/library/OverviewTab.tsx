@@ -2,6 +2,7 @@ import React from "react";
 import { CheckCircle } from "lucide-react";
 import { FaRegClock, FaRegCommentAlt, FaRegFileVideo, FaRegKeyboard, FaRegStar } from "react-icons/fa";
 import { RiShapesLine } from "react-icons/ri";
+import DOMPurify from "dompurify";
 
 interface OverviewTabProps {
     overview: string;
@@ -31,9 +32,22 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                  flex items-center">
                 Overview
             </h3>
-            <p className="font-['Open_Sans'] font-normal text-[16px] leading [10] text-black bg-white w-full max-w-[843px] opacity-100 py-2">
-                {overview}
-            </p>
+            <div className="rich-text-content font-['Open_Sans'] font-normal text-[16px] leading [10] text-black bg-white w-full max-w-[843px] opacity-100 py-2
+                               [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
+                               [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
+                               [&_li]:my-1 [&_li]:pl-1
+                               [&_p]:my-3
+                               [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:my-4
+                               [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-3
+                               [&_h3]:text-lg [&_h3]:font-bold [&_h3]:my-2
+                               [&_strong]:font-bold
+                               [&_em]:italic
+                               [&_u]:underline"
+                dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(overview),
+                }}
+            >
+            </div>
 
 
             {/* Highlights Section */}

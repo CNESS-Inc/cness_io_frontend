@@ -65,7 +65,7 @@ export default function ProductSummery() {
   };
   return (
     <div>
-      {isLoading && (<>
+      {!isLoading && (<>
         <div className="pt-5 pb-2 px-2">
           <nav className="flex items-center text-xs text-gray-500 mb-2 font-medium">
             <span className="text-gray-700">Order History</span>
