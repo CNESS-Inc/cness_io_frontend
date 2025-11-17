@@ -52,21 +52,21 @@ export default function Faqs() {
           question: "Does CNESS offer marketing support?",
           answer: "Yes, we provide promotional resources to qualified members.",
         },
-        {
-          id: "gen-8",
-          question: "Can Visionary Council members host events?",
-          answer: "Yes, subject to approval and alignment with CNESS values.",
-        },
+        //{
+         // id: "gen-8",
+         // question: "Can Visionary Council members host events?",
+          //answer: "Yes, subject to approval and alignment with CNESS values.",
+        //},
         {
           id: "gen-9",
           question: "Can I refer someone to CNESS?",
           answer: "Yes! Use our referral program available on your dashboard.",
         },
-        {
-          id: "gen-10",
-          question: "Is there a media kit available?",
-          answer: "Yes, it’s available in the Resources section.",
-        },
+        //{
+          //id: "gen-10",
+         // question: "Is there a media kit available?",
+          //answer: "Yes, it’s available in the Resources section.",
+        //},
       ],
     },
     {

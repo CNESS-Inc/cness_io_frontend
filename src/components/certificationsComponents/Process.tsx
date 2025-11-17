@@ -89,9 +89,9 @@ export default function Process() {
         </div>
 
         {/* middle */}
-        <div className="grid grid-cols-[40px_1fr] gap-6 md:contents">
-          <div className="flex justify-center self-center md:col-start-2 md:row-start-1">
-            <div className="relative flex flex-col justify-between items-center w-[60px] h-[35rem]">
+        <div className="grid grid-cols-[40px_1fr] gap-6 md:contents ">
+<div className="flex justify-center self-center md:col-start-2 md:row-start-1 mt-20 md:mt-20">
+            <div className="relative flex flex-col justify-between items-center w-[60px] h-[35rem] ">
               <div className="absolute inset-0 left-1/2 -translate-x-1/2 w-[2px] border-l-2 border-dashed border-[#E9E9E9] z-0"></div>
 
               {steps.map((step, i) => (
@@ -107,7 +107,7 @@ export default function Process() {
           </div>
 
           {/* Right Steps */}
-          <div className="flex flex-col space-y-6 md:col-start-3 md:row-start-1">
+          <div className="flex flex-col space-y-6 md:col-start-3 md:row-start-1 mt-20">
             {steps.map((step, i) => (
               <div
                 key={i}

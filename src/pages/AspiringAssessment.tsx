@@ -132,7 +132,7 @@ const AspiringAssessment = () => {
             return {
               id: monthlyPlan?.id || yearlyPlan?.id,
               title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              description: "Customized pricing based on your selection",
+              description: "This helps us support your experience and gives you access to all premium features.",
               monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
               yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
               period: isAnnual ? "/year" : "/month",
@@ -142,7 +142,7 @@ const AspiringAssessment = () => {
                   : `or $${monthlyPlan?.amount}/month`
                 : undefined,
               features: [], // Add any features you need here
-              buttonText: "Get Started",
+              buttonText: "Pay Now",
               buttonClass: yearlyPlan
                 ? ""
                 : "bg-gray-100 text-gray-800 hover:bg-gray-200",
@@ -215,7 +215,7 @@ const AspiringAssessment = () => {
 
     if (isAnnual) {
       // For annual billing: show "billed annually (yearly price)"
-      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
+      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 11})`;
     } else {
       return `or ${plan.monthlyPrice}/month`;
     }

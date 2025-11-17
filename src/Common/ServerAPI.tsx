@@ -178,6 +178,7 @@ export const EndPoint = {
   following: "/user/following",
   follow_status: "/user/follow/status",
   followers: "/user/follower",
+  story_user: "/story/user",
   following_followers: "/user/following-followers",
   connection: "/friend",
   user_connection: "/friend/get-friend-status",
@@ -265,6 +266,7 @@ export const EndPoint = {
   get_moods: "/marketplace-product/moods",
   get_preview_product: "/marketplace-product",
   expand_product_overview: "/marketplace-product/ai/expand-overview",
+  improve_product_overview: "/marketplace-product/ai/improve-overview",
   generate_signed_url: "/marketplace-product/generate-signed-url",
 
   create_video_product: "/marketplace-product/video",
@@ -1343,6 +1345,10 @@ export const GetFollowerUser = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.followers);
 };
+export const GetUserReel = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story_user);
+};
 export const GetFollowingFollowerUsers = () => {
   let data = {};
   return executeAPI(
@@ -1723,6 +1729,14 @@ export const ExpandProductOverview = (data: any): ApiResponse => {
   );
 };
 
+export const ImproveProductOverview = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.improve_product_overview
+  );
+};
+
 export const GenerateSignedUrl = (fileType: string, data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -2029,8 +2043,11 @@ export const AddProductToCart = (data: any): ApiResponse => {
 export const GetProductCart = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_cart);
 };
-export const GetOrderDetailsByOrdId = (order_id:string) => {
-  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}`);
+export const GetOrderDetailsByOrdId = (order_id:string,pid:string) => {
+  if(!pid){
+    return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}`);
+  }
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}?product_id=${pid}`);
 };
 
 export const RemoveProductToCart = (id: any): ApiResponse => {

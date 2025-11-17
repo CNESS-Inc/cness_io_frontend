@@ -87,17 +87,25 @@ export default function BestPracticeSearch() {
 
   // Get profession title from query params and find matching ID
   const professionTitleFromParams = searchParams.get("profession") || "";
+  const interestNameFromParams = searchParams.get("interest") || "";
   const initialProfessionId = professionTitleFromParams
     ? profession.find((p) => p.title === professionTitleFromParams)?.id || ""
     : "";
 
+  const initialInterestId = interestNameFromParams
+    ? interest.find((i) => i.name === interestNameFromParams)?.id || ""
+    : "";
+
+  const initialFilter = initialProfessionId
+    ? { id: initialProfessionId, type: "profession" as const }
+    : initialInterestId
+    ? { id: initialInterestId, type: "interest" as const }
+    : { id: "", type: "" as const };
+
   const [selectedFilter, setSelectedFilter] = useState<{
     id: string;
     type: "profession" | "interest" | "";
-  }>({
-    id: initialProfessionId,
-    type: initialProfessionId ? "profession" : "",
-  });
+  }>(initialFilter);
 
   const [activeModal, setActiveModal] = useState<"bestpractices" | null>(null);
   const [textWidth, setTextWidth] = useState(0);
@@ -117,8 +125,13 @@ export default function BestPracticeSearch() {
   // Initialize selected domain text from query params
   const getSelectedDomainText = () => {
     const professionTitle = searchParams.get("profession");
+    const interestName = searchParams.get("interest");
+
     if (professionTitle) {
       return professionTitle;
+    }
+    if (interestName) {
+      return interestName;
     }
     return "All Domains";
   };
@@ -131,11 +144,45 @@ export default function BestPracticeSearch() {
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
 
   // Update selectedDomainText when profession data is loaded or query params change
+  // Re-initialize filter when professions/interests are loaded and we have params
   useEffect(() => {
-    if (profession.length > 0 || searchParams.get("profession")) {
-      setSelectedDomainText(getSelectedDomainText());
+    if (
+      (profession.length > 0 || interest.length > 0) &&
+      (searchParams.get("profession") || searchParams.get("interest"))
+    ) {
+      const professionTitle = searchParams.get("profession") || "";
+      const interestName = searchParams.get("interest") || "";
+
+      const professionId = professionTitle
+        ? profession.find((p) => p.title === professionTitle)?.id || ""
+        : "";
+
+      const interestId = interestName
+        ? interest.find((i) => i.name === interestName)?.id || ""
+        : "";
+
+      // Only update if we found a matching ID and it's different from current
+      if (professionId && professionId !== selectedFilter.id) {
+        setSelectedFilter({
+          id: professionId,
+          type: "profession",
+        });
+        setSelectedDomainText(professionTitle);
+
+        const search = searchParams.get("search") || "";
+        fetchBestPractices(1, professionId, "profession", search);
+      } else if (interestId && interestId !== selectedFilter.id) {
+        setSelectedFilter({
+          id: interestId,
+          type: "interest",
+        });
+        setSelectedDomainText(interestName);
+
+        const search = searchParams.get("search") || "";
+        fetchBestPractices(1, interestId, "interest", search);
+      }
     }
-  }, [profession, searchParams]);
+  }, [profession, interest, searchParams]);
 
   // Fetch saved best practices and store in variable
   useEffect(() => {
@@ -220,16 +267,34 @@ export default function BestPracticeSearch() {
   }, [selectedFilter, selectedDomainText]);
 
   // Update query params when filter changes - using title instead of ID
-  const updateQueryParams = (professionId: string, search: string) => {
+  // Update query params when filter changes
+  const updateQueryParams = (
+    professionId: string,
+    interestId: string,
+    search: string
+  ) => {
     const params = new URLSearchParams();
 
     if (professionId) {
-      // Find profession title by ID
       const professionTitle =
         profession.find((p) => p.id === professionId)?.title || "";
       if (professionTitle) {
         params.set("profession", professionTitle);
       }
+      // Remove interest if profession is selected
+      params.delete("interest");
+    } else if (interestId) {
+      const interestName =
+        interest.find((i) => i.id === interestId)?.name || "";
+      if (interestName) {
+        params.set("interest", interestName);
+      }
+      // Remove profession if interest is selected
+      params.delete("profession");
+    } else {
+      // Clear both if no filter
+      params.delete("profession");
+      params.delete("interest");
     }
 
     if (search) {
@@ -347,39 +412,66 @@ export default function BestPracticeSearch() {
   };
 
   // Initialize data from query params on component mount
+  // Initialize data from query params on component mount
   useEffect(() => {
     fetchProfession();
     fetchIntrusts();
 
     // Get initial values from query params
     const initialProfessionTitle = searchParams.get("profession") || "";
+    const initialInterestName = searchParams.get("interest") || "";
     const initialSearch = searchParams.get("search") || "";
 
-    // Find profession ID from title after professions are loaded
+    // Find IDs from titles after data is loaded
     const findProfessionIdFromTitle = (title: string) => {
       return profession.find((p) => p.title === title)?.id || "";
     };
 
-    // Set initial filter state after professions are loaded
+    const findInterestIdFromName = (name: string) => {
+      return interest.find((i) => i.name === name)?.id || "";
+    };
+
+    // Set initial filter state after data is loaded
     const initializeFilter = async () => {
       await fetchProfession();
+      await fetchIntrusts();
 
       const initialProfessionId = initialProfessionTitle
         ? findProfessionIdFromTitle(initialProfessionTitle)
         : "";
 
+      const initialInterestId = initialInterestName
+        ? findInterestIdFromName(initialInterestName)
+        : "";
+
+      // Determine which filter to use (profession takes priority if both exist)
+      let initialFilterId = "";
+      let initialFilterType: "profession" | "interest" | "" = "";
+
+      if (initialProfessionId) {
+        initialFilterId = initialProfessionId;
+        initialFilterType = "profession";
+      } else if (initialInterestId) {
+        initialFilterId = initialInterestId;
+        initialFilterType = "interest";
+      }
+
       setSelectedFilter({
-        id: initialProfessionId,
-        type: initialProfessionId ? "profession" : "",
+        id: initialFilterId,
+        type: initialFilterType,
       });
 
+      // Set selected domain text
+      if (initialProfessionTitle) {
+        setSelectedDomainText(initialProfessionTitle);
+      } else if (initialInterestName) {
+        setSelectedDomainText(initialInterestName);
+      } else {
+        setSelectedDomainText("All Domains");
+      }
+
       // Fetch data with initial params
-      fetchBestPractices(
-        1,
-        initialProfessionId,
-        initialProfessionId ? "profession" : "",
-        initialSearch
-      );
+      fetchBestPractices(1, initialFilterId, initialFilterType, initialSearch);
     };
 
     initializeFilter();
@@ -406,8 +498,14 @@ export default function BestPracticeSearch() {
   }, [profession, searchParams]);
 
   const handleSearch = () => {
-    // Update query params
-    updateQueryParams(selectedFilter.id, searchText);
+    // Update query params based on current filter type
+    if (selectedFilter.type === "profession") {
+      updateQueryParams(selectedFilter.id, "", searchText);
+    } else if (selectedFilter.type === "interest") {
+      updateQueryParams("", selectedFilter.id, searchText);
+    } else {
+      updateQueryParams("", "", searchText);
+    }
 
     fetchBestPractices(1, selectedFilter.id, selectedFilter.type, searchText);
   };
@@ -653,7 +751,7 @@ export default function BestPracticeSearch() {
     setSearchQuery("");
 
     // Update query params
-    updateQueryParams("", searchText);
+    updateQueryParams("", "", searchText);
 
     // Fetch data
     fetchBestPractices(1, "", "", searchText);
@@ -669,8 +767,14 @@ export default function BestPracticeSearch() {
     setIsDropdownOpen(false);
     setSearchQuery("");
 
-    // Update query params
-    updateQueryParams(id, searchText);
+    // Update query params - pass empty string for the other type
+    if (type === "profession") {
+      updateQueryParams(id, "", searchText);
+    } else if (type === "interest") {
+      updateQueryParams("", id, searchText);
+    } else {
+      updateQueryParams("", "", searchText);
+    }
 
     // Fetch data
     fetchBestPractices(1, id, type, searchText);
@@ -1006,7 +1110,9 @@ export default function BestPracticeSearch() {
                             alignSelf: "flex-start", // 👈 forces pill to left
                           }}
                         >
-                          {company.profession ? company.profession : company.interest}
+                          {company.profession
+                            ? company.profession
+                            : company.interest}
                         </span>
                         <div className="w-full flex justify-between items-center gap-3">
                           <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">

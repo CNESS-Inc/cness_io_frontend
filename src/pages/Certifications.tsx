@@ -93,7 +93,7 @@ export default function Certifications() {
     className="font-medium text-[#2a2a2a]
                text-2xl sm:text-3xl md:text-[42px]
                leading-[1.3] md:leading-[50px]
-               tracking-normal max-w-[900px]"
+               tracking-normal whitespace-nowrap  max-w-none"
   >
     Your conscious journey deserves to be seen.
   </h2>

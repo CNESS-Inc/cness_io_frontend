@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "../ui/Toast/ToastProvider";
 import { AddProductToCart, AddProductToWishlist, RemoveProductToCart, RemoveProductToWishlist } from "../../Common/ServerAPI";
 import { FiShoppingCart } from "react-icons/fi";
+import { useCartWishlist } from "./context/CartWishlistContext";
 
 interface Product {
   id: string;
@@ -37,6 +38,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [carted, setCarted] = useState(false);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const { incrementCart, decrementCart, incrementWishlist, decrementWishlist, updateCartCount, updateWishlistCount } = useCartWishlist();
   const navigate = useNavigate();
   const { showToast } = useToast();
 
@@ -69,6 +71,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           type: "success",
           duration: 2000,
         });
+        await decrementWishlist();
       } else {
         await AddProductToWishlist({ product_id: product.id });
         setLiked(true);
@@ -77,8 +80,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           type: "success",
           duration: 2000,
         });
+        await incrementWishlist();
       }
 
+      await updateWishlistCount();
       if (onWishlistUpdate) {
         onWishlistUpdate();
       }
@@ -112,6 +117,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           type: "success",
           duration: 2000,
         });
+        await decrementCart();
       } else {
         await AddProductToCart({
           product_id: product.id,
@@ -123,7 +129,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
           type: "success",
           duration: 2000,
         });
+        await incrementCart();
       }
+      await updateCartCount();
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message || "Failed to add to cart",

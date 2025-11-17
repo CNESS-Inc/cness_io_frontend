@@ -70,7 +70,7 @@ type Collection = {
   slug: string;
   description: string;
   is_public: boolean;
-  sample_product_thumbnail:string
+  sample_product_thumbnail: string
   thumbnail_url: string;
   product_count: number;
   createdAt: string;
@@ -139,17 +139,17 @@ const CollectionThumb: React.FC<{ src: string; label?: string }> = ({
 }) => {
   const navigate = useNavigate();
 
-  return(
-  <div className="relative rounded-xl overflow-hidden group"  >
-    <img src={src} alt={"collection"} className="w-full h-32 object-cover" />
-    <button  onClick={()=>navigate(`/dashboard/my-collections/${label}`)} className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition">
-      <span className="flex items-center gap-2 text-white text-sm font-medium px-3 py-1 bg-black/50 rounded-full">
-        <Play size={16} />
-        Watch
-      </span>
-    </button>
-  </div>
-)
+  return (
+    <div className="relative rounded-xl overflow-hidden group"  >
+      <img src={src} alt={"collection"} className="w-full h-32 object-cover" />
+      <button onClick={() => navigate(`/dashboard/my-collections/${label}`)} className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition">
+        <span className="flex items-center gap-2 text-white text-sm font-medium px-3 py-1 bg-black/50 rounded-full">
+          <Play size={16} />
+          Watch
+        </span>
+      </button>
+    </div>
+  )
 };
 
 const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
@@ -202,9 +202,9 @@ const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
         <div className="mt-1 text-[12px] text-gray-600">  by {p.seller.shop_name}</div>
 
         {/* Watch Now button inside content */}
-        <button 
-        onClick={() => navigate(`/dashboard/library/course/${p.product_id}`)}
-        className="mt-3 w-full flex items-center justify-center gap-2 bg-[#7077FE] hover:bg-[#5a60ef] text-white text-sm font-medium py-2.5 border border-transparent rounded-[3px] shadow">
+        <button
+          onClick={() => navigate(`/dashboard/library/course/${p.product_id}`)}
+          className="mt-3 w-full flex items-center justify-center gap-2 bg-[#7077FE] hover:bg-[#5a60ef] text-white text-sm font-medium py-2.5 border border-transparent rounded-[3px] shadow">
           <Play size={20} /> Watch Now
         </button>
 
@@ -234,7 +234,6 @@ const Library: React.FC = () => {
   const [selectedValue, setSelectedValue] = useState("recently_added");
   const [isOpen, setIsOpen] = useState(false);
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [setPagination]= useState<any>({});
 
   const [continueWatching, setContinueWatching] = useState<
     ContinueWatchingProduct[]
@@ -253,10 +252,9 @@ const Library: React.FC = () => {
 
   useEffect(() => {
     fetchContinueWatching();
-  }, []);
-  useEffect(() => {
     fetchCollections();
   }, []);
+
   useEffect(() => {
     fetchLibrary();
   }, [activeCategory, selectedValue, appliedFilters]);
@@ -279,6 +277,7 @@ const Library: React.FC = () => {
       console.error("Failed to load library filters:", error);
     }
   };
+
   const fetchCollections = async () => {
     setIsLoading(true);
     try {
@@ -286,9 +285,7 @@ const Library: React.FC = () => {
       const data = response?.data?.data;
 
       setCollections(data?.collections || []);
-      setPagination(data?.pagination || {});
     } catch (error: any) {
-      console.error("Failed to load collections:", error);
       showToast({
         message: "Failed to load collections",
         type: "error",
@@ -298,6 +295,7 @@ const Library: React.FC = () => {
       setIsLoading(false);
     }
   };
+
   const fetchContinueWatching = async () => {
     try {
       const response = await GetContinueWatchingProductList();
@@ -422,17 +420,19 @@ const Library: React.FC = () => {
           )}
 
           {/* My Collections */}
-          <section>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[16px] sm:text-lg font-semibold text-[#111827]">My Collectionss</h2>
-              <button className="text-[#7077FE] text-sm" onClick={() => navigate('/dashboard/collections')}>View all</button>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
-              {collections?.map((c) => (
-                <CollectionThumb key={c.name} src={c.sample_product_thumbnail} label={c.id} />
-              ))}
-            </div>
-          </section>
+          {collections.length > 0 && (
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-[16px] sm:text-lg font-semibold text-[#111827]">My Collections</h2>
+                <button className="text-[#7077FE] text-sm" onClick={() => navigate('/dashboard/collections')}>View all</button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
+                {collections?.map((c) => (
+                  <CollectionThumb key={c.name} src={c.sample_product_thumbnail} label={c.id} />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Search and sort */}
           <section className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-3">

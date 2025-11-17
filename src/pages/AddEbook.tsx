@@ -56,7 +56,7 @@ const InputField: React.FC<InputFieldProps> = ({
 }) => (
   <div className="flex flex-col">
     <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-      {label}
+      {label} {required && <span className="text-red-500">*</span>}
     </label>
     <input
       type={type}
@@ -153,6 +153,8 @@ const AddEbookForm: React.FC = () => {
     }));
 
     setErrors(prev => ({ ...prev, overview: "" }));
+
+    handleAIGenerate
   };
 
   // Breadcrumb category handling
@@ -731,7 +733,7 @@ const AddEbookForm: React.FC = () => {
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <InputField
-              label="Product Title *"
+              label="Product Title"
               placeholder="Enter your title"
               name="product_title"
               value={formData.product_title}
@@ -740,7 +742,7 @@ const AddEbookForm: React.FC = () => {
               required
             />
             <InputField
-              label="Price *"
+              label="Price"
               placeholder=" $ "
               name="price"
               value={formData.price === 0 ? "" : formData.price.toString()}
@@ -758,7 +760,7 @@ const AddEbookForm: React.FC = () => {
             />
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Mood *
+                Mood <span className="text-red-500">*</span>
               </label>
               <select
                 name="mood_id"
@@ -784,7 +786,7 @@ const AddEbookForm: React.FC = () => {
             />
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Thumbnail *
+                Thumbnail <span className="text-red-500">*</span>
               </label>
 
               {thumbnailData?.thumbnail_url ? (
@@ -864,7 +866,7 @@ const AddEbookForm: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
-                  Overview *
+                  Overview <span className="text-red-500">*</span>
                 </label>
                 <button
                   type="button"
@@ -900,7 +902,7 @@ const AddEbookForm: React.FC = () => {
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Highlights * (Max 3)
+                Highlights <span className="text-red-500">*</span> (Max 3)
               </label>
               <div className="space-y-3">
                 {formData?.highlights?.map((highlight: any, index: number) => (
@@ -980,7 +982,7 @@ const AddEbookForm: React.FC = () => {
             {/* Format dropdown */}
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Format *
+                Format <span className="text-red-500">*</span>
               </label>
               <select
                 name="format"
@@ -1051,7 +1053,7 @@ const AddEbookForm: React.FC = () => {
                       className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
                     />
                     <p className="text-sm text-[#665B5B] mb-4">
-                      Upload chapter {chapter.id} Ebook files *
+                      Upload chapter {chapter.id} Ebook files <span className="text-red-500">*</span>
                     </p>
                   </div>
                   <button

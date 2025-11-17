@@ -298,7 +298,7 @@ export default function MarketplacePage() {
                 />
               </div>
               {/* Side Image */}
-              <div className="w-full lg:w-[40%] flex">
+              <div className="w-full lg:w-[30%] flex">
                 <img
                   src="https://cdn.cness.io/neon.webp"
                   alt="Sell on CNESS"

@@ -24,6 +24,7 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 type OrderItem = {
+  product_id: string;
   product_name: string;
   product_thumbnail: string | null;
   category: string;
@@ -350,7 +351,7 @@ const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                             </button>
 
                             <button
-                              onClick={() => navigate(`/dashboard/order-history/${order.order_id}`)}
+                              onClick={() => navigate(`/dashboard/order-history/${order.order_id}?pid=${item.product_id}  `)}
                               className="text-[#7077FE] text-[14px] font-[Plus_Jakarta_Sans] font-medium hover:underline">
                               Rate or leave review
                             </button>

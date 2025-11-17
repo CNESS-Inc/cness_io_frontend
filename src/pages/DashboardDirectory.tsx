@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
+//import { Filter } from "lucide-react";
 
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
@@ -16,6 +17,8 @@ import CompanyFilters from "../components/directory/CompanyFilters";
 import Pagination from "../components/directory/CompanyPagination";
 
 type Company = {
+  interests: any;
+  professions: any;
   level: unknown;
   is_organization: boolean | undefined;
   is_person: boolean | undefined;
@@ -86,7 +89,7 @@ export default function DashboardDirectory() {
     });
 
   const [popularCompanies, setPopularCompanies] = useState<Company[]>([]);
-  console.log("popularCompanies", popularCompanies);
+  console.log("🚀 ~ DashboardDirectory ~ popularCompanies:", popularCompanies)
   const [aspiringCompanies, setAspiringCompanies] = useState<Company[]>([]);
   const [inspiringCompanies, setInspiringCompanies] = useState<Company[]>([]);
 
@@ -126,24 +129,29 @@ export default function DashboardDirectory() {
         page,
         popularPagination.itemsPerPage
       );
+      console.log("🚀 ~ fetchPopularCompany ~ res:", res);
 
       if (res?.data?.data) {
-        const transformedCompanies = res.data.data.rows.map((company: any) => ({
-          id: company.id,
-          name: company.name,
-          location: company.location || "",
-          domain: company.domain || "General",
-          category: "Popular",
-          logo: company.profile_picture || iconMap["companylogo1"],
-          banner: company.profile_banner || iconMap["companycard1"],
-          description: company.bio || "No description available",
-          tags: company.tags || [],
-          rating: company.average,
-          isCertified: company.is_certified || true,
-          is_person: company.is_person,
-          is_organization: company.is_organization,
-          level: company?.level?.level,
-        }));
+        const transformedCompanies = res.data.data.rows.map((company: any) => {
+          return {
+            id: company.id,
+            name: company.name,
+            location: company.location || "",
+            domain: company.domain || "General",
+            category: "Popular",
+            logo: company.profile_picture || iconMap["companylogo1"],
+            banner: company.profile_banner || iconMap["companycard1"],
+            description: company.bio || "No description available",
+            tags: company.tags || [],
+            rating: company.average,
+            isCertified: company.is_certified || true,
+            is_person: company.is_person,
+            is_organization: company.is_organization,
+            level: company?.level?.level,
+            professions: company?.professions,
+            interests: company?.interests,
+          };
+        });
 
         setPopularCompanies(transformedCompanies);
 
@@ -187,6 +195,8 @@ export default function DashboardDirectory() {
           rating: company.average,
           isCertified: company.is_certified || false,
           level: company?.level?.level,
+          professions: company?.professions,
+          interests: company?.interests,
         }));
         setInspiringCompanies(transformedCompanies);
         setInspiringPagination((prev) => ({
@@ -229,6 +239,8 @@ export default function DashboardDirectory() {
           rating: company.average,
           isCertified: company.is_certified || false,
           level: company?.level?.level,
+          professions: company?.professions,
+          interests: company?.interests,
         }));
         setAspiringCompanies(transformedCompanies);
         setAspiringPagination((prev) => ({
@@ -334,20 +346,21 @@ export default function DashboardDirectory() {
       };
     return null; // All
   })();
+  console.log("🚀 ~ DashboardDirectory ~ activeList:", activeList);
 
   return (
     <>
       <div className="px-2 sm:px-2 lg:px-1">
-        <section className="relative w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-[12px] overflow-hidden mt-2">
+        <section className="relative w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2">
           <AnimatedBackground />
           <img
             src={iconMap["heroimgs"]}
             alt="City Skyline"
-            className="absolute bottom-[0px] left-0 w-full object-cover z-0 pointer-events-none"
+            className="absolute bottom-0 left-0 w-full object-cover z-0 pointer-events-none"
           />
 
           <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto mt-20">
-            <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-gradient-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
+            <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-linear-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
               Conscious Search Stops here.
             </h1>
 
@@ -406,7 +419,7 @@ export default function DashboardDirectory() {
                 </div>
               </div>
               {/* Search Input - full width on mobile */}
-              <div className="relative flex-grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 h-[100%] shadow-sm ">
+              <div className="relative grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 h-full shadow-sm ">
                 <input
                   type="text"
                   placeholder="Technology and AI"
@@ -442,7 +455,9 @@ export default function DashboardDirectory() {
               ? "Inspired People"
               : "All People"}
           </h2>
-
+          {/*<button className="p-2 rounded-lg hover:bg-gray-100 transition ml-335">
+      <Filter className="h-5 w-5 text-gray-300" />
+    </button>*/}
           <CompanyFilters
             options={badge}
             selected={selected}
@@ -467,25 +482,29 @@ export default function DashboardDirectory() {
             ) : activeList.list.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
-                  {activeList.list.map((company) => (
-                    <CompanyCard
-                      id={company.id}
-                      key={company.id}
-                      name={company.name}
-                      domain={company.domain}
-                      logoUrl={company.logo}
-                      bannerUrl={company.banner}
-                      location={company.location}
-                      description={company.description}
-                      tags={company.tags}
-                      rating={company.rating}
-                      isCertified={company.isCertified}
-                      is_organization={company.is_organization}
-                      is_person={company.is_person}
-                      routeKey={company.id}
-                      level={company.level}
-                    />
-                  ))}
+                  {activeList.list.map((company) => {
+                    return (
+                      <CompanyCard
+                        id={company.id}
+                        key={company.id}
+                        name={company.name}
+                        domain={company.domain}
+                        logoUrl={company.logo}
+                        bannerUrl={company.banner}
+                        location={company.location}
+                        description={company.description}
+                        tags={company.tags}
+                        rating={company.rating}
+                        isCertified={company.isCertified}
+                        is_organization={company.is_organization}
+                        is_person={company.is_person}
+                        routeKey={company.id}
+                        level={company.level}
+                        interest={company.interests}
+                        profession={company.professions}
+                      />
+                    );
+                  })}
                 </div>
 
                 <Pagination
@@ -504,7 +523,7 @@ export default function DashboardDirectory() {
         <>
           <section className="py-12 px-1 bg-[#f9f9f9] border-t border-gray-100 pt-2">
             <div className="w-full mx-auto">
-              <h3 className="text-lg font-semibold mb-4">Popular People</h3>
+              {/*<h3 className="text-lg font-semibold mb-4">Popular People</h3>*/}
               {isLoading.popular ? (
                 <div className="flex justify-center py-10">
                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
@@ -512,8 +531,9 @@ export default function DashboardDirectory() {
               ) : popularCompanies.length > 0 ? (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
-                    {sortByName(popularCompanies).map((company) => (
-                      <CompanyCard
+                    {sortByName(popularCompanies).map((company) => {
+                      console.log("🚀 ~ DashboardDirectory ~ company:", company)
+                      return <CompanyCard
                         id={company.id}
                         key={company.id}
                         name={company.name}
@@ -529,15 +549,17 @@ export default function DashboardDirectory() {
                         is_person={company.is_person}
                         routeKey={company.id}
                         level={company.level}
-                      />
-                    ))}
+                        interest={company.interests}
+                        profession={company.professions}
+                      />;
+                    })}
                   </div>
-                  <Pagination
+                  {/* <Pagination
                     pagination={popularPagination}
                     isLoading={isLoading.popular}
                     onPageChange={fetchPopularCompany}
                     align="end"
-                  />
+                  />*/}
                 </>
               ) : (
                 <p className="text-gray-500">No popular people found.</p>
@@ -548,7 +570,7 @@ export default function DashboardDirectory() {
           {/* Aspiring */}
           <section className="py-12 border-t border-gray-100">
             <div className="w-full mx-auto">
-              <h3 className="text-lg font-semibold mb-4">Aspiring People</h3>
+              {/*<h3 className="text-lg font-semibold mb-4">Aspiring People</h3>*/}
               {isLoading.aspiring ? (
                 <div className="flex justify-center py-10">
                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
@@ -571,15 +593,17 @@ export default function DashboardDirectory() {
                         isCertified={company.isCertified}
                         routeKey={company.id}
                         level={company.level}
+                        interest={company.interests}
+                        profession={company.professions}
                       />
                     ))}
                   </div>
-                  <Pagination
+                  {/* <Pagination
                     pagination={aspiringPagination}
                     isLoading={isLoading.aspiring}
                     onPageChange={fetchAspiringCompany}
                     align="end"
-                  />
+                  />*/}
                 </>
               ) : (
                 <p className="text-gray-500">No aspiring people found.</p>
@@ -590,7 +614,7 @@ export default function DashboardDirectory() {
           {/* Inspiring */}
           <section className="py-12 border-t border-gray-100">
             <div className="w-full mx-auto">
-              <h3 className="text-lg font-semibold mb-4">Inspiring People</h3>
+              {/*<h3 className="text-lg font-semibold mb-4">Inspiring People</h3> */}
               {isLoading.inspiring ? (
                 <div className="flex justify-center py-10">
                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
@@ -613,6 +637,8 @@ export default function DashboardDirectory() {
                         isCertified={company.isCertified}
                         routeKey={company.id}
                         level={company.level}
+                        interest={company.interests}
+                        profession={company.professions}
                       />
                     ))}
                   </div>

@@ -16,18 +16,18 @@ const Certification = () => {
   // }, []);
 
   return (
-<div className="bg-[#FAFAFA] w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+<div className="bg-[#FAFAFA] w-full px-4 sm:px-6 lg:px-8 py-15 sm:py-16 lg:py-20">
 <div className="max-w-[1336px] w-full mx-auto flex flex-col-reverse lg:flex-row items-center justify-between gap-10 lg:gap-20">
 <div className="w-full lg:w-[60%] flex flex-col justify-center items-start text-left">
           <h3
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className=" leading-10 text-[42px] font-medium text-black"
+  className="leading-10 text-[42px] font-medium text-black lg:-mt-[70px] md:-mt-[40px] -mt-0"
           >
             Certification Makes It Official.
           </h3>
           <p
             style={{ fontFamily: "Open Sans, sans-serif" }}
-            className="text-[18px] text-[#242424] font-light pt-[10px] mb-2"
+            className="text-[18px] text-[#242424] font-light pt-[15px] mb-2"
           >
             Get your conscious identity verified and unlock everything CNESS has
             to offer.
@@ -41,12 +41,11 @@ const Certification = () => {
 
           <div className="lg:leading-9 md:leading-9 leading-[24px] pt-[20px] flex flex-col gap-4 w-full">
             {[
-              "Unlock your True Profile with verified status",
-              "Sell your services or digital tools in the Conscious Marketplace",
+              "Elevate your identity, unlock your Verified Profile.",
+              "Sell your digital products in the conscious marketplace",
               "Publish reflections, stories, and offerings on your social feed",
               "Get featured in the CNESS Directory with certification tags",
-              "Become eligible to mentor others and earn through guidance",
-              "Priority access to broadcasting and live events",
+          
             ].map((text, index) => (
               <div className="flex items-center gap-2" key={index}>
                 <div className="h-[25px] w-[25px] rounded-full bg-[#F4D373] flex items-center justify-center">

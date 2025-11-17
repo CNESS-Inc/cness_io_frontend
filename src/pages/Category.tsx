@@ -174,7 +174,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                       image:
                         product.thumbnail_url ||
                         "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-                      category: product.product_category?.name || "",
+                      category: product.category?.name || "",
                       isLike: product?.is_in_wishlist,
                       isCarted: product?.is_in_cart,
                     }}

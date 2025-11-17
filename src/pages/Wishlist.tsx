@@ -7,10 +7,12 @@ import filter from "../assets/filter.svg";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { GetProductWishlist } from "../Common/ServerAPI";
+import { useCartWishlist } from "../components/MarketPlace/context/CartWishlistContext";
 
 const Wishlist: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { showToast } = useToast();
+  const { updateWishlistCount, decrementWishlist } = useCartWishlist();
 
   const initialSearch = searchParams.get("search") || "";
   const [searchQuery, setSearchQuery] = useState(initialSearch);
@@ -93,6 +95,8 @@ const Wishlist: React.FC = () => {
       const response = await GetProductWishlist(apiParams);
       const wishlistData = response?.data?.data?.wishlist || [];
       setProducts(wishlistData);
+
+      await updateWishlistCount();
     } catch (error: any) {
       console.error("API Error:", error);
       showToast({
@@ -131,6 +135,7 @@ const Wishlist: React.FC = () => {
   };
 
   const handleWishlistUpdate = () => {
+    decrementWishlist();
     fetchWishlistProducts();
   };
 

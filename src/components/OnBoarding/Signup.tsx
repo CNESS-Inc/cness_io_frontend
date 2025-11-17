@@ -22,7 +22,8 @@ import {
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import Select from "react-select";
-
+import ContentModal from "../../components/ui/ContentModal";
+import ModalPortal from "../ui/ModelPortal";
 //import { Button } from "@headlessui/react";
 
 interface FormErrors {
@@ -32,6 +33,7 @@ interface FormErrors {
   confirmPassword?: string;
   referralCode?: string;
   recaptcha?: string;
+   consent?: string; 
 }
 interface FormErrorsl {
   email?: string;
@@ -295,6 +297,7 @@ export default function SignupModal({
     password: "",
     confirmPassword: "",
     referralCode: "",
+     consent: false,
   });
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [personErrors, setPersonErrors] = useState<FormErrorsl>({});
@@ -357,6 +360,7 @@ export default function SignupModal({
     email: string;
     password: string;
     confirmPassword: string;
+     consent: boolean;
   }) => {
     const newErrors: FormErrors = {};
 
@@ -404,7 +408,9 @@ export default function SignupModal({
     if (!recaptchaValue) {
       newErrors.recaptcha = "Please verify you're not a robot";
     }
-
+if (!formData.consent) {
+  newErrors.consent = "You must agree to the Terms & Conditions,Privacy policy and Community guidelines";
+}
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -455,6 +461,7 @@ export default function SignupModal({
       password: form.password.value.trim(),
       confirmPassword: form.confirmPassword.value.trim(),
       referralCode: form.referralCode.value.trim(),
+      consent: registerForm.consent, 
     };
 
     const isValid = validateForms(formData);
@@ -929,6 +936,34 @@ export default function SignupModal({
     }
   };
 
+  const [showConsentTerms, setShowConsentTerms] = useState(false);
+const [showConsentPrivacy, setShowConsentPrivacy] = useState(false);
+const [showConsentCommunity, setShowConsentCommunity] = useState(false);
+
+const [consentTermsContent, setConsentTermsContent] = useState("");
+const [consentPrivacyContent, setConsentPrivacyContent] = useState("");
+const [consentCommunityContent, setConsentCommunityContent] = useState("");
+
+  useEffect(() => {
+  fetch("/terms and conditions new.html")
+    .then((res) => res.text())
+    .then((data) => setConsentTermsContent(data));
+}, []);
+
+// Privacy
+useEffect(() => {
+  fetch("/CNESS privacy policy.htm")
+    .then((res) => res.text())
+    .then((data) => setConsentPrivacyContent(data));
+}, []);
+
+// Community Guideline
+useEffect(() => {
+  fetch("/community_guideline.html")
+    .then((res) => res.text())
+    .then((data) => setConsentCommunityContent(data));
+}, []);
+
   return (
     <>
       <PopupOnboardingModal open={open} onClose={onClose}>
@@ -1155,7 +1190,7 @@ export default function SignupModal({
             {/* Referral Code */}
             <div className="mb-0 w-[100%]">
               <label className="block">
-                <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
+                <span className="block mb-1 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
                   Referral code (optional)
                 </span>
                 <input
@@ -1199,7 +1234,7 @@ export default function SignupModal({
                 />
                 {(errors.recaptcha ||
                   (recaptchaTouched && !recaptchaValue)) && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-1 text-[10px] text-red-600">
                     Please complete reCAPTCHA
                   </p>
                 )}
@@ -1211,10 +1246,60 @@ export default function SignupModal({
             <p className="text-sm text-red-600 mb-0">{registerError}</p>
           )}
 
+          {/* Consent Checkbox */}
+<div className="flex items-start gap-2">
+  <input
+    type="checkbox"
+    id="consent"
+    name="consent"
+    checked={registerForm.consent || false}
+    onChange={(e) =>
+      setRegisterForm((prev) => ({ ...prev, consent: e.target.checked }))
+    }
+    className="mt-0.5 w-4 h-4"
+  />
+
+  <label htmlFor="consent" className="text-[11px] text-gray-700 font-openSans">
+  I agree to the{" "}
+  
+  <button
+    type="button"
+    onClick={() => setShowConsentTerms(true)}
+    className="text-purple-600 underline"
+  >
+    Terms & Conditions
+  </button>
+
+  ,{" "}
+
+  <button
+    type="button"
+    onClick={() => setShowConsentPrivacy(true)}
+    className="text-purple-600 underline"
+  >
+    Privacy Policy
+  </button>
+
+  {" "}and{" "}
+
+  <button
+    type="button"
+    onClick={() => setShowConsentCommunity(true)}
+    className="text-purple-600 underline"
+  >
+    Community Guidelines
+  </button>.
+</label>
+</div>
+
+{errors.consent && (
+  <p className="text-[9px] text-red-600">{errors.consent}</p>
+)}
+
           {/* Submit */}
           <button
             type="submit"
-            className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[42px] text-white text-[14px] shadow-md hover:opacity-95"
+            className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[42px] text-white text-[14px] shadow-md hover:opacity-95 -mt-2"
             disabled={registerLoading || !recaptchaValue}
           >
             {registerLoading ? "Signing Up..." : "Sign Up"}
@@ -1938,6 +2023,67 @@ export default function SignupModal({
           </div>
         </div>
       </Modal>
+
+      {/* Terms Modal */}
+<ModalPortal>
+  <ContentModal
+    isOpen={showConsentTerms}
+    onClose={() => setShowConsentTerms(false)}
+  >
+    <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+      <h3 className="lg:text-[36px] md:text-[30px] text-[24px] font-[500] text-black mb-4 text-center">
+        CNESS TERMS AND CONDITIONS
+      </h3>
+
+      <div
+        className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg max-h-[500px] overflow-y-auto content-container"
+        style={{ lineHeight: "1.6", fontSize: "16px", color: "#333" }}
+        dangerouslySetInnerHTML={{ __html: consentTermsContent }}
+      />
+    </div>
+  </ContentModal>
+</ModalPortal>
+
+{/* Privacy Modal */}
+<ModalPortal>
+  <ContentModal
+    isOpen={showConsentPrivacy}
+    onClose={() => setShowConsentPrivacy(false)}
+  >
+    <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+      <h3 className="lg:text-[36px] md:text-[30px] text-[24px] font-[500] text-black mb-4 text-center">
+        CNESS PRIVACY POLICY
+      </h3>
+
+      <div
+        className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg max-h-[500px] overflow-y-auto content-container"
+        style={{ lineHeight: "1.6", fontSize: "16px", color: "#333" }}
+        dangerouslySetInnerHTML={{ __html: consentPrivacyContent }}
+      />
+    </div>
+  </ContentModal>
+</ModalPortal>
+
+
+{/* Community Guidelines Modal */}
+<ModalPortal>
+  <ContentModal
+    isOpen={showConsentCommunity}
+    onClose={() => setShowConsentCommunity(false)}
+  >
+    <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+      <h3 className="lg:text-[36px] md:text-[30px] text-[24px] font-[500] text-black mb-4 text-center">
+        COMMUNITY GUIDELINES
+      </h3>
+
+      <div
+        className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg max-h-[500px] overflow-y-auto content-container"
+        style={{ lineHeight: "1.6", fontSize: "16px", color: "#333" }}
+        dangerouslySetInnerHTML={{ __html: consentCommunityContent }}
+      />
+    </div>
+  </ContentModal>
+</ModalPortal>
     </>
   );
 }

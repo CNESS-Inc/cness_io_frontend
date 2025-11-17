@@ -695,9 +695,9 @@ const UpgradeBadge = () => {
                 </h3>
               </div>
 
-              <div className="pt-3 flex justify-start items-start gap-3">
+               {/*<div className="pt-3 flex justify-start items-start gap-3">
                 <img src={arrow} alt="icon" className="w-4 h-4 mt-0.5" />
-                <div className="text-sm text-[#222224] font-['Open_Sans',Helvetica] font-normal space-y-1">
+                {/*<div className="text-sm text-[#222224] font-['Open_Sans',Helvetica] font-normal space-y-1">
                   <p>Renewal requires:</p>
                   <ul className="list-disc list-inside pl-2 space-y-1">
                     <li>LMS course completion.</li>
@@ -705,7 +705,7 @@ const UpgradeBadge = () => {
                     <li>Shortened reassessment form submission.</li>
                   </ul>
                 </div>
-              </div>
+              </div>*/}
             </div>
           </div>
         </div>

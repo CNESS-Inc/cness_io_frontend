@@ -5,7 +5,7 @@ import {
   List,
   ListOrdered,
 } from "lucide-react";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 
 interface CustomRichTextEditorProps {
   value: string;
@@ -31,38 +31,43 @@ const CustomRichTextEditor: React.FC<CustomRichTextEditorProps> = ({
     }
   }, [value]);
 
-  // Detect active formats when selection changes
-  useEffect(() => {
-    const handleSelectionChange = () => {
-      if (!editorRef.current) return;
+  // Update active formats for this specific editor
+  const updateActiveFormats = useCallback(() => {
+    if (!editorRef.current) return;
 
-      const commands = [
-        "bold",
-        "italic",
-        "underline",
-        "strikeThrough",
-        "insertUnorderedList",
-        "insertOrderedList",
-        "justifyLeft",
-        "justifyCenter",
-        "justifyRight",
-      ];
+    const commands = [
+      "bold",
+      "italic",
+      "underline",
+      "strikeThrough",
+      "insertUnorderedList",
+      "insertOrderedList",
+      "justifyLeft",
+      "justifyCenter",
+      "justifyRight",
+    ];
 
-      const active: string[] = commands.filter((cmd) =>
-        document.queryCommandState(cmd)
-      );
-      setActiveFormats(active);
-    };
-
-    document.addEventListener("selectionchange", handleSelectionChange);
-    return () =>
-      document.removeEventListener("selectionchange", handleSelectionChange);
+    const active: string[] = commands.filter((cmd) =>
+      document.queryCommandState(cmd)
+    );
+    setActiveFormats(active);
   }, []);
 
   const handleInput = () => {
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML);
     }
+  };
+
+  const handleFocus = () => {
+    // Add selection change listener when this editor is focused
+    document.addEventListener("selectionchange", updateActiveFormats);
+  };
+
+  const handleBlur = () => {
+    // Remove selection change listener when this editor loses focus
+    document.removeEventListener("selectionchange", updateActiveFormats);
+    onBlur?.();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -179,20 +184,8 @@ const CustomRichTextEditor: React.FC<CustomRichTextEditorProps> = ({
       document.execCommand(command, false, value);
       handleInput();
 
-      // Refresh active formats
-      const commands = [
-        "bold",
-        "italic",
-        "underline",
-        "strikeThrough",
-        "insertUnorderedList",
-        "insertOrderedList",
-        "justifyLeft",
-        "justifyCenter",
-        "justifyRight",
-      ];
-      const active = commands.filter((cmd) => document.queryCommandState(cmd));
-      setActiveFormats(active);
+      // Update active formats for this editor
+      updateActiveFormats();
     }
   };
 
@@ -334,7 +327,8 @@ const CustomRichTextEditor: React.FC<CustomRichTextEditorProps> = ({
         contentEditable
         onInput={handleInput}
         onKeyDown={handleKeyDown}
-        onBlur={onBlur}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         data-placeholder={placeholder}
         suppressContentEditableWarning
       ></div>

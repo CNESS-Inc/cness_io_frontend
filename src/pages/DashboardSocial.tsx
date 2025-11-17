@@ -65,6 +65,7 @@ import CreditAnimation from "../Common/CreditAnimation";
 // import { buildShareUrl } from "../lib/utils";
 
 interface Post {
+  product_id: any;
   id: string;
   user_id: string;
   content: string;
@@ -304,6 +305,7 @@ export default function SocialTopBar() {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const [userPosts, setUserPosts] = useState<Post[]>([]);
+  console.log("🚀 ~ SocialTopBar ~ userPosts:", userPosts)
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -333,6 +335,7 @@ export default function SocialTopBar() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
+  console.log("🚀 ~ SocialTopBar ~ userInfo:", userInfo)
   // const [isAdult, setIsAdult] = useState<Boolean>(
   //   localStorage.getItem("isAdult") === "true" ? true : false
   // );
@@ -859,6 +862,7 @@ export default function SocialTopBar() {
             is_liked: newPost.is_liked,
             is_saved: newPost.is_saved,
             is_requested: newPost.is_requested,
+            product_id: null,
             user: {
               id: newPost.user.id,
               username: newPost.user.username,
@@ -2020,58 +2024,76 @@ export default function SocialTopBar() {
 
                         {/* Dynamic Media Block */}
                         {post.file && (
-                          <div className="rounded-lg">
-                            {(() => {
-                              // Split and filter valid URLs
-                              const urls = post.file
-                                .split(",")
-                                .map((url) => url.trim())
-                                .filter((url) => isValidMediaUrl(url)); // Filter out invalid URLs
+        <div className="rounded-lg">
+          {(() => {
+            // Split and filter valid URLs
+            const urls = post.file
+              .split(",")
+              .map((url) => url.trim())
+              .filter((url) => isValidMediaUrl(url)); // Filter out invalid URLs
 
-                              // If no valid media URLs after filtering, don't render anything
-                              if (urls.length === 0) {
-                                return null;
-                              }
+            // If no valid media URLs after filtering, don't render anything
+            if (urls.length === 0) {
+              return null;
+            }
 
-                              const mediaItems = urls.map((url) => ({
-                                url,
-                                type: (isVideoFile(url) ? "video" : "image") as
-                                  | "video"
-                                  | "image",
-                              }));
+            const mediaItems = urls.map((url) => ({
+              url,
+              type: (isVideoFile(url) ? "video" : "image") as
+                | "video"
+                | "image",
+            }));
 
-                              // Use PostCarousel if there are multiple items
-                              if (mediaItems.length > 1) {
-                                return <PostCarousel mediaItems={mediaItems} />;
-                              }
+            // Use PostCarousel if there are multiple items
+            if (mediaItems.length > 1) {
+              return (
+                // Wrap with Link if product_id exists
+                post.product_id ? (
+                  <Link to={`/dashboard/product-detail/${post.product_id}`}>
+                    <PostCarousel mediaItems={mediaItems} />
+                  </Link>
+                ) : (
+                  <PostCarousel mediaItems={mediaItems} />
+                )
+              );
+            }
 
-                              // Single item rendering
-                              const item = mediaItems[0];
-                              return item.type === "video" ? (
-                                <video
-                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
-                                  controls
-                                  muted
-                                  autoPlay
-                                  loop
-                                >
-                                  <source src={item.url} type="video/mp4" />
-                                  Your browser does not support the video tag.
-                                </video>
-                              ) : (
-                                <img
-                                  src={item.url}
-                                  alt="Post content"
-                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
-                                  onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    target.src = ""; // Clear broken images
-                                  }}
-                                />
-                              );
-                            })()}
-                          </div>
-                        )}
+            // Single item rendering - wrap with Link if product_id exists
+            const item = mediaItems[0];
+            const mediaContent = item.type === "video" ? (
+              <video
+                className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
+                controls
+                muted
+                autoPlay
+                loop
+              >
+                <source src={item.url} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <img
+                src={item.url}
+                alt="Post content"
+                className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = ""; // Clear broken images
+                }}
+              />
+            );
+
+            // Conditionally wrap with Link if product_id exists
+            return post.product_id ? (
+              <Link to={`/dashboard/product-detail/${post.product_id}`}>
+                {mediaContent}
+              </Link>
+            ) : (
+              mediaContent
+            );
+          })()}
+        </div>
+      )}
                       </div>
 
                       {/* Reactions and Action Buttons */}
