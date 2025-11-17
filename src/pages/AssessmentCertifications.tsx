@@ -407,7 +407,7 @@ const isInspiredCompleted = () => {
                 <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-[#000000] mb-2 align-middle">
                   {item.title}
                 </h6>
-                <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
+                <p className="font-['Open_Sans'] font-normal text-[14px] leading-[18.01px] tracking-[0px] text-[#64748B]">
                   {item.desc}
                 </p>
               </div>
@@ -596,7 +596,7 @@ const isInspiredCompleted = () => {
                 <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-[#000000] mb-2 align-middle">
                   {item.title}
                 </h6>
-                <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
+                <p className="font-['Open_Sans'] font-normal text-[14px] leading-[18.01px] tracking-[0px] text-[#64748B]">
                   {item.desc}
                 </p>
               </div>
@@ -893,7 +893,7 @@ You commit to transparent, people-first practices.
                 <h6 className="font-[poppins] font-medium text-[14.76px] leading-[22.14px] tracking-[-0.03em] text-[#000000] mb-2 align-middle">
                   {item.title}
                 </h6>
-                <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18.01px] tracking-[0px] text-[#64748B]">
+                <p className="font-['Open_Sans'] font-normal text-[14px] leading-[18.01px] tracking-[0px] text-[#64748B]">
                   {item.desc}
                 </p>
               </div>
