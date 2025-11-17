@@ -29,7 +29,7 @@ const SellerHelp: React.FC = () => {
         <p className="text-gray-500 font-['Poppins'] text-sm mt-2 max-w-lg mx-auto">
           If you cannot find an answer to your question in the FAQ, you can always contact us. We will answer you shortly.
         </p>
-        <div className="flex flex-col md:flex-row justify-center gap-8 pb-10 mt-10">
+        <div className="flex flex-col md:flex-row justify-center sm:flex flex-col items-center gap-8 pb-10 mt-10">
           {/* Phone */}
           <div className="bg-white rounded-2xl shadow-md p-8 w-72 flex flex-col items-center text-center border border-gray-100 ">
             <MdCall className="text-indigo-500 w-8 h-8 mb-3" />
