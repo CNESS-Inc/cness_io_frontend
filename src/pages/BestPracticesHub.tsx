@@ -148,14 +148,14 @@ export default function BestPracticesHub() {
       currentPage: 1,
       totalPages: 1,
       totalItems: 0,
-      itemsPerPage: 10,
+      itemsPerPage: 9,
     });
 
   const [paginationInterest, setPaginationInterest] = useState<PaginationData>({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 10,
+    itemsPerPage: 9,
   });
 
   // Separate loading states
