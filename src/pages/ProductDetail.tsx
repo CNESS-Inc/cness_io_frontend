@@ -365,14 +365,30 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       { stars: 1, percentage: 0, color: "bg-[#F8B814]" },
     ];
 
-  const details = [
-    { icon: 'https://static.codia.ai/image/2025-10-16/wo8469r2jf.png', label: 'Duration', value: '12 hours' },
-    // { icon: 'https://static.codia.ai/image/2025-10-16/TBG52Y11Ne.png', label: 'Skill Level', value: 'Beginner → Advanced' },
-    { icon: 'https://static.codia.ai/image/2025-10-16/dCQ1oOqZNv.png', label: 'Language', value: 'English (with subtitles)' },
-    { icon: 'https://static.codia.ai/image/2025-10-16/Kzho4cnKy1.png', label: 'Format', value: 'Video' },
-    { icon: 'https://static.codia.ai/image/2025-10-16/9eNhkyRAT7.png', label: 'Requirements', value: 'Basic computer with drawing tablet or mouse' },
-  ]
+ const details = [
+  {
+    icon: "https://static.codia.ai/image/2025-10-16/wo8469r2jf.png",
+    label: "Duration",
+    value: product?.product_details?.duration || "Not available",
+  },
+  {
+    icon: "https://static.codia.ai/image/2025-10-16/dCQ1oOqZNv.png",
+    label: "Language",
+    value: product?.product_details?.language || product?.language || "Not available",
+  },
+  {
+    icon: "https://static.codia.ai/image/2025-10-16/Kzho4cnKy1.png",
+    label: "Format",
+    value: product?.product_details?.format || product?.format || product?.category?.name,
+  },
+ // {
+   // icon: "https://static.codia.ai/image/2025-10-16/9eNhkyRAT7.png",
+   // label: "Requirements",
+  //  value: product?.product_details?.requirements || "N/A",
+ // },
+];
 
+  
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">

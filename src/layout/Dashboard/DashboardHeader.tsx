@@ -703,12 +703,7 @@ localStorage.clear();
 
             {isSupportDropdownOpen && (
               <div className="absolute right-0 top-full mt-3 w-52 bg-white rounded-xl shadow-lg border border-gray-200 z-50 py-2 animate-fadeIn">
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 w-full transition"
-                >
-                  <LogOutIcon className="w-4 h-4 text-[#897AFF]" /> Logout
-                </button>
+                
 
                 <button
                   onClick={() => navigate("/dashboard/support")}
@@ -739,6 +734,13 @@ localStorage.clear();
                   className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 w-full transition"
                 >
                   <SettingsIcon className="w-4 h-4 text-[#897AFF]" /> Settings
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 w-full transition"
+                >
+                  <LogOutIcon className="w-4 h-4 text-[#897AFF]" /> Logout
                 </button>
               </div>
             )}

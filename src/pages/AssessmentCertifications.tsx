@@ -253,6 +253,16 @@ const AssessmentCertification = () => {
     );
   };
 
+  const isAspiringCompleted = () => {
+  const cert = getCertificationBySlug("aspiring");
+  return cert && (cert.status === 1 || cert.status === 2);
+};
+
+const isInspiredCompleted = () => {
+  const cert = getCertificationBySlug("inspired");
+  return cert && (cert.status === 1 || cert.status === 2);
+};
+
   return (
     <>
       <h2 className="font-[poppins] font-medium text-[20px] md:text-[24px] text[#000000] mb-8 mt-2 text-center md:text-left px-2">
@@ -407,10 +417,52 @@ const AssessmentCertification = () => {
       </section>
 
       {/* Inspired Section */}
+
+      <div className="relative">
+  {/* Glassy overlay when locked */}
+  {!isAspiringCompleted() && (
+    <div
+      className="
+        absolute inset-0
+        bg-white/40 
+        backdrop-blur-md 
+        flex items-center justify-center 
+        z-10 
+        rounded-2xl
+      "
+    >
+      <div className="flex flex-col items-center">
+        {/* Your custom lock icon */}
+       <svg
+  width="48"
+  height="48"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  className="text-indigo-600"
+>
+  <path
+    d="M17 10H7a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2z"
+    fill="#4F46E5"
+    fillOpacity="0.85"
+  />
+  <path
+    d="M12 2a4 4 0 00-4 4v4h2V6a2 2 0 114 0v4h2V6a4 4 0 00-4-4z"
+    fill="#4F46E5"
+  />
+</svg>
+        <p className="text-gray-700 font-medium text-sm">
+          Complete Aspiring to Unlock
+        </p>
+      </div>
+    </div>
+  )}
+
       <section
         ref={inspiredRef}
-        className="bg-white rounded-2xl py-16 px-6 md:px-16 border-b border-gray-100 mt-6"
-      >
+       className={`bg-white rounded-2xl py-16 px-6 md:px-16 border-b border-gray-100 mt-6 
+      ${!isAspiringCompleted() ? "opacity-40 pointer-events-none" : ""}`}
+  >
         {/* Header */}
         <div className="flex items-center space-x-3 mb-6">
           <img
@@ -552,12 +604,55 @@ const AssessmentCertification = () => {
           </div>
         </div>
       </section>
+</div>
 
-      {/* Leader Section */}
+ {/* Leader Section */}
+ <div className="relative">
+  {/* Glassy overlay when locked */}
+  {!isInspiredCompleted() && (
+    <div
+      className="
+        absolute inset-0
+        bg-white/40 
+        backdrop-blur-md 
+        flex items-center justify-center 
+        z-10 
+        rounded-2xl
+      "
+    >
+      <div className="flex flex-col items-center">
+        {/* Your custom lock icon */}
+       <svg
+  width="48"
+  height="48"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  className="text-indigo-600"
+>
+  <path
+    d="M17 10H7a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2z"
+    fill="#4F46E5"
+    fillOpacity="0.85"
+  />
+  <path
+    d="M12 2a4 4 0 00-4 4v4h2V6a2 2 0 114 0v4h2V6a4 4 0 00-4-4z"
+    fill="#4F46E5"
+  />
+</svg>
+        <p className="text-gray-700 font-medium text-sm">
+          Complete Aspiring to Unlock
+        </p>
+      </div>
+    </div>
+  )}
+
+
       <section
         ref={leaderRef}
-        className="bg-white rounded-2xl py-16 px-6 md:px-16 border-b border-gray-100 mt-6"
-      >
+         className={`bg-white rounded-2xl py-16 px-6 md:px-16 border-b border-gray-100 mt-6 
+      ${!isInspiredCompleted() ? "opacity-40 pointer-events-none" : ""}`}
+  >
         {/* Header */}
         <div className="flex items-center space-x-3 mb-6">
           <img
@@ -806,7 +901,7 @@ You commit to transparent, people-first practices.
           </div>
         </div>
       </section>
-
+</div>
       {isModalOpen && <Nomimationmodel onClose={() => setIsModalOpen(false)} />}
     </>
   );
