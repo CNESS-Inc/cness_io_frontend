@@ -112,6 +112,7 @@ import CoursePreview from "../pages/CoursePreview";
 import ArtPreview from "../pages/ArtPreview";
 import EditSellerProductPage from "../pages/EditSellerProductPage";
 import PaymentConfirmation from "../pages/PaymentConfirmation";
+import BestPracticeSearch from "../pages/BestPracticeSearch";
 import CollectionDetail from "../pages/CollectionDetail";
 
 // Lazy-loaded pages
@@ -480,10 +481,6 @@ export const router = createBrowserRouter([
             element: <CartPage />,
           },
           {
-            path: "checkout",
-            element: <Checkout />,
-          },
-          {
             path: "payment-success",
             element: <PaymentSuccess />,
           },
@@ -656,6 +653,10 @@ export const router = createBrowserRouter([
           {
             path: "bestpractices",
             element: <BestPracticesHub />,
+          },
+          {
+            path: "search-bestpractices",
+            element: <BestPracticeSearch />,
           },
           {
             path: "bestpractices/:id/:slug",

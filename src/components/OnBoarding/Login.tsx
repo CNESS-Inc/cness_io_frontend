@@ -22,10 +22,8 @@ import { useGoogleLogin } from "@react-oauth/google";
 import PopupOnboardingModal from "../ui/OnBoardingModel";
 import { Check } from "lucide-react";
 import SignupModel from "../OnBoarding/Signup";
-
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi"; // add if not already
-
-import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 //import Fcopyright from "../../layout/Header/Fcopyright";
 
 interface SubDomain {
@@ -201,7 +199,6 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
   const [resetPasswordErrors] = useState<FormErrors>({});
   const [apiMessage, setApiMessage] = useState<string | null>(null);
-  console.log("🚀 ~ Login ~ apiMessage:", apiMessage)
   const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
   const [showResendEmail, setShowResendEmail] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState("");
@@ -455,7 +452,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
       if (response) {
         setAuthenticated(true);
-          setShowResendEmail(false);
+        setShowResendEmail(false);
         setApiMessage(response?.success?.message || "Login successful");
         setIsSubmitting(false);
         localStorage.setItem("authenticated", "true");
@@ -1972,7 +1969,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -2020,12 +2017,12 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     placeholder="Enter your first name"
                     value={personForm.first_name}
                     onChange={handlePersonFormChange}
-                    className={`w-[440px] h-[41px]
-    rounded-[12px]
-    border-[0.82px]
-    p-[12px] mt-2 ${
-      personErrors.first_name ? "border-red-500" : "border-gray-300"
-    } rounded-md`}
+                    className={`w-full max-w-[440px] h-[41px]
+                rounded-[12px]
+                border-[0.82px]
+                p-[12px] mt-2 ${
+                  personErrors.first_name ? "border-red-500" : "border-gray-300"
+                } rounded-md`}
                   />
                   {personErrors.first_name && (
                     <p className="mt-1 text-sm text-red-600">
@@ -2044,12 +2041,12 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     name="last_name"
                     value={personForm.last_name}
                     onChange={handlePersonFormChange}
-                    className={`w-[440px] h-[41px]
-    rounded-[12px]
-    border-[0.82px]
-    p-[12px] mt-2 ${
-      personErrors.last_name ? "border-red-500" : "border-gray-300"
-    } rounded-md`}
+                    className={`w-full max-w-[440px] h-[41px]
+                rounded-[12px]
+                border-[0.82px]
+                p-[12px] mt-2 ${
+                  personErrors.last_name ? "border-red-500" : "border-gray-300"
+                } rounded-md`}
                     placeholder="Enter your last name"
                   />
                   {personErrors.last_name && (
@@ -2059,40 +2056,82 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                   )}
                 </div>
 
+                {/* Interests - Updated to CreatableSelect */}
                 <div className="mb-4">
-                  <label className="block openSans text-base font-medium text-gray-800 mb-1 ">
+                  <label className="block openSans text-base font-medium text-gray-800 mb-1">
                     Interests
                     <span className="text-red-500">*</span>
                   </label>
-                  <div className="mt-4">
-                    <Select
+                  <div className="mt-2">
+                    <CreatableSelect
                       isMulti
                       options={interest?.map((interestItem: Interest) => ({
                         value: interestItem.id,
                         label: interestItem.name,
                       }))}
-                      value={
-                        personForm.interests?.map((interestId: any) => ({
-                          value: interestId,
-                          label: interest?.find((i: any) => i.id === interestId)
-                            ?.name,
-                        })) || []
-                      }
+                      value={personForm.interests?.map((interestValue: any) => {
+                        // Check if it's a custom interest (string without UUID format) or existing (ID)
+                        if (
+                          typeof interestValue === "string" &&
+                          !interestValue.includes("-")
+                        ) {
+                          // It's a custom interest - return as is
+                          return {
+                            value: interestValue,
+                            label: interestValue,
+                          };
+                        }
+
+                        // It's an existing interest ID - find in interest data
+                        const foundInterest = interest?.find(
+                          (i: any) => i.id === interestValue
+                        );
+
+                        return {
+                          value: interestValue,
+                          label: foundInterest?.name || interestValue,
+                        };
+                      })}
                       onChange={(selectedOptions) => {
-                        const selectedValues = selectedOptions?.map(
-                          (option) => option.value
+                        const normalizedInterests = selectedOptions.map(
+                          (option: any) => option.value
                         );
                         setPersonForm({
                           ...personForm,
-                          interests: selectedValues,
+                          interests: normalizedInterests,
                         });
                       }}
                       className="react-select-container"
                       classNamePrefix="react-select"
-                      placeholder="Select interests..."
+                      placeholder="Select interests or type to add custom..."
+                      noOptionsMessage={({ inputValue }) =>
+                        inputValue
+                          ? `Press Enter to add "${inputValue}" as custom interest`
+                          : "No options"
+                      }
+                      formatCreateLabel={(inputValue) =>
+                        `Add "${inputValue}" as custom interest`
+                      }
+                      isValidNewOption={(inputValue) =>
+                        inputValue.trim().length > 0 &&
+                        inputValue.trim().length <= 50 &&
+                        !personForm.interests?.some(
+                          (interest: any) =>
+                            typeof interest === "string" &&
+                            interest.toLowerCase() ===
+                              inputValue.trim().toLowerCase()
+                        )
+                      }
                       menuPortalTarget={document.body}
                       styles={{
                         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        control: (base) => ({
+                          ...base,
+                          border: "0.82px solid #D1D5DB",
+                          borderRadius: "12px",
+                          padding: "4px 8px",
+                          minHeight: "41px",
+                        }),
                       }}
                     />
                   </div>
@@ -2103,45 +2142,84 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                   )}
                 </div>
 
+                {/* Professions - Updated to CreatableSelect */}
                 <div className="mb-4">
                   <label className="block openSans text-base font-medium text-gray-800 mb-1">
                     Professions
                     <span className="text-red-500">*</span>
                   </label>
-                  <div className="mt-4">
-                    <Select
+                  <div className="mt-2">
+                    <CreatableSelect
                       isMulti
-                      options={[
-                        ...profession?.map((professionItem: Profession) => ({
+                      options={profession?.map(
+                        (professionItem: Profession) => ({
                           value: professionItem.id,
                           label: professionItem.title,
-                        })),
-                        { value: "other", label: "Other (please specify)" },
-                      ]}
-                      value={
-                        personForm.professions?.map((professionId: any) => ({
-                          value: professionId,
-                          label:
-                            profession?.find((p: any) => p.id === professionId)
-                              ?.title ||
-                            (professionId === "other" ? "Other" : ""),
-                        })) || []
-                      }
+                        })
+                      )}
+                      value={personForm.professions?.map((profValue: any) => {
+                        // Check if it's a custom profession (string without UUID format) or existing (ID)
+                        if (
+                          typeof profValue === "string" &&
+                          !profValue.includes("-")
+                        ) {
+                          // It's a custom profession - return as is
+                          return {
+                            value: profValue,
+                            label: profValue,
+                          };
+                        }
+
+                        // It's an existing profession ID - find in profession data
+                        const foundProf = profession?.find(
+                          (p: any) => p.id === profValue
+                        );
+
+                        return {
+                          value: profValue,
+                          label: foundProf?.title || profValue,
+                        };
+                      })}
                       onChange={(selectedOptions) => {
-                        const selectedValues = selectedOptions?.map(
-                          (option) => option.value
+                        const normalizedProfessions = selectedOptions.map(
+                          (option: any) => option.value
                         );
                         setPersonForm({
                           ...personForm,
-                          professions: selectedValues,
+                          professions: normalizedProfessions,
                         });
                       }}
                       className="react-select-container"
                       classNamePrefix="react-select"
-                      placeholder="Select professions..."
+                      placeholder="Select professions or type to add custom..."
+                      noOptionsMessage={({ inputValue }) =>
+                        inputValue
+                          ? `Press Enter to add "${inputValue}" as custom profession`
+                          : "No options"
+                      }
+                      formatCreateLabel={(inputValue) =>
+                        `Add "${inputValue}" as custom profession`
+                      }
+                      isValidNewOption={(inputValue) =>
+                        inputValue.trim().length > 0 &&
+                        inputValue.trim().length <= 50 &&
+                        !personForm.professions?.some(
+                          (prof: any) =>
+                            typeof prof === "string" &&
+                            prof.toLowerCase() ===
+                              inputValue.trim().toLowerCase()
+                        )
+                      }
                       menuPortalTarget={document.body}
                       styles={{
                         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        control: (base) => ({
+                          ...base,
+                          border: "0.82px solid #D1D5DB",
+                          borderRadius: "12px",
+                          padding: "4px 8px",
+                          minHeight: "41px",
+                        }),
                       }}
                     />
                   </div>
@@ -2152,37 +2230,15 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                   )}
                 </div>
 
-                {/* Add this after the Select component */}
-                {personForm.professions?.includes("other") && (
-                  <div className="mb-4 mt-2">
-                    <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                      Specify Your Profession
-                    </label>
-                    <input
-                      type="text"
-                      name="custom_profession"
-                      value={personForm.custom_profession || ""}
-                      onChange={(e) =>
-                        setPersonForm({
-                          ...personForm,
-                          custom_profession: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      placeholder="Enter your profession"
-                    />
-                  </div>
-                )}
-
-                {/* Form Footer Actions - simplified for single form */}
+                {/* Form Footer Actions */}
                 <div className="flex justify-end mt-6 gap-3 flex-wrap">
                   <Button
                     type="button"
                     onClick={closeModal}
                     variant="white-outline"
                     className="w-[104px] h-[39px] rounded-[100px] p-0
-    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"
+                font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+                flex items-center justify-center"
                   >
                     Cancel
                   </Button>
@@ -2191,8 +2247,8 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     type="submit"
                     variant="gradient-primary"
                     className="w-[104px] h-[39px] rounded-[100px] p-0
-    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-    flex items-center justify-center"
+                font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
+                flex items-center justify-center"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Submitting..." : "Submit"}

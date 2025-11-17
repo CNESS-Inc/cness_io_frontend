@@ -56,7 +56,7 @@ const InputField: React.FC<InputFieldProps> = ({
 }) => (
   <div className="flex flex-col">
     <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-      {label}
+      {label} {required && <span className="text-red-500">*</span>}
     </label>
     <input
       type={type}
@@ -154,6 +154,8 @@ const AddPodcastForm: React.FC = () => {
     }));
 
     setErrors(prev => ({ ...prev, overview: "" }));
+
+    handleAIGenerate
   };
 
   const handleSelectCategory = (category: string) => {
@@ -262,6 +264,12 @@ const AddPodcastForm: React.FC = () => {
     if (!formData.language.trim()) newErrors.language = "Language is required";
     if (!formData.theme.trim()) newErrors.theme = "Theme is required";
     if (!formData.format.trim()) newErrors.format = "Format is required";
+    if (formData.total_duration) {
+      if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)) {
+        newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
+      }
+    }
+    if (!formData.total_duration.trim()) newErrors.total_duration = "Duration is required.";
 
     episodes.forEach((episode, index) => {
       if (episode.episode_files.length === 0) {
@@ -307,6 +315,7 @@ const AddPodcastForm: React.FC = () => {
         if (!valStr) message = "Overview is required";
         break;
       case "total_duration":
+        if (!valStr) message = "Duration is required";
         if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr))
           message = "Invalid duration format. Use HH:MM:SS";
         break;
@@ -645,7 +654,7 @@ const AddPodcastForm: React.FC = () => {
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <InputField
-              label="Product Title *"
+              label="Product Title"
               placeholder="Enter your title"
               name="product_title"
               value={formData.product_title}
@@ -654,7 +663,7 @@ const AddPodcastForm: React.FC = () => {
               required
             />
             <InputField
-              label="Price *"
+              label="Price"
               placeholder=" $ "
               name="price"
               value={formData.price === 0 ? "" : formData.price.toString()}
@@ -672,7 +681,7 @@ const AddPodcastForm: React.FC = () => {
             />
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Mood *
+                Mood <span className="text-red-500">*</span>
               </label>
               <select
                 name="mood_id"
@@ -690,7 +699,7 @@ const AddPodcastForm: React.FC = () => {
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Thumbnail *
+                Thumbnail <span className="text-red-500">*</span>
               </label>
               {thumbnailData?.thumbnail_url ? (
                 <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
@@ -782,7 +791,7 @@ const AddPodcastForm: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
-                  Overview *
+                  Overview <span className="text-red-500">*</span>
                 </label>
                 <button
                   type="button"
@@ -818,7 +827,7 @@ const AddPodcastForm: React.FC = () => {
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Highlights * (Max 3)
+                Highlights <span className="text-red-500">*</span> (Max 3)
               </label>
               <div className="space-y-3">
                 {formData?.highlights?.map((highlight: any, index: number) => (
@@ -874,6 +883,7 @@ const AddPodcastForm: React.FC = () => {
 
             <InputField
               label="Total Duration (HH:MM:SS)"
+              required
               placeholder="e.g., 30:00:00"
               name="total_duration"
               value={formData.total_duration}
@@ -891,7 +901,7 @@ const AddPodcastForm: React.FC = () => {
 
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Format *
+                Format <span className="text-red-500">*</span>
               </label>
               <select
                 name="format"
@@ -957,7 +967,7 @@ const AddPodcastForm: React.FC = () => {
                       className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
                     />
                     <p className="text-sm text-[#665B5B]">
-                      Upload episode {episodeIndex + 1} audios *
+                      Upload episode {episodeIndex + 1} audios <span className="text-red-500">*</span>
                     </p>
                   </div>
 

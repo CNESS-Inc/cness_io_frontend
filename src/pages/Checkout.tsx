@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Trash2, CheckCircle, CreditCard, ShoppingCart } from "lucide-react";
+import {  CheckCircle, CreditCard, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateCheckoutSession, GetProductCart, RemoveProductToCart } from "../Common/ServerAPI";
+import { CreateCheckoutSession, GetProductCart } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 const DonationModal = ({ setShowDonationModal }: { setShowDonationModal: React.Dispatch<React.SetStateAction<boolean>> }) => (
@@ -232,24 +232,6 @@ const CheckoutPage: React.FC = () => {
     fetchCartItems();
   }, []);
 
-  const handleRemoveFromCart = async (productId: string) => {
-    try {
-      await RemoveProductToCart(productId);
-      showToast({
-        message: "Item removed from cart",
-        type: "success",
-        duration: 2000,
-      });
-      fetchCartItems(); // Refresh cart
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message || "Failed to remove item",
-        type: "error",
-        duration: 3000,
-      });
-    }
-  };
-
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
       showToast({
@@ -435,11 +417,11 @@ const CheckoutPage: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-4">
-                    <button
+                    {/* <button
                       onClick={() => handleRemoveFromCart(item.product_id)}
                       className="p-2 hover:bg-red-50 rounded-full transition">
                       <Trash2 className="w-4 h-4 text-red-500" />
-                    </button>
+                    </button> */}
                     <span className="font-semibold text-[#1A1A1A]">
                       ${item.discounted_price}
                     </span>

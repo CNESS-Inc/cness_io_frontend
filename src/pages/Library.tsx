@@ -4,7 +4,7 @@ import FilterSidebar from "../components/MarketPlace/Filter";
 import { Play, Search, ChevronDown, Video, Music, BookOpen, FileAudio, FileText, Palette, Star, Clock } from "lucide-react";
 import filter from "../assets/filter.svg";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { GetContinueWatchingProductList, GetLibraryrDetails, GetLibraryrFilters } from "../Common/ServerAPI";
+import { GetCollectionList, GetContinueWatchingProductList, GetLibraryrDetails, GetLibraryrFilters } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import EmptyPageLibrary from "./EmptyPageLibrary";
 
@@ -64,7 +64,18 @@ const CATEGORY_TABS = [
   "Course",
 ] as const;
 type Category = (typeof CATEGORY_TABS)[number];
-
+type Collection = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  is_public: boolean;
+  sample_product_thumbnail: string
+  thumbnail_url: string;
+  product_count: number;
+  createdAt: string;
+  updatedAt: string;
+};
 const CATEGORY_SLUG_MAP: Record<string, string> = {
   Video: "video",
   Podcast: "podcast",
@@ -122,21 +133,24 @@ const ContinueWatchingThumb: React.FC<{
     </div>
   );
 };
-
 const CollectionThumb: React.FC<{ src: string; label?: string }> = ({
   src,
   label,
-}) => (
-  <div className="relative rounded-xl overflow-hidden group">
-    <img src={src} alt={label || "collection"} className="w-full h-32 object-cover" />
-    <button className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition">
-      <span className="flex items-center gap-2 text-white text-sm font-medium px-3 py-1 bg-black/50 rounded-full">
-        <Play size={16} />
-        Watch
-      </span>
-    </button>
-  </div>
-);
+}) => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="relative rounded-xl overflow-hidden group"  >
+      <img src={src} alt={"collection"} className="w-full h-32 object-cover" />
+      <button onClick={() => navigate(`/dashboard/my-collections/${label}`)} className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition">
+        <span className="flex items-center gap-2 text-white text-sm font-medium px-3 py-1 bg-black/50 rounded-full">
+          <Play size={16} />
+          Watch
+        </span>
+      </button>
+    </div>
+  )
+};
 
 const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
   const navigate = useNavigate();
@@ -188,9 +202,9 @@ const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
         <div className="mt-1 text-[12px] text-gray-600">  by {p.seller.shop_name}</div>
 
         {/* Watch Now button inside content */}
-        <button 
-        onClick={() => navigate(`/dashboard/library/course/${p.product_id}`)}
-        className="mt-3 w-full flex items-center justify-center gap-2 bg-[#7077FE] hover:bg-[#5a60ef] text-white text-sm font-medium py-2.5 border border-transparent rounded-[3px] shadow">
+        <button
+          onClick={() => navigate(`/dashboard/library/course/${p.product_id}`)}
+          className="mt-3 w-full flex items-center justify-center gap-2 bg-[#7077FE] hover:bg-[#5a60ef] text-white text-sm font-medium py-2.5 border border-transparent rounded-[3px] shadow">
           <Play size={20} /> Watch Now
         </button>
 
@@ -219,6 +233,7 @@ const Library: React.FC = () => {
   const [selected, setSelected] = useState("Recently Added");
   const [selectedValue, setSelectedValue] = useState("recently_added");
   const [isOpen, setIsOpen] = useState(false);
+  const [collections, setCollections] = useState<Collection[]>([]);
 
   const [continueWatching, setContinueWatching] = useState<
     ContinueWatchingProduct[]
@@ -237,6 +252,7 @@ const Library: React.FC = () => {
 
   useEffect(() => {
     fetchContinueWatching();
+    fetchCollections();
   }, []);
 
   useEffect(() => {
@@ -259,6 +275,24 @@ const Library: React.FC = () => {
       setLibraryFilterOptions(response?.data?.data || null);
     } catch (error: any) {
       console.error("Failed to load library filters:", error);
+    }
+  };
+
+  const fetchCollections = async () => {
+    setIsLoading(true);
+    try {
+      const response = await GetCollectionList();
+      const data = response?.data?.data;
+
+      setCollections(data?.collections || []);
+    } catch (error: any) {
+      showToast({
+        message: "Failed to load collections",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -386,21 +420,19 @@ const Library: React.FC = () => {
           )}
 
           {/* My Collections */}
-          <section>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[16px] sm:text-lg font-semibold text-[#111827]">My Collections</h2>
-              <button className="text-[#7077FE] text-sm" onClick={() => navigate('/dashboard/collections')}>View all</button>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
-              {[
-                { label: "Motivated", src: "https://cdn.cness.io/collection1.svg" },
-                { label: "Ebook", src: "https://cdn.cness.io/collection3.svg" },
-                { label: "Yoga", src: "https://cdn.cness.io/collection2.svg" },
-              ].map((c) => (
-                <CollectionThumb key={c.label} src={c.src} label={c.label} />
-              ))}
-            </div>
-          </section>
+          {collections.length > 0 && (
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-[16px] sm:text-lg font-semibold text-[#111827]">My Collections</h2>
+                <button className="text-[#7077FE] text-sm" onClick={() => navigate('/dashboard/collections')}>View all</button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
+                {collections?.map((c) => (
+                  <CollectionThumb key={c.name} src={c.sample_product_thumbnail} label={c.id} />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Search and sort */}
           <section className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-3">

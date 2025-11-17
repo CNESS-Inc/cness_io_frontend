@@ -28,14 +28,18 @@ interface StoryViewerProps {
   is_liked: any;
   allStories: { content: StoryContent[] }[];
   currentStoryIndex: number;
+  currentContentIndex: number;
+  onContentIndexChange: (index: number) => void;
   storyId?: string;
   userId?: string;
-  onStoryChange?: () => void; // Callback when story changes
+  onStoryChange?: () => void;
 }
 
 export function StoryViewer({
   allStories,
   currentStoryIndex,
+  currentContentIndex,
+  onContentIndexChange,
   stories,
   userName,
   userAvatar,
@@ -93,15 +97,32 @@ export function StoryViewer({
     }
   }, [stories]);
 
+   useEffect(() => {
+    console.log("🔄 Content changed:", currentContentIndex);
+    setProgress(0);
+    setIsPaused(false);
+    setIsStoryReady(false);
+    
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+    }
+  }, [currentContentIndex]);
+
   // Handle video metadata and set ready state
   useEffect(() => {
     if (currentStory?.type === "video" && videoRef.current) {
       const video = videoRef.current;
-      
+
       const handleLoadedMetadata = () => {
         console.log("🎬 Video metadata loaded");
         if (videoRef.current) {
-          const duration = videoRef.current.duration * 1000 || currentStory.duration;
+          const duration =
+            videoRef.current.duration * 1000 || currentStory.duration;
           setVideoDuration(duration);
           setIsStoryReady(true); // Mark as ready when metadata is loaded
         }
@@ -114,36 +135,30 @@ export function StoryViewer({
 
       video.addEventListener("loadedmetadata", handleLoadedMetadata);
       video.addEventListener("canplay", handleCanPlay);
-      
+
       return () => {
         video.removeEventListener("loadedmetadata", handleLoadedMetadata);
         video.removeEventListener("canplay", handleCanPlay);
       };
     } else if (currentStory?.type === "image") {
-      // For images, mark as ready immediately
-      console.log("🖼️ Image story ready");
       setIsStoryReady(true);
     }
   }, [currentStory]);
 
-  function handleAutoAdvance() {
-    console.log("⏭️ Auto advancing story");
-    if (currentIndex < stories.length - 1) {
-      // Move to next story in current user's stories
-      setCurrentIndex(currentIndex + 1);
-      setProgress(0);
-      setIsStoryReady(false); // Reset ready state for next story
+  const handleAutoAdvance = () => {
+    console.log("⏭️ Auto advancing content");
+    if (currentContentIndex < stories.length - 1) {
+      // Move to next content in current user's stories
+      onContentIndexChange(currentContentIndex + 1);
     } else {
-      // Move to next user's stories
+      // Move to next user
       onNext();
     }
-  }
+  };
 
   function startProgressInterval() {
     const effectiveDuration =
       currentStory.type === "video" ? videoDuration : duration;
-
-    console.log("⏰ Starting progress interval, duration:", effectiveDuration);
 
     // Clear any existing interval
     if (intervalRef.current) {
@@ -171,7 +186,7 @@ export function StoryViewer({
         isPaused,
         selectedReelId,
         hasCurrentStory: !!currentStory,
-        isStoryReady
+        isStoryReady,
       });
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -179,14 +194,12 @@ export function StoryViewer({
       }
       return;
     }
-
-    console.log("🎯 Starting progress for story index:", currentIndex);
     setProgress(0);
 
     // For videos, use the video element for progress
     if (currentStory.type === "video" && videoRef.current) {
       const video = videoRef.current;
-      
+
       // Try to play the video
       video.play().catch((error) => {
         console.error("Video play error:", error);
@@ -215,7 +228,7 @@ export function StoryViewer({
     selectedReelId,
     currentStory,
     currentStory?.type,
-    isStoryReady // Add this dependency
+    isStoryReady, // Add this dependency
   ]);
 
   // Video time update handler
@@ -227,7 +240,7 @@ export function StoryViewer({
         if (video.duration) {
           const currentProgress = (video.currentTime / video.duration) * 100;
           setProgress(currentProgress);
-          
+
           // Auto-advance when video ends
           if (video.currentTime >= video.duration) {
             handleAutoAdvance();
@@ -298,6 +311,26 @@ export function StoryViewer({
     }
   };
 
+  const handlePrevContent = () => {
+    if (currentContentIndex > 0) {
+      console.log("⬅️ Moving to previous content");
+      onContentIndexChange(currentContentIndex - 1);
+    } else {
+      console.log("⬅️ Moving to previous user");
+      onPrevious();
+    }
+  };
+
+  const handleNextContent = () => {
+    if (currentContentIndex < stories.length - 1) {
+      console.log("➡️ Moving to next content");
+      onContentIndexChange(currentContentIndex + 1);
+    } else {
+      console.log("➡️ Moving to next user");
+      onNext();
+    }
+  };
+
   // Add debug logging
   useEffect(() => {
     console.log("📊 Story Viewer State:", {
@@ -309,9 +342,18 @@ export function StoryViewer({
       isPaused,
       selectedReelId,
       videoDuration,
-      isStoryReady
+      isStoryReady,
     });
-  }, [currentIndex, progress, stories.length, currentStory, isPaused, selectedReelId, videoDuration, isStoryReady]);
+  }, [
+    currentIndex,
+    progress,
+    stories.length,
+    currentStory,
+    isPaused,
+    selectedReelId,
+    videoDuration,
+    isStoryReady,
+  ]);
 
   // Rest of your component remains the same...
   const togglePause = (e: React.MouseEvent) => {
@@ -414,26 +456,38 @@ export function StoryViewer({
         <div className="relative z-10 w-full max-w-md h-[80%] mx-4">
           {/* Progress bars */}
           <div className="absolute top-4 left-4 right-4 flex gap-1 z-30">
-            {stories.map((_story, index) => (
-              <div
-                key={index}
-                className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden"
-              >
-                <div
-                  className="h-full bg-white transition-all duration-100 ease-linear"
-                  style={{
-                    width: `${
-                      index < currentIndex
-                        ? 100
-                        : index === currentIndex
-                        ? progress
-                        : 0
-                    }%`,
-                  }}
-                />
-              </div>
-            ))}
+        {stories.map((_story, index) => (
+          <div
+            key={index}
+            className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden"
+          >
+            <div
+              className="h-full bg-white transition-all duration-100 ease-linear"
+              style={{
+                width: `${
+                  index < currentContentIndex
+                    ? 100
+                    : index === currentContentIndex
+                    ? progress
+                    : 0
+                }%`,
+              }}
+            />
           </div>
+        ))}
+      </div>
+
+      {/* Navigation areas */}
+      <button
+        onClick={handlePrevContent}
+        className="absolute left-0 top-0 w-1/4 h-full z-10 focus:outline-none"
+        disabled={!hasPrevious && currentContentIndex === 0}
+      />
+      <button
+        onClick={handleNextContent}
+        className="absolute right-0 top-0 w-1/4 h-full z-10 focus:outline-none"
+        disabled={!hasNext && currentContentIndex === stories.length - 1}
+      />
 
           {/* Story Content */}
           <div className="relative h-full w-full bg-black rounded-2xl overflow-hidden">
@@ -466,7 +520,7 @@ export function StoryViewer({
               <div className="relative w-[42px] h-[42px] rounded-full p-[1.83px] bg-linear-to-r from-[#6340FF] to-[#D748EA]">
                 <div className="w-full h-full rounded-full overflow-hidden object-cover bg-white p-px">
                   <img
-                    src={userAvatar}
+                    src={userAvatar ? userAvatar : "/profile.png"}
                     alt="User Avatar"
                     className="w-full h-full rounded-full object-cover bg-white"
                   />

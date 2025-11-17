@@ -10,11 +10,12 @@ import {
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import { useCartWishlist } from "../components/MarketPlace/context/CartWishlistContext";
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
-
+  const { updateCartCount, updateWishlistCount, decrementCart } = useCartWishlist();
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [summary, setSummary] = useState<any>({});
   // console.log('cartItems', cartItems)
@@ -31,6 +32,8 @@ const CartPage: React.FC = () => {
       const items = response?.data?.data?.cart_items || [];
       setSummary(response?.data?.data?.summary || {});
       setCartItems(items);
+
+      await updateCartCount();
     } catch (error: any) {
       showToast({
         message: "Failed to load cart",
@@ -56,6 +59,7 @@ const CartPage: React.FC = () => {
         type: "success",
         duration: 2000,
       });
+      decrementCart();
       fetchCartItems(); // Refresh cart
 
       // Remove from selected items if it was selected
@@ -91,6 +95,8 @@ const CartPage: React.FC = () => {
           duration: 2000,
         });
       }
+
+      await updateWishlistCount();
       fetchCartItems(); // Refresh to update wishlist status
     } catch (error: any) {
       showToast({
@@ -174,7 +180,8 @@ const CartPage: React.FC = () => {
     //   });
     //   return;
     // }
-
+    navigate('/dashboard/checkout');
+    return;
     setIsLoading(true);
     try {
       const response = await CreateCheckoutSession();

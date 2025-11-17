@@ -37,7 +37,6 @@ const AssessmentCertification = () => {
     try {
       const response = await GetCertificationDetails();
       const res = response?.data?.data || [];
-      console.log("🚀 ~ fetchCertificationDetails ~ res:", res);
       setCertifications(res);
     } catch (error: any) {
       showToast({
@@ -294,8 +293,7 @@ const AssessmentCertification = () => {
 
             <ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] text-[#1E1E1E] space-y-2 mb-6">
               <li>
-                Complete your True Profile (photo, bio, contact, profession,
-                interests)
+                Complete these True Profile fields (First & Last Name, Profession, Date of Birth, Phone Number, Email, and Country)
               </li>
               <li>Select 5 Conscious Values you aspire to follow</li>
             </ol>
@@ -352,17 +350,14 @@ const AssessmentCertification = () => {
                 desc: "Start selling and grow your business on our marketplace.",
               },
               {
-                title: "Aspiring Creator directory visibility",
+                title: "Directory Listing",
                 desc: "Get discovered by showcasing your profile in our directory.",
               },
               {
-                title: "Feed visibility boost",
-                desc: "Increase your content reach and get noticed in the feed.",
+                title: "Aspiring badge",
+                desc: "Let your conscious intent shine out into the world.",
               },
-              {
-                title: "Community participation",
-                desc: "Join discussions and connect with like-minded members.",
-              },
+            
             ].map((item, i) => (
               <div
                 key={i}
@@ -428,7 +423,7 @@ const AssessmentCertification = () => {
               Inspired Certification
             </h3>
             <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-3">
-              Start your conscious journey
+             Unlock the next tier of recognition and capability.
             </p>
           </div>
         </div>
@@ -440,7 +435,7 @@ const AssessmentCertification = () => {
           {/* Left Section */}
           <div>
             <h4 className="font-[poppins] font-semibold text-[34px] leading-[140%] tracking-[0] text[#000000] mb-3">
-              Get Your Inspired Certification in 1 Step
+            Earn your Inspired Certification in one simple step.
             </h4>
 
             <ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-2 mb-6">
@@ -483,9 +478,9 @@ const AssessmentCertification = () => {
                 alt="Inspired Certification Card"
                 className="w-[250px] h-[271px] md:w-[275px] md:h-[271px] drop-shadow-md"
               />
-              <div className="font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-center md:translate-x-4 sm:translate-x-2">
+              {/*<div className="font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-center md:translate-x-4 sm:translate-x-2">
                 Price: $108
-              </div>
+              </div>*/}
             </div>
           </div>
         </div>
@@ -493,23 +488,23 @@ const AssessmentCertification = () => {
         {/* Footer Info */}
         <div className="mt-10">
           <h5 className="font-[poppins] font-semibold text-[20px] leading-[100%] tracking-[0] text[#000000] mb-4">
-            Unlocks Trust, Growth, and Purpose
+           What you will gain with Inspired certification
           </h5>
 
           <div className="grid md:grid-cols-4 gap-4">
             {[
               {
                 title: "Premium Directory visibility",
-                desc: "Start selling and grow your business on our marketplace.",
+                desc: "Gain enhanced visibility in the premium directory",
               },
-              {
-                title: "Ability to Create Circles",
-                desc: "build your own conscious community",
-              },
-              {
-                title: "Eligibility for",
-                desc: "Featured stories, collaborations, and partner projects",
-              },
+              //{
+                //title: "Ability to Create Circles",
+               // desc: "build your own conscious community",
+              //},
+              //{
+              //  title: "Eligibility for",
+              //  desc: "Featured stories, collaborations, and partner projects",
+              //},
             ].map((item, i) => (
               <div
                 key={i}
@@ -575,7 +570,7 @@ const AssessmentCertification = () => {
               Leader Certification
             </h3>
             <p className="font-[poppins] font-medium text-[14px] leading-[100%] tracking-[0] text-black-500 mt-3">
-              Lead the conscious revolution.
+Prove your leadership standards. Earn a verifiable badge.
             </p>
           </div>
         </div>
@@ -591,10 +586,12 @@ const AssessmentCertification = () => {
             </h4>
 
             <ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-2 mb-6">
-              <li>Demonstrated leadership or community impact</li>
+              <li>You lead teams or initiatives.</li>
               <li>
-                Must be nominated by another certified user or self-nominated
-                with justification
+                You influence decisions, budgets, or outcomes.
+              </li>
+               <li>
+You commit to transparent, people-first practices.
               </li>
             </ol>
 
@@ -701,6 +698,26 @@ const AssessmentCertification = () => {
                 </li>
               </ul>
             </div>
+
+              <div className="mt-8">
+              <h5 className="font-[poppins] font-medium text-[16px] leading-[100%] tracking-[0] text[#000000] mb-2">
+                Program inclusions
+              </h5>
+              <ul className="list-disc list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-2 mb-6">
+                <li>
+                  Self-assessment + scenario tasks
+                </li>
+                <li>
+                  Peer/mentor feedback option 
+                </li>
+                <li>
+                  Score report with strengths & focus areas
+                </li>
+                <li>
+                 Badge + profile placement + directory highlight 
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* Right Section */}
@@ -711,9 +728,9 @@ const AssessmentCertification = () => {
                 alt="Leader Certification Card"
                 className="w-[200px] h-auto md:w-[275px] md:h-[271px] drop-shadow-md"
               />
-              <div className="font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-center md:translate-x-4 sm:translate-x-2">
+              {/*<div className="font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-center md:translate-x-4 sm:translate-x-2">
                 Price: $508
-              </div>
+              </div>*/}
             </div>
           </div>
         </div>
@@ -727,16 +744,20 @@ const AssessmentCertification = () => {
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
             {[
               {
-                title: "Verified Leader Badge across web & mobile",
-                desc: "Trusted leadership, recognized everywhere.",
+                title: "Credibility",
+                desc: "A verifiable badge you can share on LinkedIn and your profile.",
               },
               {
-                title: "Top-tier visibility in Directory & Marketplace",
-                desc: "Get seen by the right audience, everywhere in our network.",
+                title: "Trust",
+                desc: "A clear, public standard your team and partners can rely on.",
               },
               {
-                title: "Leader Circles, exclusive events, & collaborations",
-                desc: " collaboration opportunities with top professionals.",
+                title: "Growth",
+                desc: "Access to curated mentors, partner programs, and speaking opportunities.",
+              },
+               {
+                title: "Purpose",
+                desc: "A framework to align daily decisions with your values.",
               },
             ].map((item, i) => (
               <div

@@ -224,7 +224,8 @@ const DashboardHeader = ({
       const response = await LogOut();
 
       if (response) {
-        localStorage.clear();
+localStorage.setItem("hasLoggedBefore", "false");
+localStorage.clear();
         toggleMobileNav();
         navigate("/");
       }
@@ -241,7 +242,6 @@ const DashboardHeader = ({
   const getNotification = async () => {
     try {
       const res = await GetUserNotification();
-      console.log("🚀 ~ getNotification ~ res:", res);
 
       if (res?.data?.data) {
         // Get first 10 notifications from the API response
@@ -461,7 +461,7 @@ const DashboardHeader = ({
         <div className="flex items-center justify-end sm:justify-cneter gap-3">
           <div className="hidden sm:flex items-center gap-2">
             {/* Logout Button */}
-            <div className="relative group">
+            {/* <div className="relative group">
               <div
                 onClick={handleLogout}
                 className="flex w-[37px] h-[37px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
@@ -472,10 +472,10 @@ const DashboardHeader = ({
                 Logout
                 <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></span>
               </span>
-            </div>
+            </div> */}
 
             {/* Support Button */}
-            <div className="relative group">
+            {/* <div className="relative group">
               <div
                 onClick={() => navigate("/dashboard/support")}
                 className="flex w-[37px] h-[37px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
@@ -486,7 +486,7 @@ const DashboardHeader = ({
                 Support
                 <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></span>
               </span>
-            </div>
+            </div> */}
 
             {/* Notification Button with Dropdown */}
             <div className="relative group" ref={notificationDropdownRef}>
@@ -567,7 +567,7 @@ const DashboardHeader = ({
             </div>
 
             {/* Settings Button */}
-            <div className="relative group">
+            {/* <div className="relative group">
               <div
                 onClick={() => navigate("/dashboard/setting")}
                 className="flex w-[37px] h-[37px] items-center justify-center relative bg-white rounded-xl overflow-hidden border-[0.59px] border-solid border-[#eceef2] shadow-[0px_0px_4.69px_1.17px_#0000000d] cursor-pointer hover:bg-gray-50 transition"
@@ -578,7 +578,7 @@ const DashboardHeader = ({
                 Settings
                 <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45"></span>
               </span>
-            </div>
+            </div> */}
           </div>
           {/* {import.meta.env.VITE_ENV_STAGE === "test" ||
           import.meta.env.VITE_ENV_STAGE === "uat" ? ( */}
@@ -689,7 +689,7 @@ const DashboardHeader = ({
           </div>
 
           {/* Mobile Actions Dropdown (sm and below) */}
-          <div className="sm:hidden relative" ref={dropdownRef}>
+          <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsSupportDropdownOpen(!isSupportDropdownOpen)}
               className="flex items-center justify-center w-10 h-10 bg-white rounded-xl border border-[#eceef2] shadow-sm transition hover:bg-gray-50"
@@ -717,7 +717,7 @@ const DashboardHeader = ({
                   <HelpCircleIcon className="w-4 h-4 text-[#897AFF]" /> Support
                 </button>
 
-                <div className="flex justify-between items-center px-4 py-2.5 hover:bg-gray-100 w-full transition">
+                <div className="sm:hidden flex justify-between items-center px-4 py-2.5 hover:bg-gray-100 w-full transition">
                   <button
                     onClick={handleNotificationClick}
                     className="flex items-center gap-2 text-sm text-gray-700"

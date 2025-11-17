@@ -29,16 +29,10 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
 
     const getAcceptTypes = () => {
         switch (productType) {
-            case "video":
             case "course":
                 return "video/*";
             case "music":
-            case "podcast":
-                return "audio/*";
-            case "ebook":
-                return ".pdf,.epub,.mobi";
-            case "art":
-                return "image/*";
+                 return "audio/*";
             default:
                 return "*";
         }
@@ -46,16 +40,10 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
 
     const getFileTypeName = () => {
         switch (productType) {
-            case "video":
-            case "course":
-                return "video";
             case "music":
+                return "audio";
             case "podcast":
                 return "audio";
-            case "ebook":
-                return "document";
-            case "art":
-                return "image";
             default:
                 return "file";
         }
@@ -79,16 +67,16 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
 
         try {
             const formData = new FormData();
-            formData.append("video", file);
+            formData.append("sample_track", file);
 
-            const response = await UploadProductDocument("main-video", formData);
+            const response = await UploadProductDocument("sample-track", formData);
             const sampleData = response?.data?.data;
 
             setUploadedFile(file.name);
             onUploadSuccess(
-                sampleData.sample_id,
-                sampleData.sample_url,
-                sampleData.thumbnail
+                sampleData.sample_track_url,
+                sampleData.sample_track_url,
+                sampleData.sample_track_url
             );
 
             showToast({

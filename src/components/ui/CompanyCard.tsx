@@ -66,11 +66,11 @@ export default function CompanyCard({
   bannerUrl,
   description,
   tags,
-  rating,
+ // rating,
   level,
   routeKey,
+
 }: CompanyCardProps) {
-  console.log("🚀 ~ rating:", level);
   const navigate = useNavigate();
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -208,7 +208,7 @@ export default function CompanyCard({
             </>
           )}
 
-          {/* Rating aligned right */}
+          {/* Rating aligned right 
             <div className="flex justify-end mb-2">
               {typeof rating === "number" && rating > 0 && (
                 <div className="flex items-center text-yellow-500 text-sm">
@@ -216,7 +216,7 @@ export default function CompanyCard({
                   {"☆".repeat(5 - rating)}
                 </div>
               )}
-            </div>
+            </div>*/}
 
           {/* Tags only if available */}
           {tags?.length > 0 && (

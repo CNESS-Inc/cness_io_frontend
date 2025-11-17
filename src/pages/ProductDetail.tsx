@@ -12,6 +12,8 @@ import { FaPinterestP } from 'react-icons/fa';
 import { useToast } from '../components/ui/Toast/ToastProvider';
 import { IoMdShareAlt } from 'react-icons/io';
 import ReviewModal from '../components/MarketPlace/ReviewModal';
+import DOMPurify from "dompurify";
+import { useCartWishlist } from '../components/MarketPlace/context/CartWishlistContext';
 
 const socialMediaPlatforms = [
   { key: 'facebook', name: 'Facebook', icon: <CiFacebook size={25} className='text-gray-500' /> },
@@ -27,6 +29,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { incrementCart, decrementCart, incrementWishlist, decrementWishlist, updateCartCount, updateWishlistCount } = useCartWishlist();
 
   const [product, setProduct] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -211,6 +214,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           type: "success",
           duration: 2000,
         });
+        await decrementCart();
       } else {
         await AddProductToCart({ product_id: product.id });
         setIsCarted(true);
@@ -219,7 +223,9 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           type: "success",
           duration: 2000,
         });
+        await incrementCart();
       }
+      await updateCartCount();
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message || "Failed to update cart",
@@ -270,6 +276,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           type: "success",
           duration: 2000,
         });
+        await decrementWishlist();
       } else {
         await AddProductToWishlist({ product_id: product.id });
         setIsLiked(true);
@@ -278,7 +285,9 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           type: "success",
           duration: 2000,
         });
+        await incrementWishlist();
       }
+      await updateWishlistCount();
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message || "Failed to update wishlist",
@@ -508,9 +517,21 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             <h2
               className="font-['Poppins'] font-semibold text-[18px] leading-[100%] tracking-[0] text-gray-900"
             >Overview</h2>
-            <p className="font-['Open_Sans'] font-normal text-[16px] leading-[150%] tracking-[0] text-black">
-              {product?.overview || "No overview available"}
-            </p>
+            <div className="rich-text-content font-['Open_Sans'] font-normal text-[16px] leading-[150%] tracking-[0] text-black
+                               [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
+                               [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
+                               [&_li]:my-1 [&_li]:pl-1
+                               [&_p]:my-3
+                               [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:my-4
+                               [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-3
+                               [&_h3]:text-lg [&_h3]:font-bold [&_h3]:my-2
+                               [&_strong]:font-bold
+                               [&_em]:italic
+                               [&_u]:underline"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(product?.overview),
+              }}
+            ></div>
           </div>
 
           {/* Highlights */}
@@ -649,7 +670,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
             {/* View Store Button */}
             <button
-              onClick={() => navigate(`/dashboard/shop-detail/${product?.seller?.id}`)}
+              onClick={() => navigate(`/dashboard/shop-detail/${product?.seller?.shop_id}`)}
               className="flex items-center space-x-2 bg-[#7077FE] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#7077FE]">
               <img
                 src="https://static.codia.ai/image/2025-10-16/t3md55f2ZY.png" alt="Store"
@@ -660,10 +681,47 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           </div>
         </div>
 
+        {(product?.category?.slug === 'music' || product?.category?.slug === 'podcast') &&
+          product?.product_details?.sample_track && (
+            <div className="bg-white rounded-xl shadow-md p-6 mt-6">
+              <h2 className="font-[Poppins] font-semibold text-[20px] text-[#242E3A] mb-4">
+                Sample {product?.category?.slug === 'music' ? 'Track' : 'Episode'}
+              </h2>
+              <div className="border border-gray-200 rounded-lg p-4 bg-[#F9FAFB]">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-[#7077FE]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <PlayCircle className="w-8 h-8 text-[#7077FE]" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-[Poppins] font-medium text-[16px] text-[#242E3A] mb-1">
+                      Sample Preview
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Listen to a preview before purchasing
+                    </p>
+                  </div>
+                  <audio
+                    controls
+                    className="h-10"
+                    preload="metadata"
+                  >
+                    <source src={product?.product_details?.sample_track?.url} type="audio/mpeg" />
+                    Your browser does not support the audio element.
+                  </audio>
+                </div>
+              </div>
+            </div>
+          )}
+
         {product?.category?.slug !== 'video' && (
           <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mt-6 ">
             <h2 className="font-[Poppins] font-semibold text-[20px] sm:text-[22px] font-semibold text-[#242E3A] mb-6 ">
-              Course Content
+              {product?.category?.slug === 'music' ? 'Music' :
+                product?.category?.slug === 'podcast' ? 'Podcast' :
+                  product?.category?.slug === 'ebook' ? 'Ebook' :
+                    product?.category?.slug === 'course' ? 'Course' :
+                      'Art'}{" "}
+              Content
             </h2>
             <div className="border border-gray-100 ">
             </div>

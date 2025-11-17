@@ -191,6 +191,8 @@ export const EndPoint = {
   googleLogin: "/auth/google-login",
   resendMail: "/auth/resend-verification",
   all_bestPractices: "/best-practice/all",
+  all_bestPractices_by_profession: "/best-practice/profession-wise",
+  all_bestPractices_by_interest: "/best-practice/interest-wise",
   bp: "/best-practice",
   bp_recommended: "/best-practice/recommended",
   bp_related: "/best-practice/related",
@@ -263,6 +265,7 @@ export const EndPoint = {
   get_moods: "/marketplace-product/moods",
   get_preview_product: "/marketplace-product",
   expand_product_overview: "/marketplace-product/ai/expand-overview",
+  improve_product_overview: "/marketplace-product/ai/improve-overview",
   generate_signed_url: "/marketplace-product/generate-signed-url",
 
   create_video_product: "/marketplace-product/video",
@@ -301,6 +304,7 @@ export const EndPoint = {
   marketplace_checkout_confirm: "/marketplace-buyer/checkout/confirm",
   marketplace_retry_payment: "/marketplace-buyer/retry-payment",
   marketplace_order_details: "/marketplace-buyer/orders",
+  marketplace_order_details_by_order_id: "/marketplace-buyer/orders",
   marketplace_buyer_library: "/marketplace-buyer/library",
 
   // collections apis
@@ -791,6 +795,43 @@ export const GetAllBestPractices = (
     ServerAPI.APIMethod.GET,
     null,
     EndPoint.all_bestPractices,
+    params
+  );
+};
+
+export const GetAllBestPracticesByProfession = (
+  page: number,
+  limit: number,
+  professionId: string,
+  searchText: string
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  params["profession"] = professionId;
+  params["text"] = searchText;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.all_bestPractices_by_profession,
+    params
+  );
+};
+export const GetAllBestPracticesByInterest = (
+  page: number,
+  limit: number,
+  interestId: string,
+  searchText: string
+): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["limit"] = limit;
+  params["interest"] = interestId;
+  params["text"] = searchText;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    null,
+    EndPoint.all_bestPractices_by_interest,
     params
   );
 };
@@ -1683,6 +1724,14 @@ export const ExpandProductOverview = (data: any): ApiResponse => {
   );
 };
 
+export const ImproveProductOverview = (data: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.improve_product_overview
+  );
+};
+
 export const GenerateSignedUrl = (fileType: string, data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -1988,6 +2037,9 @@ export const AddProductToCart = (data: any): ApiResponse => {
 
 export const GetProductCart = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_cart);
+};
+export const GetOrderDetailsByOrdId = (order_id:string) => {
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}`);
 };
 
 export const RemoveProductToCart = (id: any): ApiResponse => {
@@ -2303,7 +2355,6 @@ export const executeAPI = async <T = any,>(
     if (appCatId) {
       headers["x-app-cat-id"] = appCatId;
     }
-    console.log("🚀 ~ executeAPI ~ headers:", headers)
     const response: AxiosResponse<T> = await axios({
       method: method,
       url: API.BaseUrl + endpoint,

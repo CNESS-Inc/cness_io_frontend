@@ -13,7 +13,6 @@ import {
   GetRelatedBestPractices, // You'll need to create this API function
 } from "../Common/ServerAPI";
 import blush from "../assets/bg-one.png";
-import moon from "../assets/moon.png";
 import image1 from "../assets/image1.png";
 import DOMPurify from "dompurify";
 import {
@@ -24,12 +23,14 @@ import {
   FaRegBookmark,
   FaTwitter,
 } from "react-icons/fa";
-import Thumb from "../assets/prime_thumbs.png";
 import { ChatBubbleLeftIcon, HandThumbUpIcon } from "@heroicons/react/24/solid";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import CreditAnimation from "../Common/CreditAnimation";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import defaultImg from "../assets/profile.png";
+//import defaultImg from "../assets/profile.png";
+import home from "../assets/home1.svg";
+import thumbs from "../assets/thumbsup.svg";
+import cnessicon from "../assets/cnessi.svg";
 
 const SingleBP = () => {
   const [isSaved, setIs_saved] = useState<boolean>(false);
@@ -50,7 +51,7 @@ const SingleBP = () => {
   const [animations, _setAnimations] = useState<any[]>([]);
   const [relatedBestPractices, setRelatedBestPractices] = useState<any[]>([]);
 
-  const profile_picture = localStorage.getItem("profile_picture") || defaultImg;
+  const profile_picture = localStorage.getItem("profile_picture") || "/profile.png";
   const name = localStorage.getItem("name") || "";
   const { id } = useParams();
   const { showToast } = useToast();
@@ -95,7 +96,6 @@ const SingleBP = () => {
   const fetchSinglePost = async (id: any) => {
     try {
       const res = await GetSingleBestPractice(id);
-      console.log("🚀 ~ fetchSinglePost ~ res:", res);
       setCommentCount(res.data?.data?.comments_count);
       setIs_saved(res.data?.data?.is_saved);
       setIsFollowing(res.data?.data?.is_bp_following);
@@ -312,7 +312,7 @@ const SingleBP = () => {
               {/* Breadcrumb */}
               <div className="flex flex-wrap items-center gap-2 text-gray-500">
                 <img
-                  src="/home.png"
+                  src={home}
                   alt="Home"
                   className="w-[15px] h-[15px] cursor-pointer"
                   onClick={() => navigate("/dashboard")}
@@ -348,7 +348,7 @@ const SingleBP = () => {
                 {/* Social Icons */}
                 <div className="flex items-center gap-1 pr-4 border-r border-gray-300">
                   <button className="p-2 hover:text-[#7077FE] rounded-full transition">
-                    <img src={moon} alt="Light Mode" className="w-4 h-4" />
+                    <img src={cnessicon} alt="Light Mode" className="w-5 h-5" />
                   </button>
 
                   {/* Facebook */}
@@ -468,7 +468,7 @@ const SingleBP = () => {
                     </div>
 
                     {/* Appreciate */}
-                    <div className="flex justify-center gap-2 py-2">
+                    <div className="flex justify-center gap-2 py-2 ml-6">
                       <div
                         className="flex items-center gap-1 text-base font-medium"
                         style={{
@@ -478,7 +478,7 @@ const SingleBP = () => {
                           WebkitTextFillColor: "transparent",
                         }}
                       >
-                        <img src={Thumb} alt="Likes" />
+                        <img src={thumbs} alt="Likes" />
                         {localLikeCount}
                       </div>
                       <button
@@ -516,7 +516,7 @@ const SingleBP = () => {
                       ) : (
                         <FaRegBookmark className="text-base text-[#D77CFF]" />
                       )}
-                      {isSaved ? "Saved" : "Save Best Practice"}
+                      {isSaved ? "Saved" : "Save "}
                     </button>
 
                     <button
@@ -577,7 +577,7 @@ const SingleBP = () => {
                         alt="User avatar"
                         className="w-5 h-5 rounded-full"
                         onError={(e) => {
-                          e.currentTarget.src = defaultImg;
+                          e.currentTarget.src = "/profile.png";
                         }}
                       />
                       <span className="font-semibold text-gray-700">

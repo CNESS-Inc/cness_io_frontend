@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
+//import { Filter } from "lucide-react";
 
 import { iconMap } from "../assets/icons";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
@@ -126,7 +127,6 @@ export default function DashboardDirectory() {
         page,
         popularPagination.itemsPerPage
       );
-      console.log("🚀 ~ fetchPopularCompany ~ res:", res);
 
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map((company: any) => ({
@@ -433,6 +433,7 @@ export default function DashboardDirectory() {
       </div>
 
       <section className="py-6 px-1 bg-[#f9f9f9] border-t border-gray-100 ">
+        
         <div className="w-full mx-auto flex items-center">
           <h2 className="text-xl font-semibold">
             {selected === "popular"
@@ -443,7 +444,9 @@ export default function DashboardDirectory() {
               ? "Inspired People"
               : "All People"}
           </h2>
-
+  {/*<button className="p-2 rounded-lg hover:bg-gray-100 transition ml-335">
+      <Filter className="h-5 w-5 text-gray-300" />
+    </button>*/}
           <CompanyFilters
             options={badge}
             selected={selected}
@@ -485,6 +488,7 @@ export default function DashboardDirectory() {
                       is_person={company.is_person}
                       routeKey={company.id}
                       level={company.level}
+                  
                     />
                   ))}
                 </div>
@@ -505,7 +509,7 @@ export default function DashboardDirectory() {
         <>
           <section className="py-12 px-1 bg-[#f9f9f9] border-t border-gray-100 pt-2">
             <div className="w-full mx-auto">
-              <h3 className="text-lg font-semibold mb-4">Popular People</h3>
+              {/*<h3 className="text-lg font-semibold mb-4">Popular People</h3>*/}
               {isLoading.popular ? (
                 <div className="flex justify-center py-10">
                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
@@ -533,12 +537,12 @@ export default function DashboardDirectory() {
                       />
                     ))}
                   </div>
-                  <Pagination
+                    {/* <Pagination
                     pagination={popularPagination}
                     isLoading={isLoading.popular}
                     onPageChange={fetchPopularCompany}
                     align="end"
-                  />
+                  />*/}
                 </>
               ) : (
                 <p className="text-gray-500">No popular people found.</p>
@@ -549,7 +553,7 @@ export default function DashboardDirectory() {
           {/* Aspiring */}
           <section className="py-12 border-t border-gray-100">
             <div className="w-full mx-auto">
-              <h3 className="text-lg font-semibold mb-4">Aspiring People</h3>
+                {/*<h3 className="text-lg font-semibold mb-4">Aspiring People</h3>*/}
               {isLoading.aspiring ? (
                 <div className="flex justify-center py-10">
                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
@@ -575,12 +579,12 @@ export default function DashboardDirectory() {
                       />
                     ))}
                   </div>
-                  <Pagination
+                 {/* <Pagination
                     pagination={aspiringPagination}
                     isLoading={isLoading.aspiring}
                     onPageChange={fetchAspiringCompany}
                     align="end"
-                  />
+                  />*/}
                 </>
               ) : (
                 <p className="text-gray-500">No aspiring people found.</p>
@@ -591,7 +595,7 @@ export default function DashboardDirectory() {
           {/* Inspiring */}
           <section className="py-12 border-t border-gray-100">
             <div className="w-full mx-auto">
-              <h3 className="text-lg font-semibold mb-4">Inspiring People</h3>
+            {/*<h3 className="text-lg font-semibold mb-4">Inspiring People</h3> */}
               {isLoading.inspiring ? (
                 <div className="flex justify-center py-10">
                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>

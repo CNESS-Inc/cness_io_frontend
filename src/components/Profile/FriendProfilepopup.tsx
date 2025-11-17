@@ -32,6 +32,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const [profileData, setProfileData] = useState<any>(null);
   const [followingFollowers, setFollowingFollowers] = useState<any>(null);
   const [userPosts, setUserPosts] = useState<any[]>([]);
+  console.log("🚀 ~ FriendProfileModal ~ userPosts:", userPosts)
   const [loading, setLoading] = useState(false);
   const [_isFollowing, setIsFollowing] = useState(false);
   const { showToast } = useToast();
@@ -73,7 +74,6 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
           GetFollowingFollowersByUserId(friend.id.toString()),
           GetUserPostsByUserId(friend.id.toString()),
         ]);
-      console.log("🚀 ~ fetchFriendData ~ profileResponse:", profileResponse);
 
       setProfileData(profileResponse.data.data);
       setFollowingFollowers(followingResponse.data.data);
@@ -143,6 +143,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
           reflections: item.comments_count,
           id: item.id,
           is_liked: item.is_liked,
+          product_id: item.product_id,
         };
       });
 
@@ -242,7 +243,6 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
           (friend: any) =>
             friend.friend_id === userId || friend.user_id === userId
         );
-        console.log("🚀 ~ checkFriendStatus ~ friendRecord:", friendsList);
         if (friendRecord) {
           // Check the request_status from the database
           const status = friendRecord.request_status;
@@ -670,6 +670,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                       media={post.media}
                       body={post.content}
                       likes={post.likes || 0}
+                      product_id={post.product_id}
                       reflections={post.reflections || 0}
                       date={post.date || new Date().toISOString()}
                       onViewPost={() => setSelectedPost(post)}

@@ -4,10 +4,11 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import Mhome from "../../assets/Mhome.svg";
 import Mhome1 from "../../assets/mhome1.svg";
 import sellbag from "../../assets/ep_sell.svg";
-import { GetUserScoreResult } from "../../Common/ServerAPI";
+import { GetSellerShop, GetUserScoreResult } from "../../Common/ServerAPI";
 import { useToast } from "../ui/Toast/ToastProvider";
 import { IoCloseOutline } from "react-icons/io5";
 import Button from "../ui/Button";
+import { useCartWishlist } from "./context/CartWishlistContext";
 
 interface MarketHeaderProps {
   toggleMobileNav?: () => void;
@@ -18,6 +19,8 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEligible, setIsEligible] = useState(false);
   const [eligibilityCard, setEligibilityCard] = useState(false);
+  const [isApproved, setIsApproved] = useState(false);
+  const { cartCount, wishlistCount } = useCartWishlist();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,21 +37,21 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
 
   useEffect(() => {
     fetchRatingDetails();
+    loadShopData();
   }, [])
 
 
   const isActive = (path: string) => {
-  // Treat Library, Continue Watching, and My Library as part of Library
-  if (path === "/dashboard/library") {
-    return (
-      location.pathname === "/dashboard/library" ||
-      location.pathname === "/dashboard/continue-watching" ||
-      location.pathname === "/dashboard/my-library"
-    );
-  }
-  return location.pathname === path;
-};
-
+    // Treat Library, Continue Watching, and My Library as part of Library
+    if (path === "/dashboard/library") {
+      return (
+        location.pathname === "/dashboard/library" ||
+        location.pathname === "/dashboard/continue-watching" ||
+        location.pathname === "/dashboard/my-library"
+      );
+    }
+    return location.pathname === path;
+  };
 
   const fetchRatingDetails = async () => {
     try {
@@ -68,9 +71,28 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
     }
   };
 
+  const loadShopData = async () => {
+    try {
+      const response = await GetSellerShop();
+      if (response?.data?.data) {
+        const data = response.data.data;
+
+        if (data.verification_status === "approved") {
+          setIsApproved(true);
+        }
+      }
+    } catch (error) {
+      console.log("No existing shop data");
+    }
+  };
+
   const handleBecomeSeller = () => {
     if (isEligible) {
-      navigate(`/dashboard/createshop`)
+      if (isApproved) {
+        navigate(`/dashboard/seller-dashboard`)
+      } else {
+        navigate(`/dashboard/createshop`)
+      }
     } else {
       setEligibilityCard(true);
     }
@@ -132,22 +154,32 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
               className="flex items-center gap-2 px-4 py-2 text-[#9747FF] font-[Poppins] text-[14px] font-normal leading-[150%] tracking-[-0.019em] bg-white rounded-md hover:opacity-80 transition"
             >
               <img src={sellbag} alt="Sell" className="w-5 h-5" />
-              <span>Become a Seller</span>
+              <span>{isApproved ? 'Vendor Dashboard' : 'Become a Seller'}</span>
             </button>
             <button
               onClick={() => navigate(`/dashboard/wishlist`)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition shadow-sm"
+              className="relative p-2 rounded-lg hover:bg-gray-100 transition shadow-sm"
               aria-label="Wishlist"
             >
               <Heart className="w-5 h-5 text-[#8A8A8A]" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                  {wishlistCount > 99 ? '99+' : wishlistCount}
+                </span>
+              )}
             </button>
 
             <button
               onClick={() => navigate(`/dashboard/cart`)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition shadow-sm"
+              className="relative p-2 rounded-lg hover:bg-gray-100 transition shadow-sm"
               aria-label="Cart"
             >
               <ShoppingCart className="w-5 h-5 text-[#8A8A8A]" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#7077FE] text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
             </button>
 
             {/* Mobile Menu Toggle */}

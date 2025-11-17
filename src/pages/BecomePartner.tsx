@@ -136,7 +136,6 @@ const BecomePartner = () => {
 
   // Add these states
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  console.log("🚀 ~ BecomePartner ~ fieldErrors:", fieldErrors)
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<{
     type: "success" | "error";
@@ -427,7 +426,6 @@ const getFieldError = (fieldName: string, value: string): string | null => {
   const fetchOrgType = async () => {
     try {
       const res = await OrgTypeDetails();
-      console.log("🚀 ~ fetchOrgType ~ res:", res);
       setOrgSize(res?.data?.data);
     } catch (error: any) {
       if (error?.response?.data?.error?.message) {

@@ -10,6 +10,7 @@ type Collection = {
   slug: string;
   description: string;
   is_public: boolean;
+  sample_product_thumbnail: string;
   thumbnail_url: string;
   product_count: number;
   createdAt: string;
@@ -100,11 +101,12 @@ export default function MyCollections() {
                 onClick={() => handleCollectionClick(collection)}
                 className="group cursor-pointer"
               >
-                <div className="relative overflow-hidden rounded-[10px]  bg-white w-full">
+                <div className="bg-black rounded-t-[10px] h-4 w-[90%] z-30 flex mx-auto"></div>
+                <div className="relative overflow-x-hidden rounded-[10px] bg-white w-full h-full">
                   <img
-                    src={collection.thumbnail_url || defaultImage}
+                    src={collection.sample_product_thumbnail || defaultImage}
                     alt={collection.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="z-40 w-full h-[150px] object-cover rounded-[10px] group-hover:scale-105 transition-transform duration-300"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = defaultImage;
                     }}

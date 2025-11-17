@@ -222,7 +222,6 @@ export default function UserProfileView() {
     try {
       const res = await GetFollowBestpractices();
       setFollowBP(res.data.data.rows);
-      console.log("🚀 ~ fetchFollowBestPractices ~ res:", res);
     } catch (error: any) {
       console.error("Error fetching inspiring companies:", error);
       showToast({
@@ -372,7 +371,6 @@ export default function UserProfileView() {
           friend_id: userId,
         };
         const res = await SendConnectionRequest(formattedData);
-        console.log("🚀 ~ handleFriend ~ res:", res);
         showToast({
           message: res?.success?.message,
           type: "success",
@@ -1867,14 +1865,14 @@ export default function UserProfileView() {
                   </p>
                   <div className="mt-4 flex justify-center gap-2 w-full mx-auto place-items-center">
                     <PrimaryButton
-                      className="px-6 py-2 rounded-lg whitespace-nowrap shrink-0
+                      className="px-6 py-2  whitespace-nowrap shrink-0
                       !justify-center text-white shadow"
                       onClick={() => setActiveModal(true)}
                     >
                       Add Best Practice
                     </PrimaryButton>
                     <OutlinePill
-                      className="px-6 py-2 rounded-lg whitespace-nowrap shrink-0
+                      className="px-6 py-2  whitespace-nowrap shrink-0
                       !justify-center border border-gray-300 text-gray-600 hover:bg-gray-50"
                       onClick={() => navigate("/dashboard/bestpractices")}
                     >
@@ -1889,7 +1887,7 @@ export default function UserProfileView() {
                     Best Practices publicly.
                   </h2>
                   <PrimaryButton
-                    className="mt-6 px-6 py-2 rounded-lg whitespace-nowrap shrink-0
+                    className="mt-6 px-6 py-2 whitespace-nowrap shrink-0
                       !justify-center border border-gray-300 text-gray-600 hover:bg-gray-50"
                     // onClick={() => navigate("/dashboard/bestpractices")}
                     onClick={() => {

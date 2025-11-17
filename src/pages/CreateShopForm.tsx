@@ -1,23 +1,40 @@
-import React, { useEffect } from 'react'
-import { useState } from 'react'
-import { CreateSellerShop, GetCountryDetails, GetSellerShop, GetUserScoreResult, RemoveAllExtraBanner, RemoveSellerDocument, RemoveSpecificExtraBanner, RemoveTeamMember, RemoveTeamMemberImage, SaveExtraBanners, UpdateSellerShop, UploadSellerDocument } from '../Common/ServerAPI';
-import { useToast } from '../components/ui/Toast/ToastProvider';
-import { CiFacebook, CiInstagram, CiLinkedin, CiYoutube } from 'react-icons/ci';
-import { RiTwitterXFill } from 'react-icons/ri';
-import { IoLogoTiktok } from 'react-icons/io5';
-import { FaPinterestP } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import Button from '../components/ui/Button';
-import uploadimg from '../assets/upload.svg';
-import { PhoneInput } from 'react-international-phone';
+import React, { useEffect } from "react";
+import { useState } from "react";
+import {
+  CreateSellerShop,
+  GetCountryDetails,
+  GetSellerShop,
+  GetUserScoreResult,
+  RemoveSellerDocument,
+  RemoveTeamMember,
+  RemoveTeamMemberImage,
+  UpdateSellerShop,
+  UploadSellerDocument,
+} from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import { CiFacebook, CiInstagram, CiLinkedin, CiYoutube } from "react-icons/ci";
+import { RiTwitterXFill } from "react-icons/ri";
+import { IoLogoTiktok } from "react-icons/io5";
+import { FaPinterestP } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import Button from "../components/ui/Button";
+import uploadimg from "../assets/upload.svg";
+import { PhoneInput } from "react-international-phone";
+import CustomRichTextEditor from "../components/sections/bestPractiseHub/CustomRichTextEditor";
+import AIModal from "../components/MarketPlace/AIModal";
+import { Sparkles } from "lucide-react";
 
 interface FormSectionProps {
-  title: string
-  description: string
-  children: React.ReactNode
+  title: string;
+  description: string;
+  children: React.ReactNode;
 }
 
-const FormSection: React.FC<FormSectionProps> = ({ title, description, children }) => {
+const FormSection: React.FC<FormSectionProps> = ({
+  title,
+  description,
+  children,
+}) => {
   return (
     <section className="space-y-5">
       <div>
@@ -32,8 +49,8 @@ const FormSection: React.FC<FormSectionProps> = ({ title, description, children 
         {children}
       </div>
     </section>
-  )
-}
+  );
+};
 
 // interface InputFieldProps {
 //   label: string
@@ -84,7 +101,12 @@ interface DateInputProps {
   error?: string;
 }
 
-const DateInput: React.FC<DateInputProps> = ({ label, value, onChange, error }) => {
+const DateInput: React.FC<DateInputProps> = ({
+  label,
+  value,
+  onChange,
+  error,
+}) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value.replace(/\D/g, "");
     let maxLength = label === "YYYY" ? 4 : 2;
@@ -108,13 +130,41 @@ const DateInput: React.FC<DateInputProps> = ({ label, value, onChange, error }) 
 };
 
 const socialMediaPlatforms = [
-  { key: 'facebook_url', name: 'Facebook', icon: <CiFacebook size={25} className='text-gray-500' /> },
-  { key: 'instagram_url', name: 'Instagram', icon: <CiInstagram size={25} className='text-gray-500' /> },
-  { key: 'youtube_url', name: 'YouTube', icon: <CiYoutube size={25} className='text-gray-500' /> },
-  { key: 'twitter_url', name: 'Twitter', icon: <RiTwitterXFill size={25} className='text-gray-500' /> },
-  { key: 'tiktok_url', name: 'Tiktok', icon: <IoLogoTiktok size={25} className='text-gray-500' /> },
-  { key: 'linkedin_url', name: 'LinkedIn', icon: <CiLinkedin size={25} className='text-gray-500' /> },
-  { key: 'pinterest_url', name: 'Pinterest', icon: <FaPinterestP size={25} className='text-gray-500' /> },
+  {
+    key: "facebook_url",
+    name: "Facebook",
+    icon: <CiFacebook size={25} className="text-gray-500" />,
+  },
+  {
+    key: "instagram_url",
+    name: "Instagram",
+    icon: <CiInstagram size={25} className="text-gray-500" />,
+  },
+  {
+    key: "youtube_url",
+    name: "YouTube",
+    icon: <CiYoutube size={25} className="text-gray-500" />,
+  },
+  {
+    key: "twitter_url",
+    name: "Twitter",
+    icon: <RiTwitterXFill size={25} className="text-gray-500" />,
+  },
+  {
+    key: "tiktok_url",
+    name: "Tiktok",
+    icon: <IoLogoTiktok size={25} className="text-gray-500" />,
+  },
+  {
+    key: "linkedin_url",
+    name: "LinkedIn",
+    icon: <CiLinkedin size={25} className="text-gray-500" />,
+  },
+  {
+    key: "pinterest_url",
+    name: "Pinterest",
+    icon: <FaPinterestP size={25} className="text-gray-500" />,
+  },
 ] as const;
 
 const availableLanguages = [
@@ -153,7 +203,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   onUploadSuccess,
   defaultPreview,
   error,
-  onRemove
+  onRemove,
 }) => {
   const [preview, setPreview] = useState<string | null>(defaultPreview || null);
   const [isUploading, setIsUploading] = useState(false);
@@ -168,7 +218,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     if (!file) return;
 
     // Validate file type
-    if (fileType === 'government-id') {
+    if (fileType === "government-id") {
       if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
         showToast({
           message: "Only image or PDF files are allowed",
@@ -208,19 +258,19 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       let uploadedUrl = "";
 
-      if (fileType === 'extra-banners') {
+      if (fileType === "extra-banners") {
         const banners = responseData?.extra_banners;
         if (banners && banners.length > 0) {
           const latestBanner = banners[banners.length - 1];
           uploadedUrl = latestBanner.banner_url;
         }
-      } else if (fileType === 'team-member-image') {
+      } else if (fileType === "team-member-image") {
         uploadedUrl = responseData?.profile_image_url || "";
-      } else if (fileType === 'government-id') {
+      } else if (fileType === "government-id") {
         uploadedUrl = responseData?.secure_url || "";
-      } else if (fileType === 'shop-logo') {
+      } else if (fileType === "shop-logo") {
         uploadedUrl = responseData?.shop_logo_url || "";
-      } else if (fileType === 'shop-banner') {
+      } else if (fileType === "shop-banner") {
         uploadedUrl = responseData?.shop_banner_url || "";
       }
 
@@ -299,14 +349,16 @@ const FileUpload: React.FC<FileUploadProps> = ({
     <div>
       {label && (
         <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-4">
-          {label} {required && <span className='text-red-500'>*</span>}
+          {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`relative border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer ${isDragging ? "border-primary bg-primary/5" : "border-dashed border-[#CBD5E1]"
+        className={`relative border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer ${isDragging
+          ? "border-primary bg-primary/5"
+          : "border-dashed border-[#CBD5E1]"
           } ${className}`}
         style={{
           borderStyle: "dashed",
@@ -321,15 +373,28 @@ const FileUpload: React.FC<FileUploadProps> = ({
             <img
               src={preview}
               alt="Preview"
-              className={`${fileType === 'team-member-image' ? 'w-[90px] h-[90px]' : 'w-[140px] h-[140px]'} object-cover rounded-lg`}
+              className={`${fileType === "team-member-image"
+                ? "w-[90px] h-[90px]"
+                : "w-[140px] h-[140px]"
+                } object-cover rounded-lg`}
             />
             <button
               type="button"
               onClick={handleRemove}
               className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -349,13 +414,15 @@ const FileUpload: React.FC<FileUploadProps> = ({
               <img
                 src={uploadimg}
                 alt="upload"
-                className={`w-10 h-10 text-gray-400 transition-all duration-300 mt-8`}
+                className={`${fileType === 'team-member-image' ? 'w-5 h-5' : 'w-10 h-10'} text-gray-400 transition-all duration-300 mt-8`}
               />
               {isUploading ? (
                 <p className="text-primary">Uploading...</p>
               ) : (
                 <>
-                  <p className="font-[poppins] text-[16px] text-[#242E3A]">{description || "Drag & drop or click to upload"}</p>
+                  <p className={`font-[poppins] ${fileType === 'team-member-image' ? 'text-xs' : 'text-[16px]'} text-[#242E3A]`}>
+                    {description || "Drag & drop or click to upload"}
+                  </p>
                   {recommendation && (
                     <p className="font-['Open_Sans'] text-[14px] text-[#665B5B]">
                       {recommendation}
@@ -388,6 +455,8 @@ const CreateShopForm: React.FC = () => {
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [selectedLanguage, setSelectedLanguage] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<any>(null);
+  const [currentAIField, setCurrentAIField] = useState<string>("");
+  const [showAIModal, setShowAIModal] = useState(false);
 
   const [formData, setFormData] = useState({
     owner_full_name: "",
@@ -413,6 +482,7 @@ const CreateShopForm: React.FC = () => {
       linkedin_url: "",
       pinterest_url: "",
     },
+    extra_banner_urls: [""],
     team_members: [] as Array<{
       id?: string;
       name: string;
@@ -421,13 +491,19 @@ const CreateShopForm: React.FC = () => {
       display_order: number;
     }>,
     store_policies: {
-      terms_and_conditions: "By using this shop, you agree to our terms and conditions. We reserve the right to update these terms at any time.",
-      licensing_and_usage: "All products include standard and commercial usage rights. Resale of digital files is prohibited.",
-      refund_policy: "Refunds are available within 12 hours of purchase if you haven't downloaded the product. After download, all sales are final.",
+      terms_and_conditions:
+        "By using this shop, you agree to our terms and conditions. We reserve the right to update these terms at any time.",
+      licensing_and_usage:
+        "All products include standard and commercial usage rights. Resale of digital files is prohibited.",
+      refund_policy:
+        "Refunds are available within 12 hours of purchase if you haven't downloaded the product. After download, all sales are final.",
     },
   });
 
-  const getSSNValidation = (countryId: string, value: string): string | null => {
+  const getSSNValidation = (
+    countryId: string,
+    value: string
+  ): string | null => {
     if (!value.trim()) return "This field is required";
 
     // Find country from the list
@@ -493,41 +569,68 @@ const CreateShopForm: React.FC = () => {
     const countryData = country?.find((c: any) => c.id === countryId);
     const countryCode = countryData?.code?.toUpperCase();
 
-    const fieldInfo: { [key: string]: { label: string; placeholder: string } } = {
-      US: { label: "SSN (Social Security Number)", placeholder: "XXX-XX-XXXX" },
+    const fieldInfo: { [key: string]: { label: string; placeholder: string } } =
+    {
+      US: {
+        label: "SSN (Social Security Number)",
+        placeholder: "XXX-XX-XXXX",
+      },
       IN: { label: "PAN Card Number", placeholder: "ABCDE1234F" },
       GB: { label: "National Insurance Number", placeholder: "AB123456C" },
-      CA: { label: "SIN (Social Insurance Number)", placeholder: "XXX-XXX-XXX" },
+      CA: {
+        label: "SIN (Social Insurance Number)",
+        placeholder: "XXX-XXX-XXX",
+      },
       AU: { label: "TFN (Tax File Number)", placeholder: "XXX XXX XXX" },
       DE: { label: "Tax ID (Steuer-ID)", placeholder: "12345678901" },
-      FR: { label: "Tax Number (Numéro Fiscal)", placeholder: "1234567890123" },
+      FR: {
+        label: "Tax Number (Numéro Fiscal)",
+        placeholder: "1234567890123",
+      },
     };
 
-    return fieldInfo[countryCode || ""] || {
-      label: "Tax ID / EIN",
-      placeholder: "Enter your tax identification number"
-    };
+    return (
+      fieldInfo[countryCode || ""] || {
+        label: "Tax ID / EIN",
+        placeholder: "Enter your tax identification number",
+      }
+    );
   };
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!formData.owner_full_name.trim()) newErrors.owner_full_name = "Owner name is required";
-    if (!formData.owner_date_of_birth) newErrors.owner_date_of_birth = "Date of birth is required";
-    if (!formData.owner_mobile_number.trim()) newErrors.owner_mobile_number = "Mobile number is required";
-    if (!formData.ssn_or_ein.trim()) newErrors.ssn_or_ein = "SSN/EIN is required";
+    if (!formData.owner_full_name.trim())
+      newErrors.owner_full_name = "Owner name is required";
+    if (!formData.owner_date_of_birth)
+      newErrors.owner_date_of_birth = "Date of birth is required";
+    if (!formData.owner_mobile_number.trim())
+      newErrors.owner_mobile_number = "Mobile number is required";
+    if (!formData.ssn_or_ein.trim())
+      newErrors.ssn_or_ein = "SSN/EIN is required";
     if (formData.owner_address && formData.owner_address.trim().length < 10) {
-      newErrors.owner_address = "Please enter a more detailed address (e.g., street, city, etc.)";
+      newErrors.owner_address =
+        "Please enter a more detailed address (e.g., street, city, etc.)";
     }
-    if (!formData.government_id_document) newErrors.government_id_document = "Government ID is required";
-    if (!formData.shop_name.trim()) newErrors.shop_name = "Shop name is required";
-    if (!formData.shop_logo_url) newErrors.shop_logo_url = "Shop logo is required";
-    if (!formData.shop_banner_url) newErrors.shop_banner_url = "Shop banner is required";
-    if (!formData.about_shop.trim()) newErrors.about_shop = "About shop is required";
-    if (!formData.why_choose_your_shop.trim()) newErrors.why_choose_your_shop = "This field is required";
-    if (!formData.shop_philosophy.trim()) newErrors.shop_philosophy = "Shop philosophy is required";
+    if (!formData.government_id_document)
+      newErrors.government_id_document = "Government ID is required";
+    if (!formData.shop_name.trim())
+      newErrors.shop_name = "Shop name is required";
+    if (!formData.shop_logo_url)
+      newErrors.shop_logo_url = "Shop logo is required";
+    if (!formData.shop_banner_url)
+      newErrors.shop_banner_url = "Shop banner is required";
+    if (!formData.about_shop.trim())
+      newErrors.about_shop = "About shop is required";
+    if (!formData.why_choose_your_shop.trim())
+      newErrors.why_choose_your_shop = "This field is required";
+    if (!formData.shop_philosophy.trim())
+      newErrors.shop_philosophy = "Shop philosophy is required";
     if (formData.shop_base_country_id) {
-      const ssnError = getSSNValidation(formData.shop_base_country_id, formData.ssn_or_ein);
+      const ssnError = getSSNValidation(
+        formData.shop_base_country_id,
+        formData.ssn_or_ein
+      );
       if (ssnError) {
         newErrors.ssn_or_ein = ssnError;
       }
@@ -535,26 +638,36 @@ const CreateShopForm: React.FC = () => {
       newErrors.ssn_or_ein = "Please select a country first";
     }
 
-    if (formData.owner_mobile_number && !/^\+?[\d\s-()]+$/.test(formData.owner_mobile_number)) {
+    if (
+      formData.owner_mobile_number &&
+      !/^\+?[\d\s-()]+$/.test(formData.owner_mobile_number)
+    ) {
       newErrors.owner_mobile_number = "Invalid mobile number format";
     }
 
-    if (formData.ssn_or_ein && !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn_or_ein)) {
+    if (
+      formData.ssn_or_ein &&
+      !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn_or_ein)
+    ) {
       newErrors.ssn_or_ein = "Invalid format. Use XXX-XX-XXXX";
     }
 
-    const allPoliciesChecked = policies.every(policy => policy.checked);
+    const allPoliciesChecked = policies.every((policy) => policy.checked);
     if (!allPoliciesChecked) {
-      newErrors.store_policies = "You must agree to all store policies to proceed";
+      newErrors.store_policies =
+        "You must agree to all store policies to proceed";
     }
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) {
       setTimeout(() => {
-        const firstErrorElement = document.querySelector('.text-red-500');
+        const firstErrorElement = document.querySelector(".text-red-500");
         if (firstErrorElement) {
-          firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstErrorElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
         }
       }, 100);
     }
@@ -565,18 +678,19 @@ const CreateShopForm: React.FC = () => {
   const [policies, setPolicies] = useState([
     {
       title: "Terms & Conditions",
-      description: "Using this shop means you agree to our terms and conditions",
-      checked: false,
+      description:
+        "Using this shop means you agree to our terms and conditions",
+      checked: true,
     },
     {
       title: "Licensing & usage",
       description: "Products include standard and commercial usage rights",
-      checked: false,
+      checked: true,
     },
     {
       title: "Refund Policy",
       description: "Refunds available within 12 hours of purchase",
-      checked: false,
+      checked: true,
     },
   ]);
 
@@ -588,11 +702,9 @@ const CreateShopForm: React.FC = () => {
     );
   };
 
-  const [extraBanners, setExtraBanners] = useState<Array<{ id?: string; url: string }>>([
-    { url: "" },
-    { url: "" },
-    { url: "" }
-  ]);
+  const [extraBanners, setExtraBanners] = useState<
+    Array<{ id?: string; url: string }>
+  >([{ url: "" }, { url: "" }, { url: "" }]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
@@ -604,14 +716,14 @@ const CreateShopForm: React.FC = () => {
   const fetchRatingDetails = async () => {
     try {
       const res = await GetUserScoreResult();
-      const badge = res?.data?.data?.badge
+      const badge = res?.data?.data?.badge;
       if (badge === null) {
-        setIsEligible(false)
+        setIsEligible(false);
       } else {
-        setIsEligible(true)
+        setIsEligible(true);
       }
     } catch (error: any) {
-      console.log('error', error)
+      console.log("error", error);
     }
   };
 
@@ -634,14 +746,13 @@ const CreateShopForm: React.FC = () => {
       if (response?.data?.data) {
         const data = response.data.data;
 
-        // if (data.verification_status === "pending") {
-        //   setIsSubmitted(true);
-        //   return;
-        // }
+        if (data.verification_status === "pending") {
+          setIsSubmitted(true);
+          return;
+        }
 
         if (data.verification_status === "approved") {
           setIsApproved(true);
-          return;
         }
 
         setFormData({
@@ -668,31 +779,34 @@ const CreateShopForm: React.FC = () => {
             linkedin_url: data?.shop?.social_links?.linkedin_url || "",
             pinterest_url: data?.shop?.social_links?.pinterest_url || "",
           },
+          extra_banner_urls: data?.shop?.extra_banners || [""],
           // Load team members with IDs
-          team_members: data?.shop?.team_members?.map((member: any) => ({
-            id: member.id,
-            name: member.name || "",
-            role: member.role || "",
-            profile_image: member.profile_image || "",
-            display_order: member.display_order || 0,
-          })) || [],
+          team_members:
+            data?.shop?.team_members?.map((member: any) => ({
+              id: member.id,
+              name: member.name || "",
+              role: member.role || "",
+              profile_image: member.profile_image || "",
+              display_order: member.display_order || 0,
+            })) || [],
           store_policies: data.shop?.store_policies || {
-            terms_and_conditions: "By using this shop, you agree to our terms and conditions. We reserve the right to update these terms at any time.",
-            licensing_and_usage: "All products include standard and commercial usage rights. Resale of digital files is prohibited.",
-            refund_policy: "Refunds are available within 12 hours of purchase if you haven't downloaded the product. After download, all sales are final.",
+            terms_and_conditions:
+              "By using this shop, you agree to our terms and conditions. We reserve the right to update these terms at any time.",
+            licensing_and_usage:
+              "All products include standard and commercial usage rights. Resale of digital files is prohibited.",
+            refund_policy:
+              "Refunds are available within 12 hours of purchase if you haven't downloaded the product. After download, all sales are final.",
           },
         });
 
         // Load extra banners with IDs
         if (data?.shop?.extra_banners && Array.isArray(data.shop.extra_banners)) {
-          const bannerData = data.shop.extra_banners.map((b: any) => ({
-            id: b.id,
-            url: b.banner_url || "",
-          }));
-
           const newBanners = [{ url: "" }, { url: "" }, { url: "" }];
-          bannerData.forEach((banner: { id?: string; url: string }, idx: number) => {
-            if (idx < 3) newBanners[idx] = banner;
+
+          data.shop.extra_banners.forEach((banner: any, idx: number) => {
+            if (idx < 3 && banner.banner_url) {
+              newBanners[idx] = { url: banner.banner_url };
+            }
           });
           setExtraBanners(newBanners);
         }
@@ -730,7 +844,11 @@ const CreateShopForm: React.FC = () => {
       return;
     }
 
-    if (year.length !== 4 || yearNum < 1900 || yearNum > new Date().getFullYear()) {
+    if (
+      year.length !== 4 ||
+      yearNum < 1900 ||
+      yearNum > new Date().getFullYear()
+    ) {
       setDateError("Enter a valid 4-digit year");
       return;
     }
@@ -745,22 +863,30 @@ const CreateShopForm: React.FC = () => {
       return;
     }
 
-    const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(
+      2,
+      "0"
+    )}`;
     setDateError("");
     setFormData((prev) => ({ ...prev, owner_date_of_birth: formattedDate }));
   }, [month, day, year]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
-    const target = e.target as HTMLInputElement & HTMLTextAreaElement & HTMLSelectElement;
+    const target = e.target as HTMLInputElement &
+      HTMLTextAreaElement &
+      HTMLSelectElement;
     const { name } = target;
 
     let value = target.value;
 
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-    const toStr = (v: unknown) => (v === undefined || v === null ? "" : String(v));
+    const toStr = (v: unknown) =>
+      v === undefined || v === null ? "" : String(v);
     const valStr = toStr(value).trim();
 
     let message = "";
@@ -783,7 +909,8 @@ const CreateShopForm: React.FC = () => {
 
       case "ssn_or_ein":
         if (formData.shop_base_country_id) {
-          message = getSSNValidation(formData.shop_base_country_id, value) || "";
+          message =
+            getSSNValidation(formData.shop_base_country_id, value) || "";
         } else {
           message = "Please select a country first";
         }
@@ -793,7 +920,8 @@ const CreateShopForm: React.FC = () => {
         if (!valStr) {
           message = "Address is required";
         } else if (valStr.length < 10) {
-          message = "Please enter a more detailed address (e.g., street, city, etc.)";
+          message =
+            "Please enter a more detailed address (e.g., street, city, etc.)";
         } else if (!/\d/.test(valStr) || !/[a-zA-Z]/.test(valStr)) {
           message = "Address should contain street number and name";
         }
@@ -820,7 +948,7 @@ const CreateShopForm: React.FC = () => {
           message = "Country is required";
         } else {
           // Clear SSN error when country changes
-          setErrors(prev => ({ ...prev, ssn_or_ein: "" }));
+          setErrors((prev) => ({ ...prev, ssn_or_ein: "" }));
           // Find and set selected country
           const selected = country?.find((c: any) => c.id === value);
           setSelectedCountry(selected);
@@ -831,20 +959,49 @@ const CreateShopForm: React.FC = () => {
         break;
     }
 
-    setErrors(prev => ({ ...prev, [name]: message }));
+    setErrors((prev) => ({ ...prev, [name]: message }));
   };
 
-  // Handle textarea with character limit
-  const handleTextareaChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-    field: string,
-    maxLength: number
-  ) => {
-    const value = e.target.value;
-    if (value.length <= maxLength) {
-      setFormData((prev) => ({ ...prev, [field]: value }));
-      setErrors((prev) => ({ ...prev, [field]: "" }));
+  const handleAIGenerate = (generatedText: string) => {
+    if (currentAIField === "about_shop") {
+      setFormData((prev: any) => ({
+        ...prev,
+        about_shop: generatedText,
+      }));
+      if (errors.about_shop) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.about_shop;
+          return newErrors;
+        });
+      }
+    } else if (currentAIField === "why_choose_your_shop") {
+      setFormData((prev: any) => ({
+        ...prev,
+        why_choose_your_shop: generatedText,
+      }));
+      if (errors.why_choose_your_shop) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.why_choose_your_shop;
+          return newErrors;
+        });
+      }
+    } else if (currentAIField === "shop_philosophy") {
+      setFormData((prev: any) => ({
+        ...prev,
+        shop_philosophy: generatedText,
+      }));
+      if (errors.shop_philosophy) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.shop_philosophy;
+          return newErrors;
+        });
+      }
     }
+    setCurrentAIField("");
+    setShowAIModal(false);
   };
 
   const getAvailablePlatforms = () => {
@@ -855,7 +1012,9 @@ const CreateShopForm: React.FC = () => {
 
   const getAddedPlatforms = () => {
     if (formData.social_links) {
-      return socialMediaPlatforms.filter((platform) => formData.social_links[platform.key]);
+      return socialMediaPlatforms.filter(
+        (platform) => formData.social_links[platform.key]
+      );
     }
     return [];
   };
@@ -911,7 +1070,9 @@ const CreateShopForm: React.FC = () => {
   const handleRemoveLanguage = (language: string) => {
     setFormData((prev) => ({
       ...prev,
-      languages_supported: prev.languages_supported.filter((lang) => lang !== language),
+      languages_supported: prev.languages_supported.filter(
+        (lang) => lang !== language
+      ),
     }));
   };
 
@@ -936,7 +1097,9 @@ const CreateShopForm: React.FC = () => {
         });
       } catch (error: any) {
         showToast({
-          message: error?.response?.data?.error?.message || "Failed to remove team member",
+          message:
+            error?.response?.data?.error?.message ||
+            "Failed to remove team member",
           type: "error",
           duration: 3000,
         });
@@ -947,14 +1110,19 @@ const CreateShopForm: React.FC = () => {
     // Remove from state
     setFormData((prev) => ({
       ...prev,
-      team_members: prev.team_members.filter((_, i) => i !== index).map((member, i) => ({
-        ...member,
-        display_order: i + 1,
-      })),
+      team_members: prev.team_members
+        .filter((_, i) => i !== index)
+        .map((member, i) => ({
+          ...member,
+          display_order: i + 1,
+        })),
     }));
   };
 
-  const handleRemoveTeamMemberImage = async (index: number, memberId?: string) => {
+  const handleRemoveTeamMemberImage = async (
+    index: number,
+    memberId?: string
+  ) => {
     if (memberId) {
       try {
         await RemoveTeamMemberImage(memberId);
@@ -974,7 +1142,8 @@ const CreateShopForm: React.FC = () => {
         });
       } catch (error: any) {
         showToast({
-          message: error?.response?.data?.error?.message || "Failed to remove image",
+          message:
+            error?.response?.data?.error?.message || "Failed to remove image",
           type: "error",
           duration: 3000,
         });
@@ -1018,7 +1187,11 @@ const CreateShopForm: React.FC = () => {
     }));
   };
 
-  const handleTeamMemberChange = (index: number, field: string, value: string) => {
+  const handleTeamMemberChange = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
     setFormData((prev) => ({
       ...prev,
       team_members: prev.team_members.map((member, i) =>
@@ -1044,106 +1217,130 @@ const CreateShopForm: React.FC = () => {
       return;
     }
 
-    if (banner.id) {
-      try {
-        await RemoveSpecificExtraBanner(banner.id);
+    const newBanners = [...extraBanners];
+    newBanners[index] = { url: "" };
+    setExtraBanners(newBanners);
+  
+    showToast({
+      message: "Banner removed. Save draft or submit to apply changes.",
+      type: "success",
+      duration: 3000,
+    });
 
-        const newBanners = [...extraBanners];
-        newBanners[index] = { url: "" };
-        setExtraBanners(newBanners);
+    // if (banner.id) {
+    //   try {
+    //     await RemoveSpecificExtraBanner(banner.id);
 
-        showToast({
-          message: "Banner removed successfully",
-          type: "success",
-          duration: 3000,
-        });
-      } catch (error: any) {
-        showToast({
-          message: error?.response?.data?.error?.message || "Failed to remove banner",
-          type: "error",
-          duration: 3000,
-        });
-      }
-    } else {
-      // clear from state
-      const newBanners = [...extraBanners];
-      newBanners[index] = { url: "" };
-      setExtraBanners(newBanners);
-    }
+    //     const newBanners = [...extraBanners];
+    //     newBanners[index] = { url: "" };
+    //     setExtraBanners(newBanners);
+
+    //     showToast({
+    //       message: "Banner removed successfully",
+    //       type: "success",
+    //       duration: 3000,
+    //     });
+    //   } catch (error: any) {
+    //     showToast({
+    //       message:
+    //         error?.response?.data?.error?.message || "Failed to remove banner",
+    //       type: "error",
+    //       duration: 3000,
+    //     });
+    //   }
+    // } else {
+    //   // clear from state
+    //   const newBanners = [...extraBanners];
+    //   newBanners[index] = { url: "" };
+    //   setExtraBanners(newBanners);
+    // }
   };
 
-  const handleSaveExtraBanners = async () => {
-    const validBanners = extraBanners.filter(
-      (banner) => typeof banner.url === "string" && banner.url.trim() !== ""
-    );
+  // const handleSaveExtraBanners = async () => {
+  //   const validBanners = extraBanners.filter(
+  //     (banner) => typeof banner.url === "string" && banner.url.trim() !== ""
+  //   );
 
-    // remove all
-    if (validBanners.length === 0) {
-      try {
-        await RemoveAllExtraBanner();
-        return;
-      } catch (error: any) {
-        console.log("No banners to remove or already removed");
-        return;
-      }
-    }
+  //   // remove all
+  //   if (validBanners.length === 0) {
+  //     try {
+  //       await RemoveAllExtraBanner();
+  //       return;
+  //     } catch (error: any) {
+  //       console.log("No banners to remove or already removed");
+  //       return;
+  //     }
+  //   }
 
-    const payload = {
-      banner_urls: validBanners.map(b => b.url),
-    };
+  //   const payload = {
+  //     banner_urls: validBanners.map((b) => b.url),
+  //   };
 
-    try {
-      const response = await SaveExtraBanners(payload);
+  //   try {
+  //     const response = await SaveExtraBanners(payload);
 
-      // Update state with IDs from response
-      if (response?.data?.data && Array.isArray(response.data.data)) {
-        const savedBanners = response.data.data;
-        const newBanners = [{ id: "", url: "" }, { id: "", url: "" }, { id: "", url: "" }];
+  //     // Update state with IDs from response
+  //     if (response?.data?.data && Array.isArray(response.data.data)) {
+  //       const savedBanners = response.data.data;
+  //       const newBanners = [
+  //         { id: "", url: "" },
+  //         { id: "", url: "" },
+  //         { id: "", url: "" },
+  //       ];
 
-        savedBanners.forEach((banner: any, idx: number) => {
-          if (idx < 3) {
-            newBanners[idx] = {
-              id: banner.id,
-              url: banner.banner_url,
-            };
-          }
-        });
+  //       savedBanners.forEach((banner: any, idx: number) => {
+  //         if (idx < 3) {
+  //           newBanners[idx] = {
+  //             id: banner.id,
+  //             url: banner.banner_url,
+  //           };
+  //         }
+  //       });
 
-        setExtraBanners(newBanners);
-      }
+  //       setExtraBanners(newBanners);
+  //     }
 
-      showToast({
-        message: "Banners saved successfully",
-        type: "success",
-        duration: 3000,
-      });
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message || "Failed to save banners",
-        type: "error",
-        duration: 3000,
-      });
-    }
-  };
+  //     showToast({
+  //       message: "Banners saved successfully",
+  //       type: "success",
+  //       duration: 3000,
+  //     });
+  //   } catch (error: any) {
+  //     showToast({
+  //       message:
+  //         error?.response?.data?.error?.message || "Failed to save banners",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //   }
+  // };
 
   const handleSaveDraft = async () => {
     setIsLoading(true);
     try {
-      await handleSaveExtraBanners();
+      // await handleSaveExtraBanners();
+      const validBannerUrls = extraBanners
+        .filter((banner) => banner.url && banner.url.trim() !== "")
+        .map((banner) => banner.url);
+
       const { status, ...payloadWithoutStatus } = formData as any;
+
+      const payload = {
+        ...payloadWithoutStatus,
+        extra_banner_urls: validBannerUrls,
+      };
 
       if (isApproved) {
         // update if seller approved
-        await UpdateSellerShop(payloadWithoutStatus);
+        await UpdateSellerShop(payload);
       } else {
         // create if not approved
-        const payload = { ...payloadWithoutStatus, status: "draft" };
-        await CreateSellerShop(payload);
+        const draftPayload = { ...payload, status: "draft" };
+        await CreateSellerShop(draftPayload);
       }
 
+      loadShopData();
       setErrors({});
-
-      await loadShopData();
 
       showToast({
         message: "Draft saved successfully",
@@ -1152,7 +1349,8 @@ const CreateShopForm: React.FC = () => {
       });
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to save draft",
+        message:
+          error?.response?.data?.error?.message || "Failed to save draft",
         type: "error",
         duration: 3000,
       });
@@ -1173,18 +1371,26 @@ const CreateShopForm: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await handleSaveExtraBanners();
-      if (isApproved) {
-        const { status, ...payloadWithoutStatus } = formData as any;
-        await UpdateSellerShop(payloadWithoutStatus);
+      const validBannerUrls = extraBanners
+      .filter((banner) => banner.url && banner.url.trim() !== "")
+      .map((banner) => banner.url);
 
+      const payloadWithBanners = {
+        ...formData,
+        extra_banner_urls: validBannerUrls,
+      };
+
+      if (isApproved) {
+        const { status, ...payloadWithoutStatus } = payloadWithBanners as any;
+        await UpdateSellerShop(payloadWithoutStatus);
+  
         showToast({
           message: "Shop updated successfully",
           type: "success",
           duration: 3000,
         });
       } else {
-        const payload = { ...formData, status: "submitted" };
+        const payload = { ...payloadWithBanners, status: "submitted" };
         await CreateSellerShop(payload);
         setIsSubmitted(true);
 
@@ -1194,11 +1400,13 @@ const CreateShopForm: React.FC = () => {
           duration: 3000,
         });
       }
-
+      loadShopData();
       setErrors({});
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || `Failed to ${isApproved ? 'update' : 'submit'} shop`,
+        message:
+          error?.response?.data?.error?.message ||
+          `Failed to ${isApproved ? "update" : "submit"} shop`,
         type: "error",
         duration: 3000,
       });
@@ -1212,13 +1420,27 @@ const CreateShopForm: React.FC = () => {
       <div className="h-full flex items-center justify-center bg-gray-50 px-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            <svg
+              className="w-10 h-10 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Shop Approved for Review!</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Shop Approved for Review!
+          </h2>
           <p className="text-gray-600 mb-6">
-            Your shop has been successfully submitted for approval. Our team will review your submission and notify you once it's approved. This typically takes 2-3 business days.
+            Your shop has been successfully submitted for approval. Our team
+            will review your submission and notify you once it's approved. This
+            typically takes 2-3 business days.
           </p>
           <Button onClick={() => navigate("/dashboard")} className="w-full">
             Go to Dashboard
@@ -1238,7 +1460,8 @@ const CreateShopForm: React.FC = () => {
               Create your shop
             </h1>
             <p className="font-['Open_Sans'] font-normal text-[14px] leading-[26px] text-[#665B5B]">
-              Set up your shop in minutes and start sharing your products with the world.
+              Set up your shop in minutes and start sharing your products with
+              the world.
             </p>
           </header>
 
@@ -1251,7 +1474,9 @@ const CreateShopForm: React.FC = () => {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner Name <span className='text-red-500'>*</span></label>
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">
+                      Owner Name <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="text"
                       name="owner_full_name"
@@ -1260,72 +1485,125 @@ const CreateShopForm: React.FC = () => {
                       placeholder="Enter your name"
                       className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
-                    {errors.owner_full_name && <p className="text-red-500 text-sm mt-1">{errors.owner_full_name}</p>}
+                    {errors.owner_full_name && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.owner_full_name}
+                      </p>
+                    )}
                   </div>
 
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner DOB <span className='text-red-500'>*</span></label>
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">
+                      Owner DOB <span className="text-red-500">*</span>
+                    </label>
                     <div className="flex space-x-2">
-                      <DateInput label="MM" value={month} onChange={setMonth} error={dateError} />
-                      <DateInput label="DD" value={day} onChange={setDay} error={dateError} />
-                      <DateInput label="YYYY" value={year} onChange={setYear} error={dateError} />
+                      <DateInput
+                        label="MM"
+                        value={month}
+                        onChange={setMonth}
+                        error={dateError}
+                      />
+                      <DateInput
+                        label="DD"
+                        value={day}
+                        onChange={setDay}
+                        error={dateError}
+                      />
+                      <DateInput
+                        label="YYYY"
+                        value={year}
+                        onChange={setYear}
+                        error={dateError}
+                      />
                     </div>
-                    {dateError && <p className="text-red-500 text-sm mt-1">{dateError}</p>}
+                    {dateError && (
+                      <p className="text-red-500 text-sm mt-1">{dateError}</p>
+                    )}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
                     <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">
-                      Owner Mobile Number <span className='text-red-500'>*</span>
+                      Owner Mobile Number{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <PhoneInput
                       value={formData.owner_mobile_number}
                       onChange={(value) => {
-                        setFormData(prev => ({ ...prev, owner_mobile_number: value }));
+                        setFormData((prev) => ({
+                          ...prev,
+                          owner_mobile_number: value,
+                        }));
 
                         // Validation
-                        const digits = value.replace(/\D/g, "");
-                        let message = "";
-                        if (digits.length < 7) {
-                          message = "Phone number must have at least 7 digits";
-                        }
-                        setErrors(prev => ({ ...prev, owner_mobile_number: message }));
+                        // const digits = value.replace(/\D/g, "");
+                        // let message = "";
+                        // if (digits.length < 7) {
+                        //   message = "Phone number must have at least 7 digits";
+                        // }
+                        // setErrors((prev) => ({
+                        //   ...prev,
+                        //   owner_mobile_number: message,
+                        // }));
                       }}
-                      defaultCountry={selectedCountry?.code?.toLowerCase() || "us"}
+                      defaultCountry={
+                        selectedCountry?.code?.toLowerCase() || "us"
+                      }
                       forceDialCode
                       placeholder="Enter phone number"
-                      className={`w-full border ${errors.owner_mobile_number ? 'border-red-500' : 'border-gray-200'} rounded-md`}
+                      className={`w-full border ${errors.owner_mobile_number
+                        ? "border-red-500"
+                        : "border-gray-200"
+                        } rounded-md`}
                       inputClassName="w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                       countrySelectorStyleProps={{
                         buttonClassName: "border-r border-gray-200 px-3",
                         dropdownStyleProps: {
-                          className: "z-50"
-                        }
+                          className: "z-50",
+                        },
                       }}
                     />
-                    {errors.owner_mobile_number && <p className="text-red-500 text-sm mt-1">{errors.owner_mobile_number}</p>}
+                    {errors.owner_mobile_number && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.owner_mobile_number}
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">
-                      {getSSNFieldInfo(formData.shop_base_country_id).label} <span className='text-red-500'>*</span>
+                      {getSSNFieldInfo(formData.shop_base_country_id).label}{" "}
+                      <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="ssn_or_ein"
                       value={formData.ssn_or_ein}
                       onChange={handleChange}
-                      placeholder={getSSNFieldInfo(formData.shop_base_country_id).placeholder}
+                      placeholder={
+                        getSSNFieldInfo(formData.shop_base_country_id)
+                          .placeholder
+                      }
                       className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
                     {!formData.shop_base_country_id && (
-                      <p className="text-gray-500 text-xs mt-1">Please select a country first</p>
+                      <p className="text-gray-500 text-xs mt-1">
+                        Please select a country first
+                      </p>
                     )}
-                    {errors.ssn_or_ein && <p className="text-red-500 text-sm mt-1">{errors.ssn_or_ein}</p>}
+                    {errors.ssn_or_ein && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.ssn_or_ein}
+                      </p>
+                    )}
                     {formData.shop_base_country_id && (
                       <p className="text-gray-500 text-xs mt-1">
-                        Format: {getSSNFieldInfo(formData.shop_base_country_id).placeholder}
+                        Format:{" "}
+                        {
+                          getSSNFieldInfo(formData.shop_base_country_id)
+                            .placeholder
+                        }
                       </p>
                     )}
                   </div>
@@ -1333,7 +1611,9 @@ const CreateShopForm: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Owner Address <span className='text-red-500'>*</span></label>
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">
+                      Owner Address <span className="text-red-500">*</span>
+                    </label>
                     <textarea
                       name="owner_address"
                       value={formData.owner_address}
@@ -1342,21 +1622,32 @@ const CreateShopForm: React.FC = () => {
                       rows={3}
                       className="w-full h-43 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                     />
-                    {errors.owner_address && <p className="text-red-500 text-sm mt-1">{errors.owner_address}</p>}
+                    {errors.owner_address && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.owner_address}
+                      </p>
+                    )}
                   </div>
 
                   <FileUpload
                     label="Government ID Upload"
                     required
                     fileType="government-id"
-                    onUploadSuccess={(url) => setFormData((prev) => ({ ...prev, government_id_document: url }))}
+                    onUploadSuccess={(url) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        government_id_document: url,
+                      }))
+                    }
                     defaultPreview={formData.government_id_document}
                     error={errors.government_id_document}
                   />
                 </div>
 
                 <div>
-                  <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">Shop Name <span className='text-red-500'>*</span></label>
+                  <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">
+                    Shop Name <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="text"
                     name="shop_name"
@@ -1365,7 +1656,11 @@ const CreateShopForm: React.FC = () => {
                     placeholder="Enter your shop name"
                     className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
-                  {errors.shop_name && <p className="text-red-500 text-sm mt-1">{errors.shop_name}</p>}
+                  {errors.shop_name && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.shop_name}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -1374,7 +1669,9 @@ const CreateShopForm: React.FC = () => {
                     required
                     recommendation="Recommended 120 X 120 px"
                     fileType="shop-logo"
-                    onUploadSuccess={(url) => setFormData((prev) => ({ ...prev, shop_logo_url: url }))}
+                    onUploadSuccess={(url) =>
+                      setFormData((prev) => ({ ...prev, shop_logo_url: url }))
+                    }
                     defaultPreview={formData.shop_logo_url}
                     error={errors.shop_logo_url}
                   />
@@ -1384,7 +1681,12 @@ const CreateShopForm: React.FC = () => {
                       required
                       recommendation="Recommended 1128 X 340 px"
                       fileType="shop-banner"
-                      onUploadSuccess={(url) => setFormData((prev) => ({ ...prev, shop_banner_url: url }))}
+                      onUploadSuccess={(url) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          shop_banner_url: url,
+                        }))
+                      }
                       defaultPreview={formData.shop_banner_url}
                     />
                   </div>
@@ -1397,14 +1699,15 @@ const CreateShopForm: React.FC = () => {
               title="Extra Banners (Optional)"
               description="Optional promotional banners to showcase your shop or offers"
             >
-
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {extraBanners.map((banner, index) => (
                   <FileUpload
                     key={index}
                     recommendation="Recommended 360 X 200 px"
                     fileType="extra-banners"
-                    onUploadSuccess={(url) => handleExtraBannerUpload(index, url)}
+                    onUploadSuccess={(url) =>
+                      handleExtraBannerUpload(index, url)
+                    }
                     defaultPreview={banner.url}
                     onRemove={async () => await handleExtraBannerRemove(index)}
                   />
@@ -1419,48 +1722,172 @@ const CreateShopForm: React.FC = () => {
             >
               <div className="space-y-4">
                 <div>
-                  <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">About Shop <span className='text-red-500'>*</span></label>
-                  <textarea
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                      About Shop <span className="text-red-500">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCurrentAIField("about_shop");
+                        setShowAIModal(true);
+                      }}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group text-sm"
+                    >
+                      <Sparkles className="w-4 h-4 animate-pulse" />
+                      <span className="font-medium">Generate with AI</span>
+                      <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
+                    </button>
+                  </div>
+
+                  <CustomRichTextEditor
                     value={formData.about_shop}
-                    onChange={(e) => handleTextareaChange(e, "about_shop", 300)}
-                    placeholder="Write up to 300 words"
-                    rows={4}
-                    className="w-full h-50 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                    onChange={(data: any) => {
+                      // Handle the rich text editor data
+                      const content =
+                        typeof data === "string" ? data : data?.content || "";
+                      setFormData((prev) => ({ ...prev, about_shop: content }));
+
+                      // Clear error when user starts typing
+                      if (errors.about_shop) {
+                        setErrors((prev) => ({ ...prev, about_shop: "" }));
+                      }
+                    }}
+                    onBlur={() => {
+                      // Validate on blur
+                      if (!formData.about_shop.trim()) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          about_shop: "About shop is required",
+                        }));
+                      }
+                    }}
+                    placeholder="Write about your shop..."
+                    error={!!errors.about_shop}
                   />
-                  <div className="text-right text-gray-500 text-sm mt-1">
-                    {errors.about_shop && <p className="text-red-500 text-sm">{errors.about_shop}</p>}
-                    <p className="text-gray-500 text-sm ml-auto">{formData?.about_shop?.length}/300</p>
+                  <div className="flex justify-between items-center mt-2">
+                    {errors.about_shop && (
+                      <p className="text-red-500 text-sm">{errors.about_shop}</p>
+                    )}
+                    <p className="text-gray-500 text-sm ml-auto">
+                      {formData.about_shop?.replace(/<[^>]*>/g, "").length || 0}/500
+                    </p>
                   </div>
                 </div>
-
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">Why Choose Your Shop <span className='text-red-500'>*</span></label>
-                    <textarea
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
+                        Why Choose Your Shop <span className="text-red-500">*</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCurrentAIField("why_choose_your_shop");
+                          setShowAIModal(true);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 text-xs font-medium"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Generate with AI</span>
+                      </button>
+                    </div>
+                    <CustomRichTextEditor
                       value={formData.why_choose_your_shop}
-                      onChange={(e) => handleTextareaChange(e, "why_choose_your_shop", 200)}
-                      placeholder="Highlight your unique value"
-                      rows={4}
-                      className="w-full h-50 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                      onChange={(data: any) => {
+                        const content =
+                          typeof data === "string" ? data : data?.content || "";
+                        setFormData((prev) => ({
+                          ...prev,
+                          why_choose_your_shop: content,
+                        }));
+
+                        // Clear error when user starts typing
+                        if (errors.why_choose_your_shop) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            why_choose_your_shop: "",
+                          }));
+                        }
+                      }}
+                      onBlur={() => {
+                        // Validate on blur
+                        if (!formData.why_choose_your_shop.trim()) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            why_choose_your_shop: "This field is required",
+                          }));
+                        }
+                      }}
+                      placeholder="Highlight your unique value..."
+                      error={!!errors.why_choose_your_shop}
                     />
-                    <div className="text-right text-gray-500 text-sm mt-1">
-                      {errors.why_choose_your_shop && <p className="text-red-500 text-sm">{errors.why_choose_your_shop}</p>}
-                      <p className="text-gray-500 text-sm ml-auto">{formData?.why_choose_your_shop?.length}/200</p>
+                    <div className="flex justify-between items-center mt-2">
+                      {errors.why_choose_your_shop && (
+                        <p className="text-red-500 text-sm">
+                          {errors.why_choose_your_shop}
+                        </p>
+                      )}
+                      <p className="text-gray-500 text-sm ml-auto">
+                        {formData.why_choose_your_shop?.replace(/<[^>]*>/g, "").length || 0}/300
+                      </p>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">Shop Philosophy <span className='text-red-500'>*</span></label>
-                    <textarea
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
+                        Shop Philosophy <span className="text-red-500">*</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCurrentAIField("shop_philosophy");
+                          setShowAIModal(true);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 text-xs font-medium"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Generate with AI</span>
+                      </button>
+                    </div>
+                    <CustomRichTextEditor
                       value={formData.shop_philosophy}
-                      onChange={(e) => handleTextareaChange(e, "shop_philosophy", 200)}
+                      onChange={(data: any) => {
+                        const content =
+                          typeof data === "string" ? data : data?.content || "";
+                        setFormData((prev) => ({
+                          ...prev,
+                          shop_philosophy: content,
+                        }));
+
+                        // Clear error when user starts typing
+                        if (errors.shop_philosophy) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            shop_philosophy: "",
+                          }));
+                        }
+                      }}
+                      onBlur={() => {
+                        // Validate on blur
+                        if (!formData.shop_philosophy.trim()) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            shop_philosophy: "Shop philosophy is required",
+                          }));
+                        }
+                      }}
                       placeholder="What principles guide your work?"
-                      rows={4}
-                      className="w-full h-50 px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                      error={!!errors.shop_philosophy}
                     />
-                    <div className="text-right text-gray-500 text-sm mt-1">
-                      {errors.shop_philosophy && <p className="text-red-500 text-sm">{errors.shop_philosophy}</p>}
-                      <p className="text-gray-500 text-sm ml-auto">{formData?.shop_philosophy?.length}/200</p>
+                    <div className="flex justify-between items-center mt-2">
+                      {errors.shop_philosophy && (
+                        <p className="text-red-500 text-sm">{errors.shop_philosophy}</p>
+                      )}
+                      <p className="text-gray-500 text-sm ml-auto">
+                        {formData.shop_philosophy?.replace(/<[^>]*>/g, "").length || 0}/300
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1474,7 +1901,9 @@ const CreateShopForm: React.FC = () => {
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
-                  <label className="block font-semibold text-gray-900 mb-2">Shop Based In <span className='text-red-500'>*</span></label>
+                  <label className="block font-semibold text-gray-900 mb-2">
+                    Shop Based In <span className="text-red-500">*</span>
+                  </label>
                   <select
                     value={formData.shop_base_country_id}
                     onChange={(e) =>
@@ -1492,30 +1921,39 @@ const CreateShopForm: React.FC = () => {
                       </option>
                     ))}
                   </select>
-                  {errors.shop_base_country_id && <p className="text-red-500 text-sm mt-1">{errors.shop_base_country_id}</p>}
+                  {errors.shop_base_country_id && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.shop_base_country_id}
+                    </p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-gray-900 mb-2">Languages Supported</label>
+                  <label className="block font-semibold text-gray-900 mb-2">
+                    Languages Supported
+                  </label>
                   <div className="space-y-3">
-                    {formData.languages_supported && formData.languages_supported.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {formData.languages_supported.map((lang) => (
-                          <span
-                            key={lang}
-                            className="flex items-center space-x-2 bg-[#7077FE] text-white px-5 py-2 rounded-full"
-                          >
-                            <span className="font-['Open_Sans'] font-normal text-[14px]">{lang}</span>
-                            <button
-                              onClick={() => handleRemoveLanguage(lang)}
-                              className="w-4 h-4 flex items-center justify-center hover:text-gray-200"
+                    {formData.languages_supported &&
+                      formData.languages_supported.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {formData.languages_supported.map((lang) => (
+                            <span
+                              key={lang}
+                              className="flex items-center space-x-2 bg-[#7077FE] text-white px-5 py-2 rounded-full"
                             >
-                              ×
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                              <span className="font-['Open_Sans'] font-normal text-[14px]">
+                                {lang}
+                              </span>
+                              <button
+                                onClick={() => handleRemoveLanguage(lang)}
+                                className="w-4 h-4 flex items-center justify-center hover:text-gray-200"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     <select
                       value={selectedLanguage}
                       onChange={(e) => {
@@ -1542,7 +1980,6 @@ const CreateShopForm: React.FC = () => {
               title="Social Media Links"
               description="Connect Your profiles so customers can follow and trust your brand."
             >
-
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
@@ -1564,10 +2001,16 @@ const CreateShopForm: React.FC = () => {
                   {selectedPlatform && (
                     <input
                       type="url"
-                      placeholder={`Enter ${socialMediaPlatforms.find((p) => p.key === selectedPlatform)?.name} URL`}
+                      placeholder={`Enter ${socialMediaPlatforms.find(
+                        (p) => p.key === selectedPlatform
+                      )?.name
+                        } URL`}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                          handleAddSocialLink(selectedPlatform, e.currentTarget.value.trim());
+                          handleAddSocialLink(
+                            selectedPlatform,
+                            e.currentTarget.value.trim()
+                          );
                           e.currentTarget.value = "";
                         }
                       }}
@@ -1577,10 +2020,14 @@ const CreateShopForm: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-gray-900 mb-2">Added Links</label>
+                  <label className="block font-semibold text-gray-900 mb-2">
+                    Added Links
+                  </label>
                   <div className="space-y-3">
                     {getAddedPlatforms().length === 0 ? (
-                      <p className="text-gray-400 text-sm py-4 text-center">No links added yet</p>
+                      <p className="text-gray-400 text-sm py-4 text-center">
+                        No links added yet
+                      </p>
                     ) : (
                       getAddedPlatforms().map((platform) => (
                         <div
@@ -1589,7 +2036,9 @@ const CreateShopForm: React.FC = () => {
                         >
                           <div className="flex items-center gap-3 flex-1 min-w-0">
                             {platform?.icon}
-                            <span className="text-sm truncate">{formData.social_links[platform.key]}</span>
+                            <span className="text-sm truncate">
+                              {formData.social_links[platform.key]}
+                            </span>
                           </div>
                           <button
                             onClick={() => handleRemoveSocialLink(platform.key)}
@@ -1616,8 +2065,8 @@ const CreateShopForm: React.FC = () => {
                     onClick={handleAddTeamMember}
                     disabled={formData.team_members?.length >= 4}
                     className={`px-5 py-3 rounded-lg font-jakarta font-medium transition-colors ${formData.team_members?.length >= 4
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-[#7077FE] text-white hover:bg-[#5A61E8]'
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-[#7077FE] text-white hover:bg-[#5A61E8]"
                       }`}
                   >
                     Add members
@@ -1625,23 +2074,45 @@ const CreateShopForm: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {formData.team_members?.map((member, index) => (
-                    <div key={member.id || index} className="bg-white border border-gray-200 rounded-xl p-4 space-y-6">
+                    <div
+                      key={member.id || index}
+                      className="bg-white border border-gray-200 rounded-xl p-4 space-y-6"
+                    >
                       <div className="flex justify-between items-start">
                         <div className="h-[140px] w-[140px]">
                           <FileUpload
                             fileType="team-member-image"
-                            onUploadSuccess={(url) => handleTeamMemberImageUpload(index, url)}
+                            onUploadSuccess={(url) =>
+                              handleTeamMemberImageUpload(index, url)
+                            }
                             defaultPreview={member.profile_image}
-                            className='h-[140px] w-[140px]'
-                            onRemove={async () => await handleRemoveTeamMemberImage(index, member.id)}
+                            className="h-[140px] w-[140px]"
+                            onRemove={async () =>
+                              await handleRemoveTeamMemberImage(
+                                index,
+                                member.id
+                              )
+                            }
                           />
                         </div>
                         <button
-                          onClick={() => handleRemoveTeamMember(index, member.id)}
+                          onClick={() =>
+                            handleRemoveTeamMember(index, member.id)
+                          }
                           className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center hover:bg-red-100 transition"
                         >
-                          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          <svg
+                            className="w-5 h-5 text-gray-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -1655,7 +2126,13 @@ const CreateShopForm: React.FC = () => {
                             type="text"
                             placeholder="Enter your teammate name"
                             value={member.name}
-                            onChange={(e) => handleTeamMemberChange(index, "name", e.target.value)}
+                            onChange={(e) =>
+                              handleTeamMemberChange(
+                                index,
+                                "name",
+                                e.target.value
+                              )
+                            }
                             className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                           />
                         </div>
@@ -1668,7 +2145,13 @@ const CreateShopForm: React.FC = () => {
                             type="text"
                             placeholder="Role"
                             value={member.role}
-                            onChange={(e) => handleTeamMemberChange(index, "role", e.target.value)}
+                            onChange={(e) =>
+                              handleTeamMemberChange(
+                                index,
+                                "role",
+                                e.target.value
+                              )
+                            }
                             className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                           />
                         </div>
@@ -1718,15 +2201,25 @@ const CreateShopForm: React.FC = () => {
                         <h4 className="font-poppins font-semibold text-gray-800">
                           {policy.title}
                         </h4>
-                        <p className="text-sm text-gray-500 mt-1">{policy.description}</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {policy.description}
+                        </p>
                       </div>
                     </div>
                   ))}
                 </div>
                 {errors.store_policies && (
                   <p className="text-red-500 text-sm mt-4 flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     {errors.store_policies}
                   </p>
@@ -1737,7 +2230,7 @@ const CreateShopForm: React.FC = () => {
             {!isApproved && (
               <div className="flex justify-end space-x-4 pt-6">
                 <button
-                  type='button'
+                  type="button"
                   onClick={handleSaveDraft}
                   disabled={isLoading}
                   className="px-5 py-3 border border-primary text-primary rounded-lg font-jakarta font-medium transition-colors hover:bg-[#7077FE] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1745,7 +2238,7 @@ const CreateShopForm: React.FC = () => {
                   {isLoading ? "Saving..." : "Save Draft"}
                 </button>
                 <button
-                  type='button'
+                  type="button"
                   onClick={handleSubmit}
                   disabled={isLoading}
                   className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-jakarta font-medium hover:bg-[#7077FE]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1757,7 +2250,7 @@ const CreateShopForm: React.FC = () => {
             {isApproved && (
               <div className="flex justify-end pt-6">
                 <button
-                  type='button'
+                  type="button"
                   onClick={handleSubmit}
                   disabled={isLoading}
                   className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-jakarta font-medium hover:bg-[#7077FE]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -1775,15 +2268,26 @@ const CreateShopForm: React.FC = () => {
               Shop Creation Restricted
             </h2>
             <p className="text-gray-600 mb-6">
-              Only certified members can open their own shop.
-              Become an{" "}
+              Only certified members can open their own shop. Become an{" "}
               <a
-                href='/dashboard/assesmentcertification'
-                className="text-[#7077FE] font-semibold">
+                href="/dashboard/assesmentcertification"
+                className="text-[#7077FE] font-semibold"
+              >
                 Aspiring Certified Member
-              </a>
-              {" "}to unlock this feature and start selling.
+              </a>{" "}
+              to unlock this feature and start selling.
             </p>
+            <div className="flex justify-center">
+              <div className="w-full max-w-2xl">
+                <video
+                  src="https://cdn.cness.io/CNESS_Marketplace.mp4"
+                  controls
+                  className="w-full rounded-xl shadow-lg border border-gray-200"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
             <div className="flex justify-center">
               <svg
                 className="w-16 sm:w-24 h-16 sm:h-24 text-purple-500"
@@ -1803,6 +2307,12 @@ const CreateShopForm: React.FC = () => {
           </div>
         </div>
       )}
+      <AIModal
+        isFreeType={true}
+        showModal={showAIModal}
+        setShowModal={setShowAIModal}
+        onGenerate={handleAIGenerate}
+      />
     </>
   );
 };
