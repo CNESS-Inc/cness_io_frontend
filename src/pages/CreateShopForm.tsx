@@ -2278,6 +2278,17 @@ const CreateShopForm: React.FC = () => {
               to unlock this feature and start selling.
             </p>
             <div className="flex justify-center">
+              <div className="w-full max-w-2xl">
+                <video
+                  src="https://cdn.cness.io/CNESS_Marketplace.mp4"
+                  controls
+                  className="w-full rounded-xl shadow-lg border border-gray-200"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
+            <div className="flex justify-center">
               <svg
                 className="w-16 sm:w-24 h-16 sm:h-24 text-purple-500"
                 fill="none"
