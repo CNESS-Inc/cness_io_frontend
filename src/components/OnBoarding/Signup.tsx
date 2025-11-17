@@ -23,7 +23,7 @@ import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import Select from "react-select";
 import ContentModal from "../../components/ui/ContentModal";
-import ModalPortal from "../ui/Modelportal";
+import ModalPortal from "../ui/ModelPortal";
 //import { Button } from "@headlessui/react";
 
 interface FormErrors {
