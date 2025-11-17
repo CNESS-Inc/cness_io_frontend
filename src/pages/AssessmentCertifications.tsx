@@ -424,8 +424,8 @@ const isInspiredCompleted = () => {
     <div
       className="
         absolute inset-0
-        bg-white/40 
-        backdrop-blur-md 
+        bg-white/10
+       
         flex items-center justify-center 
         z-10 
         rounded-2xl
@@ -613,8 +613,8 @@ const isInspiredCompleted = () => {
     <div
       className="
         absolute inset-0
-        bg-white/40 
-        backdrop-blur-md 
+        bg-white/10 
+       
         flex items-center justify-center 
         z-10 
         rounded-2xl
