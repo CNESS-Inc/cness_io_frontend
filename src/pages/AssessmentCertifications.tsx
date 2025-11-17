@@ -641,7 +641,7 @@ const isInspiredCompleted = () => {
   />
 </svg>
         <p className="text-gray-700 font-medium text-sm">
-          Complete Aspiring to Unlock
+          Complete Inspired to Unlock
         </p>
       </div>
     </div>
