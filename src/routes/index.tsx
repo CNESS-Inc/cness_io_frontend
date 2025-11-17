@@ -498,10 +498,6 @@ export const router = createBrowserRouter([
             element: <OrderHistory />,
           },
           {
-            path: "order-history/:id",
-            element: <ProductSummery />,
-          },
-          {
             path: "shops",
             element: <ShopsList />,
           },

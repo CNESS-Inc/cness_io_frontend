@@ -2043,8 +2043,11 @@ export const AddProductToCart = (data: any): ApiResponse => {
 export const GetProductCart = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_cart);
 };
-export const GetOrderDetailsByOrdId = (order_id:string) => {
-  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}`);
+export const GetOrderDetailsByOrdId = (order_id:string,pid:string) => {
+  if(!pid){
+    return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}`);
+  }
+  return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}?product_id=${pid}`);
 };
 
 export const RemoveProductToCart = (id: any): ApiResponse => {
