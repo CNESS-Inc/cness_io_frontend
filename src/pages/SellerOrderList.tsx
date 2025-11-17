@@ -67,7 +67,7 @@ const OrderRow: React.FC<OrderRowProps & { onClick: () => void }> = ({
 }) => (
   <tr
     onClick={onClick}
-    className="border-b border-gray-100 hover:bg-[#F9FAFB] transition cursor-pointer"
+    className="border-b border-gray-100 hover:bg-[#F9FAFB] transition overflow-x-auto cursor-pointer"
   >
     <td className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] text-[#1A1A1A]">{productNo}</td>
     <td className="py-5 px-6">
@@ -232,8 +232,8 @@ const handleRowClick = (order: OrderRowProps) => {
         Order List
       </h2>
 
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-        <table className="w-full text-left border-collapse">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-x-auto shadow-sm">
+        <table className="w-full text-left overflow-x-auto border-collapse">
           <thead>
             <tr className="bg-[#F7F7F7] border-b border-gray-200">
               {[
@@ -250,7 +250,7 @@ const handleRowClick = (order: OrderRowProps) => {
                 <th
                   key={label}
                   onClick={() => key && requestSort(key)}
-                  className={`py-4 px-6 font-['Open_Sans'] font-normal text-[15px] text-[#494949] capitalize cursor-pointer select-none ${
+                  className={`py-4 px-4 font-['Open_Sans'] font-normal text-[15px] text-[#494949] capitalize cursor-pointer select-none ${
                     key && "hover:text-[#7077FE]"
                   }`}
                 >

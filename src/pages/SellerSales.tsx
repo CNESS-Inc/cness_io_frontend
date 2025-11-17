@@ -331,7 +331,7 @@ const SellerSales: React.FC = () => {
                   <th
                     key={label}
                     onClick={() => key && requestSort(key)}
-                    className={`py-3 px-6 font-['Open_Sans'] font-semibold text-[13px] text-[#64748B] uppercase tracking-wide ${key && "cursor-pointer select-none hover:text-[#7077FE]"
+                    className={`py-3 px-3 font-['Open_Sans'] font-semibold text-[13px] text-[#64748B] uppercase tracking-wide ${key && "cursor-pointer select-none hover:text-[#7077FE]"
                       }`}
                   >
                     <div className="flex items-center gap-1">
