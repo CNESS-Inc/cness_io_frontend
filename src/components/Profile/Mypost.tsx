@@ -10,6 +10,7 @@ type Media =
   | null;
 
 export type MyPostProps = {
+  is_reel?: boolean;
   id?: string | number;
   media: Media;
   date: string;
@@ -22,6 +23,7 @@ export type MyPostProps = {
   showOverlay?: boolean;
   collection?: boolean;
   friend?: boolean;
+  reel?: boolean;
   onViewPost?: () => void;
   onDeletePost?: () => void;
   onDeleteSavePost?: () => void;
@@ -54,6 +56,7 @@ export default function MyPost({
   authorName,
   authorAvatar,
   time,
+  reel,
   isFollowing,
   showFollowButton,
   insightsCount,
@@ -85,7 +88,7 @@ export default function MyPost({
   return (
     <article
       onClick={onClick}
-      className="bg-white hover:bg-[rgba(0,0,0,0.1)] rounded-[12px] border border-gray-200 shadow-sm flex flex-col cursor-pointer group p-3 gap-6 w-full max-w-[370px] sm:max-w-[100%]"
+      className="bg-white hover:bg-[rgba(0,0,0,0.1)] rounded-xl border border-gray-200 shadow-sm flex flex-col cursor-pointer group p-3 gap-6 w-full max-w-[370px] sm:max-w-full"
     >
       {/* Optional Author Header */}
       {(authorName || authorAvatar) && (
@@ -122,7 +125,7 @@ export default function MyPost({
       )}
 
       {/* MEDIA / BODY */}
-      <div className="relative overflow-hidden rounded-[12px] group w-full aspect-[4/3] min-h-[220px]">
+      <div className="relative overflow-hidden rounded-xl group w-full aspect-4/3 min-h-[220px]">
         {media ? (
           media.type === "image" ? (
             <img
@@ -151,7 +154,7 @@ export default function MyPost({
             >
               {body}
             </p>
-            <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent" />
+            <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-white to-transparent" />
           </div>
         )}
 
@@ -165,7 +168,7 @@ export default function MyPost({
               {!friend && <Pen className="w-4 h-4 inline-block mr-1" />}
               View Post
             </button>
-            {!friend && (
+            {!friend && !reel && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();

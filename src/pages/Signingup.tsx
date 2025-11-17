@@ -295,7 +295,7 @@ export default function Signingup() {
         <div className="min-h-[920px] flex flex-col">
           <div className="absolute top-[100px] sm:top-[140px] md:top-[180px] left-0 right-0 flex justify-center z-10 px-4">
             <div className="w-full max-w-[600px] bg-white rounded-2xl shadow-xl px-4 sm:px-10 py-8 sm:py-12 space-y-10">
-              <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-[gray-900]">
+              <h2 className="font-poppins font-semibold text-[28px] leading-8 tracking-[-0.02em] text-[gray-900]">
                 Sign up
               </h2>
 
@@ -357,14 +357,14 @@ export default function Signingup() {
                     onChange={handleInputChange}
                     onFocus={() => setIsUsernameFocused(true)}
                     onBlur={() => setIsUsernameFocused(false)}
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
+                    className={`w-full px-3 py-2 rounded-xl border ${
                       errors.username ? "border-red-500" : "border-[#CBD5E1]"
                     } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
 
                   {/* Tooltip on focus/hover */}
                   {isUsernameFocused && (
-                    <div className="absolute top-10 right-0 max-w-[240px] bg-gray-700 text-white text-xs px-3 py-2 rounded-md shadow-md z-20 animate-fadeIn">
+                    <div className="absolute top-10 right-0 max-w-60 bg-gray-700 text-white text-xs px-3 py-2 rounded-md shadow-md z-20 animate-fadeIn">
                       Username must be 3–40 characters and only contain letters,
                       numbers, and underscores.
                     </div>
@@ -392,7 +392,7 @@ export default function Signingup() {
                     onChange={handleInputChange}
                     onFocus={() => setEmailFocused(true)}
                     onBlur={() => setEmailFocused(false)}
-                    className={`w-full px-3 py-2 rounded-[12px] border ${
+                    className={`w-full px-3 py-2 rounded-xl border ${
                       errors.email ? "border-red-500" : "border-[#CBD5E1]"
                     } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                   />
@@ -420,7 +420,7 @@ export default function Signingup() {
                       placeholder="Enter Your Password"
                       value={formValues.password}
                       onChange={handleInputChange}
-                      className={`w-full px-3 pr-10 py-2 rounded-[12px] border ${
+                      className={`w-full px-3 pr-10 py-2 rounded-xl border ${
                         errors.password ? "border-red-500" : "border-[#CBD5E1]"
                       } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     />
@@ -459,7 +459,7 @@ export default function Signingup() {
                       placeholder="Confirm Your Password"
                       value={formValues.confirmPassword}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 rounded-[12px] border ${
+                      className={`w-full px-3 py-2 rounded-xl border ${
                         errors.confirmPassword
                           ? "border-red-500"
                           : "border-[#CBD5E1]"
@@ -499,7 +499,7 @@ export default function Signingup() {
                       value={formValues?.referralCode}
                       onFocus={() => setreferralCodeFocused(true)}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 rounded-[12px] border border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                      className={`w-full px-3 py-2 rounded-xl border border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
                     />
                     {/* Error message after submission */}
                     {errors.referralCode && !referralCodeFocused && (
@@ -568,7 +568,7 @@ export default function Signingup() {
       </div>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
-          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
+          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-linear-to-r from-[#7077FE] to-[#9747FF] ">
             <svg
               className="h-30 w-30 text-white"
               fill="none"

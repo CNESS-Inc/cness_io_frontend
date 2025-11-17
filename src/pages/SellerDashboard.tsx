@@ -237,12 +237,13 @@ export default function SellerDashboard() {
   const fetchPopularCompany = async (page: number = 1) => {
     try {
       const res = await GetPopularCompanyDetails(page, 3);
+      console.log("🚀 ~ fetchPopularCompany ~ res:", res)
 
       if (res?.data?.data?.rows) {
         const transformedData: any[] = res.data.data.rows.map((item: any) => ({
           id: item.id,
           name: item.name,
-          handle: `@${item.name}`,
+          handle: `@${item.username}`,
           avatar: item.profile_picture,
         }));
         setDirectoryItems(transformedData);

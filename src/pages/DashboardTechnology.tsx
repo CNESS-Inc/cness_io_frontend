@@ -9,9 +9,20 @@ import {
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
-import { Award, ChevronUp, ChevronDown, SortAsc, SortDesc, X } from "lucide-react";
+import {
+  Award,
+  ChevronUp,
+  ChevronDown,
+  SortAsc,
+  SortDesc,
+  X,
+} from "lucide-react";
 
 interface Company {
+  logo: string;
+  banner: string;
+  interests: unknown;
+  professions: unknown;
   id: string;
   name: string;
   domain: string;
@@ -102,6 +113,7 @@ export default function DashboardTechnology() {
         selectedCert,
         sort
       );
+      console.log("🚀 ~ fetchUsersearchProfileDetails ~ res:", res);
 
       if (res?.data) {
         setTotalCount(res.data.data.count);
@@ -121,6 +133,8 @@ export default function DashboardTechnology() {
             is_organization: company?.is_organization,
             is_person: company?.is_person,
             level: company?.level?.level,
+            professions: company?.professions,
+            interests: company?.interests,
           }))
           .sort((a: Company, b: Company) => {
             if (sort === "az") return a.name.localeCompare(b.name);
@@ -231,7 +245,8 @@ export default function DashboardTechnology() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const hasActiveFilters = selectedDomain || searchQuery || selectedCert || sort !== "az";
+  const hasActiveFilters =
+    selectedDomain || searchQuery || selectedCert || sort !== "az";
 
   const handleClearFilters = () => {
     setSelectedDomain("");
@@ -240,10 +255,10 @@ export default function DashboardTechnology() {
     setSelectedCert("");
     setSort("az");
     setCurrentPage(1);
-    
+
     // Clear URL parameters
     navigate("?");
-    
+
     // Fetch data with cleared filters
     fetchUsersearchProfileDetails(1);
   };
@@ -491,8 +506,22 @@ export default function DashboardTechnology() {
               companies.map((company) => (
                 <CompanyCard
                   key={company.id}
-                  {...company}
+                  id={company.id}
+                  name={company.name}
+                  domain={company.domain}
+                  logoUrl={company.logo}
+                  bannerUrl={company.banner}
+                  location={company.location}
+                  description={company.description}
+                  tags={company.tags}
+                  rating={company.rating}
+                  isCertified={company.isCertified}
+                  is_organization={company.is_organization}
+                  is_person={company.is_person}
                   routeKey={company.id}
+                  level={company.level}
+                  interest={company.interests}
+                  profession={company.professions}
                 />
               ))
             )}

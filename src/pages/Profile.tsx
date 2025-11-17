@@ -37,6 +37,7 @@ import {
   MeDetails,
   GetSavedPosts,
   SavePost,
+  GetUserReel,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Modal from "../components/ui/Modal";
@@ -224,10 +225,10 @@ export default function Profile() {
   const [openFollowers, setopenfollowers] = useState(false);
 
   const [userPosts, setUserPosts] = useState<MyPostProps[]>([]);
-  console.log("🚀 ~ Profile ~ userPosts:", userPosts)
   const [followingUsers, setFollowingUsers] = useState<FollowedUser[]>([]);
   const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
   const [collectionItems, setCollectionItems] = useState<any[]>([]);
+  const [userReels, setUserReels] = useState<any[]>([]);
 
   const { showToast } = useToast();
 
@@ -339,13 +340,44 @@ export default function Profile() {
       });
     }
   };
+  const fetchUsersReel = async () => {
+    try {
+      const res = await GetUserReel();
+      const transformReelsToPostProps = res.data.data.rows.map((reel: any) => ({
+        id: reel.id,
+        media: {
+          type: "video" as const,
+          src: reel.file || reel.video_file,
+          alt: reel.description,
+          poster: reel.thumbnail,
+        },
+        body: reel.description,
+        likes: reel.likes_count,
+        reflections: reel.comments_count,
+        is_liked: reel.is_liked,
+        user: reel.storyuser,
+        profile: reel.storyuser.profile,
+        date: reel.createdAt,
+        duration: reel.duration,
+        is_reel: true,
+      }));
+      setUserReels(transformReelsToPostProps); // Store reels data
+    } catch (error) {
+      console.error("Error fetching user reels:", error);
+      showToast({
+        message: "Failed to load user reels",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
 
   const fetchCollectionItems = async () => {
     try {
       const res = await GetSavedPosts();
 
       // Transform the API response to match CollectionItem interface
-     const transformedItems = res.data.data.rows.map((item: any) => {
+      const transformedItems = res.data.data.rows.map((item: any) => {
         // Handle multiple images (comma-separated), single image/video, or text-only
         let media = null;
         if (item.file) {
@@ -418,7 +450,7 @@ export default function Profile() {
   const fetchUserPosts = async () => {
     try {
       const res = await GetUserPost();
-      console.log("🚀 ~ fetchUserPosts ~ res:", res)
+      console.log("🚀 ~ fetchUserPosts ~ res:", res);
       const transformedPosts = res.data.data.rows.map((item: any) => {
         // Handle multiple images (comma-separated), single image/video, or text-only
         let media = null;
@@ -525,7 +557,7 @@ export default function Profile() {
   const handleUnsavePost = async (postId: string | number) => {
     try {
       await SavePost(String(postId)); // Call your API
-      fetchCollectionItems()
+      fetchCollectionItems();
     } catch (error) {
       showToast({
         message: "Failed to delete post.",
@@ -568,6 +600,9 @@ export default function Profile() {
     }
     if (activeTab === "Connections") {
       fetchFollowingUsers();
+    }
+    if (activeTab === "Reels") {
+      fetchUsersReel();
     }
     if (activeTab === "Posts") {
       fetchUserPosts();
@@ -657,7 +692,8 @@ export default function Profile() {
               media:
                 selectedPost.media ??
                 ({ type: "text", src: selectedPost.body || "" } as const),
-            body: selectedPost.body,
+              body: selectedPost.body,
+              is_reel: selectedPost.is_reel || activeTab === "Reels", // Add this line
             }}
             onClose={() => setSelectedPost(null)}
             onDeletePost={() => {
@@ -668,7 +704,7 @@ export default function Profile() {
                 });
               }
             }}
-            // collection
+            collection={activeTab === "Collections"}
             likesCount={selectedPost.likes ?? 0}
             insightsCount={selectedPost.reflections ?? 0}
           />
@@ -703,37 +739,39 @@ export default function Profile() {
               <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
                 {collectionItems.length ? (
                   collectionItems.map((post, i) => (
-                    <MyPost
-                      key={i}
-                      {...post}
-                      showOverlay
-                      collection
-                      //onClick={() => setSelectedPost(post)}
-                      onViewPost={() => setSelectedPost(post)}
-                      onLike={() => {
-                        if (post.id !== undefined) {
-                          handleLikePost(post.id);
+                    <>
+                      <MyPost
+                        key={i}
+                        {...post}
+                        showOverlay
+                        collection
+                        //onClick={() => setSelectedPost(post)}
+                        onViewPost={() => setSelectedPost(post)}
+                        onLike={() => {
+                          if (post.id !== undefined) {
+                            handleLikePost(post.id);
+                          }
+                        }}
+                        onOpenReflections={() =>
+                          // console.log("Open reflections for post", i)
+                          setSelectedPost(post)
                         }
-                      }}
-                      onOpenReflections={() =>
-                        // console.log("Open reflections for post", i)
-                        setSelectedPost(post)
-                      }
-                      onDeletePost={() => {
-                        if (post.id !== undefined) {
-                          // handleDeletePost(post.id);
-                          setDeleteConfirmation({
-                            isOpen: true,
-                            postId: String(post.id),
-                          });
-                        }
-                      }}
-                      onDeleteSavePost={()=>{
-                        if (post.id !== undefined) {
-                          handleUnsavePost(post.id);
-                        }
-                      }}
-                    />
+                        onDeletePost={() => {
+                          if (post.id !== undefined) {
+                            // handleDeletePost(post.id);
+                            setDeleteConfirmation({
+                              isOpen: true,
+                              postId: String(post.id),
+                            });
+                          }
+                        }}
+                        onDeleteSavePost={() => {
+                          if (post.id !== undefined) {
+                            handleUnsavePost(post.id);
+                          }
+                        }}
+                      />
+                    </>
                   ))
                 ) : (
                   <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-16 text-center bg-[#F5F2FF]">
@@ -748,7 +786,40 @@ export default function Profile() {
           ))}
 
         {activeTab === "Reels" && (
-          <div className="text-gray-400 text-center py-16">No Reels yet.</div>
+          <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
+            {userReels.length ? (
+              userReels.map((reel, i) => (
+                <MyPost
+                  key={i}
+                  {...reel}
+                  showOverlay
+                  reel
+                  onViewPost={() => setSelectedPost(reel)}
+                  onLike={() => {
+                    if (reel.id !== undefined) {
+                      handleLikePost(reel.id);
+                    }
+                  }}
+                  onOpenReflections={() => setSelectedPost(reel)}
+                  onDeletePost={() => {
+                    if (reel.id !== undefined) {
+                      setDeleteConfirmation({
+                        isOpen: true,
+                        postId: String(reel.id),
+                      });
+                    }
+                  }}
+                />
+              ))
+            ) : (
+              <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-16 text-center bg-[#F5F2FF]">
+                <div className="flex items-center gap-2 text-[#575FFF]">
+                  <CirclePlay className="h-5 w-5" strokeWidth={2} />
+                  <span className="text-sm">No Reels yet</span>
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
         {activeTab === "Connections" &&

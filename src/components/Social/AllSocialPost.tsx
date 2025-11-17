@@ -457,7 +457,7 @@ export default function AllSocialPost() {
                   <div
                     className={`border border-black rounded-lg p-2 ${
                       isHighlighted
-                        ? "border-blue-500 bg-[#F6F6F6] border-[2px] transition duration-300"
+                        ? "border-blue-500 bg-[#F6F6F6] border-2 transition duration-300"
                         : ""
                     }`}
                     style={{
