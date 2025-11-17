@@ -5,7 +5,7 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
-import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
+import { NavLink, useLocation, Link } from "react-router-dom";
 import { iconMap } from "../../assets/icons";
 import hambur from "../../assets/hambur.png";
 
@@ -21,7 +21,7 @@ const DashboardNavbar = ({
   sort: "az" | "za";
   setSort: React.Dispatch<React.SetStateAction<"az" | "za">>;
 }) => {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const location = useLocation();
   const [openDropdown, setOpenDropdown] = useState<{ [key: string]: boolean }>({});
   const loggedInUserID = localStorage.getItem("Id");
@@ -236,17 +236,40 @@ const DashboardNavbar = ({
       }
     };
 
-    const toggleDropdown = () => {
-      setOpenDropdown(prev => ({
-        ...prev,
-        [item.id]: !prev[item.id]
-      }));
-      
+    //to open all the navibar does NOT close the rest.
+
+    //const toggleDropdown = () => {
+      //setOpenDropdown(prev => ({
+       // ...prev,
+       // [item.id]: !prev[item.id]
+     // }));
+     // 
       // If item has a path and dropdown is being closed, navigate to it
-      if (item.path && !openDropdown[item.id]) {
-        navigate(item.path);
-      }
-    };
+     // if (item.path && !openDropdown[item.id]) {
+      //  navigate(item.path);
+     // }
+  //  };
+
+//closes the previous dropdown 
+  const toggleDropdown = () => {
+  setOpenDropdown(prev => {
+    const isCurrentlyOpen = !!prev[item.id];
+
+    // Close all
+    const newState: { [key: string]: boolean } = {};
+    Object.keys(prev).forEach(key => {
+      newState[key] = false;
+    });
+
+    // Open only the clicked one if it was closed
+    if (!isCurrentlyOpen) {
+      newState[item.id] = true;
+    }
+
+    return newState;
+  });
+};
+
 
     // Special handling for profile dropdown
     if (item.isProfileDropdown) {

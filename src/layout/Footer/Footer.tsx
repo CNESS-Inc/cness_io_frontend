@@ -148,7 +148,7 @@ const Footer = () => {
 
                     <li>
                     <a
-                      href="https://www.facebook.com/share/1A8V21L6Qj"
+                      href=""
                       className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <img src={cnessicon} alt="cnessicon"className="me-1 md:me-2  sm:me-2 w-5 h-5 object-contain "></img>
