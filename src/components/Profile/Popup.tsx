@@ -4,6 +4,8 @@ import {
   GetChildComments,
   PostChildComments,
   PostComments,
+  FetchCommentStory,
+  CommentStory,
 } from "../../Common/ServerAPI";
 import { BsThreeDots } from "react-icons/bs";
 import { FiEdit2, FiLink2, FiSend, FiTrash2, FiX } from "react-icons/fi";
@@ -39,6 +41,7 @@ type CommentItem = {
 };
 
 interface Post {
+  is_reel?: any;
   id: string;
   date: string;
   media: Media;
@@ -78,6 +81,7 @@ const PostPopup: React.FC<PopupProps> = ({
   insightsCount,
   collection,
 }) => {
+  const isReel = post.is_reel;
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -119,11 +123,21 @@ const PostPopup: React.FC<PopupProps> = ({
   const handlePostComment = async () => {
     if (!commentInput.trim()) return;
     setPosting(true);
+
     try {
-      await PostComments({ post_id: post.id, text: commentInput });
+      if (isReel) {
+        await CommentStory({ story_id: post.id, text: commentInput });
+      } else {
+        await PostComments({ post_id: post.id, text: commentInput });
+      }
+
       setCommentInput("");
+
       // Refresh comments after posting
-      GetComment(post.id)
+      const refreshData = isReel
+        ? FetchCommentStory(post.id)
+        : GetComment(post.id);
+      refreshData
         .then((data) => {
           const rows = data.data.data?.rows || [];
           const mapped: CommentItem[] = rows.map((item: any) => ({
@@ -145,7 +159,8 @@ const PostPopup: React.FC<PopupProps> = ({
         })
         .catch(() => setComments([]));
     } catch (error) {
-      // Optionally show error to user
+      // Handle error
+      console.error("Error posting comment:", error);
     }
     setPosting(false);
   };
@@ -168,29 +183,57 @@ const PostPopup: React.FC<PopupProps> = ({
 
   useEffect(() => {
     setIsCommentsLoading(true);
-    GetComment(post.id)
-      .then((data) => {
-        const rows = data.data.data?.rows || [];
-        const mapped: CommentItem[] = rows.map((item: any) => ({
-          id: item.id,
-          user_id: item.user_id,
-          text: item.text || "",
-          createdAt: item.createdAt,
-          likes_count: item.likes_count,
-          child_comment_count: item.child_comment_count,
-          replies: [],
-          profile: {
-            first_name: item.profile.first_name,
-            last_name: item.profile.last_name,
-            profile_picture: item.profile.profile_picture || "",
-          },
-          is_liked: item.is_liked,
-        }));
-        setComments(mapped);
-      })
-      .catch(() => setComments([]))
-      .finally(() => setIsCommentsLoading(false));
-  }, [post.id]);
+
+    if (isReel) {
+      // Use reel comment APIs
+      FetchCommentStory(post.id)
+        .then((data) => {
+          const rows = data.data.data?.rows || [];
+          const mapped: CommentItem[] = rows.map((item: any) => ({
+            id: item.id,
+            user_id: item.user_id,
+            text: item.text || "",
+            createdAt: item.createdAt,
+            likes_count: item.likes_count,
+            child_comment_count: item.child_comment_count,
+            replies: [],
+            profile: {
+              first_name: item.profile.first_name,
+              last_name: item.profile.last_name,
+              profile_picture: item.profile.profile_picture || "",
+            },
+            is_liked: item.is_liked,
+          }));
+          setComments(mapped);
+        })
+        .catch(() => setComments([]))
+        .finally(() => setIsCommentsLoading(false));
+    } else {
+      // Use post comment APIs (existing code)
+      GetComment(post.id)
+        .then((data) => {
+          const rows = data.data.data?.rows || [];
+          const mapped: CommentItem[] = rows.map((item: any) => ({
+            id: item.id,
+            user_id: item.user_id,
+            text: item.text || "",
+            createdAt: item.createdAt,
+            likes_count: item.likes_count,
+            child_comment_count: item.child_comment_count,
+            replies: [],
+            profile: {
+              first_name: item.profile.first_name,
+              last_name: item.profile.last_name,
+              profile_picture: item.profile.profile_picture || "",
+            },
+            is_liked: item.is_liked,
+          }));
+          setComments(mapped);
+        })
+        .catch(() => setComments([]))
+        .finally(() => setIsCommentsLoading(false));
+    }
+  }, [post.id, isReel]);
 
   const handleReplySubmit = async (id: string) => {
     if (!replyInput.trim()) return;
@@ -304,9 +347,8 @@ const PostPopup: React.FC<PopupProps> = ({
     throw new Error("Function not implemented.");
   }
 
-   const shouldShowMediaSection = 
-    post?.media?.type === "image" || 
-    post?.media?.type === "video";
+  const shouldShowMediaSection =
+    post?.media?.type === "image" || post?.media?.type === "video";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
@@ -363,7 +405,7 @@ const PostPopup: React.FC<PopupProps> = ({
 
                       {/* Menu items */}
                       <div className="px-3 py-3 flex flex-col">
-                        {!collection && (
+                        {!collection && !isReel && (
                           <>
                             <button
                               className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0] transition-colors duration-200 w-full text-left"
@@ -506,7 +548,9 @@ const PostPopup: React.FC<PopupProps> = ({
         {/* Right side - comments */}
         <div
           className={`w-full ${
-            shouldShowMediaSection ? "lg:w-[40%] rounded-r-2xl" : "lg:w-full rounded-2xl"
+            shouldShowMediaSection
+              ? "lg:w-[40%] rounded-r-2xl"
+              : "lg:w-full rounded-2xl"
           } flex flex-col bg-white pb-6 overflow-y-auto border-t lg:border-l lg:border-t-0 border-[#E5E7EB] h-full`}
         >
           {/* Close button */}
@@ -552,92 +596,98 @@ const PostPopup: React.FC<PopupProps> = ({
                         {timeAgo(comment.createdAt)}
                       </span>
                     </div>
-                    <button
-                      className="text-sm text-blue-500 hover:underline"
-                      onClick={() =>
-                        setShowReplyBoxFor(
-                          showReplyBoxFor === comment.id ? null : comment.id
-                        )
-                      }
-                    >
-                      Reply
-                    </button>
+                    {!isReel && (
+                      <button
+                        className="text-sm text-blue-500 hover:underline"
+                        onClick={() =>
+                          setShowReplyBoxFor(
+                            showReplyBoxFor === comment.id ? null : comment.id
+                          )
+                        }
+                      >
+                        Reply
+                      </button>
+                    )}
                   </div>
 
                   <div className="bg-gray-50 rounded-lg p-3 px-4 text-sm text-gray-800">
                     {comment.text}
                   </div>
 
-                  <div className="flex items-center text-xs text-gray-500">
-                    {comment.child_comment_count ? (
-                      <button
-                        className="hover:underline flex items-center"
-                        onClick={() => fetchAndToggleReplies(comment.id)}
-                        disabled={!!loadingReplies[comment.id]}
-                      >
-                        {loadingReplies[comment.id]
-                          ? "Loading..."
-                          : expandedComments[comment.id]
-                          ? "— Close replies"
-                          : `— View Replies (${comment.child_comment_count})`}
-                      </button>
-                    ) : null}
-                  </div>
-
-                  {showReplyBoxFor === comment.id && (
-                    <div className="ml-12 mb-2 flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Add a reflection..."
-                        className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none text-sm"
-                        value={replyInput}
-                        onChange={(e) => setReplyInput(e.target.value)}
-                        onKeyDown={(e) =>
-                          e.key === "Enter" && handleReplySubmit(comment.id)
-                        }
-                      />
-                      <button
-                        className={`px-3 py-1 rounded-full text-sm ${
-                          replyInput
-                            ? "text-purple-600 hover:text-purple-700"
-                            : "text-purple-300 cursor-not-allowed"
-                        }`}
-                        disabled={!replyInput}
-                        onClick={() => handleReplySubmit(comment.id)}
-                      >
-                        Post
-                      </button>
-                    </div>
-                  )}
-
-                  {expandedComments[comment.id] &&
-                    comment.replies &&
-                    comment.replies.length > 0 && (
-                      <div className="ml-12 space-y-3 border-l-2 border-gray-200 pl-3">
-                        {comment.replies.map((reply) => (
-                          <div key={reply.id} className="flex gap-3 pt-2">
-                            <img
-                              src={
-                                reply.profile.profile_picture || "/profile.png"
-                              }
-                              alt={`${reply.profile.first_name} ${reply.profile.last_name}`}
-                              className="w-8 h-8 rounded-full object-cover shrink-0"
-                            />
-                            <div className="flex items-center justify-between w-full">
-                              <div className="flex items-baseline gap-2">
-                                <span className="font-semibold text-sm">
-                                  {reply.profile.first_name}{" "}
-                                  {reply.profile.last_name}
-                                </span>
-                                <p className="text-sm wrap-break-word">
-                                  {reply.text}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
+                  {!isReel && (
+                    <>
+                      <div className="flex items-center text-xs text-gray-500">
+                        {comment.child_comment_count ? (
+                          <button
+                            className="hover:underline flex items-center"
+                            onClick={() => fetchAndToggleReplies(comment.id)}
+                            disabled={!!loadingReplies[comment.id]}
+                          >
+                            {loadingReplies[comment.id]
+                              ? "Loading..."
+                              : expandedComments[comment.id]
+                              ? "— Close replies"
+                              : `— View Replies (${comment.child_comment_count})`}
+                          </button>
+                        ) : null}
                       </div>
-                    )}
+
+                      {showReplyBoxFor === comment.id && (
+                        <div className="ml-12 mb-2 flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Add a reflection..."
+                            className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none text-sm"
+                            value={replyInput}
+                            onChange={(e) => setReplyInput(e.target.value)}
+                            onKeyDown={(e) =>
+                              e.key === "Enter" && handleReplySubmit(comment.id)
+                            }
+                          />
+                          <button
+                            className={`px-3 py-1 rounded-full text-sm ${
+                              replyInput
+                                ? "text-purple-600 hover:text-purple-700"
+                                : "text-purple-300 cursor-not-allowed"
+                            }`}
+                            disabled={!replyInput}
+                            onClick={() => handleReplySubmit(comment.id)}
+                          >
+                            Post
+                          </button>
+                        </div>
+                      )}
+
+                      {expandedComments[comment.id] &&
+                        comment.replies &&
+                        comment.replies.length > 0 && (
+                          <div className="ml-12 space-y-3 border-l-2 border-gray-200 pl-3">
+                            {comment.replies.map((reply) => (
+                              <div key={reply.id} className="flex gap-3 pt-2">
+                                <img
+                                  src={
+                                    reply.profile.profile_picture || "/profile.png"
+                                  }
+                                  alt={`${reply.profile.first_name} ${reply.profile.last_name}`}
+                                  className="w-8 h-8 rounded-full object-cover shrink-0"
+                                />
+                                <div className="flex items-center justify-between w-full">
+                                  <div className="flex items-baseline gap-2">
+                                    <span className="font-semibold text-sm">
+                                      {reply.profile.first_name}{" "}
+                                      {reply.profile.last_name}
+                                    </span>
+                                    <p className="text-sm wrap-break-word">
+                                      {reply.text}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                    </>
+                  )}
                 </div>
               ))
             )}

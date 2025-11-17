@@ -1261,7 +1261,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                   onClick={() => login()}
                   className="mt-6 w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 shadow-sm hover:bg-gray-50"
                 >
-                  <span className="inline-flex items-center gap-3 font-inter font-medium text-[14px] leading-[20px] text-gray-900">
+                  <span className="inline-flex items-center gap-3 font-inter font-medium text-[14px] leading-5 text-gray-900">
                     <img
                       src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                       alt="Google"
@@ -1380,7 +1380,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                   className="font-openSans font-semibold
     text-[12px] leading-[24.4px] tracking-[0px]
     text-right align-middle
-    bg-gradient-to-r from-[#7077FE] to-[#F07EFF]
+    bg-linear-to-r from-[#7077FE] to-[#F07EFF]
     bg-clip-text text-transparent
     hover:underline"
                 >
@@ -1393,8 +1393,8 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                 variant="gradient-primary"
                 className="mt-1 lg:w-[415px] md:w-[415px] w-full h-[42px] 
     rounded-[81.26px]
-    bg-gradient-to-r from-indigo-500 to-fuchsia-500
-    px-[19.5px] py-[16px]
+    bg-linear-to-r from-indigo-500 to-fuchsia-500
+    px-[19.5px] py-4
     gap-[8.13px]
     text-white
     font-['Plus_Jakarta_Sans'] font-medium
@@ -1442,7 +1442,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     setShowLogin(false);
                     setOpenSignup(true);
                   }}
-                  className="font-poppins font-semibold text-[13px] leading-[100%] tracking-[0px] text-[#D748EA] underline underline-offset-[2px] decoration-solid hover:opacity-80"
+                  className="font-poppins font-semibold text-[13px] leading-[100%] tracking-[0px] text-[#D748EA] underline underline-offset-2 decoration-solid hover:opacity-80"
                 >
                   Create account
                 </button>
@@ -1472,7 +1472,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
             <Button
               type="submit"
               onClick={() => handleTypeSelection(1)}
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              className="bg-[#7077FE] py-4 px-6 rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >
@@ -1480,7 +1480,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
             </Button>
             <Button
               onClick={() => handleTypeSelection(2)}
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              className="bg-[#7077FE] py-4 px-6 rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >
@@ -1501,7 +1501,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           {/* Ensures center + padding on small screens */}
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1793,7 +1793,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                                       value={option.option}
                                       checked={existingAnswer === option.option}
                                       onChange={handleOrganizationFormChange}
-                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
+                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 shrink-0 peer-checked:border-transparent peer-checked:bg-linear-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
@@ -1920,7 +1920,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     <div className="flex justify-center">
                       <div className="relative w-full max-w-sm p-8 rounded-3xl border border-violet-300 shadow-xl bg-white hover:shadow-2xl transition-all duration-300">
                         {/* Ribbon */}
-                        <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-3 py-1 rounded-bl-xl rounded-tr-3xl font-semibold shadow-md">
+                        <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-3 py-1 rounded-bl-xl rounded-tr-3xl font-semibold shadow-md">
                           Popular
                         </div>
 
@@ -2018,9 +2018,9 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     value={personForm.first_name}
                     onChange={handlePersonFormChange}
                     className={`w-full max-w-[440px] h-[41px]
-                rounded-[12px]
+                rounded-xl
                 border-[0.82px]
-                p-[12px] mt-2 ${
+                p-3 mt-2 ${
                   personErrors.first_name ? "border-red-500" : "border-gray-300"
                 } rounded-md`}
                   />
@@ -2042,9 +2042,9 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     value={personForm.last_name}
                     onChange={handlePersonFormChange}
                     className={`w-full max-w-[440px] h-[41px]
-                rounded-[12px]
+                rounded-xl
                 border-[0.82px]
-                p-[12px] mt-2 ${
+                p-3 mt-2 ${
                   personErrors.last_name ? "border-red-500" : "border-gray-300"
                 } rounded-md`}
                     placeholder="Enter your last name"
@@ -2268,7 +2268,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -2311,7 +2311,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
                   >
                     {plan.popular && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                      <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                         Popular
                       </div>
                     )}
@@ -2357,7 +2357,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                       checked={isAnnual}
                       onChange={() => setIsAnnual(!isAnnual)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
                   </div>
                   <span className="ml-3 text-sm font-medium text-gray-700">
                     Annual billing
@@ -2386,7 +2386,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -2489,7 +2489,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                     className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
                   >
                     {plan.popular && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                      <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                         Popular
                       </div>
                     )}
@@ -2535,7 +2535,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                       checked={isAnnual}
                       onChange={() => setIsAnnual(!isAnnual)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
                   </div>
                   <span className="ml-3 text-sm font-medium text-gray-700">
                     Annual billing
@@ -2590,7 +2590,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                 name="email"
                 required
                 placeholder="Enter your email"
-                className={`w-full px-3 py-2 rounded-[12px] border ${
+                className={`w-full px-3 py-2 rounded-xl border ${
                   resetPasswordErrors.email
                     ? "border-red-500"
                     : "border-[#CBD5E1]"
@@ -2630,7 +2630,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         modalKey="success"
       >
         <div className="text-center p-6 max-w-md">
-          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
+          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-linear-to-r from-[#7077FE] to-[#9747FF] ">
             <svg
               className="h-30 w-30 text-white "
               fill="none"
@@ -2670,7 +2670,7 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
 
       <Modal isOpen={activeModal === "disqualify"} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
-          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] mb-4">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-linear-to-r from-[#7077FE] to-[#9747FF] mb-4">
             <svg
               className="h-10 w-10 text-white"
               fill="none"

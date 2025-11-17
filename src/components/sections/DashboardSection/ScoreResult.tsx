@@ -484,7 +484,7 @@ const handleReportDownload = async () => {
           <div className="flex flex-col w-full min-h-screen bg-[#f9f9f9] pt-1 pb-10 px-2 sm:px-2 md:px-2 lg:pl-6 lg:pr-4 xl:px-1 font-[Poppins] overflow-x-hidden max-w-full lg:max-w-none">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-              <p className="text-[20px] sm:text-[22px] md:text-[24px] font-semibold text-[#000]">
+              <p className="text-[20px] sm:text-[22px] md:text-[24px] font-semibold text-black">
                 Score & Results
               </p>
               {scoreData.is_submitted_by_head &&
@@ -601,7 +601,7 @@ const handleReportDownload = async () => {
                   </button>
                 </div>
               ) : (
-                <div className="flex gap-2 items-center hidden">
+                <div className="flex gap-2 items-center">
                   <div className="relative">
                     <button
                       className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
@@ -638,7 +638,7 @@ const handleReportDownload = async () => {
             <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-2">
               {/* Overall CIS Score Card */}
               <div
-                className="min-h-[208px] p-4 rounded-[12px] border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2 relative"
+                className="min-h-52 p-4 rounded-xl border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2 relative"
                 style={{
                   background:
                     "linear-gradient(135deg, #f5f2fc 0%, #fef3f8 100%)",
@@ -648,7 +648,7 @@ const handleReportDownload = async () => {
                 {(!scoreData.is_assessment_submited ||
                   !scoreData.is_submitted_by_head ||
                   scoreData.cis_score === 0) && (
-                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[12px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-xl shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
                     <svg
                       className="w-8 h-8 text-gray-700 opacity-80 mb-2"
                       fill="currentColor"
@@ -691,13 +691,13 @@ const handleReportDownload = async () => {
                   <span className="text-[32px] font-bold text-[#9747FF] leading-none">
                     {Math.round(scoreData.cis_score)}
                   </span>
-                  <span className="text-sm font-semibold text-[#222224] mb-[2px]">
+                  <span className="text-sm font-semibold text-[#222224] mb-0.5">
                     /100
                   </span>
                 </div>
                 <div className="w-full h-2 rounded-full bg-[#f3f3f3] overflow-hidden mb-1">
                   <div
-                    className="h-2 rounded-full bg-gradient-to-r from-[#a392f2] to-[#f07eff]"
+                    className="h-2 rounded-full bg-linear-to-r from-[#a392f2] to-[#f07eff]"
                     style={{ width: `${scoreData.cis_score}%` }}
                   ></div>
                 </div>
@@ -710,10 +710,10 @@ const handleReportDownload = async () => {
               </div>
 
               {/* Badge Card */}
-              <div className="h-[208px] p-3 rounded-[12px] border border-[#eceef2] shadow-sm bg-white relative">
+              <div className="h-52 p-3 rounded-xl border border-[#eceef2] shadow-sm bg-white relative">
                 {/* Lock overlay - shown when badge is not earned */}
                 {!scoreData?.badge?.level && (
-                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[12px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-xl shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
                     <svg
                       className="w-8 h-8 text-gray-700 opacity-80 mb-2"
                       fill="currentColor"
@@ -779,10 +779,10 @@ const handleReportDownload = async () => {
               </div>
 
               {/* Certification Level Card */}
-              <div className="h-[208px] bg-white rounded-[12px] p-3 shadow-sm border border-[#eceef2] relative">
+              <div className="h-52 bg-white rounded-xl p-3 shadow-sm border border-[#eceef2] relative">
                 {/* Lock overlay - shown when certification level is not available */}
                 {!scoreData?.badge?.level && (
-                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-[12px] shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-xl shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
                     <svg
                       className="w-8 h-8 text-gray-700 opacity-80 mb-2"
                       fill="currentColor"
@@ -821,11 +821,11 @@ const handleReportDownload = async () => {
 
                 <div className="flex justify-center items-center h-[72px]">
                   {scoreData?.badge?.level ? (
-                    <span className="px-18 py-4 bg-[#eaf9f5] text-[#00bfa5] text-sm font-semibold rounded-[12px] inline-block">
+                    <span className="px-18 py-4 bg-[#eaf9f5] text-[#00bfa5] text-sm font-semibold rounded-xl inline-block">
                       {scoreData.badge.level}
                     </span>
                   ) : (
-                    <div className="h-[56px]"></div>
+                    <div className="h-14"></div>
                   )}
                 </div>
               </div>
@@ -833,7 +833,7 @@ const handleReportDownload = async () => {
             {/*<hr className="border-t border-gray-200 mb-2 mt-0" />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 mt-0">
-              <div className="w-full h-[151px] bg-white rounded-[12px] border border-[#eceef2] p-[12px] flex flex-col justify-between shadow-sm">
+              <div className="w-full h-[151px] bg-white rounded-xl border border-[#eceef2] p-3 flex flex-col justify-between shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <img
@@ -851,13 +851,13 @@ const handleReportDownload = async () => {
                   <div className="text-[24px] font-semibold text-[#222224]">
                     85
                   </div>
-                  <span className="text-xs bg-green-100 text-green-600 px-2 py-[4px] rounded-full font-medium">
+                  <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full font-medium">
                     + 5%
                   </span>
                 </div>
               </div>
 
-              <div className="w-full h-[151px] bg-white rounded-[12px] border border-[#eceef2] p-[12px] flex flex-col justify-between shadow-sm">
+              <div className="w-full h-[151px] bg-white rounded-xl border border-[#eceef2] p-3 flex flex-col justify-between shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <img
@@ -875,13 +875,13 @@ const handleReportDownload = async () => {
                   <div className="text-[24px] font-semibold text-[#222224]">
                     90
                   </div>
-                  <span className="text-xs bg-green-100 text-green-600 px-2 py-[4px] rounded-full font-medium">
+                  <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full font-medium">
                     + 9%
                   </span>
                 </div>
               </div>
 
-              <div className="w-full h-[151px] bg-white rounded-[12px] border border-[#eceef2] p-[12px] flex flex-col justify-between shadow-sm">
+              <div className="w-full h-[151px] bg-white rounded-xl border border-[#eceef2] p-3 flex flex-col justify-between shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <img
@@ -899,7 +899,7 @@ const handleReportDownload = async () => {
                   <div className="text-[24px] font-semibold text-[#222224]">
                     75
                   </div>
-                  <span className="text-xs bg-[#ffe2e2] text-[#FF7878] px-2 py-[4px] rounded-full font-medium">
+                  <span className="text-xs bg-[#ffe2e2] text-[#FF7878] px-2 py-1 rounded-full font-medium">
                     - 5%
                   </span>
                 </div>
@@ -935,7 +935,7 @@ const handleReportDownload = async () => {
                       key={section.section_id}
                       onClick={() => setActiveTab(index)}
                       className={`
-                  flex-shrink-0 
+                  shrink-0 
                   min-w-[120px] 
                   max-w-[200px] 
                   text-sm 
@@ -952,7 +952,7 @@ const handleReportDownload = async () => {
                   transition-all
                   ${
                     activeTab === index
-                      ? "bg-[#F8F3FF] text-[#9747FF] -mt-[6px] z-10"
+                      ? "bg-[#F8F3FF] text-[#9747FF] -mt-1.5 z-10"
                       : "bg-white text-[#334155] hover:bg-[#F1F5F9]"
                   }
                 `}
@@ -964,7 +964,7 @@ const handleReportDownload = async () => {
                 </div>
               </div>
 
-              <div className="bg-[#F8F3FF] rounded-[12px] border border-[#ECEEF2] p-6 -mt-1.5">
+              <div className="bg-[#F8F3FF] rounded-xl border border-[#ECEEF2] p-6 -mt-1.5">
                 <h2 className="text-center text-xl font-bold text-[#9747FF] mb-6">
                   {scoreData.cis_result[activeTab]?.section_name}
                 </h2>
@@ -977,7 +977,7 @@ const handleReportDownload = async () => {
                     return (
                       <div
                         key={idx}
-                        className="bg-white rounded-[12px] p-4 w-full max-w-[258px] h-[303px] flex flex-col justify-between text-center"
+                        className="bg-white rounded-xl p-4 w-full max-w-[258px] h-[303px] flex flex-col justify-between text-center"
                       >
                         <div>
                           <h3 className="text-[12px] font-semibold text-gray-800">
@@ -1002,7 +1002,7 @@ const handleReportDownload = async () => {
                           >
                             {scoreMeta.tip}
                           </p>
-                          <p className="text-xs text-[#2E2E30] leading-none mt-[10px]">
+                          <p className="text-xs text-[#2E2E30] leading-none mt-2.5">
                             Here are some tips on how to improve your score
                           </p>
                         </div>
@@ -1016,14 +1016,14 @@ const handleReportDownload = async () => {
                 {scoreData.is_submitted_by_head ? (
                   <div className="w-full px-0 md:px-0">
                     {/* Section Wrapper */}
-                    <div className="bg-[#F8F3FF] rounded-[12px] border border-[#ECEEF2] p-6">
+                    <div className="bg-[#F8F3FF] rounded-xl border border-[#ECEEF2] p-6">
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
                         {scoreData.cis_result.map((section: any) => {
                           const scoreMeta = getScoreMeta(section.weight);
                           return (
                             <div
                               key={section.section_id}
-                              className="bg-white rounded-[12px] p-3 sm:p-4 w-full lg:max-w-[258px] min-h-[303px] flex flex-col justify-between text-center border border-[#ECEEF2]"
+                              className="bg-white rounded-xl p-3 sm:p-4 w-full lg:max-w-[258px] min-h-[303px] flex flex-col justify-between text-center border border-[#ECEEF2]"
                             >
                               <div>
                                 <h3 className="text-[16px] font-medium text-[#222224]">
@@ -1055,7 +1055,7 @@ const handleReportDownload = async () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-[#F8F3FF] rounded-[12px] border border-[#ECEEF2] p-6 text-center">
+                  <div className="bg-[#F8F3FF] rounded-xl border border-[#ECEEF2] p-6 text-center">
                     <div className="flex flex-col items-center justify-center py-8">
                       <svg
                         className="w-12 h-12 text-purple-500 mb-4"

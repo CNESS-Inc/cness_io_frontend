@@ -31,7 +31,7 @@ const Connections: React.FC<ConnectionsListProps> = ({
   const renderConnection = (conn: Connection) => (
     <div
       key={conn.id}
-      className="flex items-center justify-between  h-[76px] border border-gray-200 rounded-[12px] p-[12px] bg-white"
+      className="flex items-center justify-between  h-[76px] border border-gray-200 rounded-xl p-3 bg-white"
     >
       <div className="flex items-center gap-3">
         <img
@@ -59,7 +59,7 @@ const Connections: React.FC<ConnectionsListProps> = ({
 
         <button
           onClick={() => onUnfriend?.(conn.id)}
-          className="w-[93px] h-[30px] rounded-[75px] px-[12px] py-[6px] gap-[6px] flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 transition font-openSans font-semibold text-[12px] leading-[150%] tracking-[0]"
+          className="w-[93px] h-[30px] rounded-[75px] px-3 py-1.5 gap-1.5 flex items-center justify-center border border-gray-300 text-gray-600 hover:bg-gray-50 transition font-openSans font-semibold text-[12px] leading-[150%] tracking-[0]"
         >
           <X className="inline-block w-4 h-4" />
           Unfriend

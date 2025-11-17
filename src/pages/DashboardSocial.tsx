@@ -335,6 +335,7 @@ export default function SocialTopBar() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
+  console.log("🚀 ~ SocialTopBar ~ userInfo:", userInfo)
   // const [isAdult, setIsAdult] = useState<Boolean>(
   //   localStorage.getItem("isAdult") === "true" ? true : false
   // );

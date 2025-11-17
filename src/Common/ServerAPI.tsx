@@ -178,6 +178,7 @@ export const EndPoint = {
   following: "/user/following",
   follow_status: "/user/follow/status",
   followers: "/user/follower",
+  story_user: "/story/user",
   following_followers: "/user/following-followers",
   connection: "/friend",
   user_connection: "/friend/get-friend-status",
@@ -1343,6 +1344,10 @@ export const GetFollowingUser = () => {
 export const GetFollowerUser = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.followers);
+};
+export const GetUserReel = () => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story_user);
 };
 export const GetFollowingFollowerUsers = () => {
   let data = {};

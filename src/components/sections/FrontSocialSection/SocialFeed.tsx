@@ -299,6 +299,7 @@ export default function SocialFeed() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
+  console.log("🚀 ~ SocialFeed ~ userInfo:", userInfo)
   // const [isAdult, setIsAdult] = useState<Boolean>(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
