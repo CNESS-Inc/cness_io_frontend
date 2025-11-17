@@ -111,7 +111,7 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
         ))}
       </div>
       {/* Medium+ screens: separate buttons */}
-      <div className="hidden md:flex gap-4 flex-wrap">
+      <div className="hidden md:flex gap-4 flex-wrap justify-center">
         {faqs.map((category, index) => (
           <button
             key={category.id}

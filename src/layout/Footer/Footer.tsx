@@ -6,7 +6,7 @@ import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import BackToTopButton from "./BackToTop";
 import vector from "../../assets/Vector.svg";
 import ContentModal from "../../components/ui/ContentModal";
-
+import cnessicon from "../../assets/cnessi1.svg";
 const Footer = () => {
   const [showTermModal, setShowTermModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
@@ -145,6 +145,17 @@ const Footer = () => {
                   Follow Us
                 </h4>
                 <ul className="space-y-1 md:space-y-2">
+
+                    <li>
+                    <a
+                      href=""
+                      className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                    >
+                      <img src={cnessicon} alt="cnessicon"className="me-1 md:me-2  sm:me-2 w-5 h-5 object-contain "></img>
+                      CNESS
+                    </a>
+                  </li> 
+
                   <li>
                     <a
                       href="https://www.facebook.com/share/1A8V21L6Qj"

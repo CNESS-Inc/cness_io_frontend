@@ -9,6 +9,7 @@ import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, Uplo
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
+import CustomRichTextEditor from "../components/sections/bestPractiseHub/CustomRichTextEditor";
 
 interface FormSectionProps {
   title: string;
@@ -57,7 +58,7 @@ const InputField: React.FC<InputFieldProps> = ({
 }) => (
   <div className="flex flex-col">
     <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-      {label}
+      {label} {required && <span className="text-red-500">*</span>}
     </label>
     <input
       type={type}
@@ -174,6 +175,8 @@ const AddMusicForm: React.FC = () => {
     }));
 
     setErrors(prev => ({ ...prev, overview: "" }));
+
+    setShowAIModal(false);
   };
 
   const handleSelectCategory = (category: string) => {
@@ -383,8 +386,7 @@ const AddMusicForm: React.FC = () => {
         newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
       }
     }
-
-    // Remove duration validation
+    if (!formData.total_duration.trim()) newErrors.total_duration = "Duration is required.";
 
     const validFormats = ["MP3", "AAC", "WAV", "FLAC", "OGG"];
     if (!formData.format || !validFormats.includes(formData.format.toUpperCase())) {
@@ -446,7 +448,7 @@ const AddMusicForm: React.FC = () => {
         const discount = parseFloat(value);
         if (value === "" || isNaN(discount)) {
           message = "Discount percentage must be a number";
-        } else if (discount <= 0 || discount >= 100) {
+        } else if (discount < 0 || discount > 100) {
           message = "Discount percentage must be between 0 and 100";
         }
         break;
@@ -472,6 +474,7 @@ const AddMusicForm: React.FC = () => {
         break;
 
       case "total_duration":
+        if (!valStr) message = "Duration is required";
         if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr)) message = "Invalid duration format. Use HH:MM:SS";
         break;
 
@@ -751,6 +754,22 @@ const AddMusicForm: React.FC = () => {
     );
   }
 
+  const handleOverviewChange = (data: any) => {
+    const content = typeof data === "string" ? data : data?.content || "";
+    setFormData((prev) => ({
+      ...prev,
+      overview: content,
+    }));
+
+    // Clear error when user starts typing
+    if (errors.overview) {
+      setErrors((prev) => ({
+        ...prev,
+        overview: "",
+      }));
+    }
+  };
+
   return (
     <>
       <Breadcrumb
@@ -766,7 +785,7 @@ const AddMusicForm: React.FC = () => {
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <InputField
-              label="Product Title *"
+              label="Product Title"
               placeholder="Enter your title"
               name="product_title"
               value={formData.product_title}
@@ -775,7 +794,7 @@ const AddMusicForm: React.FC = () => {
               required
             />
             <InputField
-              label="Price *"
+              label="Price"
               placeholder=" $ "
               name="price"
               value={formData.price === 0 ? "" : formData.price.toString()}
@@ -793,7 +812,7 @@ const AddMusicForm: React.FC = () => {
             />
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Mood *
+                Mood <span className="text-red-500">*</span>
               </label>
               <select
                 name="mood_id"
@@ -812,7 +831,7 @@ const AddMusicForm: React.FC = () => {
 
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Thumbnail *
+                Thumbnail <span className="text-red-500">*</span>
               </label>
               {thumbnailData?.thumbnail_url ? (
                 <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
@@ -905,7 +924,7 @@ const AddMusicForm: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
-                  Overview *
+                  Overview <span className="text-red-500">*</span>
                 </label>
                 <button
                   type="button"
@@ -929,19 +948,29 @@ const AddMusicForm: React.FC = () => {
                   <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
                 </button>
               </div>
-              <textarea
-                name="overview"
+              
+              {/* Replaced textarea with CustomRichTextEditor */}
+              <CustomRichTextEditor
                 value={formData.overview}
-                onChange={handleChange}
-                placeholder="Describe your track or album"
-                className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:ring-2 focus:ring-[#7077FE]"
-                required
+                onChange={handleOverviewChange}
+                onBlur={() => {
+                  // Validate on blur
+                  const overviewText = formData.overview.replace(/<[^>]*>/g, '').trim();
+                  if (!overviewText) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      overview: "Overview is required",
+                    }));
+                  }
+                }}
+                placeholder="Describe your artwork, including inspiration, techniques used, and what makes it special..."
+                error={!!errors.overview}
               />
               {errors.overview && <span className="text-red-500 text-sm mt-1">{errors.overview}</span>}
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Highlights * (Max 3)
+                Highlights <span className="text-red-500">*</span> (Max 3)
               </label>
               <div className="space-y-3">
                 {formData?.highlights?.map((highlight: any, index: number) => (
@@ -997,6 +1026,7 @@ const AddMusicForm: React.FC = () => {
 
             <InputField
               label="Duration (HH:MM:SS)"
+              required
               placeholder="e.g., 01:10:00"
               name="total_duration"
               value={formData.total_duration}
@@ -1015,7 +1045,7 @@ const AddMusicForm: React.FC = () => {
             {/* Format dropdown */}
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Format *
+                Format <span className="text-red-500">*</span>
               </label>
               <select
                 name="format"
@@ -1085,7 +1115,7 @@ const AddMusicForm: React.FC = () => {
                       className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
                     />
                     <p className="text-sm text-[#665B5B]">
-                      Upload track {trackIndex + 1} audio files *
+                      Upload track {trackIndex + 1} audio files <span className="text-red-500">*</span>
                     </p>
                   </div>
 

@@ -596,10 +596,25 @@ const Managebestpractices = () => {
 
         {/* Tab Content */}
         {activeTab === "mine" && (
-          <div className="min-h-screen bg-white p-6 font-sans">
-            <h3 className="font-[Poppins] font-medium text-[18px] leading-[150%] tracking-normal mb-4">
-              View My Best Practices
-            </h3>
+  <div className="min-h-screen bg-white p-6 font-sans">
+
+    {/* TITLE + BUTTON IN ONE ROW */}
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="font-[Poppins] font-medium text-[18px] leading-[150%] tracking-normal">
+        My Submissions
+      </h3>
+
+      <Button
+                  variant="gradient-primary"
+                  className="jakarta font-medium w-fit rounded-[100px] h-[42px] py-1 px-6 self-stretch text-[16px] "
+        onClick={openCreateModal}
+       
+      >
+        Create New Best Practice
+      </Button>
+    </div>
+
+
 
             {/* Status Tabs */}
             <div className="flex border-b border-gray-100">
@@ -866,12 +881,7 @@ const Managebestpractices = () => {
                   {activeStatusTab === 2 &&
                     "There is no best practice data in Rejected list."}
                 </p>
-                <button
-                  onClick={openCreateModal}
-                  className="px-4 py-2 bg-[#F07EFF] text-white rounded-md hover:bg-[#E06EE5] transition-colors"
-                >
-                  Create New Best Practice
-                </button>
+               
               </div>
             )}
           </div>

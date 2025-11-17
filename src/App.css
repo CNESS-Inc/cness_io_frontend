@@ -361,6 +361,10 @@ body {
   border: none !important;
 }
 
+.rich-html ul { list-style: disc; padding-left: 1.25rem; margin: .5rem 0; }
+.rich-html ol { list-style: decimal; padding-left: 1.25rem; margin: .5rem 0; }
+.rich-html li { margin: .25rem 0; }
+
 /* Fix for lists showing outside the editor */
 .ckeditor-container .ck.ck-editor__editable.ck-focused {
   border: none !important;

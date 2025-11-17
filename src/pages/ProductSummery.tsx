@@ -4,11 +4,13 @@ import { BsCalendar2 } from "react-icons/bs";
 import { HiArrowUturnLeft } from "react-icons/hi2";
 import { IoVideocamOutline } from "react-icons/io5";
 import { GetOrderDetailsByOrdId } from "../Common/ServerAPI";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import ReviewsTab from "../components/MarketPlace/library/ReviewsTab";
 
 export default function ProductSummery() {
+    const [searchParams] = useSearchParams();
+  const pid = searchParams.get("pid") || "";
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { id } = useParams<{ id: string }>();
@@ -22,7 +24,7 @@ export default function ProductSummery() {
   const fetchOrderItemItems = async () => {
     setIsLoading(true);
     try {
-      const response = await GetOrderDetailsByOrdId(id || "");
+      const response = await GetOrderDetailsByOrdId(id || "",pid || "");
       console.log('response', response)
       const items = response?.data?.data?.items || [];
       setOrderItems(response?.data?.data || []);
@@ -65,7 +67,7 @@ export default function ProductSummery() {
   };
   return (
     <div>
-      {isLoading && (<>
+      {!isLoading && (<>
         <div className="pt-5 pb-2 px-2">
           <nav className="flex items-center text-xs text-gray-500 mb-2 font-medium">
             <span className="text-gray-700">Order History</span>

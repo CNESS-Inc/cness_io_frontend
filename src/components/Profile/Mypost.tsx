@@ -3,12 +3,14 @@ import like from "../../assets/like.svg";
 import comment from "../../assets/comment.svg";
 // import repost from "../../assets/repost.svg";
 import { Pen, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 type Media =
   | { type: "image"; src: string; alt?: string }
   | { type: "video"; src: string; poster?: string }
   | null;
 
 export type MyPostProps = {
+  is_reel?: boolean;
   id?: string | number;
   media: Media;
   date: string;
@@ -21,6 +23,7 @@ export type MyPostProps = {
   showOverlay?: boolean;
   collection?: boolean;
   friend?: boolean;
+  reel?: boolean;
   onViewPost?: () => void;
   onDeletePost?: () => void;
   onDeleteSavePost?: () => void;
@@ -32,6 +35,7 @@ export type MyPostProps = {
   showFollowButton?: boolean;
   insightsCount?: number;
   reflections?: number;
+  product_id?: string | null;
   onFollowToggle?: () => void;
 };
 function formatCount(count: number) {
@@ -52,6 +56,7 @@ export default function MyPost({
   authorName,
   authorAvatar,
   time,
+  reel,
   isFollowing,
   showFollowButton,
   insightsCount,
@@ -62,12 +67,28 @@ export default function MyPost({
   onViewPost,
   onDeletePost,
   onDeleteSavePost,
+  product_id,
 }: MyPostProps) {
-  // const total = likes + (reflections ?? 0);
+  const navigate = useNavigate(); // Initialize navigate
+
+  const handleViewPost = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    // If product_id exists, redirect to product detail page
+    if (product_id) {
+      navigate(`/dashboard/product-detail/${product_id}`);
+      return;
+    }
+
+    // Otherwise, call the original onViewPost callback
+    onViewPost?.();
+    console.log("View Post clicked");
+  };
+
   return (
     <article
       onClick={onClick}
-      className="bg-white hover:bg-[rgba(0,0,0,0.1)] rounded-[12px] border border-gray-200 shadow-sm flex flex-col cursor-pointer group p-3 gap-6 w-full max-w-[370px] sm:max-w-[100%]"
+      className="bg-white hover:bg-[rgba(0,0,0,0.1)] rounded-xl border border-gray-200 shadow-sm flex flex-col cursor-pointer group p-3 gap-6 w-full max-w-[370px] sm:max-w-full"
     >
       {/* Optional Author Header */}
       {(authorName || authorAvatar) && (
@@ -104,7 +125,7 @@ export default function MyPost({
       )}
 
       {/* MEDIA / BODY */}
-      <div className="relative overflow-hidden rounded-[12px] group w-full aspect-[4/3] min-h-[220px]">
+      <div className="relative overflow-hidden rounded-xl group w-full aspect-4/3 min-h-[220px]">
         {media ? (
           media.type === "image" ? (
             <img
@@ -133,7 +154,7 @@ export default function MyPost({
             >
               {body}
             </p>
-            <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent" />
+            <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-white to-transparent" />
           </div>
         )}
 
@@ -141,17 +162,13 @@ export default function MyPost({
         {showOverlay && (
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewPost?.();
-                console.log("View Post clicked");
-              }}
+              onClick={handleViewPost}
               className="w-32 py-2 rounded-full bg-[#7077FE] hover:bg-[#4B51D1] text-white font-medium text-sm shadow"
             >
               {!friend && <Pen className="w-4 h-4 inline-block mr-1" />}
               View Post
             </button>
-            {!friend && (
+            {!friend && !reel && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();

@@ -9,6 +9,7 @@ import { RiTwitterXFill } from "react-icons/ri";
 import { IoLogoTiktok } from "react-icons/io5";
 import { FaPinterestP } from "react-icons/fa";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import DOMPurify from "dompurify";
 
 const socialMediaIcons: Record<string, any> = {
   facebook: <CiFacebook size={30} className='text-white' />,
@@ -254,10 +255,25 @@ const ShopDetail: React.FC = () => {
               <h1 className="font-['open_sans'] font-bold text-[22px] leading-[29.96px] text-[#1A1A1A]">
                 {shop?.shop_name}
               </h1>
+              <div className="line-clamp-2 overflow-hidden">
+                <div
+                  className="rich-text-content font-['open_sans'] font-normal text-[14px] leading-[19.07px] text-[#665B5B] max-w-[645px]
+      [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
+      [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
+      [&_li]:my-1 [&_li]:pl-1
+      [&_p]:my-3
+      [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:my-4
+      [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-3
+      [&_h3]:text-lg [&_h3]:font-bold [&_h3]:my-2
+      [&_strong]:font-bold
+      [&_em]:italic
+      [&_u]:underline"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(shop?.about_shop || ""),
+                  }}
+                ></div>
+              </div>
 
-              <p className="font-['open_sans'] font-normal text-[14px] leading-[19.07px] text-[#665B5B] max-w-[645px]">
-                {shop?.about_shop}
-              </p>
 
               <div className="flex items-center gap-3">
                 <div className="bg-[#7077FE]/10 rounded-full px-3 py-2 flex items-center gap-3">
@@ -341,22 +357,46 @@ const ShopDetail: React.FC = () => {
               About {shop?.shop_name}
             </h2>
 
-            <p className="font-['open_sans'] font-normal text-[16px] leading-[28px] text-[#1A1A1A]">
-              {shop?.about_shop || ""}
-            </p>
+            <div className="rich-text-content font-['open_sans'] font-normal text-[16px] leading-[28px] text-[#1A1A1A]
+                               [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
+                               [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
+                               [&_li]:my-1 [&_li]:pl-1
+                               [&_p]:my-3
+                               [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:my-4
+                               [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-3
+                               [&_h3]:text-lg [&_h3]:font-bold [&_h3]:my-2
+                               [&_strong]:font-bold
+                               [&_em]:italic
+                               [&_u]:underline"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(shop?.about_shop || ""),
+              }}>
+            </div>
 
             {shop?.why_choose_your_shop && (
               <>
                 <h3 className="font-[poppins] font-semibold text-[18px] leading-[27px] text-black">
                   Why choose {shop?.shop_name}?
                 </h3>
-                <p className="font-['open_sans'] font-normal text-[16px] leading-[28px] text-[#1A1A1A]">
-                  {shop.why_choose_your_shop}
-                </p>
+                <div className="rich-text-content font-['open_sans'] font-normal text-[16px] leading-[28px] text-[#1A1A1A]
+                               [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
+                               [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
+                               [&_li]:my-1 [&_li]:pl-1
+                               [&_p]:my-3
+                               [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:my-4
+                               [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-3
+                               [&_h3]:text-lg [&_h3]:font-bold [&_h3]:my-2
+                               [&_strong]:font-bold
+                               [&_em]:italic
+                               [&_u]:underline"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(shop.why_choose_your_shop),
+                  }}
+                ></div>
               </>
             )}
 
-            <div className="font-['open_sans'] font-normal text-[16px] leading-[28px] text-[#1A1A1A]">
+            {/* <div className="font-['open_sans'] font-normal text-[16px] leading-[28px] text-[#1A1A1A]">
               <ul className="list-disc list-inside space-y-2">
                 <li>
                   <strong>Premium Quality:</strong> Every digital product is curated with attention to detail, usability, and reliability.
@@ -371,16 +411,28 @@ const ShopDetail: React.FC = () => {
                   <strong>Creative Freedom:</strong> Products that empower creators, learners, and professionals to unlock their full potential.
                 </li>
               </ul>
-            </div>
+            </div> */}
 
             {shop?.shop_philosophy && (
               <>
                 <h3 className="font-[poppins] font-semibold text-[18px] leading-[27px] text-black">
                   Our Philosophy
                 </h3>
-                <p className="font-['open_sans'] font-normal text-[16px] leading-[28px] text-[#1A1A1A]">
-                  {shop.shop_philosophy}
-                </p>
+                <div className="rich-text-content font-['open_sans'] font-normal text-[16px] leading-[28px] text-[#1A1A1A]
+                               [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
+                               [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
+                               [&_li]:my-1 [&_li]:pl-1
+                               [&_p]:my-3
+                               [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:my-4
+                               [&_h2]:text-xl [&_h2]:font-bold [&_h2]:my-3
+                               [&_h3]:text-lg [&_h3]:font-bold [&_h3]:my-2
+                               [&_strong]:font-bold
+                               [&_em]:italic
+                               [&_u]:underline"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(shop.shop_philosophy),
+                  }}
+                ></div>
               </>
             )}
           </div>

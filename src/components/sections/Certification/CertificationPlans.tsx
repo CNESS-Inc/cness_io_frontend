@@ -75,13 +75,13 @@ function PricingCard({
           {card.subtitle}
         </h3>
       </div>
-      <div className="w-full h-full border-b border-black/10 my-6"></div>
+      {/* <div className="w-full h-full border-b border-black/10 my-6"></div>*/}
 
       <div className="flex flex-col justify-start text-left gap-[32px]">
         <div className="flex flex-col justify-start text-left gap-6">
-          <h3 className="font-['Poppins',Helvetica] text-base text-[#102821]">
+       {/*<h3 className="font-['Poppins',Helvetica] text-base text-[#102821]">
             Includes:
-          </h3>
+          </h3>*/}
 
           <div className="flex-1 space-y-[18px] space-x-3">
             {card.features.map((f, idx) => (
@@ -301,11 +301,11 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       title: "Aspired",
       subtitle: "Foundation level certification",
       price: "",
-      features: [
-        "Basic profile creation",
-        "Community Access",
-        "Resources Library",
-        "Basic profile creation",
+     features: [
+        //"Basic profile creation",
+        //"Community Access",
+       // "Resources Library",
+       // "Basic profile creation",
       ],
       ...getCardState("Aspired"),
       badge: getBadgeImage("Aspired"),
@@ -316,10 +316,10 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       subtitle: "Professional level certification",
       price: "",
       features: [
-        "Unlock True Profile",
-        "Community Access",
-        "Resources Library",
-        "Social media Access",
+       // "Unlock True Profile",
+       // "Community Access",
+       // "Resources Library",
+       // "Social media Access",
       ],
       ...getCardState("Inspired"),
       badge: getBadgeImage("Inspired"),
@@ -330,10 +330,10 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       subtitle: "Expert level certification",
       price: "",
       features: [
-        "Basic profile creation",
-        "Community Access",
-        "Resources Library",
-        "Basic profile creation",
+       // "Basic profile creation",
+       // "Community Access",
+       // "Resources Library",
+       // "Basic profile creation",
       ],
       ...getCardState("Leader"),
       badge: getBadgeImage("Leader"),

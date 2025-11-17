@@ -80,7 +80,7 @@ export default function Modal({
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 overflow-y-auto z-[2000]">
+<div className="fixed inset-0 flex items-center justify-center bg-black/40 z-[3000]">
       <div
         className={`flex min-h-screen p-4 sm:p-6 ${positionClasses[position]}`}
       >

@@ -5,7 +5,7 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
-import { NavLink, useNavigate, useLocation, Link } from "react-router-dom";
+import { NavLink, useLocation, Link } from "react-router-dom";
 import { iconMap } from "../../assets/icons";
 import hambur from "../../assets/hambur.png";
 
@@ -21,7 +21,7 @@ const DashboardNavbar = ({
   sort: "az" | "za";
   setSort: React.Dispatch<React.SetStateAction<"az" | "za">>;
 }) => {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const location = useLocation();
   const [openDropdown, setOpenDropdown] = useState<{ [key: string]: boolean }>({});
   const loggedInUserID = localStorage.getItem("Id");
@@ -64,7 +64,7 @@ const DashboardNavbar = ({
     {
       id: "dashboard",
       icon: <img src={iconMap["home"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Home / Dashboard",
+      label: "Home",
       active: true,
       path: "/dashboard",
     },
@@ -144,13 +144,13 @@ const DashboardNavbar = ({
       children: [
         { label: "Feed", path: "/dashboard/feed" },
         { label: "Profile", path: "/dashboard/Profile" },
-        { label: "My Connections", path: "/dashboard/MyConnection" },
+        { label: "Connections", path: "/dashboard/MyConnection" },
       ],
     },
     {
       id: "marketplace",
       icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Marketplace",
+      label: "Marketplace (Beta)",
       active: true,
       path: "/dashboard/marketplace",
     },
@@ -236,17 +236,40 @@ const DashboardNavbar = ({
       }
     };
 
-    const toggleDropdown = () => {
-      setOpenDropdown(prev => ({
-        ...prev,
-        [item.id]: !prev[item.id]
-      }));
-      
+    //to open all the navibar does NOT close the rest.
+
+    //const toggleDropdown = () => {
+      //setOpenDropdown(prev => ({
+       // ...prev,
+       // [item.id]: !prev[item.id]
+     // }));
+     // 
       // If item has a path and dropdown is being closed, navigate to it
-      if (item.path && !openDropdown[item.id]) {
-        navigate(item.path);
-      }
-    };
+     // if (item.path && !openDropdown[item.id]) {
+      //  navigate(item.path);
+     // }
+  //  };
+
+//closes the previous dropdown 
+  const toggleDropdown = () => {
+  setOpenDropdown(prev => {
+    const isCurrentlyOpen = !!prev[item.id];
+
+    // Close all
+    const newState: { [key: string]: boolean } = {};
+    Object.keys(prev).forEach(key => {
+      newState[key] = false;
+    });
+
+    // Open only the clicked one if it was closed
+    if (!isCurrentlyOpen) {
+      newState[item.id] = true;
+    }
+
+    return newState;
+  });
+};
+
 
     // Special handling for profile dropdown
     if (item.isProfileDropdown) {
@@ -287,7 +310,7 @@ const DashboardNavbar = ({
                 }
                 // onClick={toggleMobileNav}
               >
-                My True Profile
+                Profile
               </NavLink>
               <NavLink
                 to="/dashboard/user-profile"

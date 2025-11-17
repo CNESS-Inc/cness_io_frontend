@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type ReactNode } from "react";
+import React, { useEffect, useState, type ReactNode  } from "react";
 import {
   //ChevronRight,
 
@@ -303,6 +303,16 @@ export function GreetingBar({
     professions: [],
     question: [],
   });
+
+
+  //greeting
+
+const hasLoggedBefore = localStorage.getItem("hasLoggedBefore") === "true";
+useEffect(() => {
+  if (!hasLoggedBefore) {
+    localStorage.setItem("hasLoggedBefore", "true");
+  }
+}, []);
 
   const handleOrganizationFormChange = async (
     e: React.ChangeEvent<
@@ -997,12 +1007,23 @@ export function GreetingBar({
     <>
       <div className="mb-5 grid grid-cols-12 gap-5">
         <div className="col-span-12 lg:col-span-8">
-          <h1 className="text-[26px] md:text-[26px] lg:text-[30px] font-semibold tracking-[-0.02em]">
-            Hello, <span className="text-[#7077FE]">{name}</span>
-          </h1>
-          <p className="mt-1 text-xs md:text-sm text-[#242424]">
-            Welcome to your CNESS Dashboard
-          </p>
+         {!hasLoggedBefore ? (
+  <>
+    <h1 className="text-[26px] lg:text-[30px] font-semibold">
+      Hello, <span className="text-[#7077FE]">{name}</span>
+    </h1>
+    <p className="mt-1 text-xs md:text-sm text-[#242424]">
+      Welcome to your CNESS Dashboard
+    </p>
+  </>
+) : (
+  <>
+    <h1 className="text-[26px] lg:text-[30px] font-semibold">
+      Welcome Back, <span className="text-[#7077FE]">{name}</span>
+    </h1>
+  </>
+)}
+
         </div>
 
         <div className="col-span-12 lg:col-span-4 flex items-start lg:justify-end justify-start">
@@ -2295,8 +2316,11 @@ export function GreetingBar({
    1) TRUE PROFILE
    =========================================================== */
 export function TrueProfileCard({
-  title = "True Profile Created",
-  description = "Your profile is now complete with all the essential details added. This allows us to customize your experience!",
+
+  
+  //title = "True Profile Created",
+  //description = "Your profile is now complete with all the essential details added. This allows us to customize your experience!",
+ 
   completion = 100,
   avatar,
   onUpdateProfile,
@@ -2311,6 +2335,15 @@ export function TrueProfileCard({
 }) {
   const id = localStorage.getItem("Id");
   const navigate = useNavigate();
+
+  const computedTitle =
+    completion === 100 ? "True Profile Created" : "Complete Your True Profile";
+
+  const computedDescription =
+    completion === 100
+      ? "Your profile is now complete with all the essential details added. This allows us to customize your experience!"
+      : "Your profile is still in progress. Please add the remaining details so we can customize your experience.";
+
   return (
     <Card className="p-4 md:p-5">
       {" "}
@@ -2369,11 +2402,11 @@ export function TrueProfileCard({
         {/* Texts + Button */}
         <div className="min-w-0 flex-1 text-center sm:text-left">
           <h3 className="font-opensans font-semibold text-[16px] sm:text-[18px] md:text-[20px] leading-[24px] sm:leading-[28px] md:leading-[32px] text-[#222224]">
-            {title}
+           {computedTitle}
           </h3>
 
           <p className="mt-2 font-opensans font-light text-[13px] sm:text-[14px] md:text-[16px] leading-[150%] text-[#242424]">
-            {description}
+             {computedDescription}
           </p>
 
           <button
@@ -2472,6 +2505,8 @@ export function CertificationCard({
       on ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
     } transition-colors`;
 
+
+    
   return (
     <>
       <Card className="rounded-[12px] border border-[#E5E7EB] px-4 md:px-[18px] py-5 space-y-3">
@@ -2482,7 +2517,7 @@ export function CertificationCard({
             style={{ borderColor: "var(--Stroke, rgba(236, 238, 242, 1))" }}
           >
             <h6 className="font-['Poppins',Helvetica] font-medium text-[22px] sm:text-[28px] text-[#222224]">
-              Certification Makes It Official.
+              Certification is your Official stamp of credibility
             </h6>
             <h5 className="font-['Open_Sans',Helvetica] font-normal text-base sm:text-lg text-[#999999] leading-[32px]">
               Get your conscious identity verified and unlock everything CNESS
@@ -3552,7 +3587,7 @@ export function SocialStackCard({
     const NotificationsCard = ({ notifications }: { notifications: any[] }) => {
       //const userProfile = localStorage.getItem("profile_picture");
       return (
-        <div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px]">
+<div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px] -mt-35">
           {/* header */}
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F7E9FF]">

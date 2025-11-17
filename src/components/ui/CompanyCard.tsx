@@ -30,6 +30,8 @@ interface CompanyCardProps {
   is_organization?: boolean;
   level?: any;
   routeKey?: string;
+  interest?: any;
+  profession?: any;
 }
 
 // const StarRating = ({ rating }: { rating: number }) => {
@@ -66,10 +68,14 @@ export default function CompanyCard({
   bannerUrl,
   description,
   tags,
-  rating,
+  // rating,
   level,
   routeKey,
+  interest,
+  profession,
 }: CompanyCardProps) {
+  console.log("🚀 ~ CompanyCard111111 ~ profession:", profession);
+  console.log("🚀 ~ CompanyCard ~ interest:", interest);
   const navigate = useNavigate();
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -167,7 +173,7 @@ export default function CompanyCard({
         </CardHeader>
 
         <CardContent className="px-4 pt-2 pb-4">
-          <div className="rounded-xl overflow-hidden mb-3">
+          <div className="relative rounded-xl overflow-hidden mb-3">
             <img
               src={
                 !bannerUrl ||
@@ -181,10 +187,24 @@ export default function CompanyCard({
               alt={`${name} banner`}
               className="w-full h-36 object-cover"
               onError={(e) => {
-                // Fallback in case the image fails to load
                 (e.target as HTMLImageElement).src = iconMap["companycard1"];
               }}
             />
+
+            <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
+              {(Array.isArray(profession)
+                ? profession
+                : [interest || profession]
+              ).map((item, i) => (
+                <span
+                  key={i}
+                  className="text-[12px] inline-flex items-center justify-center rounded-full px-3 py-2 leading-none font-medium bg-[#F3F3F3] text-[#8A8A8A]"
+                  style={{ fontFamily: "Poppins, sans-serif" }}
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* Show section only if real description OR rating > 0 */}
@@ -207,7 +227,7 @@ export default function CompanyCard({
             </>
           )}
 
-          {/* Rating aligned right */}
+          {/* Rating aligned right 
             <div className="flex justify-end mb-2">
               {typeof rating === "number" && rating > 0 && (
                 <div className="flex items-center text-yellow-500 text-sm">
@@ -215,7 +235,7 @@ export default function CompanyCard({
                   {"☆".repeat(5 - rating)}
                 </div>
               )}
-            </div>
+            </div>*/}
 
           {/* Tags only if available */}
           {tags?.length > 0 && (

@@ -73,7 +73,7 @@ export default function FAQContent({ categories }: FAQContentProps) {
 
   return (
     <div className="w-full 2xl:max-w-full mx-auto 2xl:px-0 pt-5 md:pb-10 lg:pb-4">
-      <div className="flex md:hidden flex-col gap-3">
+      {/* <div className="flex md:hidden flex-col gap-3">
         {categories.map((category, index) => (
           <button
             key={category.id}
@@ -90,7 +90,26 @@ export default function FAQContent({ categories }: FAQContentProps) {
             {category.title}
           </button>
         ))}
-      </div>
+      </div> */}
+
+      <div className="flex md:hidden gap-2 overflow-x-auto pb-1">
+  {categories.map((category, index) => (
+    <button
+      key={category.id}
+      onClick={() => {
+        setActiveTabId(category.id);
+        setOpenInCol1(null);
+        setOpenInCol2(null);
+      }}
+      className={`flex-shrink-0 font-[poppins] px-3 py-2 text-xs rounded-t-xl transition whitespace-nowrap ${
+        activeTabId === category.id ? "text-[#1A1A1A] font-semibold" : "text-[#64748B] font-normal border-t border-l border-r border-[#CBD5E1] "
+      }`}
+      style={{ backgroundColor: activeTabId === category.id ? buttonBgColors[index] : "transparent" }}
+    >
+      {category.title}
+    </button>
+  ))}
+</div>
 
       <div className="hidden md:flex gap-4 flex">
         {categories.map((category, index) => (
@@ -101,7 +120,7 @@ export default function FAQContent({ categories }: FAQContentProps) {
               setOpenInCol1(null);
               setOpenInCol2(null);
             }}
-            className={`px-6 lg:px-6 font-[poppins] py-2 lg:py-3 text-sm md:text-base transition rounded-t-xl ${
+            className={`flex-shrink-0 font-[poppins] px-6 py-4 text-xs rounded-t-xl transition whitespace-nowrap ${
               activeTabId === category.id ? "text-[#1A1A1A] font-semibold" : "text-[#64748B] font-normal border-t border-l border-r border-[#CBD5E1]"
             }`}
             style={{ backgroundColor: activeTabId === category.id ? buttonBgColors[index] : "transparent" }}
@@ -111,7 +130,7 @@ export default function FAQContent({ categories }: FAQContentProps) {
         ))}
       </div>
 
-      <div className="mt-10 md:mt-0 relative flex flex-col gap-10 pt-10 pb-20 justify-center items-center md:rounded-tr-3xl md:rounded-br-3xl md:rounded-bl-3xl overflow-hidden">
+      <div className=" md:mt-0 relative flex flex-col gap-10 pt-10 pb-20 justify-center items-center md:rounded-tr-3xl md:rounded-br-3xl md:rounded-bl-3xl overflow-hidden">
         {/* Use non-negative z-index to avoid being hidden behind parent backgrounds on some pages */}
         <img src={bg} alt="gradient" className="absolute top-0 left-0 w-full h-full object-cover z-0" />
         <div className="relative z-10 text-center text-2xl font-semibold text-[#1A1A1A]">{activeCategory?.title}</div>

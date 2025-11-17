@@ -3525,7 +3525,7 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* Featured Image Upload */}
-                      <div className="md:col-span-2">
+                      <div className="md:col-span-2 mt-1">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Featured Image{" "}
                           <span className="text-gray-500 text-xs">
@@ -3585,7 +3585,7 @@ const UserProfilePage = () => {
                                 />
                               </div> */}
 
-                      <div className="md:col-span-2">
+                      <div className="md:col-span-2 mt-2">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Services Offered
                         </label>
@@ -3722,7 +3722,7 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* Tags Field */}
-                      <div className="md:col-span-2">
+                      <div className="md:col-span-2 mt-2">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Tags
                           {/* <span className="text-red-500">*</span> */}
@@ -3755,32 +3755,31 @@ const UserProfilePage = () => {
                         </div>
                       </div>
 
-                      {/* Notify Email */}
-                      <div className="md:col-span-2">
+                      {/* Notify Email 
+                      <div className="md:col-span-2 mt-2">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Notify Email
-                          {/* <span className="text-red-500">*</span> */}
+                          {/* <span className="text-red-500">*</span> 
                         </label>
                         <input
-                          type="email"
-                          placeholder="Enter Your Notify Email"
-                          {...publicProfileForm.register("notifyEmail", {
-                            required: "Email is required",
-                            pattern: {
-                              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                              message: "Enter a valid email",
-                            },
-                          })}
-                          className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                            publicProfileForm.formState.errors.notifyEmail
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-xl focus:outline-none focus:ring-2 ${
-                            publicProfileForm.formState.errors.notifyEmail
-                              ? "focus:ring-red-500"
-                              : "focus:ring-purple-500"
-                          }`}
-                        />
+  type="email"
+  placeholder="Enter Your Notify Email"
+  {...publicProfileForm.register("notifyEmail", {
+    required: "Email is required",
+    pattern: {
+      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      message: "Enter a valid email",
+    },
+  })}
+  className={`w-full h-[41px] px-4 py-2 border bg-white placeholder:text-[#9CA3AF] text-[14px]
+    ${publicProfileForm.formState.errors.notifyEmail ? "border-red-500" : "border-gray-300"}
+    rounded-xl focus:outline-none focus:ring-2 
+    ${
+      publicProfileForm.formState.errors.notifyEmail
+        ? "focus:ring-red-500"
+        : "focus:ring-purple-500"
+    }`}
+/>
                         {publicProfileForm.formState.errors.notifyEmail && (
                           <p className="text-sm text-red-500 mt-1">
                             {
@@ -3789,7 +3788,9 @@ const UserProfilePage = () => {
                             }
                           </p>
                         )}
-                      </div>
+                      </div>*/}
+
+
                     </div>
                     <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                       <Button
