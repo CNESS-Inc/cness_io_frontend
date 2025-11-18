@@ -130,6 +130,9 @@ export default function UserProfileView() {
     practiceId: string | null;
   }>({ isOpen: false, practiceId: null });
   const [openSignup, setOpenSignup] = useState(false);
+  const [isFriendLoading, setIsFriendLoading] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
+  const [isAcceptRejectLoading, setIsAcceptRejectLoading] = useState(false);
 
   const token = localStorage.getItem("jwt");
 
@@ -192,6 +195,7 @@ export default function UserProfileView() {
             isLiked: practice.is_liked || false,
             commentsCount: practice.total_comment_count || 0,
             status: practice.status,
+            if_following: practice.if_following,
           })
         );
         setmineBestPractices(transformedCompanies);
@@ -345,6 +349,9 @@ export default function UserProfileView() {
   // };
 
   const handleFollow = async (userId: string) => {
+    if (isFollowLoading) return; // Prevent multiple clicks
+
+    setIsFollowLoading(true);
     try {
       const formattedData = {
         following_id: userId,
@@ -356,10 +363,15 @@ export default function UserProfileView() {
       });
     } catch (error) {
       console.error("Error fetching selection details:", error);
+    } finally {
+      setIsFollowLoading(false);
     }
   };
 
   const handleFriend = async (userId: string) => {
+    if (isFriendLoading) return; // Prevent multiple clicks
+
+    setIsFriendLoading(true);
     try {
       // Case 1: No existing connection or pending request - Send new connection request
       if (
@@ -429,6 +441,8 @@ export default function UserProfileView() {
         type: "error",
         duration: 3000,
       });
+    } finally {
+      setIsFriendLoading(false);
     }
   };
 
@@ -630,6 +644,7 @@ export default function UserProfileView() {
         });
 
         await fetchFollowBestPractices();
+        await fetchMineBestPractices();
       } else {
         console.warn("Unexpected status code:", res?.success?.statusCode);
       }
@@ -642,6 +657,7 @@ export default function UserProfileView() {
       });
     }
   };
+  
 
   //bestpractices props
   {
@@ -711,6 +727,10 @@ export default function UserProfileView() {
   }
 
   const handleAcceptRequest = async (userId: string) => {
+    if (isAcceptRejectLoading) return;
+
+    setIsAcceptRejectLoading(true);
+
     try {
       const formattedData = { friend_id: userId };
       await AcceptFriendRequest(formattedData);
@@ -733,10 +753,15 @@ export default function UserProfileView() {
         type: "error",
         duration: 3000,
       });
+    } finally {
+      setIsAcceptRejectLoading(false);
     }
   };
 
   const handleRejectRequest = async (userId: string) => {
+    if (isAcceptRejectLoading) return;
+
+    setIsAcceptRejectLoading(true);
     try {
       const formattedData = { friend_id: userId };
       await RejectFriendRequest(formattedData);
@@ -759,6 +784,8 @@ export default function UserProfileView() {
         type: "error",
         duration: 3000,
       });
+    } finally {
+      setIsAcceptRejectLoading(false);
     }
   };
 
@@ -798,7 +825,7 @@ export default function UserProfileView() {
         <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
       </button>
       {/* Banner */}
-      <div className="w-full h-[180px] sm:h-[220px] md:h-[260px] lg:h-[300px] xl:h-[320px] rounded-[8px]">
+      <div className="w-full h-[180px] sm:h-[220px] md:h-[260px] lg:h-[300px] xl:h-80 rounded-lg">
         <img
           src={
             !userDetails?.profile_banner ||
@@ -810,14 +837,14 @@ export default function UserProfileView() {
               : userDetails?.profile_banner
           }
           alt="Profile Banner"
-          className="w-full h-full object-cover rounded-[8px]"
+          className="w-full h-full object-cover rounded-lg"
         />
       </div>
 
-      <div className="w-full flex flex-col lg:flex-row justify-between gap-[24px] bg-white">
+      <div className="w-full flex flex-col lg:flex-row justify-between gap-6 bg-white">
         <div className="relative w-full lg:w-[35%] xl:w-[25%] ms-5">
           <div className="w-full -mt-[70px] sm:-mt-[90px] md:-mt-[110px] lg:-mt-[120px]">
-            <div className="rounded-[10px] p-[6px] bg-white object-cover shadow w-[150px] lg:w-full h-[110px] sm:h-[140px] md:h-[190px] lg:h-[250px] 2xl:h-[320px]">
+            <div className="rounded-[10px] p-1.5 bg-white object-cover shadow w-[150px] lg:w-full h-[110px] sm:h-[140px] md:h-[190px] lg:h-[250px] 2xl:h-80">
               <img
                 src={
                   !userDetails?.profile_picture ||
@@ -837,18 +864,18 @@ export default function UserProfileView() {
                 }}
               ></img>
             </div>
-            <div className="w-full px-3 py-[10px] mt-5 pe-14 lg:pe-0">
+            <div className="w-full px-3 py-2.5 mt-5 pe-14 lg:pe-0">
               <h2 className="font-['Poppins'] font-semibold text-[24px] leading-[21px] text-[#000000]">
                 {userDetails?.first_name} {userDetails?.last_name}
               </h2>
               <p
-                className="mt-3 font-['Open_Sans'] font-semibold text-[16px] leading-[24px] 
-             bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
+                className="mt-3 font-['Open_Sans'] font-semibold text-[16px] leading-6 
+             bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
               >
                 {/* {userDetails?.public_title} */}
                 {/* {publicUserDetails?.title} */}
               </p>
-              <p className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px] text-[#64748B] max-w-full md:max-w-[500px] break-words">
+              <p className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px] text-[#64748B] max-w-full md:max-w-[500px] wrap-break-word">
                 {isAboutExpanded
                   ? userDetails?.about_us
                   : truncateAboutText(userDetails?.about_us || "", 150)}
@@ -867,7 +894,7 @@ export default function UserProfileView() {
                 userDetails?.country?.name) && (
                 <div className="mt-3 font-['Open_Sans'] font-normal text-[16px] leading-[100%] text-[#64748B]">
                   <div className="flex items-start gap-1 text-[#64748B] text-sm">
-                    <div className="pt-[4px] flex-shrink-0 flex items-center">
+                    <div className="pt-1 shrink-0 flex items-center">
                       <FaLocationDot className="w-3 h-3" stroke="#64748B" />
                     </div>
                     <div className="leading-snug">
@@ -903,7 +930,6 @@ export default function UserProfileView() {
               <div className="pt-4 pb-10 space-y-2 border-b border-[#E5E5E5]">
                 {!isOwnProfile && (
                   <button
-                    // onClick={() => handleFollow(userDetails?.user_id)}
                     onClick={() => {
                       if (token) {
                         handleFollow(userDetails?.user_id);
@@ -911,17 +937,31 @@ export default function UserProfileView() {
                         setOpenSignup(true);
                       }
                     }}
+                    disabled={isFollowLoading}
                     className={`w-full h-9 rounded-full 
-                    bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
+                    bg-linear-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF] 
                     font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-                    text-white align-middle
+                    text-white align-middle flex items-center justify-center gap-2
                     ${
                       userDetails?.is_bp_following
                         ? "bg-gray-200 text-gray-800"
                         : "bg-[#7C81FF] text-white"
-                    } hover:bg-indigo-600 hover:text-white`}
+                    } hover:bg-indigo-600 hover:text-white disabled:opacity-70 disabled:cursor-not-allowed`}
                   >
-                    {userDetails?.is_bp_following ? "Resonating" : "+ Resonate"}
+                    {isFollowLoading ? (
+                      <>
+                        {/* <LoadingSpinner /> */}
+                        {userDetails?.is_bp_following
+                          ? "Unfollowing..."
+                          : "Following..."}
+                      </>
+                    ) : (
+                      <>
+                        {userDetails?.is_bp_following
+                          ? "Resonating"
+                          : "+ Resonate"}
+                      </>
+                    )}
                   </button>
                 )}
 
@@ -941,9 +981,6 @@ export default function UserProfileView() {
                     {userDetails?.reciver_request_status === "PENDING" ? (
                       <div className="flex gap-2">
                         <button
-                          // onClick={() =>
-                          //   handleAcceptRequest(userDetails?.user_id)
-                          // }
                           onClick={() => {
                             if (token) {
                               handleAcceptRequest(userDetails?.user_id);
@@ -951,17 +988,19 @@ export default function UserProfileView() {
                               setOpenSignup(true);
                             }
                           }}
+                          disabled={isAcceptRejectLoading}
                           className="flex-1 h-9 rounded-full bg-green-500 
                             font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-                            text-white flex items-center justify-center gap-2 hover:bg-green-600"
+                            text-white flex items-center justify-center gap-2 hover:bg-green-600 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
+                          {/* {isAcceptRejectLoading ? (
+                            <LoadingSpinner />
+                          ) : ( */}
                           <UserRoundPlus className="w-4 h-4" />
-                          Accept
+                          {/* )} */}
+                          {isAcceptRejectLoading ? "Accepting..." : "Accept"}
                         </button>
                         <button
-                          // onClick={() =>
-                          //   handleRejectRequest(userDetails?.user_id)
-                          // }
                           onClick={() => {
                             if (token) {
                               handleRejectRequest(userDetails?.user_id);
@@ -969,18 +1008,22 @@ export default function UserProfileView() {
                               setOpenSignup(true);
                             }
                           }}
+                          disabled={isAcceptRejectLoading}
                           className="flex-1 h-9 rounded-full bg-red-500 
                             font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-                            text-white flex items-center justify-center gap-2 hover:bg-red-600"
+                            text-white flex items-center justify-center gap-2 hover:bg-red-600 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
+                          {/* {isAcceptRejectLoading ? (
+                            <LoadingSpinner />
+                          ) : ( */}
                           <UserRoundMinus className="w-4 h-4" />
-                          Reject
+                          {/* )} */}
+                          {isAcceptRejectLoading ? "Rejecting..." : "Reject"}
                         </button>
                       </div>
                     ) : (
                       /* Show regular Connect/Requested/Connected button for other cases */
                       <button
-                        // onClick={() => handleFriend(userDetails?.user_id)}
                         onClick={() => {
                           if (token) {
                             handleFriend(userDetails?.user_id);
@@ -988,7 +1031,10 @@ export default function UserProfileView() {
                             setOpenSignup(true);
                           }
                         }}
-                        disabled={userDetails?.user_id === loggedInUserID}
+                        disabled={
+                          userDetails?.user_id === loggedInUserID ||
+                          isFriendLoading
+                        }
                         className={`w-full h-9 rounded-full border border-[#ECEEF2] 
                           font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
                           flex items-center justify-center gap-2
@@ -1002,16 +1048,31 @@ export default function UserProfileView() {
                                 userDetails?.friend_request_status === "PENDING"
                               ? "bg-yellow-100 text-yellow-700"
                               : "bg-[#FFFFFF] text-[#0B3449]"
-                          }`}
+                          } disabled:opacity-70 disabled:cursor-not-allowed`}
                       >
-                        <UserRoundPlus className="w-4 h-4" />
-                        {userDetails?.if_friend &&
-                        userDetails?.friend_request_status === "ACCEPT"
-                          ? "Connected"
-                          : !userDetails?.if_friend &&
-                            userDetails?.friend_request_status === "PENDING"
-                          ? "Requested..."
-                          : "Connect"}
+                        {isFriendLoading ? (
+                          <>
+                            {/* <LoadingSpinner /> */}
+                            {userDetails?.if_friend &&
+                            userDetails?.friend_request_status === "ACCEPT"
+                              ? "Disconnecting..."
+                              : !userDetails?.if_friend &&
+                                userDetails?.friend_request_status === "PENDING"
+                              ? "Cancelling..."
+                              : "Connecting..."}
+                          </>
+                        ) : (
+                          <>
+                            <UserRoundPlus className="w-4 h-4" />
+                            {userDetails?.if_friend &&
+                            userDetails?.friend_request_status === "ACCEPT"
+                              ? "Connected"
+                              : !userDetails?.if_friend &&
+                                userDetails?.friend_request_status === "PENDING"
+                              ? "Requested..."
+                              : "Connect"}
+                          </>
+                        )}
                       </button>
                     )}
                   </div>
@@ -1117,7 +1178,7 @@ export default function UserProfileView() {
                           <a
                             key={platform.key}
                             href={userDetails.social_links[platform.key]}
-                            className="flex items-center justify-between w-full h-[45px] border border-[#ECEEF2] rounded-lg px-3 py-2 gap-[10px] hover:bg-gray-50"
+                            className="flex items-center justify-between w-full h-[45px] border border-[#ECEEF2] rounded-lg px-3 py-2 gap-2.5 hover:bg-gray-50"
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1164,7 +1225,7 @@ export default function UserProfileView() {
                     (interest: any, index: number) => (
                       <span
                         key={interest.id || index}
-                        className="px-[16px] py-[7px] rounded-[30px] border border-[#CBD5E1] 
+                        className="px-4 py-[7px] rounded-[30px] border border-[#CBD5E1] 
                          bg-[#FCFCFD] font-['Open_Sans'] font-normal text-[12px] 
                          leading-[100%] tracking-[0px] text-[#64748B]"
                       >
@@ -1195,7 +1256,7 @@ export default function UserProfileView() {
                   {userDetails?.professions?.map((pro: any, index: number) => (
                     <span
                       key={pro.id || index}
-                      className="px-[16px] py-[7px] rounded-[30px] border border-[#CBD5E1] 
+                      className="px-4 py-[7px] rounded-[30px] border border-[#CBD5E1] 
                    bg-[#FCFCFD] font-['Open_Sans'] font-normal text-[12px] 
                    leading-[100%] tracking-[0px] text-[#64748B]"
                     >
@@ -1219,13 +1280,13 @@ export default function UserProfileView() {
                 onClick={() => setActiveTab("about")}
                 className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${
                   activeTab === "about"
-                    ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
+                    ? "font-bold bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
                     : "font-normal text-[#64748B]"
                 }`}
               >
                 About Me
                 {activeTab === "about" && (
-                  <span className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF]" />
+                  <span className="absolute -bottom-px left-0 right-0 h-0.5 bg-linear-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF]" />
                 )}
               </Button>
 
@@ -1233,13 +1294,13 @@ export default function UserProfileView() {
                 onClick={() => setActiveTab("best")}
                 className={`relative py-3 font-['Open_Sans'] text-[14px] leading-[100%] ${
                   activeTab === "best"
-                    ? "font-bold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
+                    ? "font-bold bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent"
                     : "font-normal text-[#64748B]"
                 }`}
               >
                 My Best Practices
                 {activeTab === "best" && (
-                  <span className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-gradient-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF]" />
+                  <span className="absolute -bottom-px left-0 right-0 h-0.5 bg-linear-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF]" />
                 )}
               </Button>
             </div>
@@ -1291,7 +1352,7 @@ export default function UserProfileView() {
                       <li key={edu.id}>
                         {/* Degree */}
                         <p
-                          className="font-['Open_Sans'] font-semibold text-[16px] leading-[20px] 
+                          className="font-['Open_Sans'] font-semibold text-[16px] leading-5 
                    tracking-[0px] text-[#000000] mt-2 "
                         >
                           {edu.degree}
@@ -1343,7 +1404,7 @@ export default function UserProfileView() {
                     {userDetails?.work_experience?.map((job: any) => (
                       <div key={job.id}>
                         {/* Position + Company */}
-                        <p className="font-['Open_Sans'] font-semibold text-[16px] leading-[20px] tracking-[0px] text-[#000000]">
+                        <p className="font-['Open_Sans'] font-semibold text-[16px] leading-5 tracking-[0px] text-[#000000]">
                           {job.position} {job.company && `at ${job.company}`}
                         </p>
 
@@ -1566,7 +1627,13 @@ export default function UserProfileView() {
                                 )}
                                 {/* Card content */}
                                 <div
-                                  onClick={() =>
+                                  onClick={(e) =>
+                                  {
+                                    if (
+                                      !(e.target as HTMLElement).closest(
+                                        ".follow"
+                                      )
+                                    ) {
                                     navigate(
                                       `/dashboard/bestpractices/${
                                         company.id
@@ -1577,7 +1644,8 @@ export default function UserProfileView() {
                                           isLiked: company.isLiked,
                                         },
                                       }
-                                    )
+                                    )}
+                                  }
                                   }
                                 >
                                   <CardHeader className="px-4 pt-4 pb-0 relative z-0">
@@ -1648,7 +1716,7 @@ export default function UserProfileView() {
                                       Overview
                                     </p>
 
-                                    <p className="text-sm text-gray-600 mb-2 leading-snug break-words whitespace-pre-line">
+                                    <p className="text-sm text-gray-600 mb-2 leading-snug wrap-break-word whitespace-pre-line">
                                       <span
                                         dangerouslySetInnerHTML={{
                                           __html: DOMPurify.sanitize(
@@ -1667,11 +1735,32 @@ export default function UserProfileView() {
                                           // onClick={(e) => toggleDescription(e, company.id)}
                                         >
                                           {/* {expandedDescriptions[company.id]
-                                  ? "Read Less"
-                                  : "Read More"} */}
+                                        ? "Read Less"
+                                        : "Read More"} */}
                                         </span>
                                       )}
                                     </p>
+                                    <div className="mb-2">
+                                      {company.if_following ? (
+                                      <button
+                                        className="w-full inline-block rounded-full bg-[#F396FF] px-4 py-2
+                font-opensans text-[14px] font-semibold text-white
+                shadow transition hover:bg-[#e885f5] follow"
+                                        onClick={()=>handleToggleFollow(company.id)}
+                                      >
+                                        Following
+                                      </button>
+                                    ) : (
+                                      <button
+                                        className="w-full rounded-full bg-[#7077FE] px-3 py-2
+                font-opensans text-[14px] font-semibold text-white
+                shadow hover:bg-[#5A61E8] transition follow"
+                                        onClick={()=>handleToggleFollow(company.id)}
+                                      >
+                                        Follow
+                                      </button>
+                                    )}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -1866,14 +1955,14 @@ export default function UserProfileView() {
                   <div className="mt-4 flex justify-center gap-2 w-full mx-auto place-items-center">
                     <PrimaryButton
                       className="px-6 py-2  whitespace-nowrap shrink-0
-                      !justify-center text-white shadow"
+                      justify-center! text-white shadow"
                       onClick={() => setActiveModal(true)}
                     >
                       Add Best Practice
                     </PrimaryButton>
                     <OutlinePill
                       className="px-6 py-2  whitespace-nowrap shrink-0
-                      !justify-center border border-gray-300 text-gray-600 hover:bg-gray-50"
+                      justify-center! border border-gray-300 text-gray-600 hover:bg-gray-50"
                       onClick={() => navigate("/dashboard/bestpractices")}
                     >
                       Explore Examples
@@ -1888,7 +1977,7 @@ export default function UserProfileView() {
                   </h2>
                   <PrimaryButton
                     className="mt-6 px-6 py-2 whitespace-nowrap shrink-0
-                      !justify-center border border-gray-300 text-gray-600 hover:bg-gray-50"
+                      justify-center! border border-gray-300 text-gray-600 hover:bg-gray-50"
                     // onClick={() => navigate("/dashboard/bestpractices")}
                     onClick={() => {
                       if (token) {
@@ -1906,7 +1995,7 @@ export default function UserProfileView() {
 
           {/* Member Since */}
           <div
-            className="pl-6 pb-12 font-['Open_Sans'] font-semibold text-[12px] leading-[20px] 
+            className="pl-6 pb-12 font-['Open_Sans'] font-semibold text-[12px] leading-5 
              tracking-[0px] text-[#000000]"
           >
             <p>

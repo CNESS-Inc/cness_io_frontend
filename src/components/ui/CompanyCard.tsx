@@ -139,7 +139,7 @@ export default function CompanyCard({
                 : indv_inspried // fallback if no level
             }
             alt={`${level || "CNESS"} Badge`}
-            className="absolute top-3 right-3 w-8 sm:w-[58px] h-[32px] object-contain z-1"
+            className="absolute top-3 right-3 w-8 sm:w-[58px] h-8 object-contain z-1"
           />
         )}
 
@@ -243,7 +243,7 @@ export default function CompanyCard({
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="bg-[#7077FE1A] text-[#7077FE] px-[26px] py-[6px] rounded-lg text-xs"
+                  className="bg-[#7077FE1A] text-[#7077FE] px-[26px] py-1.5 rounded-lg text-xs"
                 >
                   {tag}
                 </span>

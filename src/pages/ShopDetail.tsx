@@ -251,7 +251,7 @@ const ShopDetail: React.FC = () => {
               />
             )}
 
-            <div className="flex flex-col gap-[14px]">
+            <div className="flex flex-col gap-3.5">
               <h1 className="font-['open_sans'] font-bold text-[22px] leading-[29.96px] text-[#1A1A1A]">
                 {shop?.shop_name}
               </h1>
@@ -318,7 +318,7 @@ const ShopDetail: React.FC = () => {
           <button
             onClick={handleFollowToggle}
             disabled={isFollowLoading}
-            className="bg-[#7077FE] rounded-md px-5 py-[10px] flex items-center gap-[10px] h-12"
+            className="bg-[#7077FE] rounded-md px-5 py-2.5 flex items-center gap-2.5 h-12"
           >
             <img
               src="https://static.codia.ai/image/2025-10-24/xfP7JzOEXk.png"
@@ -351,13 +351,13 @@ const ShopDetail: React.FC = () => {
           )}
         </div>
 
-        <div className="bg-white rounded-[12px] shadow-[0px_4px_24px_rgba(0,0,0,0.1)] p-[30px_16px] flex flex-col gap-5 mt-8">
+        <div className="bg-white rounded-xl shadow-[0px_4px_24px_rgba(0,0,0,0.1)] p-[30px_16px] flex flex-col gap-5 mt-8">
           <div className="flex flex-col gap-[13px]">
             <h2 className="font-[poppins] font-semibold text-[18px] leading-[27px] text-black">
               About {shop?.shop_name}
             </h2>
 
-            <div className="rich-text-content font-['open_sans'] font-normal text-[16px] leading-[28px] text-[#1A1A1A]
+            <div className="rich-text-content font-['open_sans'] font-normal text-[16px] leading-7 text-[#1A1A1A]
                                [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
                                [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
                                [&_li]:my-1 [&_li]:pl-1
@@ -378,7 +378,7 @@ const ShopDetail: React.FC = () => {
                 <h3 className="font-[poppins] font-semibold text-[18px] leading-[27px] text-black">
                   Why choose {shop?.shop_name}?
                 </h3>
-                <div className="rich-text-content font-['open_sans'] font-normal text-[16px] leading-[28px] text-[#1A1A1A]
+                <div className="rich-text-content font-['open_sans'] font-normal text-[16px] leading-7 text-[#1A1A1A]
                                [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
                                [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
                                [&_li]:my-1 [&_li]:pl-1
@@ -418,7 +418,7 @@ const ShopDetail: React.FC = () => {
                 <h3 className="font-[poppins] font-semibold text-[18px] leading-[27px] text-black">
                   Our Philosophy
                 </h3>
-                <div className="rich-text-content font-['open_sans'] font-normal text-[16px] leading-[28px] text-[#1A1A1A]
+                <div className="rich-text-content font-['open_sans'] font-normal text-[16px] leading-7 text-[#1A1A1A]
                                [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
                                [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
                                [&_li]:my-1 [&_li]:pl-1
@@ -440,7 +440,7 @@ const ShopDetail: React.FC = () => {
           <div className="flex justify-between items-center gap-7">
             <div className="flex items-center gap-7">
               {shop?.based_on?.country_name && (
-                <div className="flex items-center gap-[6px]">
+                <div className="flex items-center gap-1.5">
                   <img
                     src="https://static.codia.ai/image/2025-10-24/aeJ6oQZQe1.png"
                     alt="Location Icon"
@@ -456,7 +456,7 @@ const ShopDetail: React.FC = () => {
               )}
 
               {shop?.languages_supported && shop.languages_supported.length > 0 && (
-                <div className="flex items-center gap-[6px]">
+                <div className="flex items-center gap-1.5">
                   <img
                     src="https://static.codia.ai/image/2025-10-24/CWY7KgB5yL.png"
                     alt="Globe Icon"
@@ -472,7 +472,7 @@ const ShopDetail: React.FC = () => {
               )}
 
               {shop?.since_date && (
-                <div className="flex items-center gap-[6px]">
+                <div className="flex items-center gap-1.5">
                   <img
                     src="https://static.codia.ai/image/2025-10-24/BxwyA2MPUa.png"
                     alt="Calendar Icon"
@@ -510,7 +510,7 @@ const ShopDetail: React.FC = () => {
 
         {/*team menbers*/}
         {shop?.team_members && shop.team_members.length > 0 && (
-          <div className="bg-white rounded-[12px] shadow-[0px_4px_24px_rgba(0,0,0,0.1)] p-[20px_16px] flex flex-col gap-[10px] mt-8">
+          <div className="bg-white rounded-xl shadow-[0px_4px_24px_rgba(0,0,0,0.1)] p-[20px_16px] flex flex-col gap-2.5 mt-8">
             <h2 className="font-[poppins] font-semibold text-[20px] leading-[30px] text-[#242E3A]">
               Our Team
             </h2>
@@ -526,7 +526,7 @@ const ShopDetail: React.FC = () => {
                     <img
                       src={member.profile_image || "https://static.codia.ai/image/2025-10-24/Zf5XeKUZ30.png"}
                       alt={member.name}
-                      className="w-[40px] h-[40px] rounded-full object-cover"
+                      className="w-10 h-10 rounded-full object-cover"
                     />
                     <span className="font-['open_sans'] text-[12px] text-[#7077FE]">
                       {member.name}
@@ -542,7 +542,7 @@ const ShopDetail: React.FC = () => {
         )}
 
 
-        <div className="bg-white rounded-[12px] shadow-[0px_4px_24px_rgba(0,0,0,0.1)] p-[20px_16px] flex flex-col gap-[10px] mt-8">
+        <div className="bg-white rounded-xl shadow-[0px_4px_24px_rgba(0,0,0,0.1)] p-[20px_16px] flex flex-col gap-2.5 mt-8">
           <h2 className="font-[poppins] font-semibold text-[20px] leading-[30px] text-[#242E3A]">
             Store policy
           </h2>
@@ -550,11 +550,11 @@ const ShopDetail: React.FC = () => {
           <div className="flex items-center gap-4">
             {policies.map((policy, index) => (
               <div key={index} className="bg-white border border-[#CBD5E1] rounded-[20px] p-[20px_16px] flex flex-col gap-2 flex-1">
-                <div className="flex items-center gap-[10px]">
+                <div className="flex items-center gap-2.5">
                   <img
                     src={policy.icon}
                     alt={policy.title}
-                    className="w-[40px] h-[40px]"
+                    className="w-10 h-10"
                   />
                   <h3 className="font-open-sans font-semibold text-[18px] leading-[24.51px] text-[#1A1A1A]">
                     {policy.title}
