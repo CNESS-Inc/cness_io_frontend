@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Music,
   Play,
@@ -8,7 +8,8 @@ import {
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // ✅ import navigate hook
+import { useNavigate } from "react-router-dom";
+import { GetSellerOrders } from "../Common/ServerAPI"; // <-- PATH CHECK KAR LENA
 
 interface OrderRowProps {
   productNo: string;
@@ -52,7 +53,6 @@ const getCategoryIcon = (category: string) => {
   }
 };
 
-// ✅ Add onClick prop so we can trigger navigation when row is clicked
 const OrderRow: React.FC<OrderRowProps & { onClick: () => void }> = ({
   productNo,
   thumbnail,
@@ -69,7 +69,9 @@ const OrderRow: React.FC<OrderRowProps & { onClick: () => void }> = ({
     onClick={onClick}
     className="border-b border-gray-100 hover:bg-[#F9FAFB] transition cursor-pointer"
   >
-    <td className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] text-[#1A1A1A]">{productNo}</td>
+    <td className="py-5 px-6 font-['Open_Sans'] font-semibold text-[16px] text-[#1A1A1A]">
+      {productNo}
+    </td>
     <td className="py-5 px-6">
       <img
         src={thumbnail}
@@ -77,22 +79,32 @@ const OrderRow: React.FC<OrderRowProps & { onClick: () => void }> = ({
         className="w-[80px] h-[48px] rounded-md object-cover border border-gray-200"
       />
     </td>
-    <td className="py-5 px-6 font-semibold text-[16px] text-[#1A1A1A]">{orderId}</td>
+    <td className="py-5 px-6 font-semibold text-[16px] text-[#1A1A1A]">
+      {orderId}
+    </td>
     <td className="py-5 px-6 font-semibold text-[16px] text-[#1A1A1A] truncate max-w-[250px]">
       {productName}
     </td>
-    <td className="py-5 px-6 font-semibold text-[16px] text-[#1A1A1A]">{price}</td>
+    <td className="py-5 px-6 font-semibold text-[16px] text-[#1A1A1A]">
+      {price}
+    </td>
     <td className="py-5 px-6">
       <div className="flex items-center gap-2 font-semibold text-[16px] text-[#1A1A1A]">
         {getCategoryIcon(category)}
         <span>{category}</span>
       </div>
     </td>
-    <td className="py-5 px-6 font-semibold text-[16px] text-[#1A1A1A]">{buyerName}</td>
-    <td className="py-5 px-6 font-semibold text-[16px] text-[#1A1A1A]">{dateOfPurchase}</td>
+    <td className="py-5 px-6 font-semibold text-[16px] text-[#1A1A1A]">
+      {buyerName}
+    </td>
+    <td className="py-5 px-6 font-semibold text-[16px] text-[#1A1A1A]">
+      {dateOfPurchase}
+    </td>
     <td className="py-5 px-6">
       <span
-        className={`px-4 py-1.5 rounded-full text-xs font-semibold ${getStatusStyle(status)}`}
+        className={`px-4 py-1.5 rounded-full text-xs font-semibold ${getStatusStyle(
+          status
+        )}`}
       >
         {status}
       </span>
@@ -100,59 +112,57 @@ const OrderRow: React.FC<OrderRowProps & { onClick: () => void }> = ({
   </tr>
 );
 
-const initialOrders: OrderRowProps[] = [
-  {
-    productNo: "P0001",
-    thumbnail: "https://static.codia.ai/image/2025-10-29/MqPwkBCmiC.png",
-    orderId: "76899",
-    productName: "Hatha Yoga – Mindful movement and deep breathing practice",
-    price: "$1259",
-    category: "Course",
-    buyerName: "Jayson Jaccob",
-    dateOfPurchase: "12/12/2024",
-    status: "Completed",
-  },
-  {
-    productNo: "P0002",
-    thumbnail: "https://static.codia.ai/image/2025-10-29/MqPwkBCmiC.png",
-    orderId: "76899",
-    productName: "Relaxing Electric Guitar – Soft instrumental melodies",
-    price: "$200",
-    category: "Music",
-    buyerName: "Jayson Jaccob",
-    dateOfPurchase: "02/12/2024",
-    status: "Completed",
-  },
-  {
-    productNo: "P0003",
-    thumbnail: "https://static.codia.ai/image/2025-10-29/MqPwkBCmiC.png",
-    orderId: "76899",
-    productName: "Podcast Talk – Modern mindset with experts",
-    price: "$200",
-    category: "Podcast",
-    buyerName: "Satish",
-    dateOfPurchase: "12/12/2024",
-    status: "Refunded",
-  },
-  {
-    productNo: "P0004",
-    thumbnail: "https://static.codia.ai/image/2025-10-29/MqPwkBCmiC.png",
-    orderId: "76899",
-    productName: "Podcast Series – Creative Thinking Methods",
-    price: "$200",
-    category: "Podcast",
-    buyerName: "Neil",
-    dateOfPurchase: "12/01/2024",
-    status: "Cancelled",
-  },
-];
-
 const OrderList: React.FC = () => {
-  const [orders] = useState(initialOrders);
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
-  const navigate = useNavigate(); // ✅ initialize navigation
+  const [orders, setOrders] = useState<OrderRowProps[]>([]);
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: "asc" | "desc";
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // sorting logic stays same
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await GetSellerOrders();
+        console.log("SELLER ORDERS API RESPONSE:", res);
+
+        // 👇 Postman response: data -> data -> orders
+        const apiOrders = res?.data?.data?.orders || [];
+
+        const formatted = apiOrders.map((o: any, index: number) => ({
+          productNo: "P" + String(index + 1).padStart(4, "0"),
+          thumbnail:
+            o.product_thumbnail ??
+            "https://via.placeholder.com/80x48?text=No+Image",
+          orderId: o.order_id,
+          productName: o.product_name,
+          price: "$" + o.price,
+          category: o.category_name,
+          buyerName: o.buyer_name,
+          dateOfPurchase: new Date(
+            o.date_of_purchase
+          ).toLocaleDateString(),
+          status: "Completed", // abhi UI ke liye fixed, baad me map kar sakte hain
+        }));
+
+        setOrders(formatted);
+      } catch (err: any) {
+        console.error("ORDER FETCH ERROR:", err);
+        setError(err?.message || "Failed to load orders");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadOrders();
+  }, []);
+
   const sortedOrders = useMemo(() => {
     let sorted = [...orders];
     if (sortConfig) {
@@ -175,19 +185,6 @@ const OrderList: React.FC = () => {
             : dateB.getTime() - dateA.getTime();
         }
 
-        if (key === "status") {
-          const orderPriority: Record<string, number> = {
-            Completed: 1,
-            Refunded: 2,
-            Cancelled: 3,
-          };
-          const aPriority = orderPriority[a.status] || 99;
-          const bPriority = orderPriority[b.status] || 99;
-          return sortConfig.direction === "asc"
-            ? aPriority - bPriority
-            : bPriority - aPriority;
-        }
-
         const valA = String(a[key] ?? "").toLowerCase();
         const valB = String(b[key] ?? "").toLowerCase();
         if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
@@ -206,10 +203,9 @@ const OrderList: React.FC = () => {
     setSortConfig({ key, direction });
   };
 
-  // ✅ handle click navigation
-const handleRowClick = (order: OrderRowProps) => {
-  navigate(`/dashboard/orderlist/${order.productNo}`, { state: order });
-};
+  const handleRowClick = (order: OrderRowProps) => {
+    navigate(`/dashboard/orderlist/${order.productNo}`, { state: order });
+  };
 
   const renderSortIcons = (key: string) => {
     const isActive = sortConfig?.key === key;
@@ -220,11 +216,21 @@ const handleRowClick = (order: OrderRowProps) => {
           className={`w-3 h-3 ${isActive && isAsc ? "text-black" : "text-gray-400"}`}
         />
         <ChevronDown
-          className={`w-3 h-3 ${isActive && !isAsc ? "text-black" : "text-gray-400"}`}
+          className={`w-3 h-3 ${
+            isActive && !isAsc ? "text-black" : "text-gray-400"
+          }`}
         />
       </div>
     );
   };
+
+  if (loading) {
+    return <div className="p-6">Loading orders...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="space-y-4">
@@ -264,13 +270,21 @@ const handleRowClick = (order: OrderRowProps) => {
           </thead>
 
           <tbody>
-            {sortedOrders.map((order, index) => (
-              <OrderRow
-                key={index}
-                {...order}
-                onClick={() => handleRowClick(order)} // ✅ make row clickable
-              />
-            ))}
+            {sortedOrders.length === 0 ? (
+              <tr>
+                <td className="py-6 px-6 text-center text-gray-500" colSpan={9}>
+                  No orders found.
+                </td>
+              </tr>
+            ) : (
+              sortedOrders.map((order, index) => (
+                <OrderRow
+                  key={index}
+                  {...order}
+                  onClick={() => handleRowClick(order)}
+                />
+              ))
+            )}
           </tbody>
         </table>
       </div>
