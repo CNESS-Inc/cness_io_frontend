@@ -408,13 +408,13 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   return (
     <main className=" min-h-screen bg-white">
       <div
-        className={` transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+        className={` transition-all duration-300 ${isMobileNavOpen ? "md:ml-64" : "md:ml-0"
           } pt-[30px] px-6`}
       >
         <div className="bg-white rounded-xl shadow-md p-4">
           <div className="flex items-center space-x-8">
             {/* Product Image */}
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <img
                 src={product.thumbnail_url || "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png"}
                 alt={product.product_name}
@@ -512,7 +512,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             </div>
 
             {/* Wishlist Button */}
-            <div className="flex-shrink-0 relative -top-30">
+            <div className="shrink-0 relative -top-30">
               <button
                 onClick={handleWishlistToggle}
                 disabled={isAddingToWishlist}
@@ -659,7 +659,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                           rounded-lg border border-gray-300 bg-white
                           overflow-hidden
                           transition-all duration-500 ease-out
-                          hover:w-[160px] w-[60px]
+                          hover:w-40 w-[60px]
                           shadow-sm
                         "
                       >
@@ -705,7 +705,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
               </h2>
               <div className="border border-gray-200 rounded-lg p-4 bg-[#F9FAFB]">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-[#7077FE]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-16 h-16 bg-[#7077FE]/10 rounded-lg flex items-center justify-center shrink-0">
                     <PlayCircle className="w-8 h-8 text-[#7077FE]" />
                   </div>
                   <div className="flex-1">
@@ -731,7 +731,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
         {product?.category?.slug !== 'video' && (
           <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mt-6 ">
-            <h2 className="font-[Poppins] font-semibold text-[20px] sm:text-[22px] font-semibold text-[#242E3A] mb-6 ">
+            <h2 className="font-[Poppins] text-[20px] sm:text-[22px] font-semibold text-[#242E3A] mb-6 ">
               {product?.category?.slug === 'music' ? 'Music' :
                 product?.category?.slug === 'podcast' ? 'Podcast' :
                   product?.category?.slug === 'ebook' ? 'Ebook' :

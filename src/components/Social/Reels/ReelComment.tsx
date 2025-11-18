@@ -138,7 +138,7 @@ const ReelComment = (props: any) => {
                 className={`font-medium px-4 py-2 rounded-r-md transition ${
                   postLoading
                     ? "bg-gray-300 cursor-not-allowed"
-                    : "bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
+                    : "bg-linear-to-r from-indigo-500 to-purple-500 text-white"
                 }`}
                 disabled={isLoading}
               >

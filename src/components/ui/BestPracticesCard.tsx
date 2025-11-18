@@ -1,4 +1,4 @@
-//import React from "react";
+import React, { useState } from "react";
 
 type BestPracticeCardProps = {
   id?: string;
@@ -10,7 +10,7 @@ type BestPracticeCardProps = {
   description: string;
   link?: string;
   ifFollowing?: boolean;
-  onToggleFollow?: (id: string) => void;
+  onToggleFollow?: (id: string) => void | Promise<void>; // Allow async functions
 };
 
 export default function BestPracticeCard({
@@ -25,12 +25,28 @@ export default function BestPracticeCard({
   ifFollowing,
   onToggleFollow
 }: BestPracticeCardProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleToggleFollow = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!onToggleFollow || isLoading) return;
+    
+    setIsLoading(true);
+    try {
+      await onToggleFollow(id || "");
+    } catch (error) {
+      console.error("Error toggling follow:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div
       className="
         flex flex-col cursor-pointer
-        rounded-[12px] border border-[#ECEEF2] bg-white
+        rounded-xl border border-[#ECEEF2] bg-white
         pt-3 pr-3 pb-6 pl-3
         gap-2.5
         shadow-sm hover:shadow-md transition-shadow h-full
@@ -54,7 +70,7 @@ export default function BestPracticeCard({
       </div>
 
       {/* Cover Image (keeps proportion, fits different widths) */}
-      <div className="w-full overflow-hidden rounded-[8px] h-[250px] xl:h-[150px] 2xl:h-[200px] bg-gray-100">
+      <div className="w-full overflow-hidden rounded-lg h-[250px] xl:h-[150px] 2xl:h-[200px] bg-gray-100">
         <img
           src={coverImage || "/placeholder.png"}
           alt={title}
@@ -74,7 +90,7 @@ export default function BestPracticeCard({
         </h4>
 
         {/* Clamp to keep row heights tidy; remove if you want full text */}
-        <p className="mt-1 text-[12px] sm:text-[13px] text-[#475467] leading-[18px] sm:leading-[20px] line-clamp-1">
+        <p className="mt-1 text-[12px] sm:text-[13px] text-[#475467] leading-[18px] sm:leading-5 line-clamp-1">
           {description}
         </p>
 
@@ -89,27 +105,53 @@ export default function BestPracticeCard({
 
         {onToggleFollow && (
           <div className="flex justify-end mt-auto pt-3">
-            {ifFollowing ? (
+            {isLoading ? (
+              // Loading state
+              <button
+                disabled
+                className="w-full inline-flex items-center justify-center rounded-full bg-gray-300 px-4 py-2
+                font-opensans text-[14px] font-semibold text-gray-500
+                shadow transition cursor-not-allowed"
+              >
+                <svg 
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500" 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  fill="none" 
+                  viewBox="0 0 24 24"
+                >
+                  <circle 
+                    className="opacity-25" 
+                    cx="12" 
+                    cy="12" 
+                    r="10" 
+                    stroke="currentColor" 
+                    strokeWidth="4"
+                  ></circle>
+                  <path 
+                    className="opacity-75" 
+                    fill="currentColor" 
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Loading...
+              </button>
+            ) : ifFollowing ? (
+              // Following state
               <button
                 className="w-full inline-block rounded-full bg-[#F396FF] px-4 py-2
                 font-opensans text-[14px] font-semibold text-white
-                shadow transition"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleFollow(id? id : "");
-                }}
+                shadow transition hover:bg-[#e885f5]"
+                onClick={handleToggleFollow}
               >
                 Following
               </button>
             ) : (
+              // Follow state
               <button
                 className="w-full rounded-full bg-[#7077FE] px-3 py-2
-                              font-opensans text-[14px] font-semibold text-white
-                              shadow hover:bg-[#5A61E8] transition"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleFollow(id? id : "");
-                }}
+                font-opensans text-[14px] font-semibold text-white
+                shadow hover:bg-[#5A61E8] transition"
+                onClick={handleToggleFollow}
               >
                 Follow
               </button>
