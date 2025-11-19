@@ -33,7 +33,7 @@ interface FormErrors {
   confirmPassword?: string;
   referralCode?: string;
   recaptcha?: string;
-   consent?: string; 
+  consent?: string;
 }
 interface FormErrorsl {
   email?: string;
@@ -297,7 +297,7 @@ export default function SignupModal({
     password: "",
     confirmPassword: "",
     referralCode: "",
-     consent: false,
+    consent: false,
   });
   const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [personErrors, setPersonErrors] = useState<FormErrorsl>({});
@@ -360,7 +360,7 @@ export default function SignupModal({
     email: string;
     password: string;
     confirmPassword: string;
-     consent: boolean;
+    consent: boolean;
   }) => {
     const newErrors: FormErrors = {};
 
@@ -408,9 +408,10 @@ export default function SignupModal({
     if (!recaptchaValue) {
       newErrors.recaptcha = "Please verify you're not a robot";
     }
-if (!formData.consent) {
-  newErrors.consent = "You must agree to the Terms & Conditions,Privacy policy and Community guidelines";
-}
+    if (!formData.consent) {
+      newErrors.consent =
+        "You must agree to the Terms & Conditions,Privacy policy and Community guidelines";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -461,7 +462,7 @@ if (!formData.consent) {
       password: form.password.value.trim(),
       confirmPassword: form.confirmPassword.value.trim(),
       referralCode: form.referralCode.value.trim(),
-      consent: registerForm.consent, 
+      consent: registerForm.consent,
     };
 
     const isValid = validateForms(formData);
@@ -937,32 +938,32 @@ if (!formData.consent) {
   };
 
   const [showConsentTerms, setShowConsentTerms] = useState(false);
-const [showConsentPrivacy, setShowConsentPrivacy] = useState(false);
-const [showConsentCommunity, setShowConsentCommunity] = useState(false);
+  const [showConsentPrivacy, setShowConsentPrivacy] = useState(false);
+  const [showConsentCommunity, setShowConsentCommunity] = useState(false);
 
-const [consentTermsContent, setConsentTermsContent] = useState("");
-const [consentPrivacyContent, setConsentPrivacyContent] = useState("");
-const [consentCommunityContent, setConsentCommunityContent] = useState("");
+  const [consentTermsContent, setConsentTermsContent] = useState("");
+  const [consentPrivacyContent, setConsentPrivacyContent] = useState("");
+  const [consentCommunityContent, setConsentCommunityContent] = useState("");
 
   useEffect(() => {
-  fetch("/terms and conditions new.html")
-    .then((res) => res.text())
-    .then((data) => setConsentTermsContent(data));
-}, []);
+    fetch("/terms and conditions new.html")
+      .then((res) => res.text())
+      .then((data) => setConsentTermsContent(data));
+  }, []);
 
-// Privacy
-useEffect(() => {
-  fetch("/CNESS privacy policy.htm")
-    .then((res) => res.text())
-    .then((data) => setConsentPrivacyContent(data));
-}, []);
+  // Privacy
+  useEffect(() => {
+    fetch("/CNESS privacy policy.htm")
+      .then((res) => res.text())
+      .then((data) => setConsentPrivacyContent(data));
+  }, []);
 
-// Community Guideline
-useEffect(() => {
-  fetch("/community_guideline.html")
-    .then((res) => res.text())
-    .then((data) => setConsentCommunityContent(data));
-}, []);
+  // Community Guideline
+  useEffect(() => {
+    fetch("/community_guideline.html")
+      .then((res) => res.text())
+      .then((data) => setConsentCommunityContent(data));
+  }, []);
 
   return (
     <>
@@ -993,7 +994,7 @@ useEffect(() => {
               className="
               inline-flex items-center gap-3
               font-inter font-medium
-              text-[14px] leading-[20px] tracking-[0]
+              text-[14px] leading-5 tracking-[0]
               text-gray-900
             "
             >
@@ -1011,7 +1012,7 @@ useEffect(() => {
           className={`
           my-6 flex items-center
           lg:w-[415px] w-full h-[19px]
-          gap-[20px]
+          gap-5
           text-[14px] leading-[100%] tracking-[0]
           font-['Open_Sans'] font-normal
           text-gray-500 ${formssubmitted ? " hidden" : ""}`}
@@ -1045,10 +1046,10 @@ useEffect(() => {
               }}
               placeholder="Enter your Username"
               className="w-full h-[45px]
-                  rounded-[4px] border-2 border-gray-200
-                  px-[10px]  /* pr + pl = 10px */
+                  rounded-sm border-2 border-gray-200
+                  px-2.5  /* pr + pl = 10px */
                   outline-none
-                  text-[14px] leading-[20px]
+                  text-[14px] leading-5
                   placeholder:text-gray-400"
               required
             />
@@ -1074,10 +1075,10 @@ useEffect(() => {
               }}
               className="
                   lg:w-[415px] w-full h-[45px]
-                  rounded-[4px] border-2 border-gray-200
-                  px-[10px]  /* pr + pl = 10px */
+                  rounded-sm border-2 border-gray-200
+                  px-2.5  /* pr + pl = 10px */
                   outline-none
-                  text-[14px] leading-[20px]
+                  text-[14px] leading-5
                   placeholder:text-gray-400
                 
                 "
@@ -1108,10 +1109,10 @@ useEffect(() => {
                   }}
                   className="
           lg:w-[195.5px] w-full h-[45px]
-          rounded-[4px] border-2 border-gray-200
-          px-[10px] pr-10
+          rounded-sm border-2 border-gray-200
+          px-2.5 pr-10
           outline-none
-          text-[14px] leading-[20px]
+          text-[14px] leading-5
           placeholder:text-gray-400
         "
                 />
@@ -1146,10 +1147,10 @@ useEffect(() => {
                   }}
                   className="
           lg:w-[195.5px] w-full h-[45px]
-          rounded-[4px] border-2 border-gray-200
-          px-[10px] pr-10
+          rounded-sm border-2 border-gray-200
+          px-2.5 pr-10
           outline-none
-          text-[14px] leading-[20px]
+          text-[14px] leading-5
           placeholder:text-gray-400
         "
                 />
@@ -1188,7 +1189,7 @@ useEffect(() => {
           {/* Referral + CAPTCHA placeholder */}
           <div className="grid grid-cols-1 gap-4">
             {/* Referral Code */}
-            <div className="mb-0 w-[100%]">
+            <div className="mb-0 w-full">
               <label className="block">
                 <span className="block mb-1 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
                   Referral code (optional)
@@ -1205,10 +1206,10 @@ useEffect(() => {
                   }}
                   className="
                       w-full h-[45px]
-                      rounded-[4px] border-2 border-gray-200
-                      px-[10px]
+                      rounded-sm border-2 border-gray-200
+                      px-2.5
                       outline-none
-                      text-[14px] leading-[20px]
+                      text-[14px] leading-5
                       placeholder:text-gray-400
                     
                     "
@@ -1247,59 +1248,61 @@ useEffect(() => {
           )}
 
           {/* Consent Checkbox */}
-<div className="flex items-start gap-2">
-  <input
-    type="checkbox"
-    id="consent"
-    name="consent"
-    checked={registerForm.consent || false}
-    onChange={(e) =>
-      setRegisterForm((prev) => ({ ...prev, consent: e.target.checked }))
-    }
-    className="mt-0.5 w-4 h-4"
-  />
+          <div className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              id="consent"
+              name="consent"
+              checked={registerForm.consent || false}
+              onChange={(e) =>
+                setRegisterForm((prev) => ({
+                  ...prev,
+                  consent: e.target.checked,
+                }))
+              }
+              className="mt-0.5 w-4 h-4"
+            />
 
-  <label htmlFor="consent" className="text-[11px] text-gray-700 font-openSans">
-  I agree to the{" "}
-  
-  <button
-    type="button"
-    onClick={() => setShowConsentTerms(true)}
-    className="text-purple-600 underline"
-  >
-    Terms & Conditions
-  </button>
+            <label
+              htmlFor="consent"
+              className="text-[11px] text-gray-700 font-openSans"
+            >
+              I agree to the{" "}
+              <button
+                type="button"
+                onClick={() => setShowConsentTerms(true)}
+                className="text-purple-600 underline"
+              >
+                Terms & Conditions
+              </button>
+              ,{" "}
+              <button
+                type="button"
+                onClick={() => setShowConsentPrivacy(true)}
+                className="text-purple-600 underline"
+              >
+                Privacy Policy
+              </button>{" "}
+              and{" "}
+              <button
+                type="button"
+                onClick={() => setShowConsentCommunity(true)}
+                className="text-purple-600 underline"
+              >
+                Community Guidelines
+              </button>
+              .
+            </label>
+          </div>
 
-  ,{" "}
-
-  <button
-    type="button"
-    onClick={() => setShowConsentPrivacy(true)}
-    className="text-purple-600 underline"
-  >
-    Privacy Policy
-  </button>
-
-  {" "}and{" "}
-
-  <button
-    type="button"
-    onClick={() => setShowConsentCommunity(true)}
-    className="text-purple-600 underline"
-  >
-    Community Guidelines
-  </button>.
-</label>
-</div>
-
-{errors.consent && (
-  <p className="text-[9px] text-red-600">{errors.consent}</p>
-)}
+          {errors.consent && (
+            <p className="text-[9px] text-red-600">{errors.consent}</p>
+          )}
 
           {/* Submit */}
           <button
             type="submit"
-            className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[42px] text-white text-[14px] shadow-md hover:opacity-95 -mt-2"
+            className="mt-0 w-full rounded-full bg-linear-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[42px] text-white text-[14px] shadow-md hover:opacity-95"
             disabled={registerLoading || !recaptchaValue}
           >
             {registerLoading ? "Signing Up..." : "Sign Up"}
@@ -1329,19 +1332,19 @@ useEffect(() => {
             formssubmitted ? "block" : "hidden"
           }`}
         >
-          <h2 className="text-[32px] text-black font-[500] mb-2">
+          <h2 className="text-[32px] text-black font-medium mb-2">
             Verify Your E-Mail
           </h2>
-          <p className="text-[#64748B] text-[14px] font-[400]">
+          <p className="text-[#64748B] text-[14px] font-normal">
             We have sent a verification link to your mail id
           </p>
-          <span className="text-[16px] text-[#9747FF] font-[600] mb-[35px]">
+          <span className="text-[16px] text-[#9747FF] font-semibold mb-[35px]">
             {useremail}
           </span>
           <button
             type="submit"
             onClick={handleResendMail}
-            className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[45px] text-white text-[14px] shadow-md hover:opacity-95"
+            className="mt-0 w-full rounded-full bg-linear-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[45px] text-white text-[14px] shadow-md hover:opacity-95"
           >
             Resend Verification Email
           </button>
@@ -1375,7 +1378,7 @@ useEffect(() => {
             <Button
               type="submit"
               onClick={() => handleTypeSelection(1)}
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              className="bg-[#7077FE] py-4 px-6 rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >
@@ -1383,7 +1386,7 @@ useEffect(() => {
             </Button>
             <Button
               onClick={() => handleTypeSelection(2)}
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              className="bg-[#7077FE] py-4 px-6 rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >
@@ -1401,7 +1404,7 @@ useEffect(() => {
         <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1452,9 +1455,9 @@ useEffect(() => {
                         value={personForm.first_name}
                         onChange={handlePersonFormChange}
                         className={`w-[440px] h-[41px]
-    rounded-[12px]
+    rounded-xl
     border-[0.82px]
-    p-[12px] mt-2 ${
+    p-3 mt-2 ${
       personErrors.first_name ? "border-red-500" : "border-gray-300"
     } rounded-md`}
                       />
@@ -1476,9 +1479,9 @@ useEffect(() => {
                         value={personForm.last_name}
                         onChange={handlePersonFormChange}
                         className={`w-[440px] h-[41px]
-    rounded-[12px]
+    rounded-xl
     border-[0.82px]
-    p-[12px] mt-2 ${
+    p-3 mt-2 ${
       personErrors.last_name ? "border-red-500" : "border-gray-300"
     } rounded-md`}
                         placeholder="Enter your last name"
@@ -1646,7 +1649,7 @@ useEffect(() => {
                                       value={option.option}
                                       checked={existingAnswer === option.option}
                                       onChange={handlePersonFormChange}
-                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
+                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 shrink-0 peer-checked:border-transparent peer-checked:bg-linear-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
@@ -1766,7 +1769,7 @@ useEffect(() => {
         <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1809,7 +1812,7 @@ useEffect(() => {
                     className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
                   >
                     {plan.popular && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                      <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                         Popular
                       </div>
                     )}
@@ -1855,7 +1858,7 @@ useEffect(() => {
                       checked={isAnnual}
                       onChange={() => setIsAnnual(!isAnnual)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
                   </div>
                   <span className="ml-3 text-sm font-medium text-gray-700">
                     Annual billing
@@ -1910,7 +1913,7 @@ useEffect(() => {
                 name="email"
                 required
                 placeholder="Enter your email"
-                className={`w-full px-3 py-2 rounded-[12px] border ${
+                className={`w-full px-3 py-2 rounded-xl border ${
                   resetPasswordErrors.email
                     ? "border-red-500"
                     : "border-[#CBD5E1]"
@@ -1950,7 +1953,7 @@ useEffect(() => {
         modalKey="success"
       >
         <div className="text-center p-6 max-w-md">
-          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
+          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-linear-to-r from-[#7077FE] to-[#9747FF] ">
             <svg
               className="h-30 w-30 text-white "
               fill="none"
@@ -1990,7 +1993,7 @@ useEffect(() => {
 
       <Modal isOpen={activeModal === "disqualify"} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
-          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] mb-4">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-linear-to-r from-[#7077FE] to-[#9747FF] mb-4">
             <svg
               className="h-10 w-10 text-white"
               fill="none"
@@ -2025,65 +2028,64 @@ useEffect(() => {
       </Modal>
 
       {/* Terms Modal */}
-<ModalPortal>
-  <ContentModal
-    isOpen={showConsentTerms}
-    onClose={() => setShowConsentTerms(false)}
-  >
-    <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
-      <h3 className="lg:text-[36px] md:text-[30px] text-[24px] font-[500] text-black mb-4 text-center">
-        CNESS TERMS AND CONDITIONS
-      </h3>
+      <ModalPortal>
+        <ContentModal
+          isOpen={showConsentTerms}
+          onClose={() => setShowConsentTerms(false)}
+        >
+          <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+            <h3 className="lg:text-[36px] md:text-[30px] text-[24px] font-medium text-black mb-4 text-center">
+              CNESS TERMS AND CONDITIONS
+            </h3>
 
-      <div
-        className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg max-h-[500px] overflow-y-auto content-container"
-        style={{ lineHeight: "1.6", fontSize: "16px", color: "#333" }}
-        dangerouslySetInnerHTML={{ __html: consentTermsContent }}
-      />
-    </div>
-  </ContentModal>
-</ModalPortal>
+            <div
+              className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg max-h-[500px] overflow-y-auto content-container"
+              style={{ lineHeight: "1.6", fontSize: "16px", color: "#333" }}
+              dangerouslySetInnerHTML={{ __html: consentTermsContent }}
+            />
+          </div>
+        </ContentModal>
+      </ModalPortal>
 
-{/* Privacy Modal */}
-<ModalPortal>
-  <ContentModal
-    isOpen={showConsentPrivacy}
-    onClose={() => setShowConsentPrivacy(false)}
-  >
-    <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
-      <h3 className="lg:text-[36px] md:text-[30px] text-[24px] font-[500] text-black mb-4 text-center">
-        CNESS PRIVACY POLICY
-      </h3>
+      {/* Privacy Modal */}
+      <ModalPortal>
+        <ContentModal
+          isOpen={showConsentPrivacy}
+          onClose={() => setShowConsentPrivacy(false)}
+        >
+          <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+            <h3 className="lg:text-[36px] md:text-[30px] text-[24px] font-medium text-black mb-4 text-center">
+              CNESS PRIVACY POLICY
+            </h3>
 
-      <div
-        className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg max-h-[500px] overflow-y-auto content-container"
-        style={{ lineHeight: "1.6", fontSize: "16px", color: "#333" }}
-        dangerouslySetInnerHTML={{ __html: consentPrivacyContent }}
-      />
-    </div>
-  </ContentModal>
-</ModalPortal>
+            <div
+              className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg max-h-[500px] overflow-y-auto content-container"
+              style={{ lineHeight: "1.6", fontSize: "16px", color: "#333" }}
+              dangerouslySetInnerHTML={{ __html: consentPrivacyContent }}
+            />
+          </div>
+        </ContentModal>
+      </ModalPortal>
 
+      {/* Community Guidelines Modal */}
+      <ModalPortal>
+        <ContentModal
+          isOpen={showConsentCommunity}
+          onClose={() => setShowConsentCommunity(false)}
+        >
+          <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+            <h3 className="lg:text-[36px] md:text-[30px] text-[24px] font-medium text-black mb-4 text-center">
+              COMMUNITY GUIDELINES
+            </h3>
 
-{/* Community Guidelines Modal */}
-<ModalPortal>
-  <ContentModal
-    isOpen={showConsentCommunity}
-    onClose={() => setShowConsentCommunity(false)}
-  >
-    <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
-      <h3 className="lg:text-[36px] md:text-[30px] text-[24px] font-[500] text-black mb-4 text-center">
-        COMMUNITY GUIDELINES
-      </h3>
-
-      <div
-        className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg max-h-[500px] overflow-y-auto content-container"
-        style={{ lineHeight: "1.6", fontSize: "16px", color: "#333" }}
-        dangerouslySetInnerHTML={{ __html: consentCommunityContent }}
-      />
-    </div>
-  </ContentModal>
-</ModalPortal>
+            <div
+              className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg max-h-[500px] overflow-y-auto content-container"
+              style={{ lineHeight: "1.6", fontSize: "16px", color: "#333" }}
+              dangerouslySetInnerHTML={{ __html: consentCommunityContent }}
+            />
+          </div>
+        </ContentModal>
+      </ModalPortal>
     </>
   );
 }

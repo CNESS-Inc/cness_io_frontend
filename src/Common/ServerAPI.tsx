@@ -254,12 +254,14 @@ export const EndPoint = {
   delete_seller_documents: "/seller-onboarding/remove",
   save_extra_banners: "/seller-onboarding/save-extra-banners",
   remove_extra_banners: "/seller-onboarding/remove/extra-banners",
+  seller_sales_history: "/api/seller-sales/history",
   remove_specific_extra_banners: "/seller-onboarding/remove/extra-banners",
   remove_team_member_image: "/seller-onboarding/remove/team-member-image",
   remove_team_member: "/seller-onboarding/remove/team-member",
   get_products: "/vendor/products",
   get_seller_products: "/seller-onboarding/my-products",
   delete_seller_products: "/marketplace-product/product",
+  get_wallet: "/marketplace-product/wallet",
 
   // marketplace product endpoints
   get_categories: "/marketplace-product/product-categories",
@@ -292,6 +294,7 @@ export const EndPoint = {
 
   marketplace_wishlist: "/marketplace-buyer/wishlist",
   marketplace_cart: "/marketplace-buyer/cart",
+  marketplace_seller_orders: "/seller-sales/orders",
 
   marketplace_shop_list: "/marketplace-buyer/shops",
   marketplace_followed_list: "/marketplace-buyer/my-followed-shops",
@@ -1753,6 +1756,14 @@ export const CreateVideoProduct = (data: any): ApiResponse => {
   );
 };
 
+export const GetSellerOrders = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.marketplace_seller_orders
+  );
+};
+
 export const UpdateVideoProduct = (data: any, id: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.PATCH,
@@ -1924,6 +1935,28 @@ export const DeleteCourseChapter = (pid: any, cid: any): ApiResponse => {
 export const DeleteSellerProduct = (id: any) => {
   return executeAPI(ServerAPI.APIMethod.DELETE, {}, `${EndPoint.delete_seller_products}/${id}`);
 };
+
+export const get_wallet = (id: string | number) => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.get_wallet}/${id}`
+  );
+};
+
+export const update_bank_details = (payload: {
+  bank_name: string;
+  account_number: string;
+  swift_code: string;
+  account_type: string;
+}) => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    payload,
+    "/seller-sales/bank-details"
+  );
+};
+
 
 export const GetMarketPlaceBuyerMoods = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_buyer_moods);
@@ -2339,6 +2372,32 @@ export const GetOrderDetails = (): ApiResponse => {
     EndPoint.marketplace_order_details
   );
 }
+
+export const GetSellerSalesHistory = (
+  params: {
+    customer?: string;
+    orderId?: string;
+    startDate?: string;
+    endDate?: string;
+    page?: number;
+    limit?: number;
+  } = {} // optional object
+) => {
+  // Build query params string
+  const searchParams = new URLSearchParams();
+  if (params.customer) searchParams.append('customer', params.customer);
+  if (params.orderId) searchParams.append('orderId', params.orderId);
+  if (params.startDate) searchParams.append('startDate', params.startDate);
+  if (params.endDate) searchParams.append('endDate', params.endDate);
+  searchParams.append('page', params.page?.toString() || '1');
+  searchParams.append('limit', params.limit?.toString() || '10');
+
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.seller_sales_history}?${searchParams.toString()}`
+  );
+};
 
 export const executeAPI = async <T = any,>(
   method: ApiMethod,

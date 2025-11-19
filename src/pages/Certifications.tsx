@@ -35,7 +35,7 @@ export default function Certifications() {
     {
       question: "Does the certification expire?",
       answer:
-        "No, your certification remains valid and can be shared indefinitely.",
+        "Certification stays valid for one full year and can be shared indefinitely.",
     },
     {
       question: "What if I don’t qualify right away?",

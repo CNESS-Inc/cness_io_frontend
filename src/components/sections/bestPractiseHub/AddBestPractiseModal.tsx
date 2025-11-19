@@ -529,7 +529,7 @@ export default function AddBestPracticeModal({
                 onChange={handleInputChangeWithValidation}
                 onBlur={() => handleBlur("title")}
                 placeholder="Enter Title"
-                className={`w-full px-[10px] py-3 border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm ${
+                className={`w-full px-2.5 py-3 border rounded-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm ${
                   validationErrors.title
                     ? "border-red-500 bg-red-50"
                     : "border-[#CBD0DC]"
@@ -555,7 +555,7 @@ export default function AddBestPracticeModal({
                 value={newPractice.interest}
                 onChange={handleInputChangeWithValidation}
                 onBlur={() => handleBlur("interestOrProfession")}
-                className={`w-full px-[10px] py-3 border rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                className={`w-full px-2.5 py-3 border rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                   validationErrors.interestOrProfession
                     ? "border-red-500 bg-red-50"
                     : "border-[#CBD0DC]"
@@ -587,7 +587,7 @@ export default function AddBestPracticeModal({
                 value={newPractice.profession}
                 onChange={handleInputChangeWithValidation}
                 onBlur={() => handleBlur("interestOrProfession")}
-                className={`w-full px-[10px] py-3 border rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                className={`w-full px-2.5 py-3 border rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                   validationErrors.interestOrProfession
                     ? "border-red-500 bg-red-50"
                     : "border-[#CBD0DC]"

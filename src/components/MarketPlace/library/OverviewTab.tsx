@@ -51,7 +51,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
 
 
             {/* Highlights Section */}
-            <h4 className="w-[86px] h-[27px] pt-4 pb-4 text-black font-[Poppins] font-semibold text-[18px] leading-[1] opacity-100 mb-2 flex items-center">
+            <h4 className="w-[86px] h-[27px] pt-4 pb-4 text-black font-[Poppins] font-semibold text-[18px] leading-none opacity-100 mb-2 flex items-center">
                 Highlights:
             </h4>
             <ul className="list-disc list-inside mb-4 text-[16px] font-[Poppins] text-slate-900 space-y-2">
@@ -59,7 +59,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
                     <li key={index} className="flex items-start gap-2">
                         <CheckCircle
                             size={20}
-                            className="text-green-500 flex-shrink-0 mt-0.5"
+                            className="text-green-500 shrink-0 mt-0.5"
                         />
                         <span className="text-gray-700">{highlight}</span>
                     </li>
@@ -67,7 +67,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
             </ul>
 
             {/* Details Section */}
-            <h4 className="w-[86px] h-[27px] pt-4 pb-4  text-black font-[Poppins] font-semibold text-[18px] leading-[1] opacity-100 mb-2 
+            <h4 className="w-[86px] h-[27px] pt-4 pb-4  text-black font-[Poppins] font-semibold text-[18px] leading-none opacity-100 mb-2 
                  flex items-center">Details:</h4>
             <div className="space-y-2">
                 <div className="grid grid-cols-2 gap-y-2 gap-x-6 text-[16px] pb-18 font-[Poppins] text-slate-700">

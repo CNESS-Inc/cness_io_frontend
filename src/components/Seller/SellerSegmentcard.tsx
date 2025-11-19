@@ -2,7 +2,8 @@ import React, { useEffect, useState, type ReactNode  } from "react";
 import {
   //ChevronRight,
 
-  Search as SearchIcon,
+  //Search as 
+  //SearchIcon,
   // X,
   Bell,
   Plus,
@@ -58,6 +59,7 @@ import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import { iconMap } from "../../assets/icons";
 import { HiOutlineLockClosed } from "react-icons/hi2";
+import DOMPurify from "dompurify";
 //import like from "../../assets/likes.svg";
 //import heart from "../../assets/heart.svg";
 
@@ -194,7 +196,7 @@ export function OutlinePill({
 function Progress({ value, gradient }: { value: number; gradient?: string }) {
   const v = Math.max(0, Math.min(100, value));
   return (
-    <div className="h-[10px] w-full overflow-hidden rounded-full bg-[#EEF0F5]">
+    <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#EEF0F5]">
       <div
         className={`h-full rounded-full ${gradient ? gradient : GRADIENT}`}
         style={{ width: `${v}%` }}
@@ -1106,7 +1108,7 @@ useEffect(() => {
                 className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                  <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#9747FF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                     Popular
                   </div>
                 )}
@@ -1150,7 +1152,7 @@ useEffect(() => {
                   checked={isAnnual}
                   onChange={() => setIsAnnual(!isAnnual)}
                 />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
               </div>
               <span className="ml-3 text-sm font-medium text-gray-700">
                 Annual billing
@@ -1165,7 +1167,7 @@ useEffect(() => {
           {/* Ensures center + padding on small screens */}
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1457,7 +1459,7 @@ useEffect(() => {
                                       value={option.option}
                                       checked={existingAnswer === option.option}
                                       onChange={handleOrganizationFormChange}
-                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
+                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 shrink-0 peer-checked:border-transparent peer-checked:bg-linear-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
@@ -1584,7 +1586,7 @@ useEffect(() => {
                     <div className="flex justify-center">
                       <div className="relative w-full max-w-sm p-8 rounded-3xl border border-violet-300 shadow-xl bg-white hover:shadow-2xl transition-all duration-300">
                         {/* Ribbon */}
-                        <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-3 py-1 rounded-bl-xl rounded-tr-3xl font-semibold shadow-md">
+                        <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-3 py-1 rounded-bl-xl rounded-tr-3xl font-semibold shadow-md">
                           Popular
                         </div>
 
@@ -1631,7 +1633,7 @@ useEffect(() => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1734,7 +1736,7 @@ useEffect(() => {
                     className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
                   >
                     {plan.popular && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                      <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                         Popular
                       </div>
                     )}
@@ -1780,7 +1782,7 @@ useEffect(() => {
                       checked={isAnnual}
                       onChange={() => setIsAnnual(!isAnnual)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
                   </div>
                   <span className="ml-3 text-sm font-medium text-gray-700">
                     Annual billing
@@ -1804,7 +1806,7 @@ useEffect(() => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1855,9 +1857,9 @@ useEffect(() => {
                         value={personForm.first_name}
                         onChange={handlePersonFormChange}
                         className={`w-[440px] h-[41px]
-                rounded-[12px]
+                rounded-xl
                 border-[0.82px]
-                p-[12px] mt-2 ${
+                p-3 mt-2 ${
                   personErrors.first_name ? "border-red-500" : "border-gray-300"
                 } rounded-md`}
                       />
@@ -1879,9 +1881,9 @@ useEffect(() => {
                         value={personForm.last_name}
                         onChange={handlePersonFormChange}
                         className={`w-[440px] h-[41px]
-                rounded-[12px]
+                rounded-xl
                 border-[0.82px]
-                p-[12px] mt-2 ${
+                p-3 mt-2 ${
                   personErrors.last_name ? "border-red-500" : "border-gray-300"
                 } rounded-md`}
                         placeholder="Enter your last name"
@@ -2049,7 +2051,7 @@ useEffect(() => {
                                       value={option.option}
                                       checked={existingAnswer === option.option}
                                       onChange={handlePersonFormChange}
-                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
+                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 shrink-0 peer-checked:border-transparent peer-checked:bg-linear-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
@@ -2164,7 +2166,7 @@ useEffect(() => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -2207,7 +2209,7 @@ useEffect(() => {
                     className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
                   >
                     {plan.popular && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                      <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                         Popular
                       </div>
                     )}
@@ -2253,7 +2255,7 @@ useEffect(() => {
                       checked={isAnnual}
                       onChange={() => setIsAnnual(!isAnnual)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
                   </div>
                   <span className="ml-3 text-sm font-medium text-gray-700">
                     Annual billing
@@ -2275,7 +2277,7 @@ useEffect(() => {
       </Modal>
       <Modal isOpen={activeModal === "disqualify"} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
-          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] mb-4">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-linear-to-r from-[#7077FE] to-[#9747FF] mb-4">
             <svg
               className="h-10 w-10 text-white"
               fill="none"
@@ -2376,7 +2378,7 @@ export function TrueProfileCard({
       <div className="mt-4 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
         {/* Circular completion ring */}
         <div className="relative shrink-0">
-          <div className="relative w-[92px] h-[92px] sm:w-[108px] sm:h-[108px] rounded-full p-[3px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]">
+          <div className="relative w-[92px] h-[92px] sm:w-[108px] sm:h-[108px] rounded-full p-[3px] bg-linear-to-r from-[#9747FF] to-[#F07EFF]">
             <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
               <img
                 src={
@@ -2401,7 +2403,7 @@ export function TrueProfileCard({
 
         {/* Texts + Button */}
         <div className="min-w-0 flex-1 text-center sm:text-left">
-          <h3 className="font-opensans font-semibold text-[16px] sm:text-[18px] md:text-[20px] leading-[24px] sm:leading-[28px] md:leading-[32px] text-[#222224]">
+          <h3 className="font-opensans font-semibold text-[16px] sm:text-[18px] md:text-[20px] leading-6 sm:leading-7 md:leading-8 text-[#222224]">
            {computedTitle}
           </h3>
 
@@ -2411,7 +2413,7 @@ export function TrueProfileCard({
 
           <button
             onClick={onUpdateProfile}
-            className="mt-4 sm:mt-5 inline-flex w-full sm:w-auto min-w-[140px] h-10 sm:h-[40px] items-center justify-center gap-[7px] rounded-full bg-[#7077FE] px-5 sm:px-6 font-opensans text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
+            className="mt-4 sm:mt-5 inline-flex w-full sm:w-auto min-w-[140px] h-10 sm:h-10 items-center justify-center gap-[7px] rounded-full bg-[#7077FE] px-5 sm:px-6 font-opensans text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
           >
             Update Profile
           </button>
@@ -2509,7 +2511,7 @@ export function CertificationCard({
     
   return (
     <>
-      <Card className="rounded-[12px] border border-[#E5E7EB] px-4 md:px-[18px] py-5 space-y-3">
+      <Card className="rounded-xl border border-[#E5E7EB] px-4 md:px-[18px] py-5 space-y-3">
         {activeLevel === null ||
         (activeLevel === "Aspiring" && progress === 0) ? (
           <div
@@ -2519,7 +2521,7 @@ export function CertificationCard({
             <h6 className="font-['Poppins',Helvetica] font-medium text-[22px] sm:text-[28px] text-[#222224]">
               Certification is your Official stamp of credibility
             </h6>
-            <h5 className="font-['Open_Sans',Helvetica] font-normal text-base sm:text-lg text-[#999999] leading-[32px]">
+            <h5 className="font-['Open_Sans',Helvetica] font-normal text-base sm:text-lg text-[#999999] leading-8">
               Get your conscious identity verified and unlock everything CNESS
               has to offer.
             </h5>
@@ -2562,21 +2564,21 @@ export function CertificationCard({
               <div className="flex flex-col gap-[18px]">
                 <div className="flex items-center justify-between gap-3">
                   <div className="mt-2 flex items-center justify-start gap-2">
-                    <span className="text-2xl font-semibold font-['Open_Sans'] leading-[32px] text-[#222224]">
+                    <span className="text-2xl font-semibold font-['Open_Sans'] leading-8 text-[#222224]">
                       {progress}%
                     </span>
-                    <span className="text-base font-normal font-['Open_Sans'] leading-[32px] text-[#64748B]">
+                    <span className="text-base font-normal font-['Open_Sans'] leading-8 text-[#64748B]">
                       of Certification Process
                     </span>
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <button
                       onClick={() => navigate("/dashboard/inspired-assessment")}
-                      className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
+                      className="relative w-full sm:w-[194px] h-10 rounded-full px-5 py-2.5 flex items-center justify-center text-center font-semibold text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
                     >
                       <span className="relative z-10">Continue Assessment</span>
-                      <span className="absolute inset-0 rounded-full p-[1px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]"></span>
-                      <span className="absolute inset-[1px] rounded-full bg-white"></span>
+                      <span className="absolute inset-0 rounded-full p-px bg-linear-to-r from-[#9747FF] to-[#F07EFF]"></span>
+                      <span className="absolute inset-px rounded-full bg-white"></span>
                     </button>
                   </div>
                 </div>
@@ -2613,18 +2615,18 @@ export function CertificationCard({
             {progress > 0 && (
               <div className="flex flex-col gap-[18px]">
                 <div className="mt-2 flex items-center justify-between gap-3">
-                  <span className="text-lg font-semibold font-['Open_Sans'] leading-[32px] text-[#222224]">
+                  <span className="text-lg font-semibold font-['Open_Sans'] leading-8 text-[#222224]">
                     Assessment Completed
                   </span>
                   <button
                     disabled
-                    className="inline-flex items-center gap-2 p-[12px] bg-[rgba(112,119,254,0.1)] text-[#9747FF] text-sm font-semibold rounded-full"
+                    className="inline-flex items-center gap-2 p-3 bg-[rgba(112,119,254,0.1)] text-[#9747FF] text-sm font-semibold rounded-full"
                   >
                     {/* Optional Icon */}
                     <img
                       src={clock}
                       alt="clock icon"
-                      className="w-[16px] h-[16px]"
+                      className="w-4 h-4"
                     />
                     Awaiting for Approval
                   </button>
@@ -2660,10 +2662,10 @@ export function CertificationCard({
 
             <div className="flex items-center justify-between gap-3">
               <div className="mt-2 flex items-end gap-2">
-                <span className="text-[32px] font-semibold font-['Open_Sans'] leading-[32px] text-[#222224]">
+                <span className="text-[32px] font-semibold font-['Open_Sans'] leading-8 text-[#222224]">
                   CIS Score:
                 </span>
-                <span className="text-[32px] font-semibold font-['Open_Sans'] leading-[32px] text-[#7077FE]">
+                <span className="text-[32px] font-semibold font-['Open_Sans'] leading-8 text-[#7077FE]">
                   {score}
                   <sub className="text-base font-normal font-['Open_Sans'] text-[#64748B]">
                     /100
@@ -2674,11 +2676,11 @@ export function CertificationCard({
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <button
                     onClick={onContinue}
-                    className="relative w-full sm:w-[194px] h-[40px] rounded-full px-5 py-[10px] flex items-center justify-center text-center font-[600] text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
+                    className="relative w-full sm:w-[194px] h-10 rounded-full px-5 py-2.5 flex items-center justify-center text-center font-semibold text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
                   >
                     <span className="relative z-10">Retake Assessment</span>
-                    <span className="absolute inset-0 rounded-full p-[1px] bg-gradient-to-r from-[#9747FF] to-[#F07EFF]"></span>
-                    <span className="absolute inset-[1px] rounded-full bg-white"></span>
+                    <span className="absolute inset-0 rounded-full p-px bg-linear-to-r from-[#9747FF] to-[#F07EFF]"></span>
+                    <span className="absolute inset-px rounded-full bg-white"></span>
                   </button>
                 </div>
               ) : (
@@ -2696,7 +2698,7 @@ export function CertificationCard({
         {/* Slides container */}
         <div className="mt-8">
           <div
-            className="relative min-h-[450px] sm:min-h-[300px] md:min-h-[270px] rounded-[22px] border border-[#EFE8FF] bg-gradient-to-r from-[#F6F2FF] via-[#FAF0FF] to-[#FFF1F8] p-4 sm:p-6 overflow-hidden"
+            className="relative min-h-[450px] sm:min-h-[300px] md:min-h-[270px] rounded-[22px] border border-[#EFE8FF] bg-linear-to-r from-[#F6F2FF] via-[#FAF0FF] to-[#FFF1F8] p-4 sm:p-6 overflow-hidden"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
           >
@@ -2715,9 +2717,9 @@ export function CertificationCard({
               <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 px-1 sm:px-2">
                 {/* Aspiring */}
                 <div
-                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] cursor-pointer ${
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${
                     activeLevel === "Aspiring" && progress === 0
-                      ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
+                      ? "bg-linear-to-r from-[#7077FE] to-[#F07EFF]"
                       : "border border-[#E5E7EB] bg-white"
                   }`}
                   onClick={() => {
@@ -2731,7 +2733,7 @@ export function CertificationCard({
                     }
                   }}
                 >
-                  <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
+                  <div className="w-full h-full rounded-2xl bg-white flex flex-col items-center justify-center gap-2.5 sm:gap-3 px-4 py-4">
                     <img
                       src={
                         activeLevel === null
@@ -2749,10 +2751,10 @@ export function CertificationCard({
 
                 {/* Inspired */}
                 <div
-                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-[2px] cursor-pointer ${
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${
                     activeLevel === "Inspired" ||
                     (activeLevel === "Aspiring" && progress > 0)
-                      ? "bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
+                      ? "bg-linear-to-r from-[#7077FE] to-[#F07EFF]"
                       : "border border-[#E5E7EB] bg-white"
                   }`}
                   onClick={() => {
@@ -2768,7 +2770,7 @@ export function CertificationCard({
                     }
                   }}
                 >
-                  <div className="w-full h-full rounded-[16px] bg-white flex flex-col items-center justify-center gap-[10px] sm:gap-[12px] px-4 py-4">
+                  <div className="w-full h-full rounded-2xl bg-white flex flex-col items-center justify-center gap-2.5 sm:gap-3 px-4 py-4">
                     <img
                       src={
                         activeLevel === null ||
@@ -2789,7 +2791,7 @@ export function CertificationCard({
                 <div
                   className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${
                     activeLevel === "Leader"
-                      ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-[2px] before:bg-gradient-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
+                      ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-0.5 before:bg-linear-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
                       : "border border-[#E5E7EB] bg-white"
                   }`}
                   onClick={() => {
@@ -2855,7 +2857,7 @@ export function CertificationCard({
                     {activeLevel !== "Leader" && (
                       <button
                         onClick={() => handleUpgradeClick(activeLevel)}
-                        className="mt-4 sm:mt-5 inline-flex w-full sm:w-auto min-w-[140px] h-10 sm:h-[40px] items-center justify-center gap-[7px] rounded-full bg-[#7077FE] px-5 sm:px-6 font-opensans text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
+                        className="mt-4 sm:mt-5 inline-flex w-full sm:w-auto min-w-[140px] h-10 sm:h-10 items-center justify-center gap-[7px] rounded-full bg-[#7077FE] px-5 sm:px-6 font-opensans text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
                       >
                         Upgrade to {getNextLevel()}
                       </button>
@@ -2994,6 +2996,9 @@ export function BestPracticesSection({
   const listRef = React.useRef<HTMLDivElement | null>(null);
   const [mobileIndex, setMobileIndex] = React.useState(0);
 
+  // Track loading states for each best practice item
+  const [loadingStates, setLoadingStates] = React.useState<{[key: string]: boolean}>({});
+
   // Scroll one card at a time on mobile
   const CARD_W = 332; // keep your fixed card width
   const GAP = 16; // gap-4 -> 16px
@@ -3017,6 +3022,9 @@ export function BestPracticesSection({
   }, [items.length]);
 
   const toggleFollowPost = async (bpId: any) => {
+    // Set loading state for this specific item
+    setLoadingStates(prev => ({ ...prev, [bpId]: true }));
+
     try {
       const res = await SendBpFollowRequest({ bp_id: bpId });
 
@@ -3033,6 +3041,9 @@ export function BestPracticesSection({
       }
     } catch (error) {
       console.error("Error following/unfollowing:", error);
+    } finally {
+      // Clear loading state regardless of success/error
+      setLoadingStates(prev => ({ ...prev, [bpId]: false }));
     }
   };
 
@@ -3089,8 +3100,8 @@ export function BestPracticesSection({
       {/* --- MOBILE list (horizontal scroll, snap) --- */}
       <div className="relative sm:hidden mt-3 w-full overflow-hidden">
         {/* Fade edges to hint scroll */}
-        <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-white to-transparent" />
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-white to-transparent" />
+        <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-linear-to-r from-white to-transparent" />
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-linear-to-l from-white to-transparent" />
 
         {/* Scrollable row */}
         <div
@@ -3107,10 +3118,10 @@ export function BestPracticesSection({
                   `/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`
                 )
               }
-              className="snap-start flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
+              className="snap-start shrink-0 w-[332px] h-[317px] rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
             >
               {/* Image */}
-              <div className="h-[135px] rounded-[8px] overflow-hidden">
+              <div className="h-[135px] rounded-lg overflow-hidden">
                 <img
                   src={
                     !bp.image ||
@@ -3136,32 +3147,52 @@ export function BestPracticesSection({
                 <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
                   {bp.title}
                 </div>
-                <p className="mt-3 font-opensans text-[14px] leading-[150%] text-[#667085] line-clamp-2">
-                  {bp.description}
-                </p>
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(bp.description),
+                  }}
+                />
                 {bp.if_following ? (
                   <button
                     className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
                              font-opensans text-[14px] font-semibold text-white
-                             shadow transition"
+                             shadow transition flex items-center justify-center gap-2
+                             disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleFollowPost(bp.id);
                     }}
+                    disabled={loadingStates[bp.id]}
                   >
-                    Following
+                    {loadingStates[bp.id] ? (
+                      <>
+                        <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      'Following'
+                    )}
                   </button>
                 ) : (
                   <button
                     className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
                              font-opensans text-[14px] font-semibold text-white
-                             shadow hover:bg-[#5A61E8] transition"
+                             shadow hover:bg-[#5A61E8] transition flex items-center justify-center gap-2
+                             disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleFollowPost(bp.id);
                     }}
+                    disabled={loadingStates[bp.id]}
                   >
-                    Follow
+                    {loadingStates[bp.id] ? (
+                      <>
+                        <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      'Follow'
+                    )}
                   </button>
                 )}
               </div>
@@ -3194,9 +3225,9 @@ export function BestPracticesSection({
             onClick={() =>
               navigate(`/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`)
             }
-            className="flex-shrink-0 w-[332px] h-[317px] rounded-[12px] border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
+            className="shrink-0 w-[332px] h-[317px] rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
           >
-            <div className="h-[135px] rounded-[8px] overflow-hidden">
+            <div className="h-[135px] rounded-lg overflow-hidden">
               <img
                 src={
                   !bp.image ||
@@ -3220,32 +3251,52 @@ export function BestPracticesSection({
               <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
                 {bp.title}
               </div>
-              <p className="mt-3 font-opensans text-[16px] leading-[150%] text-[#667085] line-clamp-2">
-                {bp.description}
-              </p>
+              <span className="mt-3 font-opensans text-[16px] leading-[150%] text-[#667085] line-clamp-2"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(bp.description),
+                }}
+              />
               {bp.if_following ? (
                 <button
                   className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
                              font-opensans text-[14px] font-semibold text-white
-                             shadow transition"
+                             shadow transition flex items-center justify-center gap-2
+                             disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleFollowPost(bp.id);
                   }}
+                  disabled={loadingStates[bp.id]}
                 >
-                  Following
+                  {loadingStates[bp.id] ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    'Following'
+                  )}
                 </button>
               ) : (
                 <button
                   className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
                              font-opensans text-[14px] font-semibold text-white
-                             shadow hover:bg-[#5A61E8] transition"
+                             shadow hover:bg-[#5A61E8] transition flex items-center justify-center gap-2
+                             disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleFollowPost(bp.id);
                   }}
+                  disabled={loadingStates[bp.id]}
                 >
-                  Follow
+                  {loadingStates[bp.id] ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    'Follow'
+                  )}
                 </button>
               )}
             </div>
@@ -3376,12 +3427,12 @@ export function SocialStackCard({
         {list.map((src, i) => (
           <div
             key={`${src}-${i}`}
-            className="w-9 h-[46px] md:w-[43px] md:h-[56px] p-[2px] rounded-[4px] bg-white/95 shadow"
+            className="w-9 h-[46px] md:w-[43px] md:h-14 p-0.5 rounded-sm bg-white/95 shadow"
           >
             <img
               src={src}
               alt=""
-              className="w-full h-full rounded-[2px] object-cover"
+              className="w-full h-full rounded-xs object-cover"
             />
           </div>
         ))}
@@ -3587,19 +3638,22 @@ export function SocialStackCard({
     const NotificationsCard = ({ notifications }: { notifications: any[] }) => {
       //const userProfile = localStorage.getItem("profile_picture");
       return (
-<div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px] -mt-35">
+<div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px]">
+    <div className="flex flex-col h-[350px]">
+
           {/* header */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mt-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F7E9FF]">
               <Bell className="h-4 w-4 text-[#B255FF]" />
             </div>
-            <h3 className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
+            <h3 className="font-poppins font-semibold text-[20px] leading-[32px] tracking-[0.15px] text-center text-[#0F1728]">
               Notification
             </h3>
           </div>
 
           {/* rows */}
-          <div className="mt-2 space-y-3">
+    <div className="flex-1 overflow-y-auto space-y-3 pr-2 mt-3">
+
             {notifications.map((item) => (
               <div
                 key={item.id}
@@ -3638,12 +3692,16 @@ export function SocialStackCard({
           </div>
 
           {/* CTA */}
-          <button
-            className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-full text-white text-[14px] font-semibold bg-[linear-gradient(90deg,#7077FE_0%,#9747FF_60%,#F07EFF_100%)] shadow"
-            onClick={() => navigate("/dashboard/notification")}
-          >
-            View all Notification
-          </button>
+  {/* your notification items here */}
+
+  <button
+    className="absolute bottom-3 left-1/2 -translate-x-1/2 inline-flex h-10 w-[90%] items-center justify-center rounded-full text-white text-[14px] font-semibold bg-[linear-gradient(90deg,#7077FE_0%,#9747FF_60%,#F07EFF_100%)] shadow"
+    onClick={() => navigate("/dashboard/notification")}
+  >
+    View all Notification
+  </button>
+
+        </div>
         </div>
       );
     };
@@ -3654,9 +3712,9 @@ export function SocialStackCard({
       <>
         <div
           className="relative
-             h-auto min-h-[320px] sm:h-[360px]
-             rounded-[12px] border border-[#ECEEF2]
-             px-[12px] py-[18px]
+             h-auto min-h-80 sm:h-[360px]
+             rounded-xl border border-[#ECEEF2]
+             px-3 py-[18px]
              overflow-hidden flex flex-col justify-center shadow-[0_4px_10px_0_rgba(0,0,0,0.04)]"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
@@ -3685,13 +3743,13 @@ export function SocialStackCard({
           >
             {idx === 0 ? (
               <div className="flex flex-col items-center justify-center h-full w-full px-2 sm:px-0">
-                <h4 className="font-poppins font-semibold text-[#0F1728] text-center text-[20px] leading-[28px] break-words">
+                <h4 className="font-poppins font-semibold text-[#0F1728] text-center text-[20px] leading-7 wrap-break-word">
                   <MobileBreakTitle text={s.title} afterWords={3} />
                 </h4>
                 <p
                   className="mt-2 text-[#667085] text-[12px] sm:text-[12px] md:text-[13px]
-                  leading-[150%] font-[400] font-['Open_Sans']
-                  text-center whitespace-normal break-words
+                  leading-[150%] font-normal font-['Open_Sans']
+                  text-center whitespace-normal wrap-break-word
                   max-w-[28ch] sm:max-w-[34ch] mx-auto"
                 >
                   {s.text}
@@ -3705,9 +3763,9 @@ export function SocialStackCard({
                     className="
                       w-[100px] min-w-[100px] h-[33px]
                       rounded-[100px]
-                      px-[12px] pr-[8px]
+                      px-3 pr-2
                       whitespace-nowrap shrink-0
-                      !justify-center     
+                      justify-center!     
                       text-[12px] mr-2   
                     "
                     onClick={onPrimary}
@@ -3718,9 +3776,9 @@ export function SocialStackCard({
                     className="
                       w-[100px] min-w-[100px] h-[33px]
                       rounded-[100px]
-                      px-[12px] pr-[8px]
+                      px-3 pr-2
                       whitespace-nowrap shrink-0
-                      !justify-center
+                      justify-center!
                       text-[12px]
                     "
                     onClick={onSecondary}
@@ -3948,7 +4006,7 @@ export function SocialStackCard({
       </div>
       <HeaderDivider />
 
-      {/* Search */}
+      {/* Search 
       <div
         className="mt-2 flex items-center gap-2 rounded-full border border-[#E4E7EC] bg-white px-3"
         onClick={() => navigate("/dashboard/feed")}
@@ -3960,7 +4018,7 @@ export function SocialStackCard({
           // onClick={(e) => e.stopPropagation()}
         />
         <SearchIcon className="h-4 w-4 text-[#667085]" />
-      </div>
+      </div>*/}
 
       {/* ===== Section 1: Profile preview ===== */}
       <div className=" mt-4 h-[290px] rounded-xl border border-[#ECEEF2] p-3 flex flex-col gap-3 shadow-[0_4px_10px_0_rgba(0,0,0,0.04)]">
@@ -3968,7 +4026,7 @@ export function SocialStackCard({
         <img
           src={coverUrl}
           alt=""
-          className="h-[149px] w-full rounded-[12px] object-cover"
+          className="h-[149px] w-full rounded-xl object-cover"
         />
 
         {/* Profile */}
@@ -3984,13 +4042,13 @@ export function SocialStackCard({
                 : avatar
             }
             alt={name}
-            className="h-12 w-12 rounded-full object-cover flex-shrink-0"
+            className="h-12 w-12 rounded-full object-cover shrink-0"
           />
 
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <div className="font-poppins font-medium text-[16px] md:text-[18px] leading-[24px] text-[#222224] truncate">
+                <div className="font-poppins font-medium text-[16px] md:text-[18px] leading-6 text-[#222224] truncate">
                   {name}
                 </div>
                 <div className="font-opensans text-[14px] text-[#222224]/50 truncate">
@@ -3998,7 +4056,7 @@ export function SocialStackCard({
                 </div>
               </div>
 
-              <div className="flex-shrink-0 flex flex-col sm:flex-row xl:flex-col 2xl:flex-row items-start sm:gap-4 xl:gap-0 2xl:gap-4 text-[14px] text-right">
+              <div className="shrink-0 flex flex-col sm:flex-row xl:flex-col 2xl:flex-row items-start sm:gap-4 xl:gap-0 2xl:gap-4 text-[14px] text-right">
                 <span className="whitespace-nowrap">
                   <span className="font-poppins font-medium text-[16px] text-[#7077FE]">
                     {resonating}
@@ -4024,7 +4082,7 @@ export function SocialStackCard({
         <button
           className="mt-auto w-full flex items-center justify-center gap-[7.09px] 
              h-[34px] rounded-[100px] bg-[#7077FE] 
-             px-[24px] py-[12px] 
+             px-6 py-3 
              font-opensans font-normal text-[14px] leading-[100%] text-white 
              shadow hover:bg-[#5A61E8] transition"
           onClick={() => navigate("/dashboard/Profile")}
@@ -4086,8 +4144,8 @@ export function SocialStackCard({
       <div className="my-4 border-t border-[#ECEEF2]" />
       {/* ===== Section 3: Friends ===== */}
       <div
-        className="h-[393px] rounded-[12px] border border-[#ECEEF2] 
-             px-[12px] py-[18px] flex flex-col gap-[18px] shadow-[0_4px_10px_0_rgba(0,0,0,0.04)] "
+        className="h-[393px] rounded-xl border border-[#ECEEF2] 
+             px-3 py-[18px] flex flex-col gap-[18px] shadow-[0_4px_10px_0_rgba(0,0,0,0.04)] "
       >
         {/* Header */}
         <div className="flex items-center gap-2">
@@ -4177,7 +4235,7 @@ export function SocialStackCard({
                   <button
                     onClick={() => handleConnect(f.id)}
                     disabled={connectingUsers[f.id] || false}
-                    className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
+                    className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px]
                     ${
                       getFriendStatus(f.id) === "connected"
                         ? "bg-gray-400 text-white cursor-not-allowed"
@@ -4298,22 +4356,22 @@ export function MarketplaceCard({
   }, [openMenuId]);
 
   const renderProductSection = (products: typeof suggested, title: string) => (
-    <div className="flex flex-col py-[18px] px-[12px] gap-[18px] border border-[#ECEEF2] rounded-xl">
+    <div className="flex flex-col py-[18px] px-3 gap-[18px] border border-[#ECEEF2] rounded-xl">
       <div className="flex justify-start items-center gap-3">
         <img
           src={suggesticon}
           alt="directory Icon"
-          className="h-[20px] w-[20px]"
+          className="h-5 w-5"
         />
         <span className="text-lg font-medium text-[#222224] font-poppins">
           {title}
         </span>
       </div>
-      <div className="flex flex-col px-[4px] gap-2 overflow-visible">
+      <div className="flex flex-col px-1 gap-2 overflow-visible">
         {products && products.length > 0 ? (
           products.slice(0, 3).map((f) => (
             <div
-              className="flex items-center justify-between py-[8px] ps-[8px] pr-[12px] border border-[#ECEEF2] rounded-xl gap-3"
+              className="flex items-center justify-between py-2 ps-2 pr-3 border border-[#ECEEF2] rounded-xl gap-3"
               style={{ boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)" }}
             >
               <div className="flex items-center gap-2">
@@ -4379,18 +4437,18 @@ export function MarketplaceCard({
     products: typeof topRated,
     title: string
   ) => (
-    <div className="flex flex-col py-[18px] px-[12px] gap-[18px] border border-[#ECEEF2] rounded-xl bg-[linear-gradient(180deg,rgba(112,119,254,0.1)_0%,rgba(240,126,255,0.1)_100%)]">
+    <div className="flex flex-col py-[18px] px-3 gap-[18px] border border-[#ECEEF2] rounded-xl bg-[linear-gradient(180deg,rgba(112,119,254,0.1)_0%,rgba(240,126,255,0.1)_100%)]">
       <div className="flex justify-start items-center gap-3">
-        <img src={fire} alt="directory Icon" className="h-[20px] w-[20px]" />
+        <img src={fire} alt="directory Icon" className="h-5 w-5" />
         <span className="text-lg font-medium text-[#222224] font-poppins">
           {title}
         </span>
       </div>
-      <div className="flex flex-col px-[4px] gap-2 overflow-visible">
+      <div className="flex flex-col px-1 gap-2 overflow-visible">
         {products && products.length > 0 ? (
           products.slice(0, 3).map((f) => (
             <div
-              className="flex items-center justify-between py-[8px] ps-[8px] pr-[12px] border border-[#ECEEF2] rounded-xl gap-3 bg-white"
+              className="flex items-center justify-between py-2 ps-2 pr-3 border border-[#ECEEF2] rounded-xl gap-3 bg-white"
               style={{ boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)" }}
             >
               <div className="flex items-center gap-2">
@@ -4454,7 +4512,7 @@ export function MarketplaceCard({
 
   const renderCartProductSection = (products: typeof carted, title: string) => (
     <div
-      className="flex flex-col min-h-[300px] py-[18px] px-[12px] gap-[18px] border border-[#ECEEF2] rounded-xl"
+      className="flex flex-col min-h-[300px] py-[18px] px-3 gap-[18px] border border-[#ECEEF2] rounded-xl"
       style={{ background: "rgba(240, 126, 255, 0.1)" }}
     >
       <div className="flex items-center justify-between gap-3">
@@ -4463,7 +4521,7 @@ export function MarketplaceCard({
             <img
               src={carticon}
               alt="directory Icon"
-              className="h-[20px] w-[20px]"
+              className="h-5 w-5"
             />
           </span>
           <span className="text-lg font-medium text-[#222224] font-poppins">
@@ -4478,11 +4536,11 @@ export function MarketplaceCard({
           />
         </button>
       </div>
-      <div className="grid grid-cols-2 w-full px-[4px] gap-2 overflow-visible">
+      <div className="grid grid-cols-2 w-full px-1 gap-2 overflow-visible">
         {products && products.length > 0 ? (
           products.slice(0, 2).map((f) => (
             <div
-              className="w-full flex flex-col items-center p-[8px] border border-[#ECEEF2] rounded-xl gap-2 bg-white"
+              className="w-full flex flex-col items-center p-2 border border-[#ECEEF2] rounded-xl gap-2 bg-white"
               style={{ boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)" }}
             >
               <div className="w-full h-[83px]">
@@ -4501,7 +4559,7 @@ export function MarketplaceCard({
                 </span>
               </div>
               <button
-                className="w-full rounded-full bg-[#7077FE] py-[8px] px-[3px] text-[8px] font-semibold text-white"
+                className="w-full rounded-full bg-[#7077FE] py-2 px-[3px] text-[8px] font-semibold text-white"
                 onClick={() => navigate("/dashboard/marketplace")}
               >
                 Buy Now
@@ -4552,7 +4610,7 @@ export function MarketplaceCard({
       </div>
 
       <div
-        className="mt-6 relative flex-1 overflow-hidden min-h-[320px]"
+        className="mt-6 relative flex-1 overflow-hidden min-h-80"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
@@ -4724,19 +4782,19 @@ export function LearningLabSection({
     switch (status) {
       case "completed":
         return (
-          <div className="absolute top-2 right-1 flex items-center gap-2 px-[8px] py-[4px] rounded-full bg-[#B4B7FF] backdrop-blur-sm">
+          <div className="absolute top-2 right-1 flex items-center gap-2 px-2 py-1 rounded-full bg-[#B4B7FF] backdrop-blur-sm">
             <img
               src={completed}
               alt={completed}
-              className="h-[12px] w-[12px]"
+              className="h-3 w-3"
             />
             <span className="text-xs font-medium text-white">Completed</span>
           </div>
         );
       case "resume":
         return (
-          <div className="absolute top-2 right-1 flex items-center gap-2 px-[8px] py-[4px] rounded-full bg-[#F3CCF3] backdrop-blur-sm">
-            <img src={resume} alt={resume} className="h-[12px] w-[12px]" />
+          <div className="absolute top-2 right-1 flex items-center gap-2 px-2 py-1 rounded-full bg-[#F3CCF3] backdrop-blur-sm">
+            <img src={resume} alt={resume} className="h-3 w-3" />
             <span className="text-xs font-medium text-white">In progress</span>
           </div>
         );
@@ -4750,7 +4808,7 @@ export function LearningLabSection({
   const getActionButton = (item: LearningLabItem) => {
     if (item.status === "resume") {
       return (
-        <button className="w-full sm:w-auto px-[24px] py-[8px] rounded-full bg-[#897AFF] text-white font-normal font-opensans text-[14px] cursor-not-allowed flex items-center justify-center">
+        <button className="w-full sm:w-auto px-6 py-2 rounded-full bg-[#897AFF] text-white font-normal font-opensans text-[14px] cursor-not-allowed flex items-center justify-center">
           Resume
         </button>
       );
@@ -4758,8 +4816,8 @@ export function LearningLabSection({
 
     if (item.status === "locked") {
       return (
-        <button className="w-full sm:w-auto px-[24px] py-[8px] rounded-full bg-[#FF708A] text-white font-opensans text-[14px] cursor-not-allowed flex items-center justify-center gap-2">
-          <img src={lock} alt={lock} className="h-[12px] w-[12px]" />
+        <button className="w-full sm:w-auto px-6 py-2 rounded-full bg-[#FF708A] text-white font-opensans text-[14px] cursor-not-allowed flex items-center justify-center gap-2">
+          <img src={lock} alt={lock} className="h-3 w-3" />
           Locked
         </button>
       );
@@ -4791,16 +4849,16 @@ export function LearningLabSection({
         {items.map((item) => (
           <div
             key={item.id}
-            className={`flex flex-col px-[12px] pt-[12px] pb-[24px] rounded-2xl border border-[#ECEEF2] ${
+            className={`flex flex-col px-3 pt-3 pb-6 rounded-2xl border border-[#ECEEF2] ${
               item?.status === "locked" ? "bg-[#F7F7F7]" : "bg-white "
             } overflow-hidden transition-all hover:shadow-md`}
           >
             {/* Image with status badge */}
-            <div className="relative h-[160px] overflow-hidden">
+            <div className="relative h-40 overflow-hidden">
               <img
                 src={item.image}
                 alt={item.name}
-                className="h-full w-full object-cover rounded-[8px]"
+                className="h-full w-full object-cover rounded-lg"
               />
               {getStatusBadge(item.status)}
             </div>

@@ -1103,17 +1103,46 @@ export default function BestPracticeSearch() {
                             </>
                           )}
                         </div>
-                        <span
-                          className="absolute top-6 left-6 text-[12px] inline-flex items-center justify-center mb-3 rounded-full px-3 py-2 leading-none font-medium bg-[#F3F3F3] text-[#8A8A8A]"
-                          style={{
-                            fontFamily: "Poppins, sans-serif",
-                            alignSelf: "flex-start", // 👈 forces pill to left
-                          }}
-                        >
-                          {company.profession
-                            ? company.profession
-                            : company.interest}
-                        </span>
+                        <div className="absolute top-6 left-6 flex gap-2 flex-wrap">
+                          {selectedFilter.type === "interest" &&
+                          company.interest
+                            ? // Show interest when filter is by interest
+                              (Array.isArray(company.interest)
+                                ? company.interest
+                                : [company.interest]
+                              )
+                                .filter((item) => item) // Filter out null/undefined values
+                                .map((item, i) => (
+                                  <span
+                                    key={i}
+                                    className="text-[12px] inline-flex items-center justify-center rounded-full px-3 py-2 leading-none font-medium bg-[#F3F3F3] text-[#8A8A8A]"
+                                    style={{
+                                      fontFamily: "Poppins, sans-serif",
+                                    }}
+                                  >
+                                    {item}
+                                  </span>
+                                ))
+                            : company.profession
+                            ? // Show profession by default or when filter is by profession
+                              (Array.isArray(company.profession)
+                                ? company.profession
+                                : [company.profession]
+                              )
+                                .filter((item) => item) // Filter out null/undefined values
+                                .map((item, i) => (
+                                  <span
+                                    key={i}
+                                    className="text-[12px] inline-flex items-center justify-center rounded-full px-3 py-2 leading-none font-medium bg-[#F3F3F3] text-[#8A8A8A]"
+                                    style={{
+                                      fontFamily: "Poppins, sans-serif",
+                                    }}
+                                  >
+                                    {item}
+                                  </span>
+                                ))
+                            : null}
+                        </div>
                         <div className="w-full flex justify-between items-center gap-3">
                           <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
                             {company.title}

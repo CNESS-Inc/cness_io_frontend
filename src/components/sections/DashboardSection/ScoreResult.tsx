@@ -19,6 +19,7 @@ import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import badgeicon from "../../../assets/badgeicon.svg";
 import { MdContentCopy } from "react-icons/md";
 import certifications from "../../../assets/certifications.svg";
+import LoadingSpinner from "../../ui/LoadingSpinner";
 
 // import { BiShare } from "react-icons/bi";
 
@@ -470,7 +471,7 @@ const handleReportDownload = async () => {
   // };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner/>;
   }
 
   if (!scoreData) {

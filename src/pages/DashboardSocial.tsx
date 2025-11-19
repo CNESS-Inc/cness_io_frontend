@@ -305,7 +305,7 @@ export default function SocialTopBar() {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const [userPosts, setUserPosts] = useState<Post[]>([]);
-  console.log("🚀 ~ SocialTopBar ~ userPosts:", userPosts)
+  console.log("🚀 ~ SocialTopBar ~ userPosts:", userPosts);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -335,7 +335,6 @@ export default function SocialTopBar() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
-  console.log("🚀 ~ SocialTopBar ~ userInfo:", userInfo)
   // const [isAdult, setIsAdult] = useState<Boolean>(
   //   localStorage.getItem("isAdult") === "true" ? true : false
   // );
@@ -362,6 +361,7 @@ export default function SocialTopBar() {
   //const [showTopicModal, setShowTopicModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [animations, setAnimations] = useState<any[]>([]);
+  const [isPosting, setIsPosting] = useState(false);
 
   useEffect(() => {
     if (location.state?.openPostPopup) {
@@ -769,7 +769,7 @@ export default function SocialTopBar() {
   };
 
   const handleSubmitPost = async () => {
-    // Check if message is required and validate character limits
+    // Validation checks
     if (!postMessage || postMessage.trim().length < 1) {
       showToast({
         message: "Message is required and must contain at least one character.",
@@ -816,6 +816,8 @@ export default function SocialTopBar() {
       });
       return;
     }
+
+    setIsPosting(true); // Start loading
 
     const formData = new FormData();
     formData.append("content", postMessage);
@@ -898,6 +900,8 @@ export default function SocialTopBar() {
         type: "error",
         duration: 5000,
       });
+    } finally {
+      setIsPosting(false); // End loading regardless of success/error
     }
   };
 
@@ -2024,76 +2028,82 @@ export default function SocialTopBar() {
 
                         {/* Dynamic Media Block */}
                         {post.file && (
-        <div className="rounded-lg">
-          {(() => {
-            // Split and filter valid URLs
-            const urls = post.file
-              .split(",")
-              .map((url) => url.trim())
-              .filter((url) => isValidMediaUrl(url)); // Filter out invalid URLs
+                          <div className="rounded-lg">
+                            {(() => {
+                              // Split and filter valid URLs
+                              const urls = post.file
+                                .split(",")
+                                .map((url) => url.trim())
+                                .filter((url) => isValidMediaUrl(url)); // Filter out invalid URLs
 
-            // If no valid media URLs after filtering, don't render anything
-            if (urls.length === 0) {
-              return null;
-            }
+                              // If no valid media URLs after filtering, don't render anything
+                              if (urls.length === 0) {
+                                return null;
+                              }
 
-            const mediaItems = urls.map((url) => ({
-              url,
-              type: (isVideoFile(url) ? "video" : "image") as
-                | "video"
-                | "image",
-            }));
+                              const mediaItems = urls.map((url) => ({
+                                url,
+                                type: (isVideoFile(url) ? "video" : "image") as
+                                  | "video"
+                                  | "image",
+                              }));
 
-            // Use PostCarousel if there are multiple items
-            if (mediaItems.length > 1) {
-              return (
-                // Wrap with Link if product_id exists
-                post.product_id ? (
-                  <Link to={`/dashboard/product-detail/${post.product_id}`}>
-                    <PostCarousel mediaItems={mediaItems} />
-                  </Link>
-                ) : (
-                  <PostCarousel mediaItems={mediaItems} />
-                )
-              );
-            }
+                              // Use PostCarousel if there are multiple items
+                              if (mediaItems.length > 1) {
+                                return (
+                                  // Wrap with Link if product_id exists
+                                  post.product_id ? (
+                                    <Link
+                                      to={`/dashboard/product-detail/${post.product_id}`}
+                                    >
+                                      <PostCarousel mediaItems={mediaItems} />
+                                    </Link>
+                                  ) : (
+                                    <PostCarousel mediaItems={mediaItems} />
+                                  )
+                                );
+                              }
 
-            // Single item rendering - wrap with Link if product_id exists
-            const item = mediaItems[0];
-            const mediaContent = item.type === "video" ? (
-              <video
-                className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
-                controls
-                muted
-                autoPlay
-                loop
-              >
-                <source src={item.url} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            ) : (
-              <img
-                src={item.url}
-                alt="Post content"
-                className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = ""; // Clear broken images
-                }}
-              />
-            );
+                              // Single item rendering - wrap with Link if product_id exists
+                              const item = mediaItems[0];
+                              const mediaContent =
+                                item.type === "video" ? (
+                                  <video
+                                    className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
+                                    controls
+                                    muted
+                                    autoPlay
+                                    loop
+                                  >
+                                    <source src={item.url} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                  </video>
+                                ) : (
+                                  <img
+                                    src={item.url}
+                                    alt="Post content"
+                                    className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
+                                    onError={(e) => {
+                                      const target =
+                                        e.target as HTMLImageElement;
+                                      target.src = ""; // Clear broken images
+                                    }}
+                                  />
+                                );
 
-            // Conditionally wrap with Link if product_id exists
-            return post.product_id ? (
-              <Link to={`/dashboard/product-detail/${post.product_id}`}>
-                {mediaContent}
-              </Link>
-            ) : (
-              mediaContent
-            );
-          })()}
-        </div>
-      )}
+                              // Conditionally wrap with Link if product_id exists
+                              return post.product_id ? (
+                                <Link
+                                  to={`/dashboard/product-detail/${post.product_id}`}
+                                >
+                                  {mediaContent}
+                                </Link>
+                              ) : (
+                                mediaContent
+                              );
+                            })()}
+                          </div>
+                        )}
                       </div>
 
                       {/* Reactions and Action Buttons */}
@@ -2753,10 +2763,18 @@ export default function SocialTopBar() {
 
                     <button
                       onClick={handleSubmitPost}
-                      className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6] relative"
-                      data-post-button // Add this attribute
+                      disabled={isPosting}
+                      className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6] disabled:opacity-50 disabled:cursor-not-allowed relative flex items-center justify-center min-w-20"
+                      data-post-button
                     >
-                      Post
+                      {isPosting ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Posting...
+                        </div>
+                      ) : (
+                        "Post"
+                      )}
                     </button>
                   </div>
                 </div>
