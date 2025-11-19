@@ -39,7 +39,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 
   return (
     <div
-      className="rounded-[12px] border border-gray-200 bg-white flex flex-col"
+      className="rounded-xl border border-gray-200 bg-white flex flex-col"
       style={{
         width: "100%",
         gap: "18px",
@@ -139,8 +139,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             {activeTab === tab.label && (
               <span
                 aria-hidden
-                className="absolute top-0 left-0 right-0 bottom-0 rounded-t-[12px]
-              bg-gradient-to-b from-[#FFFFFF] via-[#F5F2FF] to-[rgba(151,71,255,0.14)] z-0"
+                className="absolute top-0 left-0 right-0 bottom-0 rounded-t-xl
+              bg-linear-to-b from-[#FFFFFF] via-[#F5F2FF] to-[rgba(151,71,255,0.14)] z-0"
               />
             )}
             <span
@@ -159,7 +159,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
               {tab.label}
             </span>
             {activeTab === tab.label && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#9747FF] rounded-full" />
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#9747FF] rounded-full" />
             )}
           </button>
         ))}

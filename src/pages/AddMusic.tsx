@@ -929,7 +929,7 @@ const AddMusicForm: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAIModal(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-linear-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group"
                 >
                   <svg
                     className="w-4 h-4 animate-pulse"
