@@ -2226,8 +2226,8 @@ export const GetProductReviws = (
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 };
 
-export const CreateCheckoutSession = () => {
-  return executeAPI(ServerAPI.APIMethod.POST, {}, EndPoint.marketplace_checkout);
+export const CreateCheckoutSession = (appliedDonation:number) => {
+  return executeAPI(ServerAPI.APIMethod.POST, {donation_amount:appliedDonation}, EndPoint.marketplace_checkout);
 };
 
 export const GetCheckoutDetails = (): ApiResponse => {
