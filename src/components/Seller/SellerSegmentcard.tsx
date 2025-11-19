@@ -2,7 +2,8 @@ import React, { useEffect, useState, type ReactNode  } from "react";
 import {
   //ChevronRight,
 
-  Search as SearchIcon,
+  //Search as 
+  //SearchIcon,
   // X,
   Bell,
   Plus,
@@ -3637,19 +3638,22 @@ export function SocialStackCard({
     const NotificationsCard = ({ notifications }: { notifications: any[] }) => {
       //const userProfile = localStorage.getItem("profile_picture");
       return (
-<div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px] -mt-35">
+<div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px]">
+    <div className="flex flex-col h-[350px]">
+
           {/* header */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mt-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F7E9FF]">
               <Bell className="h-4 w-4 text-[#B255FF]" />
             </div>
-            <h3 className="font-poppins font-semibold text-[20px] leading-[32.3px] tracking-[0.15px] text-center text-[#0F1728]">
+            <h3 className="font-poppins font-semibold text-[20px] leading-[32px] tracking-[0.15px] text-center text-[#0F1728]">
               Notification
             </h3>
           </div>
 
           {/* rows */}
-          <div className="mt-2 space-y-3">
+    <div className="flex-1 overflow-y-auto space-y-3 pr-2 mt-3">
+
             {notifications.map((item) => (
               <div
                 key={item.id}
@@ -3688,12 +3692,16 @@ export function SocialStackCard({
           </div>
 
           {/* CTA */}
-          <button
-            className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-full text-white text-[14px] font-semibold bg-[linear-gradient(90deg,#7077FE_0%,#9747FF_60%,#F07EFF_100%)] shadow"
-            onClick={() => navigate("/dashboard/notification")}
-          >
-            View all Notification
-          </button>
+  {/* your notification items here */}
+
+  <button
+    className="absolute bottom-3 left-1/2 -translate-x-1/2 inline-flex h-10 w-[90%] items-center justify-center rounded-full text-white text-[14px] font-semibold bg-[linear-gradient(90deg,#7077FE_0%,#9747FF_60%,#F07EFF_100%)] shadow"
+    onClick={() => navigate("/dashboard/notification")}
+  >
+    View all Notification
+  </button>
+
+        </div>
         </div>
       );
     };
@@ -3998,7 +4006,7 @@ export function SocialStackCard({
       </div>
       <HeaderDivider />
 
-      {/* Search */}
+      {/* Search 
       <div
         className="mt-2 flex items-center gap-2 rounded-full border border-[#E4E7EC] bg-white px-3"
         onClick={() => navigate("/dashboard/feed")}
@@ -4010,7 +4018,7 @@ export function SocialStackCard({
           // onClick={(e) => e.stopPropagation()}
         />
         <SearchIcon className="h-4 w-4 text-[#667085]" />
-      </div>
+      </div>*/}
 
       {/* ===== Section 1: Profile preview ===== */}
       <div className=" mt-4 h-[290px] rounded-xl border border-[#ECEEF2] p-3 flex flex-col gap-3 shadow-[0_4px_10px_0_rgba(0,0,0,0.04)]">

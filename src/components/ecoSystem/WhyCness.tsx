@@ -61,7 +61,7 @@ export default function WhyCness() {
           Why CNESS?
         </h1>
 
-        <p className="font-['Open_Sans'] lg:text-lg md:text-[16px] text-white font-light pt-4 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
+        <p className="font-['Open_Sans'] lg:text-xl md:text-[18px] text-white font-light pt-4 max-w-4xl mx-auto transition-all duration-1000 ease-in-out">
           Discover our comprehensive range of applications designed to meet the{" "}
           <br /> diverse needs of individuals and organizations.
         </p>
@@ -125,7 +125,7 @@ export default function WhyCness() {
                   {item.title}
                 </h3>
 
-                <p className="font-['Open_Sans']  pt-3 text-white text-sm font-light">
+                <p className="font-['Open_Sans']  pt-3 text-white text-[17px] font-light">
                   {item.desc}
                 </p>
               </div>
