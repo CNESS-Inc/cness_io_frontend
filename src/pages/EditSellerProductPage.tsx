@@ -457,6 +457,14 @@ const EditSellerProductPage: React.FC = () => {
             setShortVideoPreview(
               productData.video_details?.short_video?.thumbnail || ""
             );
+
+            // ✅ FIX: Set thumbnail data for video category too
+            if (productData.video_details?.thumbnail_url) {
+              setThumbnailData({
+                thumbnail_url: productData.video_details.thumbnail_url,
+                public_id: productData.public_id || "",
+              });
+            }
           } else {
             // Non-video categories have thumbnail
             commonData.thumbnail_url = productData.thumbnail_url || "";
@@ -1080,11 +1088,11 @@ const EditSellerProductPage: React.FC = () => {
             const updatedFiles = fileArray.map((f: any) =>
               f.file === file
                 ? {
-                  ...f,
-                  url: uploadedUrl,
-                  order_number: fileArray.length - 1,
-                  isUploading: false,
-                }
+                    ...f,
+                    url: uploadedUrl,
+                    order_number: fileArray.length - 1,
+                    isUploading: false,
+                  }
                 : f
             );
 
@@ -1868,8 +1876,9 @@ const EditSellerProductPage: React.FC = () => {
         <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
           {/* Basic Info Section */}
           <FormSection
-            title={`Edit ${category.charAt(0).toUpperCase() + category.slice(1)
-              }`}
+            title={`Edit ${
+              category.charAt(0).toUpperCase() + category.slice(1)
+            }`}
             description="Update your digital product details, pricing, and availability on the marketplace."
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -1965,10 +1974,11 @@ const EditSellerProductPage: React.FC = () => {
                   </div>
                 ) : (
                   <label
-                    className={`relative flex flex-col items-center justify-center h-64 cursor-pointer rounded-lg p-6 text-center transition-all ${isMainVideoUploading
+                    className={`relative flex flex-col items-center justify-center h-64 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                      isMainVideoUploading
                         ? "pointer-events-none opacity-70"
                         : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                      }`}
+                    }`}
                   >
                     <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                       <rect
@@ -2031,107 +2041,101 @@ const EditSellerProductPage: React.FC = () => {
               </div>
             )}
 
-            {/* Non-Video Categories - Thumbnail Upload */}
-            {category !== "video" && (
-              <div className="mt-8">
-                <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                  Thumbnail <span className="text-red-500">*</span>
-                </label>
-                {thumbnailData?.thumbnail_url ? (
-                  <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
-                    <img
-                      src={thumbnailData.thumbnail_url}
-                      alt="Thumbnail"
-                      className="w-full h-40 object-cover"
-                    />
-                    {/* Edit/Replace Button */}
-                    <label
-                      htmlFor="thumbnail-replace"
-                      className="absolute top-2 right-12 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition cursor-pointer"
-                      title="Replace Thumbnail"
-                    >
-                      <SquarePen className="w-4 h-4" />
-                      <input
-                        id="thumbnail-replace"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleThumbnailUpload}
-                        disabled={isThumbnailUploading}
-                      />
-                    </label>
-                    {/* Remove Button */}
-                    <button
-                      type="button"
-                      onClick={handleRemoveThumbnail}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
-                      title="Remove Thumbnail"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : (
+            <div className="mt-8">
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Thumbnail <span className="text-red-500">*</span>
+              </label>
+              {thumbnailData?.thumbnail_url ? (
+                <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
+                  <img
+                    src={thumbnailData.thumbnail_url}
+                    alt="Thumbnail"
+                    className="w-full h-40 object-cover"
+                  />
+                  {/* Edit/Replace Button */}
                   <label
-                    className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isThumbnailUploading
-                        ? "pointer-events-none opacity-70"
-                        : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                      }`}
+                    htmlFor="thumbnail-replace"
+                    className="absolute top-2 right-12 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition cursor-pointer"
+                    title="Replace Thumbnail"
                   >
-                    <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
-                      <rect
-                        x="1"
-                        y="1"
-                        width="calc(100% - 2px)"
-                        height="calc(100% - 2px)"
-                        rx="12"
-                        ry="12"
-                        stroke={errors.thumbnail_url ? "#EF4444" : "#CBD5E1"}
-                        strokeWidth="2"
-                        strokeDasharray="6,6"
-                        fill="none"
-                        className="transition-all duration-300 group-hover:stroke-[#7077FE]"
-                      />
-                    </svg>
+                    <SquarePen className="w-4 h-4" />
                     <input
+                      id="thumbnail-replace"
                       type="file"
                       accept="image/*"
                       className="hidden"
                       onChange={handleThumbnailUpload}
                       disabled={isThumbnailUploading}
                     />
-                    {isThumbnailUploading ? (
-                      <div className="flex flex-col items-center space-y-2">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
-                        <p className="text-sm text-[#7077FE]">
-                          Uploading thumbnail...
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="text-center space-y-2">
-                        <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
-                          <img
-                            src={uploadimg}
-                            alt="Upload"
-                            className="w-6 h-6"
-                          />
-                        </div>
-                        <p className="text-sm font-[poppins] text-[#242E3A]">
-                          Drag & drop or click to upload
-                        </p>
-                        <p className="text-xs text-[#665B5B]">
-                          Recommended 266 X 149 px
-                        </p>
-                      </div>
-                    )}
                   </label>
-                )}
-                {errors.thumbnail_url && (
-                  <span className="text-red-500 text-sm mt-1">
-                    {errors.thumbnail_url}
-                  </span>
-                )}
-              </div>
-            )}
+                  {/* Remove Button */}
+                  <button
+                    type="button"
+                    onClick={handleRemoveThumbnail}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+                    title="Remove Thumbnail"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label
+                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                    isThumbnailUploading
+                      ? "pointer-events-none opacity-70"
+                      : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                  }`}
+                >
+                  <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                    <rect
+                      x="1"
+                      y="1"
+                      width="calc(100% - 2px)"
+                      height="calc(100% - 2px)"
+                      rx="12"
+                      ry="12"
+                      stroke={errors.thumbnail_url ? "#EF4444" : "#CBD5E1"}
+                      strokeWidth="2"
+                      strokeDasharray="6,6"
+                      fill="none"
+                      className="transition-all duration-300 group-hover:stroke-[#7077FE]"
+                    />
+                  </svg>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleThumbnailUpload}
+                    disabled={isThumbnailUploading}
+                  />
+                  {isThumbnailUploading ? (
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
+                      <p className="text-sm text-[#7077FE]">
+                        Uploading thumbnail...
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-center space-y-2">
+                      <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
+                        <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+                      </div>
+                      <p className="text-sm font-[poppins] text-[#242E3A]">
+                        Drag & drop or click to upload
+                      </p>
+                      <p className="text-xs text-[#665B5B]">
+                        Recommended 266 X 149 px
+                      </p>
+                    </div>
+                  )}
+                </label>
+              )}
+              {errors.thumbnail_url && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.thumbnail_url}
+                </span>
+              )}
+            </div>
           </FormSection>
 
           {/* Details Section - All Categories */}
@@ -2382,15 +2386,15 @@ const EditSellerProductPage: React.FC = () => {
                 category === "ebook" ||
                 category === "course" ||
                 category === "art") && (
-                  <InputField
-                    label="Theme"
-                    placeholder="Describe the theme"
-                    name="theme"
-                    value={formData.theme || ""}
-                    onChange={handleChange}
-                    error={errors.theme}
-                  />
-                )}
+                <InputField
+                  label="Theme"
+                  placeholder="Describe the theme"
+                  name="theme"
+                  value={formData.theme || ""}
+                  onChange={handleChange}
+                  error={errors.theme}
+                />
+              )}
 
               {/* Art - Mediums */}
               {category === "art" && (
@@ -2525,10 +2529,11 @@ const EditSellerProductPage: React.FC = () => {
                     </div>
                   ) : (
                     <label
-                      className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isShortVideoUploading
+                      className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                        isShortVideoUploading
                           ? "pointer-events-none opacity-70"
                           : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                        }`}
+                      }`}
                     >
                       <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                         <rect
@@ -2592,8 +2597,9 @@ const EditSellerProductPage: React.FC = () => {
                     value={formData.summary || ""}
                     onChange={handleChange}
                     placeholder="Write a brief description of your storytelling"
-                    className={`w-full h-40 px-3 py-2 border ${errors.summary ? "border-red-500" : "border-gray-200"
-                      } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
+                    className={`w-full h-40 px-3 py-2 border ${
+                      errors.summary ? "border-red-500" : "border-gray-200"
+                    } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
                   />
                   {errors.summary && (
                     <span className="text-red-500 text-sm mt-1">
@@ -2612,14 +2618,14 @@ const EditSellerProductPage: React.FC = () => {
                 category === "music"
                   ? "Tracks"
                   : category === "podcast"
-                    ? "Episodes"
-                    : category === "ebook"
-                      ? "Chapters"
-                      : category === "course"
-                        ? "Lessons"
-                        : category === "art"
-                          ? "Collections"
-                          : "Content"
+                  ? "Episodes"
+                  : category === "ebook"
+                  ? "Chapters"
+                  : category === "course"
+                  ? "Lessons"
+                  : category === "art"
+                  ? "Collections"
+                  : "Content"
               }
               description={`Manage your ${category} content`}
             >

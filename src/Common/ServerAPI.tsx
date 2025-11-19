@@ -255,7 +255,7 @@ export const EndPoint = {
   delete_seller_documents: "/seller-onboarding/remove",
   save_extra_banners: "/seller-onboarding/save-extra-banners",
   remove_extra_banners: "/seller-onboarding/remove/extra-banners",
-  seller_sales_history: "/api/seller-sales/history",
+  seller_sales_history: "/seller-sales/history",
   remove_specific_extra_banners: "/seller-onboarding/remove/extra-banners",
   remove_team_member_image: "/seller-onboarding/remove/team-member-image",
   remove_team_member: "/seller-onboarding/remove/team-member",
@@ -2230,8 +2230,8 @@ export const GetProductReviws = (
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 };
 
-export const CreateCheckoutSession = () => {
-  return executeAPI(ServerAPI.APIMethod.POST, {}, EndPoint.marketplace_checkout);
+export const CreateCheckoutSession = (appliedDonation:number) => {
+  return executeAPI(ServerAPI.APIMethod.POST, {donation_amount:appliedDonation}, EndPoint.marketplace_checkout);
 };
 
 export const GetCheckoutDetails = (): ApiResponse => {
@@ -2394,14 +2394,13 @@ export const GetSellerSalesHistory = (
     endDate?: string;
     page?: number;
     limit?: number;
-  } = {} // optional object
+  } = {}
 ) => {
-  // Build query params string
   const searchParams = new URLSearchParams();
-  if (params.customer) searchParams.append('customer', params.customer);
-  if (params.orderId) searchParams.append('orderId', params.orderId);
-  if (params.startDate) searchParams.append('startDate', params.startDate);
-  if (params.endDate) searchParams.append('endDate', params.endDate);
+  if (params.customer) searchParams.append('customer_name', params.customer);
+  if (params.orderId) searchParams.append('order_id', params.orderId);
+  if (params.startDate) searchParams.append('start_date', params.startDate);
+  if (params.endDate) searchParams.append('end_date', params.endDate);
   searchParams.append('page', params.page?.toString() || '1');
   searchParams.append('limit', params.limit?.toString() || '10');
 
