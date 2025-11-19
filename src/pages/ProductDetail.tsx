@@ -56,6 +56,10 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         const response = await GetMarketPlaceBuyerProductById(id);
         const productData = response?.data?.data;
         setProduct(productData);
+        console.log("ART SAMPLE → ",
+  productData?.product_details?.sample_image_url
+);
+console.log("FULL PRODUCT → ", productData);
         setIsLiked(productData?.is_in_wishlist || false);
         setIsCarted(productData?.is_in_cart || false);
       } catch (error: any) {
@@ -696,6 +700,30 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
             </button>
           </div>
         </div>
+
+
+
+
+ {product?.product_details?.sample_image_url && (
+    <div className="bg-white rounded-xl shadow-md p-6 mt-6">
+      <h2 className="font-[Poppins] font-semibold text-[20px] text-[#242E3A] mb-4">
+        Sample Preview
+      </h2>
+
+      <div className="w-full flex justify-center">
+        <img
+          src={product.product_details.sample_image_url}
+          alt="Art Sample Preview"
+          className="max-w-[400px] rounded-lg shadow-md border object-cover"
+        />
+      </div>
+
+      <p className="text-center mt-2 text-gray-500 text-sm">
+        Watermarked sample preview
+      </p>
+    </div>
+)}
+
 
         {(product?.category?.slug === 'music' || product?.category?.slug === 'podcast') &&
           product?.product_details?.sample_track && (

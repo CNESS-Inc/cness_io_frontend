@@ -180,14 +180,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return iconMap[categoryName] || <BookOpen className="w-4 h-4 text-gray-800" />;
   };
 
+  
+
+
   return (
     <div
       onClick={handleCardClick}
-      className="bg-white border border-gray-300 rounded-[14px] overflow-hidden w-full h-full cursor-pointer 
-      transition-transform duration-300 hover:shadow-lg flex flex-col"
+      className="bg-white border border-gray-300 rounded-[14px]
+    overflow-hidden cursor-pointer flex flex-col 
+    hover:shadow-lg transition-transform hover:scale-[1.02]
+
+    /* Responsive card width */
+    w-full
+    max-w-[300px]
+    lg:max-w-[300px]                         /* desktop */
+    sm:max-w-[260px]        /* small tablets */
+    xs:max-w-[210px]        /* phones below 500px */
+    
+    /* Let height scale automatically */
+    h-auto
+  "
     >
       {/* Product Image */}
-      <div className="relative group w-full aspect-[4/3] overflow-hidden">
+<div className="relative w-full aspect-[266/149] rounded-t-[14px] overflow-hidden">
         <img
           src={product.image}
           alt={product.title}
@@ -241,34 +256,72 @@ const ProductCard: React.FC<ProductCardProps> = ({
               )}
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            {/* ShoppingCart Button */}
-            <button
-              onClick={handleAddToCart}
-              disabled={isAddingToCart}
-              className="w-8 h-8 border border-[#7077FE] rounded-full flex items-center justify-center hover:bg-blue-50 transform transition-transform duration-300 hover:scale-110"
-            >
-              {carted ? (
-                <FiShoppingCart
-                  className="w-4 h-4 text-[#7077FE] fill-[#7077FE] transition-colors duration-300"
-                />
-              ) : (
-                <FiShoppingCart
-                  className="w-4 h-4 text-[#7077FE] fill-transparent transition-colors duration-300"
-                />
-              )}
-            </button>
-            {/* Buy Now Button */}
-            <button
-              onClick={handleBuyNow}
-              className="relative bg-[#7077FE] text-white pl-4 pr-12 py-2 rounded-full text-xs md:text-sm font-semibold transition-colors flex items-center overflow-hidden group"
-            >
-              <span>Buy Now</span>
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md transition-transform duration-300 group-hover:-rotate-45">
-                <ArrowRight className="w-4 h-4" stroke="#7077FE" />
-              </span>
-            </button>
-          </div>
+
+
+<div className="flex items-center gap-1 w-full justify-end">
+  
+  {/* Cart Button */}
+  <button
+    onClick={handleAddToCart}
+    disabled={isAddingToCart}
+    className="flex items-center justify-center 
+     
+      hover:bg-blue-50 transition-transform hover:scale-110
+
+      w-7 h-7        /* mobile */
+      sm:w-8 sm:h-8  /* tablet */
+      md:w-8 md:h-8  /* desktop */
+    "
+  >
+    <FiShoppingCart
+      className={`w-4 h-4 ${
+        carted ? "text-[#7077FE] fill-[#7077FE]" : "text-[#7077FE]"
+      }`}
+    />
+  </button>
+
+  {/* Buy Now Button */}
+ <button
+  onClick={handleBuyNow}
+  className="
+    relative bg-[#7077FE] text-white rounded-full font-semibold flex items-center
+    overflow-hidden group whitespace-nowrap flex-shrink
+
+    h-8 px-3
+    sm:h-8 sm:px-4
+    md:h-9 md:px-4
+
+    text-[10px] sm:text-[11px] md:text-[11px]
+
+    flex-shrink
+  "
+>
+  {/* Text that can shrink */}
+  <span className="mr-4 sm:mr-5 md:mr-6 flex-shrink">
+    Buy Now
+  </span>
+
+  {/* Arrow circle — also flexible */}
+  <span
+    className="
+      absolute right-1 top-1/2 -translate-y-1/2
+      bg-white rounded-full flex items-center justify-center shadow
+
+      w-5 h-5
+      sm:w-6 sm:h-6
+      md:w-6 md:h-6
+
+      transition-transform duration-300 group-hover:-rotate-45
+      flex-shrink-0
+    "
+  >
+    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" stroke="#7077FE" />
+  </span>
+</button>
+
+</div>
+
+          
         </div>
         <div className="border-t border-gray-200 pt-3 mt-auto">
           <div className="flex items-center justify-between">
@@ -290,7 +343,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="flex items-center space-x-1">
               <Clock className="w-4 h-4 text-[#7077FE]" />
               <span className="text-xs md:text-sm text-gray-800">
-                {product.duration}
+                 {product.duration}
               </span>
             </div>
           </div>
