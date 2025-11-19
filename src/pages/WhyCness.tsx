@@ -382,7 +382,7 @@ growth is guided by heart and conscience.
             </h2>
             <div className="absolute top-8 lg:top-auto bottom-0 lg:mb-[86px] w-full h-full lg:h-[493px]">
               <img
-                src="https://cdn.cness.io/roadmap1.svg"
+                src="https://cdn.cness.io/roadmap_2026.svg"
                 alt="CNESS roadmap"
                 className="w-full h-full pointer-events-none select-none object-contain"
               />

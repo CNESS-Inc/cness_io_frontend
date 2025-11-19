@@ -50,6 +50,13 @@ const SingleBP = () => {
   const [replyErrors, setReplyErrors] = useState<{ [key: string]: string }>({});
   const [animations, _setAnimations] = useState<any[]>([]);
   const [relatedBestPractices, setRelatedBestPractices] = useState<any[]>([]);
+  
+  // Loading states
+  const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false);
+  const [isAppreciateLoading, setIsAppreciateLoading] = useState<boolean>(false);
+  const [isSaveLoading, setIsSaveLoading] = useState<boolean>(false);
+  const [isCommentLoading, setIsCommentLoading] = useState<boolean>(false);
+  const [isReplyLoading, setIsReplyLoading] = useState<{ [key: string]: boolean }>({}); // NEW: Reply loading state
 
   const profile_picture = localStorage.getItem("profile_picture") || "/profile.png";
   const name = localStorage.getItem("name") || "";
@@ -83,13 +90,28 @@ const SingleBP = () => {
         setCommentError("Please enter a comment.");
         return;
       }
+      
+      setIsCommentLoading(true); // Start loading
       const payload = { post_id: id, text: comment };
       await CreateBestpracticesComment(payload);
       setCommentCount((prev) => prev + 1);
       setComment("");
       fetchComments();
+      
+      showToast({
+        message: "Comment posted successfully!",
+        type: "success",
+        duration: 3000,
+      });
     } catch (error) {
       console.error("Error creating comment:", error);
+      showToast({
+        message: "Failed to post comment",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsCommentLoading(false); // End loading
     }
   };
 
@@ -110,6 +132,7 @@ const SingleBP = () => {
 
   const fetchSavedPost = async () => {
     try {
+      setIsSaveLoading(true);
       const res = await SaveBestpractices({ post_id: id });
       if (res?.success?.message?.toLowerCase().includes("unsave")) {
         setIs_saved(false);
@@ -120,27 +143,44 @@ const SingleBP = () => {
       }
     } catch (error) {
       console.error("Error saving/unsaving best practice:", error);
+      showToast({
+        message: "Failed to save post",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsSaveLoading(false);
     }
   };
 
   const toggleFollowPost = async () => {
     try {
+      setIsFollowLoading(true);
       const res = await SendBpFollowRequest({ bp_id: id });
       if (res?.success?.statusCode === 200) {
         const isNowFollowing = res?.data?.data !== null;
         setIsFollowing(isNowFollowing);
+        showToast({
+          message: isNowFollowing ? "Successfully followed" : "Successfully unfollowed",
+          type: "success",
+          duration: 3000,
+        });
       }
     } catch (error) {
       console.error("Error following/unfollowing:", error);
+      showToast({
+        message: "Failed to update follow status",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsFollowLoading(false);
     }
   };
 
   const handleLike = async () => {
     try {
-      //  const like = document.querySelector(
-      //     "[data-comment-button]"
-      //   ) as HTMLElement;
-
+      setIsAppreciateLoading(true);
       const res = await LikeBestpractices({ post_id: id });
       if (res?.success?.message?.includes("Unliked")) {
         setIsLiked(false);
@@ -154,6 +194,13 @@ const SingleBP = () => {
       }
     } catch (error) {
       console.error("Error liking/unliking the post:", error);
+      showToast({
+        message: "Failed to appreciate post",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsAppreciateLoading(false);
     }
   };
 
@@ -210,6 +257,9 @@ const SingleBP = () => {
         return;
       }
 
+      // Start loading for this specific reply
+      setIsReplyLoading((prev) => ({ ...prev, [commentId]: true }));
+
       // You'll need to create this API function
       await CreateBestpracticesCommentReply({
         comment_id: commentId,
@@ -220,8 +270,22 @@ const SingleBP = () => {
       setReplyingTo(null);
       setReplyText("");
       fetchComments(); // Refresh comments to show the new reply
+      
+      showToast({
+        message: "Reply posted successfully!",
+        type: "success",
+        duration: 3000,
+      });
     } catch (error) {
       console.error("Error creating reply:", error);
+      showToast({
+        message: "Failed to post reply",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      // End loading for this specific reply
+      setIsReplyLoading((prev) => ({ ...prev, [commentId]: false }));
     }
   };
 
@@ -259,38 +323,6 @@ const SingleBP = () => {
       .replace(/^-+/, "")
       .replace(/-+$/, "");
   };
-
-  // const triggerCreditAnimation = (fromElement: HTMLElement, amount = 10) => {
-  //   const walletIcon = document.querySelector(
-  //     "[data-wallet-icon]"
-  //   ) as HTMLElement;
-  //   if (!walletIcon || !fromElement) return;
-
-  //   const fromRect = fromElement.getBoundingClientRect();
-  //   const toRect = walletIcon.getBoundingClientRect();
-
-  //   const animationId = Date.now();
-  //   setAnimations((prev) => [
-  //     ...prev,
-  //     {
-  //       id: animationId,
-  //       from: {
-  //         x: fromRect.left + fromRect.width / 2,
-  //         y: fromRect.top + fromRect.height / 2,
-  //       },
-  //       to: {
-  //         x: toRect.left + toRect.width / 2,
-  //         y: toRect.top + toRect.height / 2,
-  //       },
-  //       amount: amount,
-  //     },
-  //   ]);
-
-  //   // Remove animation after completion
-  //   setTimeout(() => {
-  //     setAnimations((prev) => prev.filter((a) => a.id !== animationId));
-  //   }, 1400);
-  // };
 
   return (
     <>
@@ -344,7 +376,6 @@ const SingleBP = () => {
 
               {/* Icons + Go Back */}
               <div className="flex flex-wrap items-center gap-3 text-gray-500">
-                {/* Social Icons */}
                 {/* Social Icons */}
                 <div className="flex items-center gap-1 pr-4 border-r border-gray-300">
                   <button className="p-2 hover:text-[#7077FE] rounded-full transition">
@@ -421,11 +452,6 @@ const SingleBP = () => {
                 <h1 className="text-[34px] sm:text-3xl font-bold text-[#000000] mt-1 leading-snug">
                   {singlepost?.title}
                 </h1>
-                {/* <p className="text-gray-600 mt-3 text-sm sm:text-base">
-                  Explore how conscious photography transforms ordinary moments
-                  into meaningful stories, capturing emotion, perspective, and
-                  purpose through every frame.
-                </p> */}
               </div>
 
               {/* ======= Info Row - Grid Version ======= */}
@@ -484,13 +510,20 @@ const SingleBP = () => {
                       <button
                         data-comment-button
                         onClick={handleLike}
+                        disabled={isAppreciateLoading}
                         className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${
                           isLiked
                             ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
                             : "border-[#7B78FE] text-dark hover:bg-gray-100"
-                        }`}
+                        } ${isAppreciateLoading ? "opacity-50 cursor-not-allowed" : ""}`}
                       >
-                        {isLiked ? "Appreciated" : "Appreciate"}
+                        {isAppreciateLoading ? (
+                          <div className="w-4 h-4 border-2 border-[#7178FF] border-t-transparent rounded-full animate-spin"></div>
+                        ) : isLiked ? (
+                          "Appreciated"
+                        ) : (
+                          "Appreciate"
+                        )}
                       </button>
                       {animations.map((anim) => (
                         <CreditAnimation
@@ -509,25 +542,39 @@ const SingleBP = () => {
                   <div className="flex items-center justify-start sm:justify-end gap-3 h-full">
                     <button
                       onClick={fetchSavedPost}
-                      className="flex items-center gap-2 text-black text-sm font-medium px-3 py-1.5 rounded-full hover:bg-gray-50 whitespace-nowrap"
+                      disabled={isSaveLoading}
+                      className={`flex items-center gap-2 text-black text-sm font-medium px-3 py-1.5 rounded-full hover:bg-gray-50 whitespace-nowrap ${
+                        isSaveLoading ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     >
-                      {isSaved ? (
+                      {isSaveLoading ? (
+                        <div className="w-4 h-4 border-2 border-[#D77CFF] border-t-transparent rounded-full animate-spin"></div>
+                      ) : isSaved ? (
                         <FaBookmark className="text-base text-[#D77CFF]" />
                       ) : (
                         <FaRegBookmark className="text-base text-[#D77CFF]" />
                       )}
-                      {isSaved ? "Saved" : "Save "}
+                      {isSaveLoading ? "Saving..." : isSaved ? "Saved" : "Save"}
                     </button>
 
                     <button
                       onClick={toggleFollowPost}
-                      className="text-white px-4 py-1.5 rounded-full text-sm font-medium transition whitespace-nowrap"
+                      disabled={isFollowLoading}
+                      className={`text-white px-4 py-1.5 rounded-full text-sm font-medium transition whitespace-nowrap ${
+                        isFollowLoading ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                       style={{
                         background:
                           "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
                       }}
                     >
-                      {isFollowing ? "Following" : "+ Follow"}
+                      {isFollowLoading ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      ) : isFollowing ? (
+                        "Following"
+                      ) : (
+                        "+ Follow"
+                      )}
                     </button>
                   </div>
                 </div>
@@ -592,7 +639,10 @@ const SingleBP = () => {
                         rows={4}
                         value={comment}
                         onChange={handleCommentChange}
-                        className="w-full border-none focus:ring-0 focus:outline-none text-sm resize-none"
+                        disabled={isCommentLoading} // Disable textarea during loading
+                        className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${
+                          isCommentLoading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                       ></textarea>
 
                       {commentError && (
@@ -606,13 +656,23 @@ const SingleBP = () => {
                         </span>
                         <button
                           onClick={handleCommentSubmit}
-                          className="bg-linear-to-r me-2 from-purple-500 to-pink-400 text-white px-4 py-2 pb-2 rounded-full text-sm"
+                          disabled={isCommentLoading}
+                          className={`bg-linear-to-r me-2 from-purple-500 to-pink-400 text-white px-4 py-2 pb-2 rounded-full text-sm flex items-center gap-2 ${
+                            isCommentLoading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
                           style={{
                             background:
                               "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
                           }}
                         >
-                          Submit
+                          {isCommentLoading ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              Posting...
+                            </>
+                          ) : (
+                            "Submit"
+                          )}
                         </button>
                       </div>
                     </div>
@@ -717,7 +777,10 @@ const SingleBP = () => {
                                       onChange={(e) =>
                                         handleReplyChange(e, comment.id)
                                       }
-                                      className="w-full border-none focus:ring-0 focus:outline-none text-sm resize-none"
+                                      disabled={isReplyLoading[comment.id]} // Disable textarea during loading
+                                      className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${
+                                        isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
+                                      }`}
                                     ></textarea>
 
                                     {replyErrors[comment.id] && (
@@ -737,17 +800,30 @@ const SingleBP = () => {
                                             comment.post_id
                                           )
                                         }
-                                        className="bg-linear-to-r from-purple-500 to-pink-400 text-white px-3 py-1 rounded-full text-sm"
+                                        disabled={isReplyLoading[comment.id]}
+                                        className={`bg-linear-to-r from-purple-500 to-pink-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 ${
+                                          isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
+                                        }`}
                                         style={{
                                           background:
                                             "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
                                         }}
                                       >
-                                        Reply
+                                        {isReplyLoading[comment.id] ? (
+                                          <>
+                                            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                            Posting...
+                                          </>
+                                        ) : (
+                                          "Reply"
+                                        )}
                                       </button>
                                       <button
                                         onClick={() => setReplyingTo(null)}
-                                        className="text-gray-500 px-3 py-1 rounded-full text-sm border border-gray-300"
+                                        disabled={isReplyLoading[comment.id]}
+                                        className={`text-gray-500 px-3 py-1 rounded-full text-sm border border-gray-300 ${
+                                          isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
+                                        }`}
                                       >
                                         Cancel
                                       </button>
@@ -824,7 +900,6 @@ const SingleBP = () => {
                   </div>
                 </div>
 
-                {/* ======= RIGHT: Related Section ======= */}
                 {/* ======= RIGHT: Related Section ======= */}
                 <aside className="lg:col-span-4 bg-[#F9F9F9] rounded-[30px] shadow-sm p-4 h-fit">
                   <h3 className="font-semibold text-gray-900 text-[20px] mb-4">

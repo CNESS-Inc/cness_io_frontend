@@ -265,16 +265,16 @@ export default function DashboardTechnology() {
 
   return (
     <>
-      <section className="relative h-auto md:h-[325px] rounded-[12px] overflow-hidden">
+      <section className="relative h-auto md:h-[325px] rounded-xl overflow-hidden">
         <AnimatedBackground />
         <img
           src={iconMap["heroimgs"]}
           alt="City Skyline"
-          className="absolute bottom-[0px] left-0 w-full object-cover z-0 pointer-events-none"
+          className="absolute bottom-0 left-0 w-full object-cover z-0 pointer-events-none"
         />
 
         <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto">
-          <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-gradient-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
+          <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-linear-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
             Conscious Search Stops here.
           </h1>
 
@@ -319,7 +319,7 @@ export default function DashboardTechnology() {
               </div>
             </div>
 
-            <div className="relative flex-grow  bg-white border border-gray-200 rounded-full md:rounded-full px-3 shadow-sm h-[100%]">
+            <div className="relative grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 shadow-sm h-full">
               <input
                 type="text"
                 placeholder="Technology and AI"
@@ -531,7 +531,7 @@ export default function DashboardTechnology() {
         {/* Pagination remains the same */}
         {!isLoading && !error && totalCount > 0 && (
           <div className="mt-8 mb-12">
-            <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-1 flex justify-center">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-1 flex justify-center">
               <nav
                 className="inline-flex rounded-md shadow-sm -space-x-px text-sm"
                 aria-label="Pagination"

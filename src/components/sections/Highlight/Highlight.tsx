@@ -1,13 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import Button from "../../ui/Button";
 import Image from "../../ui/Image";
-import Dummyvideo from "../../ui/Dummyvideo";
+//import Dummyvideo from "../../ui/Dummyvideo";
 import OptimizeImage from "../../ui/OptimizeImage";
 
 export default function Highlight() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
- const [open, setOpen] = useState(false);
+ //const [open, setOpen] = useState(false);
+   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [isPortrait, setIsPortrait] = useState(false);
+   const videoUrl = "https://cdn.cness.io/WhatsApp%20Video%202025-11-11%20at%204.48.38%20PM.mp4";
+   const videoRef = useRef(null);
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
@@ -90,7 +94,7 @@ the real you.
              w-fit h-[42px] py-1 px-6 rounded-[100px] 
              bg-gradient-to-r from-[#7077FE] to-[#F07EFF] 
              self-stretch transition-colors duration-500 ease-in-out"
-              onClick={() => setOpen(true)}>
+              onClick={() => setIsVideoOpen(true)}>
               See how it all works →
             </Button>
           </div>
@@ -192,7 +196,56 @@ the real you.
           </div>
         </div>
       </div>
-      <Dummyvideo open={open} onClose={() => setOpen(false)} />
-    </section>
+{isVideoOpen && (
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center  p-4"
+    onClick={() => setIsVideoOpen(false)}
+  >
+    {/* Auto layout container */}
+    <div
+      className={`relative w-full ${
+        isPortrait ? "max-w-[900px] aspect-video" : "max-w-[900px] aspect-video"
+      } rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)] bg-black`}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Close Button */}
+      <button
+        onClick={() => setIsVideoOpen(false)}
+        className="absolute top-3 right-3 z-10 text-white/80 hover:text-white bg-black/40 hover:bg-black/60
+                   w-8 h-8 flex items-center justify-center rounded-full backdrop-blur-sm transition-all duration-200"
+      >
+        ×
+      </button>
+
+      {/* Portrait Video: Blurred Background Layer */}
+      {isPortrait && (
+        <video
+          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40"
+          src={videoUrl}
+          muted
+          loop
+          autoPlay
+        />
+      )}
+
+      {/* Main Video (auto detect portrait or landscape) */}
+      <video
+        ref={videoRef}
+        className={`relative z-10 rounded-3xl ${
+          isPortrait
+            ? "w-auto h-full mx-auto object-contain" // Portrait → center with height fit
+            : "w-full h-full object-cover" // Landscape → fill the container
+        }`}
+        src={videoUrl}
+        controls
+        autoPlay
+        onLoadedMetadata={(e) => {
+          const video = e.target as HTMLVideoElement;
+setIsPortrait(video.videoHeight > video.videoWidth);
+        }}
+      />
+    </div>
+  </div>
+)}    </section>
   );
 }

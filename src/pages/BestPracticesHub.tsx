@@ -105,6 +105,10 @@ export default function BestPracticesHub() {
   const measureRef = useRef<HTMLSpanElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [followLoading, setFollowLoading] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [saveLoading, setSaveLoading] = useState<Record<string, boolean>>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const filteredProfessions = profession.filter((prof) =>
@@ -172,7 +176,9 @@ export default function BestPracticesHub() {
   }, [profession, searchParams]);
 
   const toggleSave = async (id: string, section: "profession" | "interest") => {
+    if (saveLoading[id]) return;
     try {
+      setSaveLoading((prev) => ({ ...prev, [id]: true }));
       const data = { post_id: id };
       await SaveBestpractices(data);
 
@@ -206,6 +212,8 @@ export default function BestPracticesHub() {
         type: "error",
         duration: 2000,
       });
+    } finally {
+      setSaveLoading((prev) => ({ ...prev, [id]: false }));
     }
   };
 
@@ -718,7 +726,9 @@ export default function BestPracticesHub() {
     id: string,
     section: "profession" | "interest"
   ) => {
+    if (followLoading[id]) return;
     try {
+      setFollowLoading((prev) => ({ ...prev, [id]: true }));
       const res = await SendBpFollowRequest({ bp_id: id });
 
       if (res?.success?.statusCode === 200) {
@@ -766,6 +776,8 @@ export default function BestPracticesHub() {
         type: "error",
         duration: 2000,
       });
+    } finally {
+      setFollowLoading((prev) => ({ ...prev, [id]: false }));
     }
   };
 
@@ -1141,7 +1153,7 @@ export default function BestPracticesHub() {
                         <div className="absolute top-6 left-6 flex gap-2 flex-wrap">
                           {(Array.isArray(company.profession)
                             ? company.profession
-                            : [company.interest || company.profession]
+                            : [company.profession]
                           ).map((item, i) => (
                             <span
                               key={i}
@@ -1159,23 +1171,39 @@ export default function BestPracticesHub() {
                           <div>
                             {!company.is_bp_following ? (
                               <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
+                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   toggleFollow(company.id, "profession");
                                 }}
+                                disabled={followLoading[company.id]}
                               >
-                                + Follow
+                                {followLoading[company.id] ? (
+                                  <div className="flex items-center">
+                                    <div className="w-3 h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
+                                    Loading...
+                                  </div>
+                                ) : (
+                                  "+ Follow"
+                                )}
                               </button>
                             ) : (
                               <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
+                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   toggleFollow(company.id, "profession");
                                 }}
+                                disabled={followLoading[company.id]}
                               >
-                                Following
+                                {followLoading[company.id] ? (
+                                  <div className="flex items-center">
+                                    <div className="w-3 h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
+                                    Loading...
+                                  </div>
+                                ) : (
+                                  "Following"
+                                )}
                               </button>
                             )}
                           </div>
@@ -1234,17 +1262,27 @@ export default function BestPracticesHub() {
                           className="cursor-pointer mb-2"
                           onClick={(e) => {
                             e.stopPropagation();
-                            toggleSave(company.id, "profession"); // or "interest" for the other section
+                            toggleSave(company.id, "profession");
                           }}
                         >
                           <div className="flex items-center gap-2 cursor-pointer">
                             <Bookmark
-                              className="w-5 h-5 transition-all duration-200"
+                              className={`w-5 h-5 transition-all duration-200 ${
+                                saveLoading[company.id] ? "opacity-50" : ""
+                              }`}
                               fill={company.is_saved ? "#72DBF2" : "none"}
                               stroke={company.is_saved ? "#72DBF2" : "#4338CA"}
                             />
-                            <span className="text-sm font-normal text-gray-700">
-                              {company.is_saved ? "Saved" : "Save"}
+                            <span
+                              className={`text-sm font-normal text-gray-700 ${
+                                saveLoading[company.id] ? "opacity-50" : ""
+                              }`}
+                            >
+                              {saveLoading[company.id]
+                                ? "Saving..."
+                                : company.is_saved
+                                ? "Saved"
+                                : "Save"}
                             </span>
                           </div>
                         </div>
@@ -1536,23 +1574,39 @@ export default function BestPracticesHub() {
                           <div>
                             {!company.is_bp_following ? (
                               <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
+                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   toggleFollow(company.id, "interest");
                                 }}
+                                disabled={followLoading[company.id]}
                               >
-                                + Follow
+                                {followLoading[company.id] ? (
+                                  <div className="flex items-center">
+                                    <div className="w-3 h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
+                                    Loading...
+                                  </div>
+                                ) : (
+                                  "+ Follow"
+                                )}
                               </button>
                             ) : (
                               <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
+                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   toggleFollow(company.id, "interest");
                                 }}
+                                disabled={followLoading[company.id]}
                               >
-                                Following
+                                {followLoading[company.id] ? (
+                                  <div className="flex items-center">
+                                    <div className="w-3 h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
+                                    Loading...
+                                  </div>
+                                ) : (
+                                  "Following"
+                                )}
                               </button>
                             )}
                           </div>
@@ -1611,17 +1665,27 @@ export default function BestPracticesHub() {
                           className="cursor-pointer mb-2"
                           onClick={(e) => {
                             e.stopPropagation();
-                            toggleSave(company.id, "interest"); // or "interest" for the other section
+                            toggleSave(company.id, "interest");
                           }}
                         >
                           <div className="flex items-center gap-2 cursor-pointer">
                             <Bookmark
-                              className="w-5 h-5 transition-all duration-200"
+                              className={`w-5 h-5 transition-all duration-200 ${
+                                saveLoading[company.id] ? "opacity-50" : ""
+                              }`}
                               fill={company.is_saved ? "#72DBF2" : "none"}
                               stroke={company.is_saved ? "#72DBF2" : "#4338CA"}
                             />
-                            <span className="text-sm font-normal text-gray-700">
-                              {company.is_saved ? "Saved" : "Save"}
+                            <span
+                              className={`text-sm font-normal text-gray-700 ${
+                                saveLoading[company.id] ? "opacity-50" : ""
+                              }`}
+                            >
+                              {saveLoading[company.id]
+                                ? "Saving..."
+                                : company.is_saved
+                                ? "Saved"
+                                : "Save"}
                             </span>
                           </div>
                         </div>
