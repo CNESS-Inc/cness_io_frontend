@@ -228,6 +228,7 @@ export const EndPoint = {
   profile_get_by_user_id: "/profile/get-user",
   user_posts_by_user_id: "/user/posts/get-user-post",
 
+
   // Messaging endpoints
   conversations: "/messaging/conversations",
   sendMessage: "/messaging/send",
@@ -277,6 +278,7 @@ export const EndPoint = {
   upload_product_document: "/marketplace-product/upload",
   update_video: "/marketplace-product",
 
+
   create_music_product: "/marketplace-product/music",
   update_music_product: "/marketplace-product",
   update_music: "/marketplace-product/music",
@@ -317,6 +319,7 @@ export const EndPoint = {
   // progress apis
   marketplace_buyer_continue_watching: "/marketplace-buyer/progress/continue-watching",
   marketplace_buyer_progress: "/marketplace-buyer/progress",
+  upload_art_sample_image :"/marketplace-product/upload/art-sample-image",
 };
 
 // Messaging endpoints
@@ -611,6 +614,7 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
       }
     });
   }
+  
 
   // Return the formatted data
   return executeAPI(ServerAPI.APIMethod.POST, { data }, EndPoint.answer);
@@ -2252,6 +2256,15 @@ export const GetLibraryrFilters = (): ApiResponse => {
     {},
     `${EndPoint.marketplace_buyer_library}/filters/options`);
 }
+
+
+export const UploadArtSampleImage = (formData: FormData): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.upload_art_sample_image
+  );
+};
 
 export const GetLibraryrDetails = (params?: {
   page?: number;
