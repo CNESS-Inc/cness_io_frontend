@@ -309,10 +309,14 @@ export function GreetingBar({
 
   //greeting
 
-const hasLoggedBefore = localStorage.getItem("hasLoggedBefore") === "true";
+const [hasLoggedBefore, setHasLoggedBefore] = useState(false);
 useEffect(() => {
-  if (!hasLoggedBefore) {
-    localStorage.setItem("hasLoggedBefore", "true");
+const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
+  if (stored === true) {
+    setHasLoggedBefore(true);
+  } else {
+    setHasLoggedBefore(false);
+    localStorage.setItem("hasLoggedBefore", JSON.stringify(true));
   }
 }, []);
 
