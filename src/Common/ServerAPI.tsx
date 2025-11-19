@@ -255,6 +255,7 @@ export const EndPoint = {
   save_extra_banners: "/seller-onboarding/save-extra-banners",
   remove_extra_banners: "/seller-onboarding/remove/extra-banners",
   seller_sales_history: "/api/seller-sales/history",
+  seller_dashboard: "/seller-sales/dashboard",
   remove_specific_extra_banners: "/seller-onboarding/remove/extra-banners",
   remove_team_member_image: "/seller-onboarding/remove/team-member-image",
   remove_team_member: "/seller-onboarding/remove/team-member",
@@ -2396,6 +2397,14 @@ export const GetSellerSalesHistory = (
     ServerAPI.APIMethod.GET,
     {},
     `${EndPoint.seller_sales_history}?${searchParams.toString()}`
+  );
+};
+
+export const GetSellerDashboard = (): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.seller_dashboard
   );
 };
 
