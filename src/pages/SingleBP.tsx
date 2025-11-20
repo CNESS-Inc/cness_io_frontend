@@ -17,10 +17,14 @@ import image1 from "../assets/image1.png";
 import DOMPurify from "dompurify";
 import {
   FaBookmark,
+  FaCheck,
+  FaEdit,
   FaFacebookF,
   FaInstagram,
   FaLinkedinIn,
   FaRegBookmark,
+  FaTimes,
+  FaTrash,
   FaTwitter,
 } from "react-icons/fa";
 import { ChatBubbleLeftIcon, HandThumbUpIcon } from "@heroicons/react/24/solid";
@@ -57,6 +61,471 @@ const SingleBP = () => {
   const [isSaveLoading, setIsSaveLoading] = useState<boolean>(false);
   const [isCommentLoading, setIsCommentLoading] = useState<boolean>(false);
   const [isReplyLoading, setIsReplyLoading] = useState<{ [key: string]: boolean }>({}); // NEW: Reply loading state
+
+   const [editingComment, setEditingComment] = useState<string | null>(null);
+  const [editingReply, setEditingReply] = useState<string | null>(null);
+  const [editCommentText, setEditCommentText] = useState("");
+  const [editReplyText, setEditReplyText] = useState("");
+  const [isEditCommentLoading, setIsEditCommentLoading] = useState<{ [key: string]: boolean }>({});
+  const [isDeleteCommentLoading, setIsDeleteCommentLoading] = useState<{ [key: string]: boolean }>({});
+  const [isEditReplyLoading, setIsEditReplyLoading] = useState<{ [key: string]: boolean }>({});
+  const [isDeleteReplyLoading, setIsDeleteReplyLoading] = useState<{ [key: string]: boolean }>({});
+
+
+  const handleEditCommentClick = (comment: any) => {
+    setEditingComment(comment.id);
+    setEditCommentText(comment.text);
+  };
+
+  const handleEditCommentChange = (event: any) => {
+    setEditCommentText(event.target.value);
+  };
+
+  const handleEditCommentSubmit = async (commentId: string) => {
+    try {
+      if (!editCommentText.trim()) {
+        showToast({
+          message: "Comment cannot be empty",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+
+      setIsEditCommentLoading((prev) => ({ ...prev, [commentId]: true }));
+
+      // await UpdateBestpracticesComment({
+      //   comment_id: commentId,
+      //   text: editCommentText,
+      // });
+
+      setEditingComment(null);
+      setEditCommentText("");
+      fetchComments();
+
+      showToast({
+        message: "Comment updated successfully!",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error updating comment:", error);
+      showToast({
+        message: "Failed to update comment",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsEditCommentLoading((prev) => ({ ...prev, [commentId]: false }));
+    }
+  };
+
+  const handleCancelEditComment = () => {
+    setEditingComment(null);
+    setEditCommentText("");
+  };
+
+  // Delete Comment Function
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      if (!window.confirm("Are you sure you want to delete this comment?")) {
+        return;
+      }
+
+      setIsDeleteCommentLoading((prev) => ({ ...prev, [commentId]: true }));
+
+      // await DeleteBestpracticesComment({ comment_id: commentId });
+
+      setCommentCount((prev) => Math.max(0, prev - 1));
+      fetchComments();
+
+      showToast({
+        message: "Comment deleted successfully!",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      showToast({
+        message: "Failed to delete comment",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsDeleteCommentLoading((prev) => ({ ...prev, [commentId]: false }));
+    }
+  };
+
+  // Edit Reply Functions
+  const handleEditReplyClick = (reply: any) => {
+    setEditingReply(reply.id);
+    setEditReplyText(reply.text);
+  };
+
+  const handleEditReplyChange = (event: any) => {
+    setEditReplyText(event.target.value);
+  };
+
+  const handleEditReplySubmit = async (replyId: string, _parentCommentId: string) => {
+    try {
+      if (!editReplyText.trim()) {
+        showToast({
+          message: "Reply cannot be empty",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+
+      setIsEditReplyLoading((prev) => ({ ...prev, [replyId]: true }));
+
+      // await UpdateBestpracticesCommentReply({
+      //   child_comment_id: replyId,
+      //   text: editReplyText,
+      //   parent_comment_id: parentCommentId,
+      // });
+
+      setEditingReply(null);
+      setEditReplyText("");
+      fetchComments();
+
+      showToast({
+        message: "Reply updated successfully!",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error updating reply:", error);
+      showToast({
+        message: "Failed to update reply",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsEditReplyLoading((prev) => ({ ...prev, [replyId]: false }));
+    }
+  };
+
+  const handleCancelEditReply = () => {
+    setEditingReply(null);
+    setEditReplyText("");
+  };
+
+  // Delete Reply Function
+  const handleDeleteReply = async (replyId: string, _parentCommentId: string) => {
+    try {
+      if (!window.confirm("Are you sure you want to delete this reply?")) {
+        return;
+      }
+
+      setIsDeleteReplyLoading((prev) => ({ ...prev, [replyId]: true }));
+
+      // await DeleteBestpracticesCommentReply({
+      //   child_comment_id: replyId,
+      //   parent_comment_id: parentCommentId,
+      // });
+
+      fetchComments();
+
+      showToast({
+        message: "Reply deleted successfully!",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error deleting reply:", error);
+      showToast({
+        message: "Failed to delete reply",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsDeleteReplyLoading((prev) => ({ ...prev, [replyId]: false }));
+    }
+  };
+
+  // Check if current user is the author of comment/reply
+  const isCurrentUserAuthor = (authorId: string) => {
+    const currentUserId = localStorage.getItem("Id"); // Adjust based on your auth storage
+    return currentUserId === authorId;
+  };
+
+  // Update the comments list rendering to include edit/delete functionality
+  const renderComments = () => {
+    const commentsToRender = sortLatest ? [...postComment].reverse() : postComment;
+
+    return commentsToRender.map((comment: any) => (
+      <div key={comment.id} className="space-y-4">
+        {/* Main Comment */}
+        <div className="flex items-start space-x-3">
+          <img
+            src={comment.profile?.profile_picture || "/profile.png"}
+            alt="avatar"
+            className="w-10 h-10 rounded-full"
+          />
+          <div className="flex-1 bg-[#F9F9F9] p-3 rounded-lg">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center">
+                <span className="font-semibold me-2 text-[16px] text-gray-800">
+                  {comment.profile?.first_name} {comment.profile?.last_name}
+                </span>
+                <span className="bg-[#A1A1A1] p-0.5 me-2 rounded-full"></span>
+                <span className="text-xs text-gray-500">
+                  {new Date(comment.createdAt).toLocaleDateString()}
+                </span>
+                {/* {comment.updatedAt !== comment.createdAt && (
+                  <span className="text-xs text-gray-400 ml-2">(edited)</span>
+                )} */}
+              </div>
+              
+              {/* Edit/Delete Buttons for Comment */}
+              {isCurrentUserAuthor(comment.user_id) && (
+                <div className="flex items-center space-x-2">
+                  {editingComment === comment.id ? (
+                    <>
+                      <button
+                        onClick={() => handleEditCommentSubmit(comment.id)}
+                        disabled={isEditCommentLoading[comment.id]}
+                        className="text-green-600 hover:text-green-800 p-1 rounded"
+                      >
+                        {isEditCommentLoading[comment.id] ? (
+                          <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <FaCheck className="w-4 h-4" />
+                        )}
+                      </button>
+                      <button
+                        onClick={handleCancelEditComment}
+                        disabled={isEditCommentLoading[comment.id]}
+                        className="text-red-600 hover:text-red-800 p-1 rounded"
+                      >
+                        <FaTimes className="w-4 h-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handleEditCommentClick(comment)}
+                        className="text-blue-600 hover:text-blue-800 p-1 rounded"
+                      >
+                        <FaEdit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteComment(comment.id)}
+                        disabled={isDeleteCommentLoading[comment.id]}
+                        className="text-red-600 hover:text-red-800 p-1 rounded"
+                      >
+                        {isDeleteCommentLoading[comment.id] ? (
+                          <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <FaTrash className="w-4 h-4" />
+                        )}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Comment Content - Editable when editing */}
+            {editingComment === comment.id ? (
+              <div className="mt-2">
+                <textarea
+                  value={editCommentText}
+                  onChange={handleEditCommentChange}
+                  rows={3}
+                  className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  maxLength={2000}
+                />
+                <div className="flex justify-between items-center mt-1 text-xs text-gray-500">
+                  <span>{2000 - editCommentText.length} characters remaining</span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-[12px] text-gray-700 mt-1">{comment.text}</p>
+            )}
+
+            {/* Comment Actions */}
+            <div className="flex items-center space-x-4 mt-4 text-xs text-gray-600 my-3">
+              <button
+                onClick={() => handleCommentLike(comment.id, comment.post_id)}
+                className="flex items-center space-x-1 hover:text-gray-700"
+              >
+                <HandThumbUpIcon className="w-6 h-6" />
+                <span className="text-[12px]">{comment.likes_count}</span>
+              </button>
+              <div className="h-4 border-l border-gray-300"></div>
+              <button
+                onClick={() => handleReplyClick(comment.id)}
+                className="flex items-center space-x-1 hover:text-gray-700"
+              >
+                <ChatBubbleLeftIcon className="w-6 h-6" />
+                <span className="text-[12px]">Reply</span>
+              </button>
+            </div>
+
+            {/* Reply Input */}
+            {replyingTo === comment.id && (
+              <div className="mt-4 border border-[#E0E0E0] rounded-[10px] p-3">
+                <textarea
+                  placeholder="Write a reply..."
+                  rows={2}
+                  value={replyText}
+                  onChange={(e) => handleReplyChange(e, comment.id)}
+                  disabled={isReplyLoading[comment.id]}
+                  className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${
+                    isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                ></textarea>
+
+                {replyErrors[comment.id] && (
+                  <p className="text-red-500 text-xs mt-1">{replyErrors[comment.id]}</p>
+                )}
+                <div className="flex justify-end items-center text-xs text-gray-400 gap-2 mt-2">
+                  <span>{2000 - replyText.length} Characters remaining</span>
+                  <button
+                    onClick={() => handleReplySubmit(comment.id, comment.post_id)}
+                    disabled={isReplyLoading[comment.id]}
+                    className={`bg-linear-to-r from-purple-500 to-pink-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 ${
+                      isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    style={{
+                      background: "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+                    }}
+                  >
+                    {isReplyLoading[comment.id] ? (
+                      <>
+                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Posting...
+                      </>
+                    ) : (
+                      "Reply"
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setReplyingTo(null)}
+                    disabled={isReplyLoading[comment.id]}
+                    className={`text-gray-500 px-3 py-1 rounded-full text-sm border border-gray-300 ${
+                      isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Replies Section */}
+        {comment.replies && comment.replies.length > 0 && (
+          <div className="ml-12 space-y-4 border-l-2 border-gray-200 pl-4">
+            {comment.replies.map((reply: any) => (
+              <div key={reply.id} className="flex items-start space-x-3">
+                <img
+                  src={reply.profile?.profile_picture || "/profile.png"}
+                  alt="avatar"
+                  className="w-8 h-8 rounded-full"
+                />
+                <div className="flex-1 bg-[#F5F5F5] p-3 rounded-lg">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center">
+                      <span className="font-semibold me-2 text-[14px] text-gray-800">
+                        {reply.profile?.first_name} {reply.profile?.last_name}
+                      </span>
+                      <span className="bg-[#A1A1A1] p-0.5 me-2 rounded-full"></span>
+                      <span className="text-xs text-gray-500">
+                        {new Date(reply.createdAt).toLocaleDateString()}
+                      </span>
+                      {/* {reply.updatedAt !== reply.createdAt && (
+                        <span className="text-xs text-gray-400 ml-2">(edited)</span>
+                      )} */}
+                    </div>
+                    
+                    {/* Edit/Delete Buttons for Reply */}
+                    {isCurrentUserAuthor(reply.user_id) && (
+                      <div className="flex items-center space-x-2">
+                        {editingReply === reply.id ? (
+                          <>
+                            <button
+                              onClick={() => handleEditReplySubmit(reply.id, comment.id)}
+                              disabled={isEditReplyLoading[reply.id]}
+                              className="text-green-600 hover:text-green-800 p-1 rounded"
+                            >
+                              {isEditReplyLoading[reply.id] ? (
+                                <div className="w-3 h-3 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                              ) : (
+                                <FaCheck className="w-3 h-3" />
+                              )}
+                            </button>
+                            <button
+                              onClick={handleCancelEditReply}
+                              disabled={isEditReplyLoading[reply.id]}
+                              className="text-red-600 hover:text-red-800 p-1 rounded"
+                            >
+                              <FaTimes className="w-3 h-3" />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => handleEditReplyClick(reply)}
+                              className="text-blue-600 hover:text-blue-800 p-1 rounded"
+                            >
+                              <FaEdit className="w-3 h-3" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteReply(reply.id, comment.id)}
+                              disabled={isDeleteReplyLoading[reply.id]}
+                              className="text-red-600 hover:text-red-800 p-1 rounded"
+                            >
+                              {isDeleteReplyLoading[reply.id] ? (
+                                <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                              ) : (
+                                <FaTrash className="w-3 h-3" />
+                              )}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Reply Content - Editable when editing */}
+                  {editingReply === reply.id ? (
+                    <div className="mt-2">
+                      <textarea
+                        value={editReplyText}
+                        onChange={handleEditReplyChange}
+                        rows={2}
+                        className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                        maxLength={2000}
+                      />
+                      <div className="flex justify-between items-center mt-1 text-xs text-gray-500">
+                        <span>{2000 - editReplyText.length} characters remaining</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-[12px] text-gray-700 mt-1">{reply.text}</p>
+                  )}
+
+                  <div className="flex items-center space-x-4 mt-3 text-xs text-gray-600">
+                    <button
+                      onClick={() => handleReplyCommentLike(reply.id, comment.post_id, comment.id)}
+                      className="flex items-center space-x-1 hover:text-gray-700"
+                    >
+                      <HandThumbUpIcon className="w-5 h-5" />
+                      <span className="text-[12px]">{reply.likes_count}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    ));
+  };
 
   const profile_picture = localStorage.getItem("profile_picture") || "/profile.png";
   const name = localStorage.getItem("name") || "";
@@ -709,193 +1178,12 @@ const SingleBP = () => {
                     {/* Comments List */}
                     <div className="space-y-6">
                       {postComment.length > 0 ? (
-                        (sortLatest
-                          ? [...postComment].reverse()
-                          : postComment
-                        ).map((comment: any) => (
-                          <div key={comment.id} className="space-y-4">
-                            {/* Main Comment */}
-                            <div className="flex items-start space-x-3">
-                              <img
-                                src={
-                                  comment.profile?.profile_picture ||
-                                  "/profile.png"
-                                }
-                                alt="avatar"
-                                className="w-10 h-10 rounded-full"
-                              />
-                              <div className="flex-1 bg-[#F9F9F9] p-3 rounded-lg">
-                                <div className="flex items-center">
-                                  <span className="font-semibold me-2 text-[16px] text-gray-800">
-                                    {comment.profile?.first_name}{" "}
-                                    {comment.profile?.last_name}
-                                  </span>
-                                  <span className="bg-[#A1A1A1] p-0.5 me-2 rounded-full"></span>
-                                  <span className="text-xs text-gray-500">
-                                    {new Date(
-                                      comment.createdAt
-                                    ).toLocaleDateString()}
-                                  </span>
-                                </div>
-
-                                <p className="text-[12px] text-gray-700 mt-1">
-                                  {comment.text}
-                                </p>
-
-                                <div className="flex items-center space-x-4 mt-4 text-xs text-gray-600 my-3">
-                                  <button
-                                    onClick={() =>
-                                      handleCommentLike(
-                                        comment.id,
-                                        comment.post_id
-                                      )
-                                    }
-                                    className="flex items-center space-x-1 hover:text-gray-700"
-                                  >
-                                    <HandThumbUpIcon className="w-6 h-6" />
-                                    <span className="text-[12px]">
-                                      {comment.likes_count}
-                                    </span>
-                                  </button>
-                                  <div className="h-4 border-l border-gray-300"></div>
-                                  <button
-                                    onClick={() => handleReplyClick(comment.id)}
-                                    className="flex items-center space-x-1 hover:text-gray-700"
-                                  >
-                                    <ChatBubbleLeftIcon className="w-6 h-6" />
-                                    <span className="text-[12px]">Reply</span>
-                                  </button>
-                                </div>
-
-                                {/* Reply Input */}
-                                {replyingTo === comment.id && (
-                                  <div className="mt-4 border border-[#E0E0E0] rounded-[10px] p-3">
-                                    <textarea
-                                      placeholder="Write a reply..."
-                                      rows={2}
-                                      value={replyText}
-                                      onChange={(e) =>
-                                        handleReplyChange(e, comment.id)
-                                      }
-                                      disabled={isReplyLoading[comment.id]} // Disable textarea during loading
-                                      className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${
-                                        isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
-                                      }`}
-                                    ></textarea>
-
-                                    {replyErrors[comment.id] && (
-                                      <p className="text-red-500 text-xs mt-1">
-                                        {replyErrors[comment.id]}
-                                      </p>
-                                    )}
-                                    <div className="flex justify-end items-center text-xs text-gray-400 gap-2 mt-2">
-                                      <span>
-                                        {2000 - replyText.length} Characters
-                                        remaining
-                                      </span>
-                                      <button
-                                        onClick={() =>
-                                          handleReplySubmit(
-                                            comment.id,
-                                            comment.post_id
-                                          )
-                                        }
-                                        disabled={isReplyLoading[comment.id]}
-                                        className={`bg-linear-to-r from-purple-500 to-pink-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 ${
-                                          isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
-                                        }`}
-                                        style={{
-                                          background:
-                                            "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
-                                        }}
-                                      >
-                                        {isReplyLoading[comment.id] ? (
-                                          <>
-                                            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            Posting...
-                                          </>
-                                        ) : (
-                                          "Reply"
-                                        )}
-                                      </button>
-                                      <button
-                                        onClick={() => setReplyingTo(null)}
-                                        disabled={isReplyLoading[comment.id]}
-                                        className={`text-gray-500 px-3 py-1 rounded-full text-sm border border-gray-300 ${
-                                          isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
-                                        }`}
-                                      >
-                                        Cancel
-                                      </button>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Replies Section */}
-                            {comment.replies && comment.replies.length > 0 && (
-                              <div className="ml-12 space-y-4 border-l-2 border-gray-200 pl-4">
-                                {comment.replies.map((reply: any) => (
-                                  <div
-                                    key={reply.id}
-                                    className="flex items-start space-x-3"
-                                  >
-                                    <img
-                                      src={
-                                        reply.profile?.profile_picture ||
-                                        "/profile.png"
-                                      }
-                                      alt="avatar"
-                                      className="w-8 h-8 rounded-full"
-                                    />
-                                    <div className="flex-1 bg-[#F5F5F5] p-3 rounded-lg">
-                                      <div className="flex items-center">
-                                        <span className="font-semibold me-2 text-[14px] text-gray-800">
-                                          {reply.profile?.first_name}{" "}
-                                          {reply.profile?.last_name}
-                                        </span>
-                                        <span className="bg-[#A1A1A1] p-0.5 me-2 rounded-full"></span>
-                                        <span className="text-xs text-gray-500">
-                                          {new Date(
-                                            reply.createdAt
-                                          ).toLocaleDateString()}
-                                        </span>
-                                      </div>
-
-                                      <p className="text-[12px] text-gray-700 mt-1">
-                                        {reply.text}
-                                      </p>
-
-                                      <div className="flex items-center space-x-4 mt-3 text-xs text-gray-600">
-                                        <button
-                                          onClick={() =>
-                                            handleReplyCommentLike(
-                                              reply.id,
-                                              comment.post_id,
-                                              comment.id
-                                            )
-                                          }
-                                          className="flex items-center space-x-1 hover:text-gray-700"
-                                        >
-                                          <HandThumbUpIcon className="w-5 h-5" />
-                                          <span className="text-[12px]">
-                                            {reply.likes_count}
-                                          </span>
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        ))
-                      ) : (
-                        <div className="text-center py-8 text-gray-500">
-                          No comments yet. Be the first to comment!
-                        </div>
-                      )}
+        renderComments()
+      ) : (
+        <div className="text-center py-8 text-gray-500">
+          No comments yet. Be the first to comment!
+        </div>
+      )}
                     </div>
                   </div>
                 </div>
