@@ -309,10 +309,14 @@ export function GreetingBar({
 
   //greeting
 
-const hasLoggedBefore = localStorage.getItem("hasLoggedBefore") === "true";
+const [hasLoggedBefore, setHasLoggedBefore] = useState(false);
 useEffect(() => {
-  if (!hasLoggedBefore) {
-    localStorage.setItem("hasLoggedBefore", "true");
+const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
+  if (stored === true) {
+    setHasLoggedBefore(true);
+  } else {
+    setHasLoggedBefore(false);
+    localStorage.setItem("hasLoggedBefore", JSON.stringify(true));
   }
 }, []);
 
@@ -3646,7 +3650,7 @@ export function SocialStackCard({
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F7E9FF]">
               <Bell className="h-4 w-4 text-[#B255FF]" />
             </div>
-            <h3 className="font-poppins font-semibold text-[20px] leading-[32px] tracking-[0.15px] text-center text-[#0F1728]">
+            <h3 className="font-poppins font-semibold text-[20px] leading-8 tracking-[0.15px] text-center text-[#0F1728]">
               Notification
             </h3>
           </div>

@@ -3,7 +3,7 @@ import { Trash2, Video, ShoppingCart, Star, ClockFading, Heart } from "lucide-re
 import { useNavigate } from "react-router-dom";
 import {
   AddProductToWishlist,
-  CreateCheckoutSession,
+  // CreateCheckoutSession,
   GetProductCart,
   RemoveProductToCart,
   RemoveProductToWishlist
@@ -182,29 +182,29 @@ const CartPage: React.FC = () => {
     // }
     navigate('/dashboard/checkout');
     return;
-    setIsLoading(true);
-    try {
-      const response = await CreateCheckoutSession();
+    // setIsLoading(true);
+    // try {
+    //   const response = await CreateCheckoutSession();
 
-      // Get the Stripe session URL from response
-      const checkoutUrl = response?.data?.data?.checkout_url;
+    //   // Get the Stripe session URL from response
+    //   const checkoutUrl = response?.data?.data?.checkout_url;
 
-      if (checkoutUrl) {
-        // Redirect to Stripe checkout page
-        window.location.href = checkoutUrl;
-      } else {
-        throw new Error("No checkout URL received");
-      }
-    } catch (error: any) {
-      console.error("Checkout error:", error);
-      showToast({
-        message: error?.response?.data?.error?.message || "Failed to proceed to checkout",
-        type: "error",
-        duration: 3000,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    //   if (checkoutUrl) {
+    //     // Redirect to Stripe checkout page
+    //     window.location.href = checkoutUrl;
+    //   } else {
+    //     throw new Error("No checkout URL received");
+    //   }
+    // } catch (error: any) {
+    //   console.error("Checkout error:", error);
+    //   showToast({
+    //     message: error?.response?.data?.error?.message || "Failed to proceed to checkout",
+    //     type: "error",
+    //     duration: 3000,
+    //   });
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   if (isLoading) {
@@ -283,6 +283,11 @@ const CartPage: React.FC = () => {
                           <Video className="w-5 h-5 mr-1 text-black" />
                           {item.category?.name || "Course"}
                         </span>
+                        {item?.moods && item?.moods.length > 0 ? item?.moods?.map((i: any) => {
+                          return <span>
+                            {i?.icon} {i?.name}
+                          </span>
+                        }) : <></>}
                         <span>
                           {item.mood?.icon || "🕊️"} {item.mood?.name || "Peaceful"}
                         </span>

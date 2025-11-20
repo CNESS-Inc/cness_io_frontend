@@ -363,7 +363,7 @@ const UpgradeBadge = () => {
                   </button>
                   {showMenu && (
                     <div
-                      className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-[9999]"
+                      className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-9999"
                       ref={menuRef}
                     >
                       <ul className="flex items-center gap-4">
@@ -464,7 +464,7 @@ const UpgradeBadge = () => {
                 </button>
               </div>
             ) : (
-              <div className="flex gap-2 items-center hidden">
+              <div className="flex gap-2 items-center">
                 <div className="relative">
                   <button
                     className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
@@ -504,7 +504,7 @@ const UpgradeBadge = () => {
               <LockOverlay message="Complete Inspired Assessment to Unlock" />
             )}
             <div>
-              <h1 className="font-['Poppins',Helvetica] font-medium text-base text-wrap bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              <h1 className="font-['Poppins',Helvetica] font-medium text-base text-wrap bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 You're making great progress
               </h1>
               <h5 className="py-3 font-['Open_Sans',Helvetica] text-sm font-light text-[#242424]">
@@ -534,10 +534,10 @@ const UpgradeBadge = () => {
                 {[...Array(6)].map((_, index) => (
                   <div
                     key={index}
-                    className={`flex-1 h-5 md:h-[24px] rounded ${
+                    className={`flex-1 h-5 md:h-6 rounded ${
                       index <
                       Math.floor((user?.cis_score || 0) / (100 / 6))
-                        ? "bg-gradient-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
+                        ? "bg-linear-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
                         : "bg-[#EDEAFF]"
                     }`}
                   />
@@ -562,7 +562,7 @@ const UpgradeBadge = () => {
                 }
               />
             )}
-            <div className="pb-3 flex justify-start items-center gap-[14px] border-b border-black/10">
+            <div className="pb-3 flex justify-start items-center gap-3.5 border-b border-black/10">
               <div className="bg-[rgba(232,205,253,0.2)] w-8 h-8 rounded-full padding-[5px] flex justify-center items-center">
                 <img
                   src={score}
@@ -607,7 +607,7 @@ const UpgradeBadge = () => {
           {/* Badge Card with Lock Overlay */}
           <div className="w-1/5 bg-white rounded-xl px-3 pt-3 pb-6 flex flex-col relative">
             {showBadgeLock && <LockOverlay message="Badge Locked" />}
-            <div className="pb-3 flex items-center justify-between w-full gap-[14px] border-b border-black/10">
+            <div className="pb-3 flex items-center justify-between w-full gap-3.5 border-b border-black/10">
               <div className="flex items-center gap-2">
                 <div className="bg-[rgba(255,204,0,0.2)] w-8 h-8 rounded-full padding-[5px] flex justify-center items-center">
                   <img
@@ -623,13 +623,13 @@ const UpgradeBadge = () => {
 
               <button
                 onClick={() => setShareOpen(true)}
-                className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-full bg-white hover:bg-[#EEF0F5]"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white hover:bg-[#EEF0F5]"
                 style={{ boxShadow: "0px 1px 10px 0px rgba(0, 0, 0, 0.1)" }}
               >
                 <img
                   src={shareicon}
                   alt="share icon"
-                  className="w-[12px] h-[12px]"
+                  className="w-3 h-3"
                 />
               </button>
             </div>
@@ -659,7 +659,7 @@ const UpgradeBadge = () => {
             className="absolute top-0 left-0 w-full h-full object-cover rounded-xl"
           />
           <div className="relative flex flex-col items-center justify-center text-center gap-3 py-3 px-6">
-            <h1 className="font-['Poppins',Helvetica] font-semibold text-2xl text-wrap bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+            <h1 className="font-['Poppins',Helvetica] font-semibold text-2xl text-wrap bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               Unlock Your Full Potential
             </h1>
             <h5 className="font-['Open_Sans',Helvetica] text-sm font-light text-[#242424] w-[64%]">
@@ -674,7 +674,7 @@ const UpgradeBadge = () => {
         <div className="my-5 bg-white flex flex-col w-full h-full px-[18px] pt-[18px] pb-6 rounded-xl">
           <div className="flex flex-col gap-2">
             <div className="flex justify-start items-center gap-2 border-b border-[#E9EDF0] pb-3">
-              <img src={icon1} alt="icon" className="w-[32px] h-[32px]" />
+              <img src={icon1} alt="icon" className="w-8 h-8" />
               <h3 className="font-['Poppins',Helvetica] text-base font-medium text-[#081021]">
                 Certification Renewal and Reassessment Rules
               </h3>

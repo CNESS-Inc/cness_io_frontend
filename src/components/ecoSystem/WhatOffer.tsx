@@ -25,7 +25,7 @@ const features = [
   {
     id: "04",
     icon: "/lms.png",
-    title: "LMS",
+    title: "My Learning",
     description:
       "Access courses and structured learning paths to upskill at your own pace.",
   },

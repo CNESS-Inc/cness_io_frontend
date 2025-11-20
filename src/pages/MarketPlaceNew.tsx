@@ -411,7 +411,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
 
       {/* Featured Products Section */}
-      <section className="sm:px-3 md:px-4 lg:px-8 py-10">
+      <section className="sm:px-3 md:px-2 lg:px-2 py-10">
         <div className="mb-8">
           <h2 className="font-poppins font-semibold sm:text-2xl md:text-2xl text-3xl text-gray-800 mb-6">Featured products</h2>
 
@@ -440,8 +440,9 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-              {featuredProducts.length > 0 ? (
+<div className="grid gap-6 
+    grid-cols-[repeat(auto-fill,minmax(250px,1fr))] mb-8">
+                    {featuredProducts.length > 0 ? (
                 featuredProducts.map((product) => (
                   <ProductCard
                     key={product.id}
@@ -456,7 +457,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                       discount: product.discount_percentage,
                       duration: product.video_details?.duration || product.music_details?.total_duration || "00:00:00",
                       mood_icon: product?.mood_icon,
-                      mood: product?.mood_name,
+                      moods: product?.moods || [],
                       image: product?.thumbnail_url || "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
                       category: product.category?.name || "",
                       isLike: product?.is_in_wishlist,

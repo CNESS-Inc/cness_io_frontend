@@ -1,4 +1,4 @@
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "../../ui/Button";
 import Image from "../../ui/Image";
 //import Dummyvideo from "../../ui/Dummyvideo";
@@ -7,11 +7,13 @@ import OptimizeImage from "../../ui/OptimizeImage";
 export default function Highlight() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
- //const [open, setOpen] = useState(false);
-   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
-   const videoUrl = "https://cdn.cness.io/WhatsApp%20Video%202025-11-11%20at%204.48.38%20PM.mp4";
-   const videoRef = useRef(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(0); // Start with first card expanded
+  const videoUrl =
+    "https://cdn.cness.io/WhatsApp%20Video%202025-11-11%20at%204.48.38%20PM.mp4";
+  const videoRef = useRef(null);
+  
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
@@ -23,6 +25,10 @@ export default function Highlight() {
     if (isMobile) {
       setOpenIndex(openIndex === index ? null : index);
     }
+  };
+
+  const handleCardHover = (index: number | null) => {
+    setHoveredIndex(index);
   };
 
   const highlightCards = [
@@ -63,38 +69,41 @@ export default function Highlight() {
       <div className="max-w-[1336px] mx-auto flex lg:flex-row flex-col">
         <div className="md:px-0 lg:px-0 lg:w-5/12 w-full">
           <div className="w-full">
-            <span className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block 
-            rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white">
+            <span
+              className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block 
+            rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white"
+            >
               Highlights
             </span>
-           <h3
-  style={{ fontFamily: "Poppins, sans-serif" }}
-  className="font-medium
+            <h3
+              style={{ fontFamily: "Poppins, sans-serif" }}
+              className="font-medium
   text-[30px] md:text-[40px]
   leading-[38px] md:leading-[50px] lg:leading-[54px]
   tracking-[-0.01em] sm:tracking-[-0.02em]
   capitalize text-left pb-[20px] md:pb-[18px]
   max-w-[28ch] sm:max-w-[30ch] md:max-w-[26ch] lg:max-w-[28ch]"
->
-  Create a Profile That Reflects
-  <br />
-  <span
-    className="bg-gradient-to-r from-[#D747EA] to-[#7741FB]
+            >
+              Create a Profile That Reflects
+              <br />
+              <span
+                className="bg-gradient-to-r from-[#D747EA] to-[#7741FB]
     text-transparent bg-clip-text"
-  >
-    Who You Truly Are.
-  </span>
-</h3>
+              >
+                Who You Truly Are.
+              </span>
+            </h3>
             <p className="font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] mb-6">
-              Tell your story, express your values and let others see 
-the real you.
-              
+              Tell your story, express your values and let others see the real
+              you.
             </p>
-            <Button className="font-['Open_Sans'] font-medium  text-[16px] leading-[100%] tracking-[0px] text-center 
+            <Button
+              className="font-['Open_Sans'] font-medium  text-[16px] leading-[100%] tracking-[0px] text-center 
              w-fit h-[42px] py-1 px-6 rounded-[100px] 
              bg-gradient-to-r from-[#7077FE] to-[#F07EFF] 
              self-stretch transition-colors duration-500 ease-in-out"
-              onClick={() => setIsVideoOpen(true)}>
+              onClick={() => setIsVideoOpen(true)}
+            >
               See how it all works →
             </Button>
           </div>
@@ -112,20 +121,30 @@ the real you.
                   className="group relative cursor-pointer w-full"
                   onClick={() => handleClick(index)}
                 >
-                  <div className={`absolute inset-0 rounded-[16px] border ${isOpen ? 'border-[#9747FF]' : 'border-transparent'} p-[1px] transition-all duration-500 ease-in-out`}></div>
+                  <div
+                    className={`absolute inset-0 rounded-[16px] border ${
+                      isOpen ? "border-[#9747FF]" : "border-transparent"
+                    } p-[1px] transition-all duration-500 ease-in-out`}
+                  ></div>
 
                   <div
-                    className={`card relative z-10 bg-white ${isOpen ? 'h-auto min-h-[150px]' : 'h-[80px] min-h-[80px]'} w-full px-4 py-4 border border-[#E9EDF0] rounded-[16px] flex ${isOpen ? 'flex-col' : 'flex-row items-center'} transition-all duration-500 ease-in-out`}
+                    className={`card relative z-10 bg-white ${
+                      isOpen ? "h-auto min-h-[150px]" : "h-[80px] min-h-[80px]"
+                    } w-full px-4 py-4 border border-[#E9EDF0] rounded-[16px] flex ${
+                      isOpen ? "flex-col" : "flex-row items-center"
+                    } transition-all duration-500 ease-in-out`}
                   >
                     <OptimizeImage
                       src={card.icon}
                       alt="Company Logo"
-                      width={'100%'}
+                      width={"100%"}
                       height={45}
-                      className={`${isOpen ? 'w-10 h-10 mb-4' : 'w-8 h-8 mr-4'}`}
+                      className={`${
+                        isOpen ? "w-10 h-10 mb-4" : "w-8 h-8 mr-4"
+                      }`}
                     />
 
-                    <div className={`${isOpen ? '' : 'flex-1'}`}>
+                    <div className={`${isOpen ? "" : "flex-1"}`}>
                       {isOpen ? (
                         // Top-left when expanded
                         <span className="text-[#4B4B4B] text-[14px] font-[600] mb-2">
@@ -158,94 +177,109 @@ the real you.
           {/* Desktop View - Original Horizontal Cards */}
           <div className="hidden lg:block overflow-x-auto scrollbar-thin scrollbar-thumb-[#9747FF]/40 scrollbar-track-transparent highlight-right-content-box">
             <div className="flex flex-row flex-nowrap gap-1 lg:gap-4 min-w-max lg:justify-end">
-              {highlightCards.map((card, index) => (
-                <div
-                  key={index}
-                  className="group relative cursor-pointer hover:[&>.card]:w-[240px]"
-                >
-                  <div className="absolute inset-0 rounded-[16px] border border-transparent group-hover:border-[#9747FF] p-[1px] transition-all duration-500 ease-in-out"></div>
-
+              {highlightCards.map((card, index) => {
+                const isExpanded = hoveredIndex === index;
+                
+                return (
                   <div
-                    className="card relative z-10 bg-white h-[350px] min-h-[350px] px-[18px] py-[26px] border border-[#E9EDF0] rounded-[16px] flex flex-col justify-between items-start transition-all duration-500 ease-in-out origin-right w-[78px] group-hover:w-[240px]"
+                    key={index}
+                    className="group relative cursor-pointer"
+                    onMouseEnter={() => handleCardHover(index)}
+                    onMouseLeave={() => handleCardHover(0)} // Reset to first card when not hovering
                   >
-                    <Image
-                      src={card.icon}
-                      alt="Company Logo"
-                      width={'45px'}
-                      height={'45px'}
-                      className="w-14 h-14 hight-box-img"
-                    />
+                    <div className={`absolute inset-0 rounded-[16px] border ${
+                      isExpanded ? "border-[#9747FF]" : "border-transparent"
+                    } p-[1px] transition-all duration-500 ease-in-out`}></div>
 
-                    <div>
-                      <span className="text-[#64748B] text-[18px] font-[400]">
-                        0{index + 1}
-                      </span>
+                    <div className={`card relative z-10 bg-white h-[350px] min-h-[350px] px-[18px] py-[26px] border border-[#E9EDF0] rounded-[16px] flex flex-col justify-between items-start transition-all duration-500 ease-in-out origin-right ${
+                      isExpanded ? "w-[240px]" : "w-[78px]"
+                    }`}>
+                      <Image
+                        src={card.icon}
+                        alt="Company Logo"
+                        width={"45px"}
+                        height={"45px"}
+                        className="w-14 h-14 hight-box-img"
+                      />
 
-                      <h2 className="transition-all duration-500 font-semibold text-start bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text text-[0px] group-hover:text-[16px] group-hover:mt-2">
-                        {card.title}
-                      </h2>
+                      <div>
+                        <span className="text-[#64748B] text-[18px] font-[400]">
+                          0{index + 1}
+                        </span>
 
-                      <p className="text-[#242424] font-light transition-all duration-500 text-start text-[0px] group-hover:text-[12px] group-hover:mt-2">
-                        {card.desc}
-                      </p>
+                        <h2 className={`transition-all duration-500 font-semibold text-start bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text ${
+                          isExpanded ? "text-[16px] mt-2" : "text-[0px]"
+                        }`}>
+                          {card.title}
+                        </h2>
+
+                        <p className={`text-[#242424] font-light transition-all duration-500 text-start ${
+                          isExpanded ? "text-[12px] mt-2" : "text-[0px]"
+                        }`}>
+                          {card.desc}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
       </div>
-{isVideoOpen && (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center  p-4"
-    onClick={() => setIsVideoOpen(false)}
-  >
-    {/* Auto layout container */}
-    <div
-      className={`relative w-full ${
-        isPortrait ? "max-w-[900px] aspect-video" : "max-w-[900px] aspect-video"
-      } rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)] bg-black`}
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* Close Button */}
-      <button
-        onClick={() => setIsVideoOpen(false)}
-        className="absolute top-3 right-3 z-10 text-white/80 hover:text-white bg-black/40 hover:bg-black/60
+      {isVideoOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center  p-4"
+          onClick={() => setIsVideoOpen(false)}
+        >
+          {/* Auto layout container */}
+          <div
+            className={`relative w-full ${
+              isPortrait
+                ? "max-w-[900px] aspect-video"
+                : "max-w-[900px] aspect-video"
+            } rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)] bg-black`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setIsVideoOpen(false)}
+              className="absolute top-3 right-3 z-10 text-white/80 hover:text-white bg-black/40 hover:bg-black/60
                    w-8 h-8 flex items-center justify-center rounded-full backdrop-blur-sm transition-all duration-200"
-      >
-        ×
-      </button>
+            >
+              ×
+            </button>
 
-      {/* Portrait Video: Blurred Background Layer */}
-      {isPortrait && (
-        <video
-          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40"
-          src={videoUrl}
-          muted
-          loop
-          autoPlay
-        />
-      )}
+            {/* Portrait Video: Blurred Background Layer */}
+            {isPortrait && (
+              <video
+                className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40"
+                src={videoUrl}
+                muted
+                loop
+                autoPlay
+              />
+            )}
 
-      {/* Main Video (auto detect portrait or landscape) */}
-      <video
-        ref={videoRef}
-        className={`relative z-10 rounded-3xl ${
-          isPortrait
-            ? "w-auto h-full mx-auto object-contain" // Portrait → center with height fit
-            : "w-full h-full object-cover" // Landscape → fill the container
-        }`}
-        src={videoUrl}
-        controls
-        autoPlay
-        onLoadedMetadata={(e) => {
-          const video = e.target as HTMLVideoElement;
-setIsPortrait(video.videoHeight > video.videoWidth);
-        }}
-      />
-    </div>
-  </div>
-)}    </section>
+            {/* Main Video (auto detect portrait or landscape) */}
+            <video
+              ref={videoRef}
+              className={`relative z-10 rounded-3xl ${
+                isPortrait
+                  ? "w-auto h-full mx-auto object-contain" // Portrait → center with height fit
+                  : "w-full h-full object-cover" // Landscape → fill the container
+              }`}
+              src={videoUrl}
+              controls
+              autoPlay
+              onLoadedMetadata={(e) => {
+                const video = e.target as HTMLVideoElement;
+                setIsPortrait(video.videoHeight > video.videoWidth);
+              }}
+            />
+          </div>
+        </div>
+      )}{" "}
+    </section>
   );
 }

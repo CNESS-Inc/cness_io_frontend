@@ -271,7 +271,7 @@ const CheckoutPage: React.FC = () => {
 
     setIsProcessing(true);
     try {
-      const response = await CreateCheckoutSession();
+      const response = await CreateCheckoutSession(appliedDonation);
 
       // Get the Stripe checkout URL
       const checkoutUrl = response?.data?.data?.checkout_url;

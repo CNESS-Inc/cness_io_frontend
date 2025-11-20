@@ -3,6 +3,7 @@ import { X, HelpCircle } from "lucide-react";
 import uploadimg from "../../assets/upload1.svg";
 import { useToast } from "../ui/Toast/ToastProvider";
 import { UploadProductDocument } from "../../Common/ServerAPI";
+import { UploadArtSampleImage } from "../../Common/ServerAPI";
 
 interface SampleTrackUploadProps {
     productType: "video" | "music" | "course" | "podcast" | "ebook" | "art";
@@ -27,16 +28,20 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
     const [isDonated, setIsDonated] = useState(false);
     const fileRef = useRef<HTMLInputElement | null>(null);
 
-    const getAcceptTypes = () => {
-        switch (productType) {
-            case "course":
-                return "video/*";
-            case "music":
-                 return "audio/*";
-            default:
-                return "*";
-        }
-    };
+  const getAcceptTypes = () => {
+    switch (productType) {
+        case "course":
+            return "video/*";
+        case "music":
+        case "podcast":
+            return "audio/*";
+        case "art":
+            return "image/*"; 
+        default:
+            return "*";
+    }
+};
+
 
     const getFileTypeName = () => {
         switch (productType) {
@@ -49,56 +54,89 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
         }
     };
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-        // Validate file size (50MB max)
-        if (file.size > 50 * 1024 * 1024) {
-            showToast({
-                message: "Sample file size should be less than 50MB",
-                type: "error",
-                duration: 3000,
-            });
-            return;
+    // Validate file size (50MB max)
+    if (file.size > 50 * 1024 * 1024) {
+        showToast({
+            message: "Sample file size should be less than 50MB",
+            type: "error",
+            duration: 3000,
+        });
+        return;
+    }
+
+    setIsUploading(true);
+
+    try {
+        // ------------------------
+        // 🎨 ART SAMPLE UPLOAD
+        // ------------------------
+        if (productType === "art") {
+    const formDataArt = new FormData();
+    formDataArt.append("sample_image", file);
+
+    const response = await UploadArtSampleImage(formDataArt);
+
+     const sampleImageUrl = response.data.data.sample_image_url;
+
+
+    setUploadedFile(file.name);
+
+    onUploadSuccess(
+        sampleImageUrl, // sampleId substitute
+        sampleImageUrl, // preview URL
+        sampleImageUrl  // thumbnail substitute
+    );
+
+    showToast({
+        message: "Sample art uploaded successfully!",
+        type: "success",
+        duration: 3000,
+    });
+
+    return; // STOP here => do NOT run audio upload logic
+}
+        // ------------------------
+        // 🎵 ORIGINAL AUDIO/VIDEO UPLOAD
+        // ------------------------
+        const formData = new FormData();
+        formData.append("sample_track", file);
+
+        const response = await UploadProductDocument("sample-track", formData);
+        const sampleData = response?.data?.data;
+
+        setUploadedFile(file.name);
+
+        onUploadSuccess(
+            sampleData.sample_track_url,
+            sampleData.sample_track_url,
+            sampleData.sample_track_url
+        );
+
+        showToast({
+            message: "Sample track uploaded successfully",
+            type: "success",
+            duration: 3000,
+        });
+
+    } catch (error: any) {
+        showToast({
+            message:
+                error?.response?.data?.error?.message || "Failed to upload sample",
+            type: "error",
+            duration: 3000,
+        });
+        setUploadedFile(null);
+    } finally {
+        setIsUploading(false);
+        if (fileRef.current) {
+            fileRef.current.value = "";
         }
-
-        setIsUploading(true);
-
-        try {
-            const formData = new FormData();
-            formData.append("sample_track", file);
-
-            const response = await UploadProductDocument("sample-track", formData);
-            const sampleData = response?.data?.data;
-
-            setUploadedFile(file.name);
-            onUploadSuccess(
-                sampleData.sample_track_url,
-                sampleData.sample_track_url,
-                sampleData.sample_track_url
-            );
-
-            showToast({
-                message: "Sample track uploaded successfully",
-                type: "success",
-                duration: 3000,
-            });
-        } catch (error: any) {
-            showToast({
-                message:
-                    error?.response?.data?.error?.message || "Failed to upload sample track",
-                type: "error",
-                duration: 3000,
-            });
-            setUploadedFile(null);
-        } finally {
-            setIsUploading(false);
-            if (fileRef.current) {
-                fileRef.current.value = "";
-            }
-        }
-    };
+    }
+};
 
     const handleRemove = () => {
         setUploadedFile(null);

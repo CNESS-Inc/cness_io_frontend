@@ -183,7 +183,7 @@ const ScoreResult = () => {
   }, []);
 
   const myid = localStorage.getItem("Id");
-  const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
+  const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
 
   const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
 
@@ -195,53 +195,53 @@ const ScoreResult = () => {
     }
   };
 
-const handleReportDownload = async () => {
-  try {
-    setIsGeneratingPDF(true);
-    const response = await GetReport();
-    
-    // Updated data extraction to match new response structure
-    const data = {
-      array: response.data.data.array,
-      final_score: response.data.data.final_score,
-    };
+  const handleReportDownload = async () => {
+    try {
+      setIsGeneratingPDF(true);
+      const response = await GetReport();
 
-    let html = "";
+      // Updated data extraction to match new response structure
+      const data = {
+        array: response.data.data.array,
+        final_score: response.data.data.final_score,
+      };
 
-    // Generate HTML content for sections
-    for (const section of data.array) {
-      html += `<div style="margin-bottom: 25px;"><h2 style="margin-bottom: 10px;">Section: ${section.section.name} - (${section.section.weight} / ${section.section.total_weight})</h2>`;
-      
-      for (const sub of section.question_data) {
-        html += `<div style="margin-bottom: 25px;"><h3>Sub Section: ${sub.sub_section.name} - (${sub.sub_section.weight} / 5)</h3>`;
-        
-        for (const ques of sub.questions) {
-          html += `<p><b>Question:</b> ${ques.question}</p><ul>`;
-          
-          // Handle different answer scenarios
-          if (ques.answer && ques.answer.length > 0) {
-            for (const ans of ques.answer) {
-              if (ans === null || ans === undefined) {
-                html += `<li>No answer provided</li>`;
-              } else if (ques.is_link) {
-                html += `<li><a href="${ans}" target="_blank">Click To View Uploaded File</a></li>`;
-              } else {
-                html += `<li>${ans}</li>`;
+      let html = "";
+
+      // Generate HTML content for sections
+      for (const section of data.array) {
+        html += `<div style="margin-bottom: 25px;"><h2 style="margin-bottom: 10px;">Section: ${section.section.name} - (${section.section.weight} / ${section.section.total_weight})</h2>`;
+
+        for (const sub of section.question_data) {
+          html += `<div style="margin-bottom: 25px;"><h3>Sub Section: ${sub.sub_section.name} - (${sub.sub_section.weight} / 5)</h3>`;
+
+          for (const ques of sub.questions) {
+            html += `<p><b>Question:</b> ${ques.question}</p><ul>`;
+
+            // Handle different answer scenarios
+            if (ques.answer && ques.answer.length > 0) {
+              for (const ans of ques.answer) {
+                if (ans === null || ans === undefined) {
+                  html += `<li>No answer provided</li>`;
+                } else if (ques.is_link) {
+                  html += `<li><a href="${ans}" target="_blank">Click To View Uploaded File</a></li>`;
+                } else {
+                  html += `<li>${ans}</li>`;
+                }
               }
+            } else {
+              html += `<li>No answer provided</li>`;
             }
-          } else {
-            html += `<li>No answer provided</li>`;
+
+            html += `</ul>`;
           }
-          
-          html += `</ul>`;
+          html += ` </div><br/> `;
         }
         html += ` </div><br/> `;
       }
-      html += ` </div><br/> `;
-    }
 
-    // Complete HTML template
-    const template = `
+      // Complete HTML template
+      const template = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -370,54 +370,56 @@ const handleReportDownload = async () => {
 
         <div class="footer">
             <p>Thank you for your dedication to conscious growth.</p>
-            <p class="mb">Generated on: ${new Date().toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })}</p>
+            <p class="mb">Generated on: ${new Date().toLocaleDateString(
+              "en-US",
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              }
+            )}</p>
         </div>
     </body>
     </html>`;
 
-    // Generate PDF from HTML with correct typing
-    const options = {
-      margin: 15,
-      filename: `CNESS_Report_${new Date().toISOString().split("T")[0]}.pdf`,
-      image: { type: "jpeg" as const, quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        async: true,
-      },
-      jsPDF: {
-        unit: "mm" as const,
-        format: "a4" as const,
-        orientation: "portrait" as const,
-      },
-      pagebreak: {
-        mode: "avoid-all" as const,
-        before: " #summary-table",
-        avoid: "img, table",
-      },
-    };
+      // Generate PDF from HTML with correct typing
+      const options = {
+        margin: 15,
+        filename: `CNESS_Report_${new Date().toISOString().split("T")[0]}.pdf`,
+        image: { type: "jpeg" as const, quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          async: true,
+        },
+        jsPDF: {
+          unit: "mm" as const,
+          format: "a4" as const,
+          orientation: "portrait" as const,
+        },
+        pagebreak: {
+          mode: "avoid-all" as const,
+          before: " #summary-table",
+          avoid: "img, table",
+        },
+      };
 
-    // Generate and download PDF
-    await html2pdf().set(options).from(template).save();
-    
-  } catch (error: any) {
-    showToast({
-      message:
-        error?.response?.data?.error?.message || "Failed to generate report",
-      type: "error",
-      duration: 5000,
-    });
-  } finally {
-    setIsGeneratingPDF(false);
-  }
-};
+      // Generate and download PDF
+      await html2pdf().set(options).from(template).save();
+    } catch (error: any) {
+      showToast({
+        message:
+          error?.response?.data?.error?.message || "Failed to generate report",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -471,7 +473,7 @@ const handleReportDownload = async () => {
   // };
 
   if (loading) {
-    return <LoadingSpinner/>;
+    return <LoadingSpinner />;
   }
 
   if (!scoreData) {
@@ -606,12 +608,64 @@ const handleReportDownload = async () => {
                   <div className="relative">
                     <button
                       className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
-                      disabled
+                      onClick={toggleMenu}
+                      style={{ cursor: "pointer" }}
                     >
                       Share
                     </button>
+                    {showMenu && (
+                      <div
+                        className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                        ref={menuRef}
+                      >
+                        <ul className="flex items-center gap-4">
+                          <li>
+                            <FacebookShareButton url={urldata}>
+                              <FaFacebook size={32} color="#4267B2" />
+                            </FacebookShareButton>
+                          </li>
+                          <li>
+                            <LinkedinShareButton url={urldata}>
+                              <FaLinkedin size={32} color="#0077B5" />
+                            </LinkedinShareButton>
+                          </li>
+                          {/* <li>
+                            <FaInstagram size={32} color="#C13584" />
+                          </li> */}
+                          <TwitterShareButton url={urldata} title={tweetText}>
+                            <FaTwitter size={32} color="#1DA1F2" />
+                          </TwitterShareButton>
+                          <li>
+                            <WhatsappShareButton url={urldata}>
+                              <FaWhatsapp size={32} color="#1DA1F2" />
+                            </WhatsappShareButton>
+                          </li>
+                          <li>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(urldata);
+                                setCopy(true);
+                                setTimeout(() => setCopy(false), 1500);
+                              }}
+                              className="flex items-center relative"
+                              title="Copy link"
+                            >
+                              <MdContentCopy
+                                size={30}
+                                className="text-gray-600"
+                              />
+                              {copy && (
+                                <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                                  Link Copied!
+                                </div>
+                              )}
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
                   </div>
-                  <button
+                  {/* <button
                     className="bg-[#FF6B81] text-white cursor-not-allowed text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
                     disabled
                   >
@@ -630,7 +684,7 @@ const handleReportDownload = async () => {
                       />
                     </svg>
                     Report
-                  </button>
+                  </button> */}
                 </div>
               )}
             </div>
@@ -759,8 +813,8 @@ const handleReportDownload = async () => {
                       <img
                         src={
                           scoreData.badge.level === "Aspiring"
-                            ? 'https://cdn.cness.io/aspiringlogo.svg'
-                            : 'https://cdn.cness.io/inspired1.svg'
+                            ? "https://cdn.cness.io/aspiringlogo.svg"
+                            : "https://cdn.cness.io/inspired1.svg"
                         }
                         // src={
                         //   scoreData.badge.level === "Aspiring"

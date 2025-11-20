@@ -39,45 +39,45 @@ const SocialNavbar: React.FC<LeftSocialProps> = () => {
       active: true,
       onClick: () => setOpenSignup(true),
     },
-    {
-      id: "Home",
-      icon: (
-        <img
-          src={iconMap["socialhome"]}
-          alt="Home Icon"
-          className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
-        />
-      ),
-      label: "Home",
-      active: false,
-      path: "/",
-    },
-    {
-      id: "Search",
-      icon: (
-        <img
-          src={iconMap["socialsearch"]}
-          alt="Home Icon"
-          className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
-        />
-      ),
-      label: "Search",
-      active: false,
-      onClick: () => setOpenSignup(true),
-    },
-    {
-      id: "Trending",
-      icon: (
-        <img
-          src={iconMap["socialtrending"]}
-          alt="Home Icon"
-          className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
-        />
-      ),
-      label: "Trending",
-      active: false,
-      onClick: () => setOpenSignup(true),
-    },
+    // {
+    //   id: "Home",
+    //   icon: (
+    //     <img
+    //       src={iconMap["socialhome"]}
+    //       alt="Home Icon"
+    //       className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
+    //     />
+    //   ),
+    //   label: "Home",
+    //   active: false,
+    //   path: "/",
+    // },
+    // {
+    //   id: "Search",
+    //   icon: (
+    //     <img
+    //       src={iconMap["socialsearch"]}
+    //       alt="Home Icon"
+    //       className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
+    //     />
+    //   ),
+    //   label: "Search",
+    //   active: false,
+    //   onClick: () => setOpenSignup(true),
+    // },
+    // {
+    //   id: "Trending",
+    //   icon: (
+    //     <img
+    //       src={iconMap["socialtrending"]}
+    //       alt="Home Icon"
+    //       className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
+    //     />
+    //   ),
+    //   label: "Trending",
+    //   active: false,
+    //   onClick: () => setOpenSignup(true),
+    // },
   ];
 
   // NavItem component with profile dropdown support

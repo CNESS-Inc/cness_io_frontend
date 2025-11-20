@@ -298,7 +298,7 @@ export default function CourseDetail() {
               rating={productData?.rating}
               purchase={productData?.purchase?.purchased_at}
               duration={productData?.duration}
-              mood={productData?.mood}
+              moods={productData?.moods}
               category={productData?.category}
               content={productData?.contents}
               currentFile={activeFile}

@@ -46,9 +46,7 @@ const Footer = () => {
               />
             </Link>
             <p className="text-[16px] font-[400] font-openSans leading-[160%] text-[#1E1E1E] lg:block md:block hidden">
-              CNESS is a consciousness-based certification and <br />
-              growth platform designed to empower purpose-
-              <br /> driven individuals and organizations.
+Your global conscious hub where social connection,<br/> meaningful commerce, and community growth come together.
             </p>
           </div>
           <div className="col-span-2 lg:w-[25%] md:w-[50%] w-[75%]  sm:col-span-3 md:col-span-3 space-y-4">
@@ -159,6 +157,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="https://www.facebook.com/share/1A8V21L6Qj"
+                       target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaFacebookF className="me-2 md:me-3" />
@@ -168,6 +167,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="https://x.com/CnessInc"
+                       target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <img
@@ -181,6 +181,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="https://www.instagram.com/cness.inc"
+                       target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaInstagram className="me-2 md:me-3" />
@@ -190,6 +191,7 @@ const Footer = () => {
                   <li>
                     <a
                       href="https://www.youtube.com/@CNESSinc"
+                       target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaYoutube className="me-2 md:me-3" />
