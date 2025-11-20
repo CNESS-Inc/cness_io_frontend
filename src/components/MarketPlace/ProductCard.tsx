@@ -4,7 +4,6 @@ import {
   ArrowRight,
   Heart,
   Video,
-  Clock,
   Music,
   BookOpen,
   FileAudio,
@@ -253,11 +252,28 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Info */}
       <div className="p-4 flex flex-col justify-between space-y-3 flex-1">
         <div className="flex items-center justify-between">
-                    {product?.moods && product?.moods.length > 0 ? product?.moods?.map((i:any)=>{
-            return  <span className="bg-purple-50 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
-            {i?.icon} {i?.name}
-          </span>
-          }) :<></>}
+                    <div className="flex items-center gap-2 flex-wrap">
+  {product?.moods && product.moods.length > 0 && (
+    <>
+      {/* Show only first 2 moods */}
+      {product.moods.slice(0, 1).map((mood: any) => (
+        <span
+          key={mood.id}
+          className="bg-purple-50 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold"
+        >
+          {mood.icon} {mood.name}
+        </span>
+      ))}
+
+      {/* If more than 2, show +N badge */}
+      {product.moods.length > 1 && (
+        <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
+          +{product.moods.length - 1}
+        </span>
+      )}
+    </>
+  )}
+</div>
          
           <div className="flex items-center space-x-1">
             <Star className="w-4 h-4 text-[#7077FE] fill-[#7077FE]" />
@@ -299,16 +315,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
               onClick={handleAddToCart}
               disabled={isAddingToCart}
               className="flex items-center justify-center 
-     
                 hover:bg-blue-50 transition-transform hover:scale-110
 
-                w-7 h-7        /* mobile */
+                w-8 h-8        /* mobile */
                 sm:w-8 sm:h-8  /* tablet */
                 md:w-8 md:h-8  /* desktop */
               "
             >
               <FiShoppingCart
-                className={`w-4 h-4 ${
+                className={`w-5 h-5 ${
                   carted ? "text-[#7077FE] fill-[#7077FE]" : "text-[#7077FE]"
                 }`}
               />
@@ -329,7 +344,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               "
             >
               {/* Text that can shrink */}
-              <span className="mr-4 sm:mr-5 md:mr-6 shrink">Buy Now</span>
+              <span className="mr-4 sm:mr-4 md:mr-4 shrink">Buy Now</span>
 
               {/* Arrow circle — also flexible */}
               <span
@@ -370,12 +385,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {product.category}
               </span>
             </div>
-            <div className="flex items-center space-x-1">
+            {/*<div className="flex items-center space-x-1">
               <Clock className="w-4 h-4 text-[#7077FE]" />
               <span className="text-xs md:text-sm text-gray-800">
                 {product.duration}
               </span>
-            </div>
+            </div>*/}
           </div>
         </div>
       </div>

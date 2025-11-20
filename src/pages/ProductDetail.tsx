@@ -436,8 +436,20 @@ console.log("FULL PRODUCT → ", productData);
                 {product.product_name}
               </h1>
 
+             {product?.moods && product.moods.length > 0 && (
+  <div className="flex items-center gap-2 flex-wrap mt-2">
+    {product.moods.map((mood: any) => (
+      <span
+        key={mood.id}
+        className="bg-purple-50 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1"
+      >
+        {mood.icon} {mood.name}
+      </span>
+    ))}
+  </div>
+)}
               {/* Author and Stats */}
-              <div className="flex items-center space-x-4 text-sm">
+              <div className="flex items-center space-x-4 text-sm ">
                 <div className="flex items-center space-x-2">
                   <img
                     src={product?.seller?.shop_logo || 'https://static.codia.ai/image/2025-10-16/1Uq1yJR1AG.png'}
@@ -772,12 +784,19 @@ console.log("FULL PRODUCT → ", productData);
 
             {contentStructure && contentStructure.items && contentStructure.items.length > 0 && (
               <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mt-6">
-                <h2 className="font-[Poppins] font-semibold text-[20px] sm:text-[22px] text-[#242E3A] mb-6">
-                  {contentStructure.type === 'music' ? 'Tracks' :
-                    contentStructure.type === 'podcast' ? 'Episodes' :
-                      contentStructure.type === 'video' ? 'Videos' :
-                        'Course Content'}
-                </h2>
+              <h2 className="font-[Poppins] font-semibold text-[20px] sm:text-[22px] text-[#242E3A] mb-6">
+  {(() => {
+    switch (product?.category?.slug) {
+      case "music": return "Tracks";
+      case "podcast": return "Episodes";
+      case "video": return "Videos";
+      case "course": return "Course Content";
+      case "ebook": return "Ebook Content";
+      case "art": return "Art Gallery";
+      default: return "Content";
+    }
+  })()}
+</h2>
                 <div className="border border-gray-100"></div>
 
                 <div className="divide-y divide-gray-200">
@@ -1003,14 +1022,16 @@ console.log("FULL PRODUCT → ", productData);
 
         {/* recommended Products Section */}
 
-        <div className="flex flex-col justify-center items-center gap-[34px] mt-8">
+<div className="flex flex-col gap-[34px] mt-8 w-full">
           <div className="flex flex-col gap-5">
             <h2 className="font-[Poppins] font-semibold text-[20px] leading-[30px] text-[#242E3A] text-center">
               Recommended products
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-              {featuredProducts.length > 0 ? (
+<div className="w-full px-4">
+<div className="grid gap-4
+    grid-cols-[repeat(auto-fill,minmax(250px,1fr))]">
+               {featuredProducts.length > 0 ? (
                 featuredProducts?.map((product, index) => {
                   if (index < 10) {
                     return (
@@ -1043,6 +1064,7 @@ console.log("FULL PRODUCT → ", productData);
                   No Recommended products found
                 </div>
               )}
+            </div>
             </div>
           </div>
         </div>

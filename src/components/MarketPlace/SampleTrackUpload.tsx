@@ -173,7 +173,7 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A]">
-                    Sample Track (Optional)
+                    Sample File (Optional)
                 </label>
             </div>
 

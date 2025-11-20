@@ -299,7 +299,7 @@ const SellerProductList: React.FC = () => {
     }
   };
 
-  const handleSelectCategory = (categoryId: string, categoryName: string) => {
+  const handleSelectCategory = (categoryName: string) => {
     setIsOpen(false);
 
     const routeMap: { [key: string]: string } = {
@@ -315,7 +315,7 @@ const SellerProductList: React.FC = () => {
 
     const route = routeMap[categoryName];
     if (route) {
-      navigate(route, { state: { categoryId, categoryName } });
+      navigate(route, { state: { categoryName } });
     } else {
       showToast({
         message: `No route found for category: ${categoryName}`,

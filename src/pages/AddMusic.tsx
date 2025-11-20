@@ -89,6 +89,17 @@ const AddMusicForm: React.FC = () => {
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [newHighlight, setNewHighlight] = useState("");
   const [showAIModal, setShowAIModal] = useState(false);
+
+const [storyMedia, setStoryMedia] = useState<{
+  type: "audio" | "video" | null;
+  url: string;
+  thumbnail?: string;
+}>({
+  type: null,
+  url: "",
+});
+const [storySummary, setStorySummary] = useState("");
+
   const [tracks, setTracks] = useState<any[]>([
     {
       id: 1,
@@ -105,7 +116,7 @@ const AddMusicForm: React.FC = () => {
     product_title: "",
     price: 0,
     discount_percentage: 0,
-    mood_id: "",
+   mood_ids: [] as string[],
     overview: "",
     highlights: [] as string[],
     total_duration: "",
@@ -116,6 +127,12 @@ const AddMusicForm: React.FC = () => {
     thumbnail_url: "",
     sample_track_url: "",
   });
+
+const [sampleList, setSampleList] = useState([0]); 
+
+const addSample = () => setSampleList(prev => [...prev, prev.length]);
+const removeSample = (index: number) =>
+  setSampleList(prev => prev.filter((_, i) => i !== index));
 
   useEffect(() => {
     const fetchMoods = async () => {
@@ -161,12 +178,12 @@ const AddMusicForm: React.FC = () => {
     }));
   };
 
-  const handleRemoveSampleTrack = () => {
-    setFormData(prev => ({
-      ...prev,
-      sample_track_url: "",
-    }));
-  };
+  //const handleRemoveSampleTrack = () => {
+   // setFormData(prev => ({
+    //  ...prev,
+     // sample_track_url: "",
+    //}));
+  //};
 
   const handleAIGenerate = (generatedText: string) => {
     setFormData(prev => ({
@@ -371,8 +388,9 @@ const AddMusicForm: React.FC = () => {
       newErrors.discount_percentage = "Discount percentage must be between 0 and 100.";
     }
 
-    if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
-
+if (!formData.mood_ids || formData.mood_ids.length === 0) {
+  newErrors.mood_ids = "Please select at least one mood.";
+}
     if (!formData.thumbnail_url.trim()) newErrors.thumbnail_url = "Thumbnail url is required.";
 
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
@@ -381,12 +399,12 @@ const AddMusicForm: React.FC = () => {
       newErrors.highlights = "At least one highlight is required.";
     }
 
-    if (formData.total_duration) {
-      if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)) {
-        newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
-      }
-    }
-    if (!formData.total_duration.trim()) newErrors.total_duration = "Duration is required.";
+   // if (formData.total_duration) {
+     // if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)) {
+     //   newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
+    //  }
+    //}
+    //if (!formData.total_duration.trim()) newErrors.total_duration = "Duration is required.";
 
     const validFormats = ["MP3", "AAC", "WAV", "FLAC", "OGG"];
     if (!formData.format || !validFormats.includes(formData.format.toUpperCase())) {
@@ -453,7 +471,7 @@ const AddMusicForm: React.FC = () => {
         }
         break;
 
-      case "mood_id":
+      case "mood_ids":
         if (!valStr) message = "Mood Selection is required";
         break;
 
@@ -659,7 +677,7 @@ const AddMusicForm: React.FC = () => {
         product_title: formData.product_title,
         price: formData.price,
         discount_percentage: formData.discount_percentage,
-        mood_id: formData.mood_id,
+        mood_ids: formData.mood_ids,
         overview: formData.overview,
         highlights: formData.highlights,
         total_duration: formData.total_duration || "00:00",
@@ -770,6 +788,145 @@ const AddMusicForm: React.FC = () => {
     }
   };
 
+
+const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const isAudio = file.type.startsWith("audio/");
+  const isVideo = file.type.startsWith("video/");
+
+  if (!isAudio && !isVideo) {
+    showToast({
+      message: "Please upload audio or video file only.",
+      type: "error",
+      duration: 3000,
+    });
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append(isAudio ? "story_audio" : "story_video", file);
+
+  try {
+    const response = await UploadProductDocument(
+      isAudio ? "story-audio" : "story-video",
+      formData
+    );
+
+    const data = response?.data?.data;
+
+    setStoryMedia({
+      type: isAudio ? "audio" : "video",
+      url: isAudio ? data.audio_url : data.video_url,
+      thumbnail: data.thumbnail || "",
+    });
+
+    showToast({
+      message: `Story ${isAudio ? "audio" : "video"} uploaded successfully`,
+      type: "success",
+      duration: 3000,
+    });
+  } catch (err) {
+    showToast({
+      message: "Failed to upload storytelling media",
+      type: "error",
+      duration: 3000,
+    });
+  }
+};
+
+
+{/*mood multi select*/}
+const MultiSelect = ({
+  label,
+  options,
+  selectedValues,
+  onChange,
+  required = false,
+}: any) => {
+  const [open, setOpen] = useState(false);
+
+  const toggleOption = (value: string) => {
+    if (selectedValues.includes(value)) {
+      onChange(selectedValues.filter((v: string) => v !== value));
+    } else {
+      onChange([...selectedValues, value]);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <label className="block font-['Open_Sans'] font-semibold text-[16px] mb-2 text-[#242E3A]">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+
+      {/* Input Box */}
+      <div
+        className="border border-gray-300 rounded-md px-3 py-2 bg-white cursor-pointer flex flex-wrap gap-2 min-h-[42px]"
+        onClick={() => setOpen(!open)}
+      >
+        {selectedValues.length === 0 ? (
+          <span className="text-gray-400">Select Mood</span>
+        ) : (
+          selectedValues.map((val: string) => {
+            const item = options.find((o: any) => o.id === val);
+            return (
+              <span
+                key={val}
+                className="bg-[#7077FE] text-white px-2 py-1 rounded-md text-sm flex items-center gap-1"
+              >
+                {item?.name}
+                <X
+                  size={14}
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleOption(val);
+                  }}
+                />
+              </span>
+            );
+
+            
+          })
+          
+        )}
+        <svg
+  className="w-4 h-4 absolute right-3 text-gray-500 pointer-events-none"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  viewBox="0 0 24 24"
+>
+  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+</svg>
+      </div>
+
+      {/* Dropdown List */}
+      {open && (
+        <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-md z-20">
+          {options.map((opt: any) => (
+            <div
+              key={opt.id}
+              onClick={() => toggleOption(opt.id)}
+              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                selectedValues.includes(opt.id)
+                  ? "bg-[#EEF3FF] text-[#7077FE]"
+                  : "text-gray-700"
+              }`}
+            >
+              {opt.name}
+            </div>
+          ))}
+        </div>
+      )}
+      
+    </div>
+    
+  );
+};
+
   return (
     <>
       <Breadcrumb
@@ -811,22 +968,27 @@ const AddMusicForm: React.FC = () => {
               error={errors.discount_percentage}
             />
             <div>
-              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Mood <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="mood_id"
-                value={formData.mood_id}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer">
-                <option value="">Select Mood</option>
-                {moods?.map((mood: any) => (
-                  <option key={mood.id} value={mood.id}>
-                    {mood.name}
-                  </option>
-                ))}
-              </select>
-              {errors.mood_id && <span className="text-red-500 text-sm mt-1">{errors.mood_id}</span>}
+              <MultiSelect
+  label="Mood"
+  required
+  options={moods}
+  selectedValues={formData.mood_ids}
+  onChange={(values: string[]) => {
+    setFormData((prev) => ({
+      ...prev,
+      mood_ids: values,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      mood_ids: "",
+    }));
+  }}
+/>
+
+{errors.mood_ids && (
+  <span className="text-red-500 text-sm">{errors.mood_ids}</span>
+)}
             </div>
 
             <div>
@@ -1024,7 +1186,7 @@ const AddMusicForm: React.FC = () => {
               {errors.highlights && <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>}
             </div>
 
-            <InputField
+            {/*<InputField
               label="Duration (HH:MM:SS)"
               required
               placeholder="e.g., 01:10:00"
@@ -1040,7 +1202,7 @@ const AddMusicForm: React.FC = () => {
               value={formData.theme}
               onChange={handleChange}
               error={errors.theme}
-            />
+            />*/}
 
             {/* Format dropdown */}
             <div>
@@ -1081,17 +1243,121 @@ const AddMusicForm: React.FC = () => {
           </div>
         </FormSection>
 
-        <FormSection
-          title="Sample Track"
-          description="Upload a preview sample so buyers can experience your content before purchasing."
-        >
-          <SampleTrackUpload
-            productType="music"
-            onUploadSuccess={handleSampleTrackUpload}
-            onRemove={handleRemoveSampleTrack}
-            defaultValue={formData.sample_track_url}
+<FormSection
+  title="Storytelling"
+  description="Add an audio, video, or text description that explains your music content."
+>
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+    {/* MEDIA UPLOAD CARD */}
+    <div>
+      <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+        Upload Audio / Video (Optional)
+      </label>
+
+      <label
+        className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition-colors"
+      >
+        <input
+          type="file"
+          accept="audio/*, video/*"
+          className="hidden"
+          onChange={handleStoryUpload}
+        />
+
+        <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+          <rect
+            x="1"
+            y="1"
+            width="calc(100% - 2px)"
+            height="calc(100% - 2px)"
+            rx="12"
+            ry="12"
+            stroke="#CBD5E1"
+            strokeWidth="2"
+            strokeDasharray="6,6"
+            fill="none"
           />
-        </FormSection>
+        </svg>
+
+        {!storyMedia.url ? (
+          <div className="text-center space-y-2">
+            <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
+              <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+            </div>
+            <p className="text-sm font-[poppins] text-[#242E3A]">
+              Drag & drop or click to upload
+            </p>
+            <p className="text-xs text-[#665B5B]">Supports audio & video</p>
+          </div>
+        ) : (
+          <div className="relative w-full">
+            {/* Preview */}
+            {storyMedia.type === "video" ? (
+              <video
+                src={storyMedia.url}
+                controls
+                className="w-full h-32 object-cover rounded-lg"
+              />
+            ) : (
+              <audio controls src={storyMedia.url} className="w-full"></audio>
+            )}
+
+            {/* Remove Button */}
+            <button
+              type="button"
+              onClick={() => setStoryMedia({ type: null, url: "" })}
+              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+              title="Remove Media"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </label>
+    </div>
+
+    {/* TEXT DESCRIPTION */}
+    <div>
+      <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+        Summary of the Storytelling <span className="text-red-500">*</span>
+      </label>
+
+      <textarea
+        value={storySummary}
+        onChange={(e) => setStorySummary(e.target.value)}
+        placeholder="Describe the idea, inspiration, or meaning behind your music..."
+        className="w-full h-40 px-3 py-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+      ></textarea>
+    </div>
+
+  </div>
+</FormSection>
+        
+
+    <FormSection
+  title="Sample Track"
+  description="Upload a preview sample so buyers can experience your content before purchasing."
+>
+  {sampleList.map((_, i) => (
+    <div key={i} className="mb-6">
+      <SampleTrackUpload
+        productType="music"
+onUploadSuccess={(sampleUrl) => handleSampleTrackUpload(sampleUrl)}
+        onRemove={() => removeSample(i)}
+      />
+    </div>
+  ))}
+
+  {/* ➕ ADD SAMPLE BUTTON */}
+  <button
+    type="button"
+    onClick={addSample}
+    className="mt-2 text-[#7077FE] font-medium flex items-center gap-2"
+  >
+    <span className="text-2xl">＋</span> Add Another Sample
+  </button>
+</FormSection>
 
         {/* Uploads Section */}
         <FormSection title="Uploads" description="">
