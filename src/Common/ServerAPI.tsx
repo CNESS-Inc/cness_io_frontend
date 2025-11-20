@@ -319,6 +319,8 @@ export const EndPoint = {
 
   // collections apis
   marketplace_collection_list: "/marketplace-buyer/collections",
+  //  best salling apis
+  seller_best_selling_products: "/seller-sales/best-selling-products",
 
   // progress apis
   marketplace_buyer_continue_watching: "/marketplace-buyer/progress/continue-watching",
@@ -2431,12 +2433,25 @@ export const GetSellerSalesHistory = (
   );
 };
 
+
 export const GetSellerDashboard = (): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.GET,
     {},
     EndPoint.seller_dashboard
   );
+};
+
+// Add this in your ServerAPI file
+export const GetSellerBestSellingProducts = (params: { limit?: number; sort_by?: string; }) => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {
+      limit: params.limit ?? 4,
+      sort_by: params.sort_by ?? "revenue"
+    },
+    EndPoint.seller_best_selling_products // <-- define key "/api/seller-sales/best-selling-products"
+  );
 };
 
 export const executeAPI = async <T = any,>(
