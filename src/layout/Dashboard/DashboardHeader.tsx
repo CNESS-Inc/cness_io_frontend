@@ -60,7 +60,7 @@ const DashboardHeader = ({
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const notificationDropdownRef = useRef<HTMLDivElement>(null);
+ const notificationDropdownRef = useRef<HTMLDivElement>(null); 
 const supportDropdownRef = useRef<HTMLDivElement>(null);
   // Add state for name values
   const [name, setName] = useState(localStorage.getItem("main_name") || "");
@@ -187,21 +187,32 @@ const supportDropdownRef = useRef<HTMLDivElement>(null);
   }, []);
 
   // Close dropdowns when clicking outside
- useEffect(() => {
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target as Node) &&
-      notificationDropdownRef.current &&
-      !notificationDropdownRef.current.contains(event.target as Node) &&
-      supportDropdownRef.current &&
-      !supportDropdownRef.current.contains(event.target as Node)
-    ) {
-      setIsDropdownOpen(false);
-      setIsNotificationDropdownOpen(false);
-      setIsSupportDropdownOpen(false); // ✅ CLOSE SUPPORT DROPDOWN
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Close dropdown if clicked outside
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+
+      // Close notification dropdown if clicked outside
+      if (
+        notificationDropdownRef.current &&
+        !notificationDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsNotificationDropdownOpen(false);
+      }
+
+      // Close support dropdown if clicked outside
+      if (
+        supportDropdownRef.current &&
+        !supportDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsSupportDropdownOpen(false);
+      }
+    };
 
   document.addEventListener("mousedown", handleClickOutside);
   return () => {
@@ -227,8 +238,8 @@ const supportDropdownRef = useRef<HTMLDivElement>(null);
       const response = await LogOut();
 
       if (response) {
-localStorage.setItem("hasLoggedBefore", "false");
-localStorage.clear();
+        localStorage.setItem("hasLoggedBefore", "false");
+        localStorage.clear();
         toggleMobileNav();
         navigate("/");
       }
@@ -389,6 +400,12 @@ localStorage.clear();
   useEffect(() => {
     fetchNotificationCount();
   }, []);
+
+  const toggleSupportDropdown = () => {
+    setIsSupportDropdownOpen(!isSupportDropdownOpen);
+    setIsDropdownOpen(false);
+    setIsNotificationDropdownOpen(false);
+  };
 
   return (
     <>
@@ -585,14 +602,16 @@ localStorage.clear();
           </div>
           {/* {import.meta.env.VITE_ENV_STAGE === "test" ||
           import.meta.env.VITE_ENV_STAGE === "uat" ? ( */}
-            <div
-              data-wallet-icon
-              onClick={() => navigate("/dashboard/wallet")}
-              className="flex items-center space-x-2 bg-[#F4F2FF] text-white px-4 py-2 rounded-full hover:shadow-xl transition-all hover:scale-105 cursor-pointer"
-            >
-              <Wallet className="w-5 h-5 text-[#6340FF]" />
-              <span className="font-bold text-lg text-[#081021]">{karmaCredits || 0}pts</span>
-            </div>
+          <div
+            data-wallet-icon
+            onClick={() => navigate("/dashboard/wallet")}
+            className="flex items-center space-x-2 bg-[#F4F2FF] text-white px-4 py-2 rounded-full hover:shadow-xl transition-all hover:scale-105 cursor-pointer"
+          >
+            <Wallet className="w-5 h-5 text-[#6340FF]" />
+            <span className="font-bold text-lg text-[#081021]">
+              {karmaCredits || 0}pts
+            </span>
+          </div>
           {/* ) : (
             ""
           )} */}
@@ -693,9 +712,8 @@ localStorage.clear();
 
           {/* Mobile Actions Dropdown (sm and below) */}
           <div className="relative" ref={supportDropdownRef}>
-          
             <button
-              onClick={() => setIsSupportDropdownOpen(!isSupportDropdownOpen)}
+              onClick={toggleSupportDropdown}
               className="flex items-center justify-center w-10 h-10 bg-white rounded-xl border border-[#eceef2] shadow-sm transition hover:bg-gray-50"
             >
               <BsCaretDownFill
@@ -707,8 +725,6 @@ localStorage.clear();
 
             {isSupportDropdownOpen && (
               <div className="absolute right-0 top-full mt-3 w-52 bg-white rounded-xl shadow-lg border border-gray-200 z-50 py-2 animate-fadeIn">
-                
-
                 <button
                     onClick={() => {
     navigate("/dashboard/support");

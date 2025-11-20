@@ -245,7 +245,7 @@ const Wishlist: React.FC = () => {
                           product.music_details?.total_duration ||
                           "00:00:00",
                         mood_icon: product?.mood_icon,
-                        mood: product?.mood_name,
+                       moods: product?.moods || [],
                         image:
                           product.thumbnail_url ||
                           "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",

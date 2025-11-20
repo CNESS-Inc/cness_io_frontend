@@ -1,10 +1,30 @@
 import React, { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { Star, ArrowRight, Heart, Video, 
   //Clock,
    Music, BookOpen, FileAudio, FileText, Palette } from "lucide-react";
+=======
+import {
+  Star,
+  ArrowRight,
+  Heart,
+  Video,
+  Clock,
+  Music,
+  BookOpen,
+  FileAudio,
+  FileText,
+  Palette,
+} from "lucide-react";
+>>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../ui/Toast/ToastProvider";
-import { AddProductToCart, AddProductToWishlist, RemoveProductToCart, RemoveProductToWishlist } from "../../Common/ServerAPI";
+import {
+  AddProductToCart,
+  AddProductToWishlist,
+  RemoveProductToCart,
+  RemoveProductToWishlist,
+} from "../../Common/ServerAPI";
 import { FiShoppingCart } from "react-icons/fi";
 import { useCartWishlist } from "./context/CartWishlistContext";
 
@@ -22,7 +42,7 @@ interface Product {
   duration: string;
   category: string;
   mood_icon?: any;
-  mood?: string;
+  moods?: { name: string; icon: string, id: string,slug:string}[];
   isLike?: boolean;
   isCarted?: boolean;
 }
@@ -34,13 +54,21 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
-  onWishlistUpdate
+  onWishlistUpdate,
 }) => {
+  console.log('product', product)
   const [liked, setLiked] = useState(false);
   const [carted, setCarted] = useState(false);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const { incrementCart, decrementCart, incrementWishlist, decrementWishlist, updateCartCount, updateWishlistCount } = useCartWishlist();
+  const {
+    incrementCart,
+    decrementCart,
+    incrementWishlist,
+    decrementWishlist,
+    updateCartCount,
+    updateWishlistCount,
+  } = useCartWishlist();
   const navigate = useNavigate();
   const { showToast } = useToast();
 
@@ -51,7 +79,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     if (product?.isCarted !== undefined) {
       setCarted(product?.isCarted);
     }
-  }, [])
+  }, []);
 
   const handleCardClick = () => {
     navigate(`/dashboard/product-detail/${product.id}`, { state: { product } });
@@ -92,7 +120,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     } catch (error: any) {
       console.error("Wishlist error:", error);
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to update wishlist",
+        message:
+          error?.response?.data?.error?.message || "Failed to update wishlist",
         type: "error",
         duration: 3000,
       });
@@ -136,7 +165,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
       await updateCartCount();
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to add to cart",
+        message:
+          error?.response?.data?.error?.message || "Failed to add to cart",
         type: "error",
         duration: 3000,
       });
@@ -171,27 +201,27 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const getCategoryIconLarge = (categoryName: string) => {
     const iconMap: { [key: string]: any } = {
-      "Video": <Video className="w-4 h-4 text-gray-800" />,
-      "Music": <Music className="w-4 h-4 text-gray-800" />,
-      "Course": <BookOpen className="w-4 h-4 text-gray-800" />,
-      "Podcast": <FileAudio className="w-4 h-4 text-gray-800" />,
-      "eBook": <FileText className="w-4 h-4 text-gray-800" />,
-      "Art": <Palette className="w-4 h-4 text-gray-800" />,
+      Video: <Video className="w-4 h-4 text-gray-800" />,
+      Music: <Music className="w-4 h-4 text-gray-800" />,
+      Course: <BookOpen className="w-4 h-4 text-gray-800" />,
+      Podcast: <FileAudio className="w-4 h-4 text-gray-800" />,
+      eBook: <FileText className="w-4 h-4 text-gray-800" />,
+      Art: <Palette className="w-4 h-4 text-gray-800" />,
     };
 
-    return iconMap[categoryName] || <BookOpen className="w-4 h-4 text-gray-800" />;
+    return (
+      iconMap[categoryName] || <BookOpen className="w-4 h-4 text-gray-800" />
+    );
   };
-
-  
-
 
   return (
     <div
       onClick={handleCardClick}
       className="bg-white border border-gray-300 rounded-[14px]
-    overflow-hidden cursor-pointer flex flex-col 
-    hover:shadow-lg transition-transform hover:scale-[1.02]
+        overflow-hidden cursor-pointer flex flex-col 
+        hover:shadow-lg transition-transform hover:scale-[1.02]
 
+<<<<<<< HEAD
     /* Responsive card width */
     w-full
     max-w-[350px]
@@ -203,9 +233,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
     /* Let height scale automatically */
     h-auto
   "
+=======
+        /* Responsive card width */
+        w-full
+        max-w-[300px]
+        lg:max-w-[300px]                         /* desktop */
+        sm:max-w-[260px]        /* small tablets */
+        xs:max-w-[210px]        /* phones below 500px */
+        
+        /* Let height scale automatically */
+        h-auto
+      "
+>>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
     >
       {/* Product Image */}
-<div className="relative w-full aspect-[266/149] rounded-t-[14px] overflow-hidden">
+      <div className="relative w-full aspect-266/149 rounded-t-[14px] overflow-hidden">
         <img
           src={product.image}
           alt={product.title}
@@ -214,12 +256,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <button
           onClick={handleWishlistToggle}
           disabled={isAddingToWishlist}
-          className={`absolute top-3 right-3 z-30 flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full p-1 ${isAddingToWishlist ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+          className={`absolute top-3 right-3 z-30 flex items-center justify-center transition-transform duration-300 hover:scale-110 rounded-full p-1 ${
+            isAddingToWishlist ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
           <Heart
-            className={`w-7 h-7 transition-colors duration-300 ${liked ? "text-red-500 fill-red-500" : "text-gray-300 fill-gray-300"
-              }`}
+            className={`w-7 h-7 transition-colors duration-300 ${
+              liked
+                ? "text-red-500 fill-red-500"
+                : "text-gray-300 fill-gray-300"
+            }`}
           />
         </button>
       </div>
@@ -227,9 +273,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Info */}
       <div className="p-4 flex flex-col justify-between space-y-3 flex-1">
         <div className="flex items-center justify-between">
-          <span className="bg-purple-50 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
-            {product.mood_icon} {product.mood}
+                    {product?.moods && product?.moods.length > 0 ? product?.moods?.map((i:any)=>{
+            return  <span className="bg-purple-50 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
+            {i?.icon} {i?.name}
           </span>
+          }) :<></>}
+         
           <div className="flex items-center space-x-1">
             <Star className="w-4 h-4 text-[#7077FE] fill-[#7077FE]" />
             <span className="text-xs font-semibold text-gray-800">
@@ -241,7 +290,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="font-['Open_Sans'] font-semibold text-[14px] leading-[20px] text-[#1A1A1A] truncate">
             {product.title}
           </h3>
+<<<<<<< HEAD
           <p className="font-['Open_Sans'] font-normal text-[11px] leading-[20px] text-gray-500 truncate">{product.author}</p>
+=======
+          <p className="text-xs md:text-sm text-gray-500 truncate">
+            {product.author}
+          </p>
+>>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
         </div>
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
@@ -255,11 +310,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 ${product.currentPrice}
               </span>
               {product.discount && product?.discount > 0 && (
+<<<<<<< HEAD
                 <span className="text-[10px] text-[#7077FE]">({product.discount}%)</span>
+=======
+                <span className="text-xs text-blue-500">
+                  ({product.discount}%)
+                </span>
+>>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
               )}
             </div>
           </div>
 
+<<<<<<< HEAD
 
 <div className="flex items-center gap-1 w-full justify-end">
   
@@ -273,32 +335,53 @@ const ProductCard: React.FC<ProductCardProps> = ({
     bg-white
     hover:bg-blue-50
     transition-transform hover:scale-110
+=======
+          <div className="flex items-center gap-1 w-full justify-end">
+            {/* Cart Button */}
+            <button
+              onClick={handleAddToCart}
+              disabled={isAddingToCart}
+              className="flex items-center justify-center 
+     
+                hover:bg-blue-50 transition-transform hover:scale-110
+>>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
 
-      w-7 h-7        /* mobile */
-      sm:w-8 sm:h-8  /* tablet */
-      md:w-8 md:h-8  /* desktop */
-    "
-  >
-    <FiShoppingCart
-      className={`w-4 h-4 ${
-        carted ? "text-[#7077FE] fill-[#7077FE]" : "text-[#7077FE]"
-      }`}
-    />
-  </button>
+                w-7 h-7        /* mobile */
+                sm:w-8 sm:h-8  /* tablet */
+                md:w-8 md:h-8  /* desktop */
+              "
+            >
+              <FiShoppingCart
+                className={`w-4 h-4 ${
+                  carted ? "text-[#7077FE] fill-[#7077FE]" : "text-[#7077FE]"
+                }`}
+              />
+            </button>
 
-  {/* Buy Now Button */}
- <button
-  onClick={handleBuyNow}
-  className="
-    relative bg-[#7077FE] text-white rounded-full font-semibold flex items-center
-    overflow-hidden group whitespace-nowrap flex-shrink
+            {/* Buy Now Button */}
+            <button
+              onClick={handleBuyNow}
+              className="
+                relative bg-[#7077FE] text-white rounded-full font-semibold flex items-center
+                overflow-hidden group whitespace-nowrap shrink
 
+<<<<<<< HEAD
     h-8 px-3
     sm:h-8 sm:px-3
     md:h-9 md:px-4
+=======
+                h-8 px-3
+                sm:h-8 sm:px-4
+                md:h-9 md:px-4
+>>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
 
-    text-[10px] sm:text-[11px] md:text-[11px]
+                text-[10px] sm:text-[11px] md:text-[11px]
+              "
+            >
+              {/* Text that can shrink */}
+              <span className="mr-4 sm:mr-5 md:mr-6 shrink">Buy Now</span>
 
+<<<<<<< HEAD
     flex-shrink
   "
 >
@@ -306,28 +389,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
   <span className="mr-4 sm:mr-4 md:mr-4 flex-shrink">
     Buy Now
   </span>
+=======
+              {/* Arrow circle — also flexible */}
+              <span
+                className="
+                  absolute right-1 top-1/2 -translate-y-1/2
+                  bg-white rounded-full flex items-center justify-center shadow
+>>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
 
-  {/* Arrow circle — also flexible */}
-  <span
-    className="
-      absolute right-1 top-1/2 -translate-y-1/2
-      bg-white rounded-full flex items-center justify-center shadow
+                  w-5 h-5
+                  sm:w-6 sm:h-6
+                  md:w-6 md:h-6
 
-      w-5 h-5
-      sm:w-6 sm:h-6
-      md:w-6 md:h-6
-
-      transition-transform duration-300 group-hover:-rotate-45
-      flex-shrink-0
-    "
-  >
-    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" stroke="#7077FE" />
-  </span>
-</button>
-
-</div>
-
-          
+                  transition-transform duration-300 group-hover:-rotate-45
+                  shrink-0
+                "
+              >
+                <ArrowRight
+                  className="w-3 h-3 sm:w-4 sm:h-4"
+                  stroke="#7077FE"
+                />
+              </span>
+            </button>
+          </div>
         </div>
         <div className="border-t border-gray-200 pt-3 mt-auto">
           <div className="flex items-center justify-between">
@@ -349,7 +433,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
            {/* <div className="flex items-center space-x-1">
               <Clock className="w-4 h-4 text-[#7077FE]" />
               <span className="text-xs md:text-sm text-gray-800">
-                 {product.duration}
+                {product.duration}
               </span>
             </div>*/}
           </div>

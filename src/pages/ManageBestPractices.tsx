@@ -234,11 +234,21 @@ const Managebestpractices = () => {
   };
 
   useEffect(() => {
-    fetchProfession();
-    fetchIntrusts();
     fetchBestPractices();
-    fetchMineBestPractices();
   }, []);
+
+useEffect(() => {
+    if (activeTab === "mine") {
+      // Only fetch if not already loaded
+      if (profession.length === 0) {
+        fetchProfession();
+      }
+      if (interest.length === 0) {
+        fetchIntrusts();
+      }
+      fetchMineBestPractices();
+    }
+  }, [activeTab]);
 
   // Filtered best practices by status
   const filteredMineBestPractices = mineBestPractices.filter(
@@ -619,7 +629,7 @@ const Managebestpractices = () => {
             {/* Status Tabs */}
             <div className="flex border-b border-gray-100">
               <button
-                className={`flex-shrink-0 
+                className={`shrink-0 
                       min-w-[120px]  
                         max-w-[200px] 
                       text-sm 
