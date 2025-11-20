@@ -10,7 +10,11 @@ import {
   CreateBestpracticesCommentReply,
   BPCommentLike,
   CreateBestpracticesCommentReplyLike,
-  GetRelatedBestPractices, // You'll need to create this API function
+  GetRelatedBestPractices,
+  UpdateBestpracticesComment,
+  UpdateBestpracticesCommentReply,
+  DeleteBestpracticesComment,
+  DeleteBestpracticesCommentReply, // You'll need to create this API function
 } from "../Common/ServerAPI";
 import blush from "../assets/bg-one.png";
 import image1 from "../assets/image1.png";
@@ -94,10 +98,10 @@ const SingleBP = () => {
 
       setIsEditCommentLoading((prev) => ({ ...prev, [commentId]: true }));
 
-      // await UpdateBestpracticesComment({
-      //   comment_id: commentId,
-      //   text: editCommentText,
-      // });
+      await UpdateBestpracticesComment({
+        id: commentId,
+        text: editCommentText,
+      });
 
       setEditingComment(null);
       setEditCommentText("");
@@ -134,7 +138,7 @@ const SingleBP = () => {
 
       setIsDeleteCommentLoading((prev) => ({ ...prev, [commentId]: true }));
 
-      // await DeleteBestpracticesComment({ comment_id: commentId });
+      await DeleteBestpracticesComment({ id: commentId });
 
       setCommentCount((prev) => Math.max(0, prev - 1));
       fetchComments();
@@ -166,7 +170,7 @@ const SingleBP = () => {
     setEditReplyText(event.target.value);
   };
 
-  const handleEditReplySubmit = async (replyId: string, _parentCommentId: string) => {
+  const handleEditReplySubmit = async (replyId: string) => {
     try {
       if (!editReplyText.trim()) {
         showToast({
@@ -179,11 +183,10 @@ const SingleBP = () => {
 
       setIsEditReplyLoading((prev) => ({ ...prev, [replyId]: true }));
 
-      // await UpdateBestpracticesCommentReply({
-      //   child_comment_id: replyId,
-      //   text: editReplyText,
-      //   parent_comment_id: parentCommentId,
-      // });
+      await UpdateBestpracticesCommentReply({
+        id: replyId,
+        text: editReplyText,
+      });
 
       setEditingReply(null);
       setEditReplyText("");
@@ -212,7 +215,7 @@ const SingleBP = () => {
   };
 
   // Delete Reply Function
-  const handleDeleteReply = async (replyId: string, _parentCommentId: string) => {
+  const handleDeleteReply = async (replyId: string) => {
     try {
       if (!window.confirm("Are you sure you want to delete this reply?")) {
         return;
@@ -220,10 +223,9 @@ const SingleBP = () => {
 
       setIsDeleteReplyLoading((prev) => ({ ...prev, [replyId]: true }));
 
-      // await DeleteBestpracticesCommentReply({
-      //   child_comment_id: replyId,
-      //   parent_comment_id: parentCommentId,
-      // });
+      await DeleteBestpracticesCommentReply({
+        id: replyId,
+      });
 
       fetchComments();
 
@@ -448,7 +450,7 @@ const SingleBP = () => {
                         {editingReply === reply.id ? (
                           <>
                             <button
-                              onClick={() => handleEditReplySubmit(reply.id, comment.id)}
+                              onClick={() => handleEditReplySubmit(reply.id)}
                               disabled={isEditReplyLoading[reply.id]}
                               className="text-green-600 hover:text-green-800 p-1 rounded"
                             >
@@ -475,7 +477,7 @@ const SingleBP = () => {
                               <FaEdit className="w-3 h-3" />
                             </button>
                             <button
-                              onClick={() => handleDeleteReply(reply.id, comment.id)}
+                              onClick={() => handleDeleteReply(reply.id)}
                               disabled={isDeleteReplyLoading[reply.id]}
                               className="text-red-600 hover:text-red-800 p-1 rounded"
                             >
