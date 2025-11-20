@@ -283,6 +283,11 @@ const CartPage: React.FC = () => {
                           <Video className="w-5 h-5 mr-1 text-black" />
                           {item.category?.name || "Course"}
                         </span>
+                        {item?.moods && item?.moods.length > 0 ? item?.moods?.map((i: any) => {
+                          return <span>
+                            {i?.icon} {i?.name}
+                          </span>
+                        }) : <></>}
                         <span>
                           {item.mood?.icon || "🕊️"} {item.mood?.name || "Peaceful"}
                         </span>
