@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Star, ArrowRight, Heart, Video, Clock, Music, BookOpen, FileAudio, FileText, Palette } from "lucide-react";
+import { Star, ArrowRight, Heart, Video, 
+  //Clock,
+   Music, BookOpen, FileAudio, FileText, Palette } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../ui/Toast/ToastProvider";
 import { AddProductToCart, AddProductToWishlist, RemoveProductToCart, RemoveProductToWishlist } from "../../Common/ServerAPI";
@@ -192,8 +194,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     /* Responsive card width */
     w-full
-    max-w-[300px]
-    lg:max-w-[300px]                         /* desktop */
+    max-w-[350px]
+    lg:max-w-[310px] 
+    md:max-w-[310px]                         /* desktop */
     sm:max-w-[260px]        /* small tablets */
     xs:max-w-[210px]        /* phones below 500px */
     
@@ -235,10 +238,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
         <div>
-          <h3 className="font-semibold text-sm md:text-base text-gray-800 leading-tight mb-1 line-clamp-2">
+          <h3 className="font-['Open_Sans'] font-semibold text-[14px] leading-[20px] text-[#1A1A1A] truncate">
             {product.title}
           </h3>
-          <p className="text-xs md:text-sm text-gray-500 truncate">{product.author}</p>
+          <p className="font-['Open_Sans'] font-normal text-[11px] leading-[20px] text-gray-500 truncate">{product.author}</p>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
@@ -248,11 +251,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </span>
             )}
             <div className="flex items-center space-x-1">
-              <span className="font-semibold text-gray-800 text-sm md:text-base">
+<span className="font-['Open_Sans'] font-semibold text-gray-800 text-sm md:text-[14px] leading-none">
                 ${product.currentPrice}
               </span>
               {product.discount && product?.discount > 0 && (
-                <span className="text-xs text-blue-500">({product.discount}%)</span>
+                <span className="text-[10px] text-[#7077FE]">({product.discount}%)</span>
               )}
             </div>
           </div>
@@ -264,9 +267,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   <button
     onClick={handleAddToCart}
     disabled={isAddingToCart}
-    className="flex items-center justify-center 
-     
-      hover:bg-blue-50 transition-transform hover:scale-110
+    className="flex items-center justify-center
+    rounded-full
+    border border-[#7077FE]/40
+    bg-white
+    hover:bg-blue-50
+    transition-transform hover:scale-110
 
       w-7 h-7        /* mobile */
       sm:w-8 sm:h-8  /* tablet */
@@ -288,7 +294,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     overflow-hidden group whitespace-nowrap flex-shrink
 
     h-8 px-3
-    sm:h-8 sm:px-4
+    sm:h-8 sm:px-3
     md:h-9 md:px-4
 
     text-[10px] sm:text-[11px] md:text-[11px]
@@ -297,7 +303,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   "
 >
   {/* Text that can shrink */}
-  <span className="mr-4 sm:mr-5 md:mr-6 flex-shrink">
+  <span className="mr-4 sm:mr-4 md:mr-4 flex-shrink">
     Buy Now
   </span>
 
@@ -340,12 +346,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {product.category}
               </span>
             </div>
-            <div className="flex items-center space-x-1">
+           {/* <div className="flex items-center space-x-1">
               <Clock className="w-4 h-4 text-[#7077FE]" />
               <span className="text-xs md:text-sm text-gray-800">
                  {product.duration}
               </span>
-            </div>
+            </div>*/}
           </div>
         </div>
       </div>

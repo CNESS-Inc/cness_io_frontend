@@ -96,7 +96,40 @@ const AddArtsForm: React.FC = () => {
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
-const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
+//const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
+const [sampleList, setSampleList] = useState<string[]>([""]);
+const [storyMedia, setStoryMedia] = useState<{
+  type: "audio" | "video" | null;
+  url: string;
+  thumbnail?: string;
+}>({
+  type: null,
+  url: "",
+});
+
+const [storySummary, setStorySummary] = useState("");
+
+const addSample = () => {
+  setSampleList([...sampleList, ""]);
+};
+
+// REMOVE a sample box
+const removeSample = (index: number) => {
+  setSampleList(sampleList.filter((_, i) => i !== index));
+};
+
+// UPDATE uploaded sample URL
+const handleSampleUpload = (index: number, url: string) => {
+  const updated = [...sampleList];
+  updated[index] = url;
+  setSampleList(updated);
+
+  // Save into formData
+  setFormData((prev) => ({
+    ...prev,
+    sample_track: updated.join(","), // OR ARRAY depending on backend
+  }));
+};
 
   const [chapters, setChapters] = useState<any[]>([
     {
@@ -113,7 +146,7 @@ const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
     product_title: "",
     price: 0,
     discount_percentage: 0,
-    mood_id: "",
+mood_id: [] as string[],
     thumbnail_url: "",
     overview: "",
     highlights: [] as string[],
@@ -160,22 +193,22 @@ const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
     fetchCategories();
   }, []);
 
-const handleSampleTrackUpload = (sampleId: string) => {
+//const handleSampleTrackUpload = (sampleId: string) => {
   // Save the uploaded sample image URL
-  setSampleImageUrl(sampleId);
+  //setSampleImageUrl(sampleId);
 
   // Also store in formData (used for API payload)
-  setFormData((prev) => ({
-    ...prev,
-    sample_track: sampleId,
-  }));
-};
-  const handleRemoveSampleTrack = () => {
-    setFormData((prev) => ({
-      ...prev,
-      sample_track: "",
-    }));
-  };
+  //setFormData((prev) => ({
+   // ...prev,
+   // sample_track: sampleId,
+  //}));
+//};
+  //const handleRemoveSampleTrack = () => {
+    //setFormData((prev) => ({
+    //  ...prev,
+    //  sample_track: "",
+   // }));
+ // };
 
   const handleAIGenerate = (generatedText: string) => {
     setFormData((prev) => ({
@@ -521,8 +554,9 @@ const handleSampleTrackUpload = (sampleId: string) => {
         "Discount percentage must be between 0 and 100.";
     }
 
-    if (!formData.mood_id.trim())
-      newErrors.mood_id = "Mood Selection is required.";
+if (!formData.mood_id || formData.mood_id.length === 0) {
+  newErrors.mood_id = "Please select at least one mood.";
+}
     if (!formData.thumbnail_url.trim())
       newErrors.thumbnail_url = "Thumbnail is required.";
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
@@ -651,7 +685,7 @@ const handleSampleTrackUpload = (sampleId: string) => {
     theme: formData.theme,
     mediums: formData.mediums,
     modern_trends: formData.modern_trends,
-    sample_image_url: sampleImageUrl,  
+    sample_image_url: sampleList   ,  
   },
 
   chapters: chapters.map((chapter) => ({
@@ -760,6 +794,143 @@ const handleSampleTrackUpload = (sampleId: string) => {
     }
   };
 
+
+  const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const isAudio = file.type.startsWith("audio/");
+  const isVideo = file.type.startsWith("video/");
+
+  if (!isAudio && !isVideo) {
+    showToast({
+      message: "Please upload audio or video only",
+      type: "error",
+      duration: 3000,
+    });
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append(isAudio ? "story_audio" : "story_video", file);
+
+  try {
+    const response = await UploadProductDocument(
+      isAudio ? "story-audio" : "story-video",
+      formData
+    );
+
+    const data = response?.data?.data;
+
+    setStoryMedia({
+      type: isAudio ? "audio" : "video",
+      url: data.video_url || data.audio_url,
+      thumbnail: data.thumbnail || "",
+    });
+
+    showToast({
+      message: `${isAudio ? "Audio" : "Video"} uploaded successfully`,
+      type: "success",
+      duration: 3000,
+    });
+  } catch (err) {
+    showToast({
+      message: "Failed to upload storytelling media",
+      type: "error",
+      duration: 3000,
+    });
+  }
+};
+{/*mood multi select*/}
+const MultiSelect = ({
+  label,
+  options,
+  selectedValues,
+  onChange,
+  required = false,
+}: any) => {
+  const [open, setOpen] = useState(false);
+
+  const toggleOption = (value: string) => {
+    if (selectedValues.includes(value)) {
+      onChange(selectedValues.filter((v: string) => v !== value));
+    } else {
+      onChange([...selectedValues, value]);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <label className="block font-['Open_Sans'] font-semibold text-[16px] mb-2 text-[#242E3A]">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+
+      {/* Input Box */}
+      <div
+        className="border border-gray-300 rounded-md px-3 py-2 bg-white cursor-pointer flex flex-wrap gap-2 min-h-[42px]"
+        onClick={() => setOpen(!open)}
+      >
+        {selectedValues.length === 0 ? (
+          <span className="text-gray-400">Select Mood</span>
+        ) : (
+          selectedValues.map((val: string) => {
+            const item = options.find((o: any) => o.id === val);
+            return (
+              <span
+                key={val}
+                className="bg-[#7077FE] text-white px-2 py-1 rounded-md text-sm flex items-center gap-1"
+              >
+                {item?.name}
+                <X
+                  size={14}
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleOption(val);
+                  }}
+                />
+              </span>
+            );
+
+            
+          })
+          
+        )}
+        <svg
+  className="w-4 h-4 absolute right-3 text-gray-500 pointer-events-none"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  viewBox="0 0 24 24"
+>
+  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+</svg>
+      </div>
+
+      {/* Dropdown List */}
+      {open && (
+        <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-md z-20">
+          {options.map((opt: any) => (
+            <div
+              key={opt.id}
+              onClick={() => toggleOption(opt.id)}
+              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                selectedValues.includes(opt.id)
+                  ? "bg-[#EEF3FF] text-[#7077FE]"
+                  : "text-gray-700"
+              }`}
+            >
+              {opt.name}
+            </div>
+          ))}
+        </div>
+      )}
+      
+    </div>
+    
+  );
+};
+
   return (
     <>
       <Breadcrumb
@@ -804,22 +975,29 @@ const handleSampleTrackUpload = (sampleId: string) => {
               error={errors.discount_percentage}
             />
             <div>
-              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Mood <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="mood_id"
-                value={formData.mood_id}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer"
-              >
-                <option value="">Select Mood</option>
-                {moods?.map((mood: any) => (
-                  <option key={mood.id} value={mood.id}>
-                    {mood.name}
-                  </option>
-                ))}
-              </select>
+          
+ <MultiSelect
+  label="Mood"
+  required
+  options={moods}
+  selectedValues={formData.mood_id}
+  onChange={(values: string[]) => {
+    setFormData((prev) => ({
+      ...prev,
+      mood_id: values,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      mood_id: "",
+    }));
+  }}
+/>
+
+{errors.mood_id && (
+  <span className="text-red-500 text-sm">{errors.mood_id}</span>
+)}
+
               {errors.mood_id && (
                 <span className="text-red-500 text-sm mt-1">
                   {errors.mood_id}
@@ -1045,14 +1223,14 @@ const handleSampleTrackUpload = (sampleId: string) => {
               )}
             </div>
 
-            <InputField
+            {/*<InputField
               label="Theme"
               placeholder="Describe the art theme"
               name="theme"
               value={formData.theme}
               onChange={handleChange}
               error={errors.theme}
-            />
+            />*/}
             <InputField
               label="Medium"
               placeholder="Describe the art creation mediums like oils, digital tools"
@@ -1061,14 +1239,14 @@ const handleSampleTrackUpload = (sampleId: string) => {
               onChange={handleChange}
               error={errors.mediums}
             />
-            <InputField
+              {/*<InputField
               label="Modern Trends"
               placeholder="Enter your art trends"
               name="modern_trends"
               value={formData.modern_trends}
               onChange={handleChange}
               error={errors.modern_trends}
-            />
+            />*/}
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
                 Language
@@ -1089,16 +1267,123 @@ const handleSampleTrackUpload = (sampleId: string) => {
           </div>
         </FormSection>
 
+    {/*story telling */}
+
+<FormSection
+  title="Storytelling"
+  description="Add an audio or video message that explains the story or inspiration behind your artwork."
+>
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+    {/* MEDIA UPLOAD */}
+    <div>
+      <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+        Upload Audio / Video (Optional)
+      </label>
+
+      <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition">
+        <input
+          type="file"
+          accept="audio/*, video/*"
+          className="hidden"
+          onChange={handleStoryUpload}
+        />
+
+        <svg className="absolute top-0 left-0 w-full h-full rounded-lg">
+          <rect
+            x="1"
+            y="1"
+            width="calc(100% - 2px)"
+            height="calc(100% - 2px)"
+            rx="12"
+            ry="12"
+            stroke="#CBD5E1"
+            strokeWidth="2"
+            strokeDasharray="6,6"
+            fill="none"
+          />
+        </svg>
+
+        {!storyMedia.url ? (
+          <div className="text-center space-y-2">
+            <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
+              <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+            </div>
+            <p className="text-sm font-[poppins] text-[#242E3A]">
+              Drag & drop or click to upload
+            </p>
+            <p className="text-xs text-[#665B5B]">Supports audio & video</p>
+          </div>
+        ) : (
+          <div className="relative w-full">
+            {storyMedia.type === "video" ? (
+              <video
+                src={storyMedia.url}
+                controls
+                className="w-full h-32 object-cover rounded-lg"
+              />
+            ) : (
+              <audio controls src={storyMedia.url} className="w-full"></audio>
+            )}
+
+            {/* REMOVE BUTTON */}
+            <button
+              type="button"
+              onClick={() => setStoryMedia({ type: null, url: "" })}
+              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </label>
+    </div>
+
+    {/* TEXT SUMMARY */}
+    <div>
+      <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+        Summary of the artwork <span className="text-red-500">*</span>
+      </label>
+
+      <textarea
+        value={storySummary}
+        onChange={(e) => setStorySummary(e.target.value)}
+        placeholder="Write about your inspiration, process or emotions behind this artwork..."
+        className="w-full h-40 px-3 py-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+      ></textarea>
+
+      {errors.story_summary && (
+        <p className="text-red-500 text-sm mt-1">{errors.story_summary}</p>
+      )}
+    </div>
+
+  </div>
+</FormSection>
+
         <FormSection
-          title="Sample Track"
+          title="Sample Artwork"
           description="Upload a preview sample so buyers can experience your content before purchasing."
         >
-          <SampleTrackUpload
-            productType="art"
-            onUploadSuccess={handleSampleTrackUpload}
-            onRemove={handleRemoveSampleTrack}
-            defaultValue={formData.sample_track}
-          />
+         {sampleList.map((sample, index) => (
+  <div key={index} className="mb-6">
+    <SampleTrackUpload
+      productType="art"
+      defaultValue={sample}
+      onUploadSuccess={(url) => handleSampleUpload(index, url)}
+      onRemove={() => removeSample(index)}
+    />
+  </div>
+))}
+
+{/* ADD SAMPLE BUTTON */}
+<button
+  type="button"
+  onClick={addSample}
+  className="flex items-center gap-2 px-4 py-2 text-[#7077FE] border border-[#7077FE] rounded-lg hover:bg-[#F4F4FF] transition"
+>
+  <Plus className="w-4 h-4" />
+  Add Another Sample
+</button>
         </FormSection>
 
         <FormSection title="Collections" description="">

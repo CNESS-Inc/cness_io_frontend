@@ -61,7 +61,7 @@ const DashboardHeader = ({
   const [searchValue, setSearchValue] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notificationDropdownRef = useRef<HTMLDivElement>(null);
-
+const supportDropdownRef = useRef<HTMLDivElement>(null);
   // Add state for name values
   const [name, setName] = useState(localStorage.getItem("main_name") || "");
   const [notificationCount, setNotificationCount] = useState(
@@ -187,24 +187,27 @@ const DashboardHeader = ({
   }, []);
 
   // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        notificationDropdownRef.current &&
-        !notificationDropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-        setIsNotificationDropdownOpen(false);
-      }
-    };
+ useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node) &&
+      notificationDropdownRef.current &&
+      !notificationDropdownRef.current.contains(event.target as Node) &&
+      supportDropdownRef.current &&
+      !supportDropdownRef.current.contains(event.target as Node)
+    ) {
+      setIsDropdownOpen(false);
+      setIsNotificationDropdownOpen(false);
+      setIsSupportDropdownOpen(false); // ✅ CLOSE SUPPORT DROPDOWN
+    }
+  };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
 
   const handleProfile = () => {
     const personOrganization = localStorage.getItem("person_organization");
@@ -265,8 +268,8 @@ localStorage.clear();
   };
 
   const handleViewAllNotifications = () => {
-    setIsNotificationDropdownOpen(false);
     navigate("/dashboard/notification");
+     setIsNotificationDropdownOpen(false);
   };
 
   // Handle notification click and redirect based on redirection type
@@ -689,7 +692,8 @@ localStorage.clear();
           </div>
 
           {/* Mobile Actions Dropdown (sm and below) */}
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative" ref={supportDropdownRef}>
+          
             <button
               onClick={() => setIsSupportDropdownOpen(!isSupportDropdownOpen)}
               className="flex items-center justify-center w-10 h-10 bg-white rounded-xl border border-[#eceef2] shadow-sm transition hover:bg-gray-50"
@@ -706,7 +710,10 @@ localStorage.clear();
                 
 
                 <button
-                  onClick={() => navigate("/dashboard/support")}
+                    onClick={() => {
+    navigate("/dashboard/support");
+    setIsSupportDropdownOpen(false);
+  }}
                   className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 w-full transition"
                 >
                   <HelpCircleIcon className="w-4 h-4 text-[#897AFF]" /> Support
@@ -714,7 +721,10 @@ localStorage.clear();
 
                 <div className="sm:hidden flex justify-between items-center px-4 py-2.5 hover:bg-gray-100 w-full transition">
                   <button
-                    onClick={handleNotificationClick}
+                    onClick={() => {
+    handleNotificationClick();
+    setIsSupportDropdownOpen(false);
+  }}
                     className="flex items-center gap-2 text-sm text-gray-700"
                   >
                     <BellIcon className="w-4 h-4 text-[#897AFF]" />{" "}
@@ -730,7 +740,10 @@ localStorage.clear();
                 </div>
 
                 <button
-                  onClick={() => navigate("/dashboard/setting")}
+                 onClick={() => {
+    navigate("/dashboard/setting");
+    setIsSupportDropdownOpen(false);
+  }}  
                   className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 w-full transition"
                 >
                   <SettingsIcon className="w-4 h-4 text-[#897AFF]" /> Settings

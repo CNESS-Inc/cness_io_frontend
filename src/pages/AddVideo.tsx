@@ -207,6 +207,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
     }
   };
 
+  
+
   return (
     <div>
       {label && (
@@ -340,18 +342,28 @@ const AddVideoForm: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [newHighlight, setNewHighlight] = useState("");
   const [showAIModal, setShowAIModal] = useState(false);
+const [sampleList, setSampleList] = useState<string[]>([""]);
 
+
+const addSample = () => {
+  setSampleList([...sampleList, ""]);
+};
+
+const removeSample = (index: number) => {
+  setSampleList(sampleList.filter((_, i) => i !== index));
+};
   const [thumbnailData, setThumbnailData] = useState<{
     thumbnail_url: string;
     public_id: string;
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
 
-  const [mainVideoData, setMainVideoData] = useState<{
-    video_id: string;
-    thumbnail: string;
-    video_url: string;
-  } | null>(null);
+const [mainVideos, setMainVideos] = useState<
+  { video_id: string; thumbnail: string; video_url: string }[]
+>([]);
+
+
+
 
   const [shortVideoData, setShortVideoData] = useState<{
     video_id: string;
@@ -359,23 +371,21 @@ const AddVideoForm: React.FC = () => {
     video_url: string;
   } | null>(null);
 
-  const handleSelectCategory = (category: string) => {
-    setShowModal(false); // Close modal first
+const handleSelectCategory = (categoryName: string) => {
+  setShowModal(false);
 
-    const routes: Record<string, string> = {
-      Video: "/dashboard/products/add-video",
-      Music: "/dashboard/products/add-music",
-      Course: "/dashboard/products/add-course",
-      Podcasts: "/dashboard/products/add-podcast",
-      Ebook: "/dashboard/products/add-ebook",
-      Art: "/dashboard/products/add-arts",
-    };
-
-    const path = routes[category];
-    if (path) {
-      navigate(path);
-    }
+  const routes: Record<string, string> = {
+    Video: "/dashboard/products/add-video",
+    Music: "/dashboard/products/add-music",
+    Course: "/dashboard/products/add-course",
+    Podcasts: "/dashboard/products/add-podcast",
+    Ebook: "/dashboard/products/add-ebook",
+    Art: "/dashboard/products/add-arts",
   };
+
+  const path = routes[categoryName];
+  if (path) navigate(path);
+};
 
   useEffect(() => {
     const fetchMoods = async () => {
@@ -419,7 +429,7 @@ const AddVideoForm: React.FC = () => {
     product_title: "",
     price: 0,
     discount_percentage: 0,
-    mood_id: "",
+     mood_id: [] as string[],
     video_url: "", // video_id
     overview: "",
     highlights: [] as string[],
@@ -506,19 +516,19 @@ const AddVideoForm: React.FC = () => {
     }));
   };
 
-  const handleSampleTrackUpload = (sampleId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      sample_track: sampleId,
-    }));
-  };
-
-  const handleRemoveSampleTrack = () => {
-    setFormData((prev) => ({
-      ...prev,
-      sample_track: "",
-    }));
-  };
+const handleSampleTrackUpload = (sampleId: string, index: number) => {
+  setSampleList((prev) => {
+    const updated = [...prev];
+    updated[index] = sampleId;
+    return updated;
+  });
+};
+  //const handleRemoveSampleTrack = () => {
+    //setFormData((prev) => ({
+    //  ...prev,
+    ///  sample_track: "",
+   // }));
+ // };
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -537,11 +547,16 @@ const AddVideoForm: React.FC = () => {
       newErrors.discount_percentage =
         "Discount percentage must be between 0 and 100.";
     }
-    if (!formData.mood_id.trim())
-      newErrors.mood_id = "Mood Selection is required.";
+if (!formData.mood_id || formData.mood_id.length === 0) {
+  newErrors.mood_id = "Mood selection is required.";
+}
+
+
     if (!formData.thumbnail_url.trim())
       newErrors.thumbnail_url = "Thumbnail is required.";
-    // if (!formData.video_url.trim()) newErrors.video_url = "Main video is required.";
+if (mainVideos.length === 0) {
+  newErrors.video_url = "Please upload at least one main video.";
+}
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
     if (formData.highlights.length === 0) {
@@ -669,21 +684,19 @@ const AddVideoForm: React.FC = () => {
       });
       return;
     }
-
-    if (!mainVideoData?.video_id) {
-      showToast({
-        message: "Please upload main video",
-        type: "error",
-        duration: 3000,
-      });
-      return;
-    }
-
+if (mainVideos.length === 0) {
+  showToast({
+    message: "Please upload at least one main video",
+    type: "error",
+    duration: 3000,
+  });
+  return;
+}
     setIsLoading(true);
     try {
       const payload = {
         ...formData,
-        video_url: mainVideoData.video_id,
+video_url: mainVideos.map((v) => v.video_id), 
         short_video_url: shortVideoData?.video_id || "",
         status: isDraft ? "draft" : "published",
       };
@@ -774,26 +787,6 @@ const AddVideoForm: React.FC = () => {
     navigate("/dashboard/products");
   };
 
-  const handleMainVideoUpload = (
-    videoId: string,
-    thumbnailUrl: string,
-    videoUrl: string
-  ) => {
-    setMainVideoData({
-      video_id: videoId,
-      thumbnail: thumbnailUrl,
-      video_url: videoUrl,
-    });
-
-    // Update formData with video_id
-    setFormData((prev) => ({
-      ...prev,
-      video_url: videoId,
-    }));
-
-    // Clear error
-    setErrors((prev) => ({ ...prev, video_url: "" }));
-  };
 
   const handleShortVideoUpload = (
     videoId: string,
@@ -813,13 +806,7 @@ const AddVideoForm: React.FC = () => {
     }));
   };
 
-  const handleRemoveMainVideo = () => {
-    setMainVideoData(null);
-    setFormData((prev) => ({
-      ...prev,
-      video_url: "",
-    }));
-  };
+
 
   const handleRemoveShortVideo = () => {
     setShortVideoData(null);
@@ -833,11 +820,164 @@ const AddVideoForm: React.FC = () => {
     return <LoadingSpinner />;
   }
 
+  const handleMultipleMainVideos = async (
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
+  const files = Array.from(e.target.files || []);
+
+  if (files.length === 0) return;
+
+  for (const file of files) {
+    if (!file.type.startsWith("video/")) {
+      showToast({
+        message: "Only video files allowed",
+        type: "error",
+        duration: 3000,
+      });
+      continue;
+    }
+
+    if (file.size > 100 * 1024 * 1024) {
+      showToast({
+        message: "Video must be less than 100MB",
+        type: "error",
+        duration: 3000,
+      });
+      continue;
+    }
+
+    const formData = new FormData();
+    formData.append("video", file);
+
+    try {
+      const response = await UploadProductDocument("video", formData);
+      const data = response?.data?.data;
+
+      setMainVideos((prev) => [
+        ...prev,
+        {
+          video_id: data.video_id,
+          thumbnail: data.thumbnail,
+          video_url: data.video_url,
+        },
+      ]);
+    } catch (err) {
+      showToast({
+        message: "Failed to upload one of the videos",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  }
+
+  e.target.value = "";
+};
+
+
+const removeMainVideo = (index: number) => {
+  setMainVideos((prev) => prev.filter((_, i) => i !== index));
+};
+
+
+
+{/*mood multi select*/}
+const MultiSelect = ({
+  label,
+  options,
+  selectedValues,
+  onChange,
+  required = false,
+}: any) => {
+  const [open, setOpen] = useState(false);
+
+  const toggleOption = (value: string) => {
+    if (selectedValues.includes(value)) {
+      onChange(selectedValues.filter((v: string) => v !== value));
+    } else {
+      onChange([...selectedValues, value]);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <label className="block font-['Open_Sans'] font-semibold text-[16px] mb-2 text-[#242E3A]">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+
+      {/* Input Box */}
+      <div
+        className="border border-gray-300 rounded-md px-3 py-2 bg-white cursor-pointer flex flex-wrap gap-2 min-h-[42px]"
+        onClick={() => setOpen(!open)}
+      >
+        {selectedValues.length === 0 ? (
+          <span className="text-gray-400">Select Mood</span>
+        ) : (
+          selectedValues.map((val: string) => {
+            const item = options.find((o: any) => o.id === val);
+            return (
+              <span
+                key={val}
+                className="bg-[#7077FE] text-white px-2 py-1 rounded-md text-sm flex items-center gap-1"
+              >
+                {item?.name}
+                <X
+                  size={14}
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleOption(val);
+                  }}
+                />
+              </span>
+            );
+
+            
+          })
+          
+        )}
+        <svg
+  className="w-4 h-4 absolute right-3 text-gray-500 pointer-events-none"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  viewBox="0 0 24 24"
+>
+  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+</svg>
+      </div>
+
+      {/* Dropdown List */}
+      {open && (
+        <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-md z-20">
+          {options.map((opt: any) => (
+            <div
+              key={opt.id}
+              onClick={() => toggleOption(opt.id)}
+              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                selectedValues.includes(opt.id)
+                  ? "bg-[#EEF3FF] text-[#7077FE]"
+                  : "text-gray-700"
+              }`}
+            >
+              {opt.name}
+            </div>
+          ))}
+        </div>
+      )}
+      
+    </div>
+    
+  );
+};
+
+
+
+
   return (
     <>
       <Breadcrumb
         onAddProductClick={() => setShowModal(true)}
-        onSelectCategory={handleSelectCategory}
+  onSelectCategory={handleSelectCategory}
       />
 
       <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
@@ -878,27 +1018,27 @@ const AddVideoForm: React.FC = () => {
               error={errors.discount_percentage}
             />
             <div>
-              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Mood <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="mood_id"
-                value={formData.mood_id}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer"
-              >
-                <option value="">Select Mood</option>
-                {moods?.map((mood: any) => (
-                  <option key={mood.id} value={mood.id}>
-                    {mood.name}
-                  </option>
-                ))}
-              </select>
-              {errors.mood_id && (
-                <span className="text-red-500 text-sm mt-1">
-                  {errors.mood_id}
-                </span>
-              )}
+              <MultiSelect
+  label="Mood"
+  required
+  options={moods}
+  selectedValues={formData.mood_id}
+  onChange={(values: string[]) => {
+    setFormData((prev) => ({
+      ...prev,
+      mood_id: values,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      mood_id: "",
+    }));
+  }}
+/>
+
+{errors.mood_id && (
+  <span className="text-red-500 text-sm">{errors.mood_id}</span>
+)}
             </div>
           </div>
           <div>
@@ -998,16 +1138,66 @@ const AddVideoForm: React.FC = () => {
           </div>
 
           <div className="mt-8">
-            <FileUpload
-              label="Upload Video"
-              required
-              description="Drag & drop or click to upload"
-              fileType="main-video"
-              onUploadSuccess={handleMainVideoUpload}
-              onRemove={handleRemoveMainVideo}
-              defaultThumbnail={mainVideoData?.thumbnail}
-              error={errors.video_url}
-            />
+          <div>
+  <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+    Upload Videos <span className="text-red-500">*</span>
+  </label>
+
+  <label className="relative block w-full h-40 bg-[#F9FAFB] hover:bg-[#EEF3FF] rounded-lg border-2 border-dashed border-gray-300 cursor-pointer p-4 text-center transition">
+    <input
+      type="file"
+      accept="video/*"
+      multiple
+      className="hidden"
+      onChange={handleMultipleMainVideos}
+    />
+
+    <img src={uploadimg} className="w-10 mx-auto mt-6" />
+    <p className="mt-2 text-sm text-gray-600">Click to upload videos</p>
+  </label>
+
+  {mainVideos.length === 0 && errors.video_url && (
+    <p className="text-red-500 text-sm mt-1">{errors.video_url}</p>
+  )}
+
+  {/* List of uploaded videos */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+    {mainVideos.map((vid, index) => (
+      <div
+        key={index}
+        className="relative rounded-lg border border-gray-200 overflow-hidden"
+      >
+        <img
+          src={vid.thumbnail}
+          className="w-full h-40 object-cover"
+          alt="Thumbnail"
+        />
+
+        {/* Play Icon */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="bg-black bg-opacity-40 rounded-full p-3">
+            <svg
+              className="w-10 h-10 text-white"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Remove Button */}
+        <button
+          type="button"
+          onClick={() => removeMainVideo(index)}
+          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    ))}
+  </div>
+</div>
           </div>
         </FormSection>
 
@@ -1194,15 +1384,27 @@ const AddVideoForm: React.FC = () => {
         </FormSection>
 
         <FormSection
-          title="Sample Track"
+          title="Sample Video"
           description="Upload a preview sample so buyers can experience your content before purchasing."
         >
-          <SampleTrackUpload
-            productType="video"
-            onUploadSuccess={handleSampleTrackUpload}
-            onRemove={handleRemoveSampleTrack}
-            defaultValue={formData.sample_track}
-          />
+          {sampleList.map((item, index) => (
+  <div key={index} className="mb-6">
+    <SampleTrackUpload
+      productType="video"
+      defaultValue={item}
+      onUploadSuccess={(sampleId) => handleSampleTrackUpload(sampleId, index)}
+      onRemove={() => removeSample(index)}
+    />
+  </div>
+))}
+
+<button
+  type="button"
+  onClick={addSample}
+  className="px-4 py-2 mt-4 bg-[#7077FE] text-white rounded-md"
+>
+  + Add Another Sample
+</button>
         </FormSection>
 
         {/* Buttons */}
