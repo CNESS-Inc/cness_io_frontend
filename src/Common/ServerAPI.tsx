@@ -2491,10 +2491,10 @@ export const executeAPI = async <T = any,>(
     return response.data;
   } catch (error: any) {
 
-    // if (error.response?.data?.error?.statusCode == 401) {
-    //   localStorage.clear();
-    //   window.location.href = "/";
-    // }
+    if (error.response?.data?.error?.statusCode == 401) {
+      localStorage.clear();
+      window.location.href = "/";
+    }
 
     throw error;
   }

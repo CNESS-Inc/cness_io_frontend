@@ -1026,7 +1026,7 @@ console.log("FULL PRODUCT → ", productData);
                           originalPrice: product?.price,
                           discount: product.discount_percentage,
                           duration: product.video_details?.duration || product.music_details?.total_duration || "00:00:00",
-                          mood: product?.mood_name,
+                         moods: product?.moods || [],
                           image:
                             product.thumbnail_url ||
                             "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",

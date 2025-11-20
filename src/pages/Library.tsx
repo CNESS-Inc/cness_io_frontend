@@ -36,12 +36,12 @@ type LibraryProduct = {
     name: string;
     slug: string;
   };
-  mood: {
+  moods: {
     id: string;
     name: string;
     icon: string;
     slug: string;
-  };
+  }[];
   rating: {
     average: any;
     total_reviews: any;
@@ -185,9 +185,14 @@ const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
       <div className="p-2">
         {/* Top meta: category + seller */}
         <div className="flex items-center justify-between text-[12px] mb-2">
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-[#6B7280]">
-            {p.mood.icon} {p.mood.name}
-          </span>
+          {p?.moods && p?.moods.length > 0 ? p?.moods?.map((i:any)=>{
+            return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-[#6B7280]">
+              {i?.icon} {i?.name}
+            </span>
+          }) :<></>}
+          {/* <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-[#6B7280]">
+            {p?.moods?.icon} {p?.mood?.name}
+          </span> */}
           <span className="inline-flex items-center gap-1 text-[#6B7280]">
             <Star size={14} className="text-[#7077FE] fill-[#7077FE]" />
             <span className="text-[#111827] font-medium">{p.rating.average}</span>

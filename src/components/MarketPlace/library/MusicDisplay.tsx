@@ -28,10 +28,10 @@ interface MusicDisplayProps {
     reviews: number;
     purchase: string;
     duration?: string;
-    mood: {
+    moods: {
         name: string;
         icon: string;
-    };
+    }[];
     category: {
         id: string;
         name: string;
@@ -54,7 +54,7 @@ const MusicDisplay: React.FC<MusicDisplayProps> = ({
     reviews,
     rating,
     purchase,
-    mood,
+    moods,
     category,
     content,
     currentFile,
@@ -430,9 +430,12 @@ console.log('productProgress', productProgress)
 
                         {/* Stats Row */}
                         <div className="flex items-center gap-4 text-[12px] text-slate-600 mb-4">
-                            <span className="flex items-center font-[Poppins]">
-                                {mood?.icon} {mood?.name}
+                                      {moods && moods.length > 0 ? moods?.map((i:any)=>{
+            return <span className="flex items-center font-[Poppins]">
+                                {i?.icon} {i?.name}
                             </span>
+          }) :<></>}
+                            
                             <span className="text-slate-300">•</span>
                             <span className="flex items-center font-[Poppins]">
                                 <svg className="w-4 h-4 text-[#7077fe] mr-1" fill="currentColor" viewBox="0 0 20 20">
