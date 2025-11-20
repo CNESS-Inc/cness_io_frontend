@@ -347,7 +347,7 @@ const VendorDashboard: React.FC = () => {
     try {
       setIsLoadingDashboard(true);
       const res = await GetSellerDashboard();
-      const data = res?.data?.data?.data;
+      const data = res?.data?.data || null;
       setDashboard(data);
       // ADD THIS:
       console.log("DASHBOARD API RAW:", res);
