@@ -5,8 +5,14 @@ import Breadcrumb from "../components/MarketPlace/Breadcrumb";
 import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateVideoProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument } from "../Common/ServerAPI";
-import { Plus, X } from "lucide-react";
+import {
+  CreateVideoProduct,
+  GetMarketPlaceCategories,
+  GetMarketPlaceMoods,
+  UploadProductDocument,
+  UploadProductThumbnail,
+} from "../Common/ServerAPI";
+import { Plus, SquarePen, X } from "lucide-react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
@@ -79,8 +85,12 @@ interface FileUploadProps {
   label?: string;
   required?: boolean;
   description: string;
-  fileType: 'main-video' | 'short-video';
-  onUploadSuccess?: (videoId: string, thumbnailUrl: string, videoUrl: string) => void;
+  fileType: "main-video" | "short-video";
+  onUploadSuccess?: (
+    videoId: string,
+    thumbnailUrl: string,
+    videoUrl: string
+  ) => void;
   onRemove?: () => void;
   defaultThumbnail?: string;
   error?: string;
@@ -98,7 +108,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
   error,
   isUploading: externalUploading = false,
 }) => {
-  const [thumbnail, setThumbnail] = useState<string | null>(defaultThumbnail || null);
+  const [thumbnail, setThumbnail] = useState<string | null>(
+    defaultThumbnail || null
+  );
   const [isUploading, setIsUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const { showToast } = useToast();
@@ -141,10 +153,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
     try {
       const formData = new FormData();
-      if (fileType === 'main-video') {
-        formData.append('video', file);
+      if (fileType === "main-video") {
+        formData.append("video", file);
       } else {
-        formData.append('short_video', file);
+        formData.append("short_video", file);
       }
 
       const response = await UploadProductDocument(fileType, formData);
@@ -153,17 +165,24 @@ const FileUpload: React.FC<FileUploadProps> = ({
       setThumbnail(videoData.thumbnail);
 
       if (onUploadSuccess) {
-        onUploadSuccess(videoData.video_id, videoData.thumbnail, videoData.video_url);
+        onUploadSuccess(
+          videoData.video_id,
+          videoData.thumbnail,
+          videoData.video_url
+        );
       }
 
       showToast({
-        message: `${fileType === 'main-video' ? 'Main' : 'Short'} video uploaded successfully`,
+        message: `${
+          fileType === "main-video" ? "Main" : "Short"
+        } video uploaded successfully`,
         type: "success",
         duration: 3000,
       });
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to upload video",
+        message:
+          error?.response?.data?.error?.message || "Failed to upload video",
         type: "error",
         duration: 3000,
       });
@@ -172,7 +191,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       setIsUploading(false);
       // Reset file input
       if (fileRef.current) {
-        fileRef.current.value = '';
+        fileRef.current.value = "";
       }
     }
   };
@@ -184,7 +203,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     }
     // Reset file input
     if (fileRef.current) {
-      fileRef.current.value = '';
+      fileRef.current.value = "";
     }
   };
 
@@ -197,8 +216,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
       )}
       <div
         onClick={handleClick}
-        className={`relative rounded-lg p-6 text-center cursor-pointer transition-all ${error ? 'bg-red-50' : 'bg-[#F9FAFB] hover:bg-[#EEF3FF]'
-          } ${(isUploading || externalUploading) ? 'pointer-events-none opacity-70' : ''}`}
+        className={`relative rounded-lg p-6 text-center cursor-pointer transition-all ${
+          error ? "bg-red-50" : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+        } ${
+          isUploading || externalUploading
+            ? "pointer-events-none opacity-70"
+            : ""
+        }`}
       >
         {/* ✅ SVG Dashed Border */}
         <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
@@ -243,8 +267,18 @@ const FileUpload: React.FC<FileUploadProps> = ({
               className="absolute top-2 right-12 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition"
               title="Replace Video"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
               </svg>
             </button>
             {/* Remove Button */}
@@ -262,7 +296,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
             {/* Play Icon Overlay */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="bg-black bg-opacity-50 rounded-full p-4">
-                <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-12 h-12 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
@@ -274,10 +312,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
             {isUploading || externalUploading ? (
               <div className="flex flex-col items-center space-y-2">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
-                <p className="font-[poppins] text-[16px] text-[#7077FE]">Uploading video...</p>
+                <p className="font-[poppins] text-[16px] text-[#7077FE]">
+                  Uploading video...
+                </p>
               </div>
             ) : (
-              <p className="font-[poppins] text-[16px] text-[#242E3A]">{description}</p>
+              <p className="font-[poppins] text-[16px] text-[#242E3A]">
+                {description}
+              </p>
             )}
           </div>
         )}
@@ -298,6 +340,12 @@ const AddVideoForm: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [newHighlight, setNewHighlight] = useState("");
   const [showAIModal, setShowAIModal] = useState(false);
+
+  const [thumbnailData, setThumbnailData] = useState<{
+    thumbnail_url: string;
+    public_id: string;
+  } | null>(null);
+  const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
 
   const [mainVideoData, setMainVideoData] = useState<{
     video_id: string;
@@ -354,7 +402,8 @@ const AddVideoForm: React.FC = () => {
           setCategories(response.data.data);
         }
       } catch (error: any) {
-        const errorMessage = error?.response?.data?.error?.message || "Failed to load categories.";
+        const errorMessage =
+          error?.response?.data?.error?.message || "Failed to load categories.";
         showToast({
           message: errorMessage,
           type: "error",
@@ -380,17 +429,92 @@ const AddVideoForm: React.FC = () => {
     summary: "",
     status: "",
     sample_track: "",
+    thumbnail_url: "",
   });
 
+  // Add these thumbnail handler functions
+  const handleThumbnailUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      showToast({
+        message: "Please upload an image file",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast({
+        message: "Image size should be less than 5MB",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setIsThumbnailUploading(true);
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("thumbnail", file);
+
+      const response = await UploadProductThumbnail(uploadFormData);
+      const thumbnailUrl = response?.data?.data?.thumbnail_url;
+      const publicId = response?.data?.data?.public_id;
+
+      setThumbnailData({
+        thumbnail_url: thumbnailUrl,
+        public_id: publicId,
+      });
+
+      setFormData((prev) => ({
+        ...prev,
+        thumbnail_url: thumbnailUrl,
+      }));
+
+      showToast({
+        message: "Thumbnail uploaded successfully",
+        type: "success",
+        duration: 2000,
+      });
+    } catch (error: any) {
+      showToast({
+        message:
+          error?.response?.data?.error?.message || "Failed to upload thumbnail",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsThumbnailUploading(false);
+      // Reset input
+      e.target.value = "";
+    }
+  };
+
+  const handleRemoveThumbnail = () => {
+    setThumbnailData(null);
+    setFormData((prev) => ({
+      ...prev,
+      thumbnail_url: "",
+    }));
+  };
+
   const handleSampleTrackUpload = (sampleId: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       sample_track: sampleId,
     }));
   };
 
   const handleRemoveSampleTrack = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       sample_track: "",
     }));
@@ -399,16 +523,24 @@ const AddVideoForm: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!formData.product_title.trim()) newErrors.product_title = "Product title is required.";
+    if (!formData.product_title.trim())
+      newErrors.product_title = "Product title is required.";
     if (isNaN(formData.price) || formData.price <= 0) {
       newErrors.price = "Price must be a positive number.";
     }
     if (isNaN(formData.discount_percentage)) {
       newErrors.discount_percentage = "Discount percentage must be a number.";
-    } else if (formData.discount_percentage < 0 || formData.discount_percentage > 100) {
-      newErrors.discount_percentage = "Discount percentage must be between 0 and 100.";
+    } else if (
+      formData.discount_percentage < 0 ||
+      formData.discount_percentage > 100
+    ) {
+      newErrors.discount_percentage =
+        "Discount percentage must be between 0 and 100.";
     }
-    if (!formData.mood_id.trim()) newErrors.mood_id = "Mood Selection is required.";
+    if (!formData.mood_id.trim())
+      newErrors.mood_id = "Mood Selection is required.";
+    if (!formData.thumbnail_url.trim())
+      newErrors.thumbnail_url = "Thumbnail is required.";
     // if (!formData.video_url.trim()) newErrors.video_url = "Main video is required.";
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
@@ -418,7 +550,8 @@ const AddVideoForm: React.FC = () => {
 
     if (formData.duration) {
       if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.duration)) {
-        newErrors.duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
+        newErrors.duration =
+          "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
       }
     }
     if (!formData.duration.trim()) newErrors.duration = "Duration is required.";
@@ -429,9 +562,12 @@ const AddVideoForm: React.FC = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setTimeout(() => {
-        const firstErrorElement = document.querySelector('.text-red-500');
+        const firstErrorElement = document.querySelector(".text-red-500");
         if (firstErrorElement) {
-          firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstErrorElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
         }
       }, 100);
     }
@@ -440,14 +576,19 @@ const AddVideoForm: React.FC = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
-    const target = e.target as HTMLInputElement & HTMLTextAreaElement & HTMLSelectElement;
+    const target = e.target as HTMLInputElement &
+      HTMLTextAreaElement &
+      HTMLSelectElement;
     const { name, value } = target;
 
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-    const toStr = (v: unknown) => (v === undefined || v === null ? "" : String(v));
+    const toStr = (v: unknown) =>
+      v === undefined || v === null ? "" : String(v);
     const valStr = toStr(value).trim();
 
     let message = "";
@@ -457,7 +598,11 @@ const AddVideoForm: React.FC = () => {
         break;
 
       case "price":
-        if (value === "" || isNaN(parseFloat(value)) || parseFloat(value) <= 0) {
+        if (
+          value === "" ||
+          isNaN(parseFloat(value)) ||
+          parseFloat(value) <= 0
+        ) {
           message = "Price must be a positive number";
         }
         break;
@@ -486,25 +631,33 @@ const AddVideoForm: React.FC = () => {
       case "highlights":
         if (Array.isArray(value) && value.length === 0) {
           message = "At least one highlight is required";
-        } else if (Array.isArray(value) && value.some((highlight: string) => !highlight.trim())) {
+        } else if (
+          Array.isArray(value) &&
+          value.some((highlight: string) => !highlight.trim())
+        ) {
           message = "Highlights cannot contain empty values";
         }
         break;
 
       case "duration":
         if (!valStr) message = "Duration is required";
-        if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr)) message = "Invalid duration format. Use HH:MM:SS";
+        if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr))
+          message = "Invalid duration format. Use HH:MM:SS";
         break;
 
       case "summary":
         if (!valStr) message = "Summary is required";
         break;
 
+      case "thumbnail_url": // Add this case
+        if (!valStr) message = "Thumbnail is required";
+        break;
+
       default:
         break;
     }
 
-    setErrors(prev => ({ ...prev, [name]: message }));
+    setErrors((prev) => ({ ...prev, [name]: message }));
   };
 
   const handleSubmit = async (isDraft: boolean = false) => {
@@ -532,22 +685,31 @@ const AddVideoForm: React.FC = () => {
         ...formData,
         video_url: mainVideoData.video_id,
         short_video_url: shortVideoData?.video_id || "",
-        status: isDraft ? 'draft' : 'published'
+        status: isDraft ? "draft" : "published",
       };
 
       const response = await CreateVideoProduct(payload);
 
       showToast({
-        message: isDraft ? "Product saved as draft" : "Product submitted successfully",
+        message: isDraft
+          ? "Product saved as draft"
+          : "Product submitted successfully",
         type: "success",
         duration: 3000,
       });
       setErrors({});
 
-      navigate(isDraft ? `/dashboard/products/preview/${response?.data?.data?.product_id}?category=video` : '/dashboard/products');
+      navigate(
+        isDraft
+          ? `/dashboard/products/preview/${response?.data?.data?.product_id}?category=video`
+          : "/dashboard/products"
+      );
     } catch (error: any) {
       showToast({
-        message: error?.message || error?.response?.data?.error?.message || 'Failed to submit product',
+        message:
+          error?.message ||
+          error?.response?.data?.error?.message ||
+          "Failed to submit product",
         type: "error",
         duration: 3000,
       });
@@ -557,12 +719,12 @@ const AddVideoForm: React.FC = () => {
   };
 
   const handleAIGenerate = (generatedText: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      overview: generatedText
+      overview: generatedText,
     }));
 
-    setErrors(prev => ({ ...prev, overview: "" }));
+    setErrors((prev) => ({ ...prev, overview: "" }));
     setShowAIModal(false);
   };
 
@@ -577,29 +739,29 @@ const AddVideoForm: React.FC = () => {
         return;
       }
 
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        highlights: [...prev.highlights, newHighlight.trim()]
+        highlights: [...prev.highlights, newHighlight.trim()],
       }));
       setNewHighlight("");
 
       if (errors.highlights) {
-        setErrors(prev => ({ ...prev, highlights: "" }));
+        setErrors((prev) => ({ ...prev, highlights: "" }));
       }
     }
   };
 
   const handleRemoveHighlight = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      highlights: prev.highlights.filter((_, i) => i !== index)
+      highlights: prev.highlights.filter((_, i) => i !== index),
     }));
   };
 
   const handleEditHighlight = (index: number, newValue: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      highlights: prev.highlights.map((h, i) => i === index ? newValue : h)
+      highlights: prev.highlights.map((h, i) => (i === index ? newValue : h)),
     }));
   };
 
@@ -609,10 +771,14 @@ const AddVideoForm: React.FC = () => {
 
   const confirmDiscard = () => {
     setShowDiscardModal(false);
-    navigate('/dashboard/products');
+    navigate("/dashboard/products");
   };
 
-  const handleMainVideoUpload = (videoId: string, thumbnailUrl: string, videoUrl: string) => {
+  const handleMainVideoUpload = (
+    videoId: string,
+    thumbnailUrl: string,
+    videoUrl: string
+  ) => {
     setMainVideoData({
       video_id: videoId,
       thumbnail: thumbnailUrl,
@@ -620,16 +786,20 @@ const AddVideoForm: React.FC = () => {
     });
 
     // Update formData with video_id
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       video_url: videoId,
     }));
 
     // Clear error
-    setErrors(prev => ({ ...prev, video_url: "" }));
+    setErrors((prev) => ({ ...prev, video_url: "" }));
   };
 
-  const handleShortVideoUpload = (videoId: string, thumbnailUrl: string, videoUrl: string) => {
+  const handleShortVideoUpload = (
+    videoId: string,
+    thumbnailUrl: string,
+    videoUrl: string
+  ) => {
     setShortVideoData({
       video_id: videoId,
       thumbnail: thumbnailUrl,
@@ -637,7 +807,7 @@ const AddVideoForm: React.FC = () => {
     });
 
     // Update formData with short_video_id
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       short_video_url: videoId,
     }));
@@ -645,7 +815,7 @@ const AddVideoForm: React.FC = () => {
 
   const handleRemoveMainVideo = () => {
     setMainVideoData(null);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       video_url: "",
     }));
@@ -653,16 +823,14 @@ const AddVideoForm: React.FC = () => {
 
   const handleRemoveShortVideo = () => {
     setShortVideoData(null);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       short_video_url: "",
     }));
   };
 
   if (isLoading) {
-    return (
-      <LoadingSpinner />
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -701,7 +869,11 @@ const AddVideoForm: React.FC = () => {
               label="Discount in %"
               placeholder="Enter discount in %"
               name="discount_percentage"
-              value={formData.discount_percentage === 0 ? "" : formData.discount_percentage.toString()}
+              value={
+                formData.discount_percentage === 0
+                  ? ""
+                  : formData.discount_percentage.toString()
+              }
               onChange={handleChange}
               error={errors.discount_percentage}
             />
@@ -713,7 +885,8 @@ const AddVideoForm: React.FC = () => {
                 name="mood_id"
                 value={formData.mood_id}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer">
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer"
+              >
                 <option value="">Select Mood</option>
                 {moods?.map((mood: any) => (
                   <option key={mood.id} value={mood.id}>
@@ -721,8 +894,107 @@ const AddVideoForm: React.FC = () => {
                   </option>
                 ))}
               </select>
-              {errors.mood_id && <span className="text-red-500 text-sm mt-1">{errors.mood_id}</span>}
+              {errors.mood_id && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.mood_id}
+                </span>
+              )}
             </div>
+          </div>
+          <div>
+            <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+              Thumbnail <span className="text-red-500">*</span>
+            </label>
+            {thumbnailData?.thumbnail_url ? (
+              <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
+                <img
+                  src={thumbnailData.thumbnail_url}
+                  alt="Thumbnail"
+                  className="w-full h-40 object-cover"
+                />
+                {/* Edit/Replace Button */}
+                <label
+                  htmlFor="thumbnail-replace"
+                  className="absolute top-2 right-12 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition cursor-pointer"
+                  title="Replace Thumbnail"
+                >
+                  <SquarePen className="w-4 h-4" />
+                  <input
+                    id="thumbnail-replace"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleThumbnailUpload}
+                    disabled={isThumbnailUploading}
+                  />
+                </label>
+                {/* Remove Button */}
+                <button
+                  type="button"
+                  onClick={handleRemoveThumbnail}
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+                  title="Remove Thumbnail"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <label
+                className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                  isThumbnailUploading
+                    ? "pointer-events-none opacity-70"
+                    : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                }`}
+              >
+                <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                  <rect
+                    x="1"
+                    y="1"
+                    width="calc(100% - 2px)"
+                    height="calc(100% - 2px)"
+                    rx="12"
+                    ry="12"
+                    stroke="#CBD5E1"
+                    strokeWidth="2"
+                    strokeDasharray="6,6"
+                    fill="none"
+                    className="transition-all duration-300 group-hover:stroke-[#7077FE]"
+                  />
+                </svg>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleThumbnailUpload}
+                  disabled={isThumbnailUploading}
+                />
+                {isThumbnailUploading ? (
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
+                    <p className="text-sm text-[#7077FE]">
+                      Uploading thumbnail...
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-center space-y-2">
+                    <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
+                      <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+                    </div>
+                    <p className="text-sm font-[poppins] text-[#242E3A]">
+                      Drag & drop or click to upload
+                    </p>
+                    <p className="text-xs text-[#665B5B]">
+                      Recommended 266 X 149 px
+                    </p>
+                  </div>
+                )}
+              </label>
+            )}
+            {errors.thumbnail_url && (
+              <span className="text-red-500 text-sm mt-1">
+                {errors.thumbnail_url}
+              </span>
+            )}
           </div>
 
           <div className="mt-8">
@@ -753,7 +1025,7 @@ const AddVideoForm: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAIModal(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-linear-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group"
                 >
                   <svg
                     className="w-4 h-4 animate-pulse"
@@ -780,7 +1052,11 @@ const AddVideoForm: React.FC = () => {
                 className="w-full h-32 px-3 py-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
                 required
               />
-              {errors.overview && <span className="text-red-500 text-sm mt-1">{errors.overview}</span>}
+              {errors.overview && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.overview}
+                </span>
+              )}
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
@@ -788,12 +1064,17 @@ const AddVideoForm: React.FC = () => {
               </label>
               <div className="space-y-3">
                 {formData.highlights.map((highlight, index) => (
-                  <div key={index} className="flex items-start gap-2 p-3 border border-gray-200 rounded-md bg-white">
+                  <div
+                    key={index}
+                    className="flex items-start gap-2 p-3 border border-gray-200 rounded-md bg-white"
+                  >
                     <span className="text-[#7077FE] font-bold mt-1">•</span>
                     <input
                       type="text"
                       value={highlight}
-                      onChange={(e) => handleEditHighlight(index, e.target.value)}
+                      onChange={(e) =>
+                        handleEditHighlight(index, e.target.value)
+                      }
                       className="flex-1 border-none focus:outline-none text-[#242E3A]"
                     />
                     <button
@@ -813,7 +1094,7 @@ const AddVideoForm: React.FC = () => {
                       value={newHighlight}
                       onChange={(e) => setNewHighlight(e.target.value)}
                       onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           e.preventDefault();
                           handleAddHighlight();
                         }
@@ -832,10 +1113,16 @@ const AddVideoForm: React.FC = () => {
                 )}
 
                 <p className="text-sm text-gray-500">
-                  Add up to 3 key highlights about your video (e.g., "Guided relaxation for stress relief", "Mindfulness and breathing techniques")
+                  Add up to 3 key highlights about your video (e.g., "Guided
+                  relaxation for stress relief", "Mindfulness and breathing
+                  techniques")
                 </p>
               </div>
-              {errors.highlights && <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>}
+              {errors.highlights && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.highlights}
+                </span>
+              )}
             </div>
             <InputField
               label="Duration (HH:MM:SS)"
@@ -854,14 +1141,19 @@ const AddVideoForm: React.FC = () => {
                 name="language"
                 value={formData.language}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+              >
                 <option value="">Select Language</option>
                 <option value="English">English</option>
                 <option value="Spanish">Spanish</option>
                 <option value="French">French</option>
                 <option value="German">German</option>
               </select>
-              {errors.language && <span className="text-red-500 text-sm mt-1">{errors.language}</span>}
+              {errors.language && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.language}
+                </span>
+              )}
             </div>
           </div>
         </FormSection>
@@ -892,7 +1184,11 @@ const AddVideoForm: React.FC = () => {
                 className="w-full h-38 px-3 py-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
                 required
               />
-              {errors.summary && <span className="text-red-500 text-sm mt-1">{errors.summary}</span>}
+              {errors.summary && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.summary}
+                </span>
+              )}
             </div>
           </div>
         </FormSection>
@@ -914,21 +1210,24 @@ const AddVideoForm: React.FC = () => {
           <button
             type="button"
             onClick={handleDiscard}
-            className=" px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0]  hover:text-blue-500 transition-colors">
+            className=" px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0]  hover:text-blue-500 transition-colors"
+          >
             Discard
           </button>
           <button
             type="button"
             onClick={() => handleSubmit(true)}
             disabled={isLoading}
-            className="px-5 py-3 bg-white text-[#7077FE] border border-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0] hover:bg-gray-300 transition-colors">
+            className="px-5 py-3 bg-white text-[#7077FE] border border-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0] hover:bg-gray-300 transition-colors"
+          >
             {isLoading ? "Saving..." : "Preview"}
           </button>
           <button
-            type='button'
+            type="button"
             onClick={() => handleSubmit(false)}
             disabled={isLoading}
-            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0] hover:bg-[#5a60ea] transition-colors">
+            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0] hover:bg-[#5a60ea] transition-colors"
+          >
             {isLoading ? "Submitting..." : "Submit"}
           </button>
         </div>
@@ -943,13 +1242,17 @@ const AddVideoForm: React.FC = () => {
       )}
       {showDiscardModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDiscardModal(false)}></div>
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowDiscardModal(false)}
+          ></div>
           <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-8 w-[450px]">
             <h3 className="text-[20px] font-semibold font-['Poppins'] text-[#242E3A] mb-4">
               Discard Product?
             </h3>
             <p className="text-[14px] text-[#665B5B] font-['Open_Sans'] mb-6">
-              Are you sure you want to discard this product? All your entered details will not be saved.
+              Are you sure you want to discard this product? All your entered
+              details will not be saved.
             </p>
             <div className="flex justify-end gap-3">
               <button

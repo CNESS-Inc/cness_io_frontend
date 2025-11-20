@@ -96,6 +96,7 @@ const AddArtsForm: React.FC = () => {
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
+const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
 
   const [chapters, setChapters] = useState<any[]>([
     {
@@ -159,13 +160,16 @@ const AddArtsForm: React.FC = () => {
     fetchCategories();
   }, []);
 
-  const handleSampleTrackUpload = (sampleId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      sample_track: sampleId,
-    }));
-  };
+const handleSampleTrackUpload = (sampleId: string) => {
+  // Save the uploaded sample image URL
+  setSampleImageUrl(sampleId);
 
+  // Also store in formData (used for API payload)
+  setFormData((prev) => ({
+    ...prev,
+    sample_track: sampleId,
+  }));
+};
   const handleRemoveSampleTrack = () => {
     setFormData((prev) => ({
       ...prev,
@@ -637,23 +641,31 @@ const AddArtsForm: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const payload = {
-        ...formData,
-        thumbnail_url: formData.thumbnail_url,
-        status: isDraft ? "draft" : "published",
-        chapters: chapters.map((chapter) => ({
-          title: chapter.title,
-          chapter_files: chapter.chapter_files.map((file: any) => ({
-            url: file.url,
-            title: file.title,
-            order_number: file.order_number,
-          })),
-          description: chapter.description || "",
-          order_number: chapter.order_number,
-          is_free: chapter.is_free,
-        })),
-      };
+     const payload = {
+  ...formData,
+  thumbnail_url: formData.thumbnail_url,
+  status: isDraft ? "draft" : "published",
 
+
+  arts_details: {
+    theme: formData.theme,
+    mediums: formData.mediums,
+    modern_trends: formData.modern_trends,
+    sample_image_url: sampleImageUrl,  
+  },
+
+  chapters: chapters.map((chapter) => ({
+    title: chapter.title,
+    chapter_files: chapter.chapter_files.map((file: any) => ({
+      url: file.url,
+      title: file.title,
+      order_number: file.order_number,
+    })),
+    description: chapter.description || "",
+    order_number: chapter.order_number,
+    is_free: chapter.is_free,
+  })),
+};
       const response = await CreateArtProduct(payload);
       const productId = response?.data?.data?.product_id;
 
@@ -1082,7 +1094,7 @@ const AddArtsForm: React.FC = () => {
           description="Upload a preview sample so buyers can experience your content before purchasing."
         >
           <SampleTrackUpload
-            productType="video"
+            productType="art"
             onUploadSuccess={handleSampleTrackUpload}
             onRemove={handleRemoveSampleTrack}
             defaultValue={formData.sample_track}

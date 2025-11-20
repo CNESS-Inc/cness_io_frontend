@@ -228,6 +228,7 @@ export const EndPoint = {
   profile_get_by_user_id: "/profile/get-user",
   user_posts_by_user_id: "/user/posts/get-user-post",
 
+
   // Messaging endpoints
   conversations: "/messaging/conversations",
   sendMessage: "/messaging/send",
@@ -262,7 +263,10 @@ export const EndPoint = {
   get_products: "/vendor/products",
   get_seller_products: "/seller-onboarding/my-products",
   delete_seller_products: "/marketplace-product/product",
-  get_wallet: "/marketplace-product/wallet",
+  get_wallet: "/seller-sales/wallet",
+  get_withdrawal_history: "/seller-sales/withdrawals",
+  submit_withdrawal: "/seller-sales/withdraw",
+  update_bank_details: "/seller-sales/bank-details",
 
   // marketplace product endpoints
   get_categories: "/marketplace-product/product-categories",
@@ -277,6 +281,7 @@ export const EndPoint = {
   upload_product_thumbnail: "/marketplace-product/product/upload-thumbnail",
   upload_product_document: "/marketplace-product/upload",
   update_video: "/marketplace-product",
+
 
   create_music_product: "/marketplace-product/music",
   update_music_product: "/marketplace-product",
@@ -318,6 +323,7 @@ export const EndPoint = {
   // progress apis
   marketplace_buyer_continue_watching: "/marketplace-buyer/progress/continue-watching",
   marketplace_buyer_progress: "/marketplace-buyer/progress",
+  upload_art_sample_image :"/marketplace-product/upload/art-sample-image",
 };
 
 // Messaging endpoints
@@ -612,6 +618,7 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
       }
     });
   }
+  
 
   // Return the formatted data
   return executeAPI(ServerAPI.APIMethod.POST, { data }, EndPoint.answer);
@@ -1937,11 +1944,27 @@ export const DeleteSellerProduct = (id: any) => {
   return executeAPI(ServerAPI.APIMethod.DELETE, {}, `${EndPoint.delete_seller_products}/${id}`);
 };
 
-export const get_wallet = (id: string | number) => {
+export const get_wallet = () => {
   return executeAPI(
     ServerAPI.APIMethod.GET,
     {},
-    `${EndPoint.get_wallet}/${id}`
+    EndPoint.get_wallet
+  );
+};
+
+export const get_withdrawal_history = () => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.get_withdrawal_history
+  );
+};
+
+export const submit_withdrawal = (payload: { amount: number }) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    payload,
+    EndPoint.submit_withdrawal
   );
 };
 
@@ -1954,7 +1977,7 @@ export const update_bank_details = (payload: {
   return executeAPI(
     ServerAPI.APIMethod.PUT,
     payload,
-    "/seller-sales/bank-details"
+    EndPoint.update_bank_details
   );
 };
 
@@ -2227,8 +2250,8 @@ export const GetProductReviws = (
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 };
 
-export const CreateCheckoutSession = () => {
-  return executeAPI(ServerAPI.APIMethod.POST, {}, EndPoint.marketplace_checkout);
+export const CreateCheckoutSession = (appliedDonation:number) => {
+  return executeAPI(ServerAPI.APIMethod.POST, {donation_amount:appliedDonation}, EndPoint.marketplace_checkout);
 };
 
 export const GetCheckoutDetails = (): ApiResponse => {
@@ -2253,6 +2276,15 @@ export const GetLibraryrFilters = (): ApiResponse => {
     {},
     `${EndPoint.marketplace_buyer_library}/filters/options`);
 }
+
+
+export const UploadArtSampleImage = (formData: FormData): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.upload_art_sample_image
+  );
+};
 
 export const GetLibraryrDetails = (params?: {
   page?: number;
@@ -2382,14 +2414,13 @@ export const GetSellerSalesHistory = (
     endDate?: string;
     page?: number;
     limit?: number;
-  } = {} // optional object
+  } = {}
 ) => {
-  // Build query params string
   const searchParams = new URLSearchParams();
-  if (params.customer) searchParams.append('customer', params.customer);
-  if (params.orderId) searchParams.append('orderId', params.orderId);
-  if (params.startDate) searchParams.append('startDate', params.startDate);
-  if (params.endDate) searchParams.append('endDate', params.endDate);
+  if (params.customer) searchParams.append('customer_name', params.customer);
+  if (params.orderId) searchParams.append('order_id', params.orderId);
+  if (params.startDate) searchParams.append('start_date', params.startDate);
+  if (params.endDate) searchParams.append('end_date', params.endDate);
   searchParams.append('page', params.page?.toString() || '1');
   searchParams.append('limit', params.limit?.toString() || '10');
 
