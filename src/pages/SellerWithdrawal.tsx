@@ -153,16 +153,64 @@ const SellerWithdrawal: React.FC = () => {
   }, []);
 
   // Refresh wallet data
-  const refreshWalletData = async () => {
-    try {
-      setLoadingWallet(true);
-      const res = await get_wallet();
-      const data: Wallet = res.data.data.data;
-      setWallet(data);
-    } finally {
-      setLoadingWallet(false);
+// Refresh wallet data with correct data path and update bank input states
+const refreshWalletData = async () => {
+  try {
+    setLoadingWallet(true);
+    const res = await get_wallet();
+    const data: Wallet = res.data.data; // corrected path (removed extra .data)
+    setWallet(data);
+
+    // Also update the bank fields in edit form from fresh data
+    if (data.bank_details) {
+      setBankName(data.bank_details.bank_name || "");
+      setAccountNumber(data.bank_details.account_number || "");
+      setSwiftCode(data.bank_details.swift_code || "");
+      setAccountType(data.bank_details.account_type || "");
     }
-  };
+  } catch (err) {
+    console.error("Failed to refresh wallet data", err);
+  } finally {
+    setLoadingWallet(false);
+  }
+};
+
+
+const handleSaveBankDetails = async () => {
+  try {
+    setSavingBank(true);
+    setBankError(null);
+    await update_bank_details({
+      bank_name: bankName,
+      account_number: accountNumber,
+      swift_code: swiftCode,
+      account_type: accountType,
+    });
+    showToast({
+      message: "Bank details updated successfully!",
+      type: "success",
+    });
+
+    // Refresh wallet and update form inputs with fresh data
+    await refreshWalletData();
+    setIsEdit(false);
+  } catch (err: any) {
+    const apiMsg =
+      err?.response?.data?.error?.message ||
+      err?.response?.data?.message ||
+      "Failed to save bank details";
+    setBankError(apiMsg);
+    showToast({
+      message: apiMsg,
+      type: "error",
+    });
+  } finally {
+    setSavingBank(false);
+  }
+};
+
+
+
 
   // Refresh withdrawal history
   const refreshWithdrawalHistory = async () => {
@@ -299,33 +347,7 @@ const SellerWithdrawal: React.FC = () => {
     );
   };
 
-  const handleSaveBankDetails = async () => {
-    try {
-      setSavingBank(true);
-      setBankError(null);
-      await update_bank_details({
-        bank_name: bankName,
-        account_number: accountNumber,
-        swift_code: swiftCode,
-        account_type: accountType,
-      });
-      showToast({
-        message: "Bank details updated successfully!",
-        type: "success"
-      });
-      setIsEdit(false);
-      await refreshWalletData();
-    } catch (err: any) {
-      const apiMsg = err?.response?.data?.error?.message || err?.response?.data?.message || "Failed to save bank details";
-      setBankError(apiMsg);
-      showToast({
-        message: apiMsg,
-        type: "error"
-      });
-    } finally {
-      setSavingBank(false);
-    }
-  };
+ 
 
     return (
         <div className="flex flex-col gap-4 w-full h-full overflow-hidden">
