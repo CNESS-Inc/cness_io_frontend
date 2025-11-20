@@ -306,7 +306,6 @@ const VendorDashboard: React.FC = () => {
   const [productData, setProductData] = useState<ProductRowProps[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [dashboard, setDashboard] = useState<any>(null);
-  const [isLoadingDashboard, setIsLoadingDashboard] = useState(false);
 
   // Best Selling Products State
   const [bestSelling, setBestSelling] = useState<BestSellingProduct[]>([]);
@@ -345,7 +344,7 @@ const VendorDashboard: React.FC = () => {
 
   const fetchDashboard = async () => {
     try {
-      setIsLoadingDashboard(true);
+      setIsLoadingProducts(true);
       const res = await GetSellerDashboard();
       const data = res?.data?.data || null;
       setDashboard(data);
@@ -355,7 +354,7 @@ const VendorDashboard: React.FC = () => {
     } catch (err) {
       console.log("Dashboard fetch error:", err);
     } finally {
-      setIsLoadingDashboard(false);
+      setIsLoadingProducts(false);
     }
   };
 
