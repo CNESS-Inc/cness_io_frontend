@@ -543,10 +543,10 @@ const CreditsWallet: React.FC = () => {
             CNESS community. To redeem your credits, please contact our
             community team at{" "}
             <a
-              href="mailto:community@cness.com"
+              href="mailto:support@cness.co"
               className="text-white underline font-semibold"
             >
-              community@cness.com
+              support@cness.co
             </a>{" "}
             with your desired redemption option.
           </p>

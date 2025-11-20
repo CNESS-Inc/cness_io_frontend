@@ -11,7 +11,7 @@ const Community = React.lazy(() => import("../components/sections/CommunityNew")
 const AwarenessNew = React.lazy(() => import("../components/sections/AwarenessNew"));
 const Certification = React.lazy(() => import("../components/sections/Certification"));
 const JoiningSection = React.lazy(() => import("../components/sections/Joiningsection"));
-const GetInTouch = React.lazy(() => import("../components/sections/GetInTouch"));
+// const GetInTouch = React.lazy(() => import("../components/sections/GetInTouch"));
 // import Stepper from "../components/sections/Stepper";
 // import Team from "../components/sections/Team";
 //import Subscribe from "../components/sections/Subscribe";
@@ -51,9 +51,9 @@ const Home = () => {
       <LazySection effect="fade-up" delay={0.2} className="belowFold">
         <JoiningSection />
       </LazySection>
-       <LazySection effect="fade-up" delay={0.2} className="belowFold">
+       {/* <LazySection effect="fade-up" delay={0.2} className="belowFold">
         <GetInTouch />
-      </LazySection> 
+      </LazySection>  */}
       {/* <LazySection effect="fade-up" delay={0.2}>
         <Subscribe />
       </LazySection>*/}

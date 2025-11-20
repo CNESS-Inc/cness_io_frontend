@@ -107,7 +107,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       </h2>
 
       {/* 🔹 Category Tabs */}
-      <div className="flex flex-wrap gap-4 mb-8 px-5">
+      <div className="flex flex-wrap gap-4 mb-8 px-0">
         {categories.map((category) => {
           // Count products for this category (you can get this from API if available)
           const categoryProductCount = category.product_count || 0;
@@ -136,7 +136,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       </div>
 
       {/* 📦 Main Section */}
-      <div className="flex w-full max-w-[1600px] mx-auto px-5 py-10 gap-8">
+<div className="flex w-full max-w-[1600px] mx-auto px-1 py-10 gap-8 relative">
         <div className="flex-1">
           {/* Mobile Filter Button */}
           <button
@@ -152,7 +152,8 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
               <LoadingSpinner />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+            <div className="grid gap-6 
+    grid-cols-[repeat(auto-fill,minmax(250px,1fr))]">
               {products.length > 0 ? (
                 products.map((product) => (
                   <ProductCard
@@ -170,7 +171,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                         product.video_details?.duration ||
                         product.music_details?.total_duration ||
                         "00:00:00",
-                      mood: `${product?.mood_icon || ""} ${product?.mood_name || ""}`,
+                      moods: product?.moods || [],
                       image:
                         product.thumbnail_url ||
                         "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
@@ -190,7 +191,8 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         </div>
 
         {/* 🧰 Right Sidebar Filter */}
-        <div className="hidden md:block w-[300px] flex-shrink-0 -mt-40 px-10">
+{/* 🧰 Right Sidebar Filter (Desktop Fixed) */}
+<div className="hidden md:block w-[280px] sticky top-[100px] h-fit">
           <Filter filters={filters} onFilterChange={handleFilterChange} />
         </div>
       </div>

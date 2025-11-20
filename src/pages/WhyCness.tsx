@@ -10,11 +10,10 @@ import SignupModel from "../components/OnBoarding/Signup";
 //import WhatOffer from "../components/ecoSystem/WhatOffer";
 
 //import Teamframe from "../components/ui/TeamFrame";
-import GetInTouch from "../components/sections/GetInTouch";
+// import GetInTouch from "../components/sections/GetInTouch";
 //import Subscribe from "../components/sections/Subscribe";
 import joinImage from "../assets/join-team.png";
 import { useEffect, useRef } from "react";
-
 
 export default function WhyCness() {
   {
@@ -60,8 +59,9 @@ export default function WhyCness() {
   //const [selected, setSelected] = useState<number>(2);
   const [openSignup, setOpenSignup] = useState(false);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
- const [isPortrait, setIsPortrait] = useState(false);
-  const videoUrl = "https://cdn.cness.io/WhatsApp%20Video%202025-11-11%20at%204.48.38%20PM.mp4";
+  const [isPortrait, setIsPortrait] = useState(false);
+  const videoUrl =
+    "https://cdn.cness.io/WhatsApp%20Video%202025-11-11%20at%204.48.38%20PM.mp4";
   const videoRef = useRef(null);
 
   const scrollToGetInTouch = () => {
@@ -73,7 +73,7 @@ export default function WhyCness() {
     window.scrollTo({ top: y, behavior: "smooth" });
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (!isVideoOpen) return;
     const video = document.createElement("video");
     video.src = videoUrl;
@@ -81,7 +81,6 @@ export default function WhyCness() {
       setIsPortrait(video.videoHeight > video.videoWidth);
     };
   }, [isVideoOpen]);
-
 
   return (
     <>
@@ -96,19 +95,22 @@ export default function WhyCness() {
         >
           {/* Text container */}
           <div className="mx-auto max-w-[1100px] px-6 text-center">
-          <h1
-  style={{ fontFamily: "Poppins, sans-serif" }}
-  className="font-medium text-[32px] md:text-[42px] leading-[120%] md:leading-[130%] tracking-[-0.02em] text-center antialiased bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
->
-Grow With Purpose, Together.
-</h1>
+            <h1
+              style={{ fontFamily: "Poppins, sans-serif" }}
+              className="font-medium text-[32px] md:text-[42px] leading-[120%] md:leading-[130%] tracking-[-0.02em] text-center antialiased bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+            >
+              Grow With Purpose, Together.
+            </h1>
 
             <p
               className={`font-['Open_Sans'] md:text-base font-light text-[#242424] mt-6 max-w-4xl mx-auto transition-all duration-1000 ease-in-out`}
             >
-             We built CNESS because we believe growth should be conscious and connected. 
-              <br /> Our community helps individuals and organizations learn, share and  
-              <br />create positive change.
+              We built CNESS because we believe growth should be conscious and
+              connected.
+              <br /> Our community helps individuals and organizations learn,
+              share and
+              <br />
+              create positive change.
             </p>
             <Button
               variant="gradient-primary"
@@ -151,7 +153,7 @@ Grow With Purpose, Together.
         <section className="relative w-full py-16 lg:py-20 bg-gradient-to-r from-[#FAFAFA] to-[#F6F5FA]">
           <div className="mx-auto max-w-[1200px] px-6">
             {/* Top row */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-start px-4 sm:px-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-start px-4 sm:px-6">
               {/* Left: title */}
               <div className="text-center lg:text-left">
                 <p className="text-[32px] md:text-[38px] lg:text-[42px] font-semibold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
@@ -165,96 +167,100 @@ Grow With Purpose, Together.
               {/* Right: copy + CTA */}
               <div className="flex flex-col items-center lg:items-start gap-6">
                 <p className="max-w-[620px] font-['Open_Sans'] text-[15px] md:text-[16px] leading-[26px] text-[#242424] font-light text-justify">
-  CNESS was born from the vision of our founder, Nandiji, whose life and teachings embody conscious living. 
-  He believed that true growth goes beyond fleeting online inspiration — it’s about nurturing the soul and 
-  connecting with others on a deeper level. Guided by this belief, he envisioned a space where people could 
-  be authentic, nourish their spirits, and support one another on a shared journey toward mindful, meaningful living. 
-  That space became CNESS.
-</p>
+                  CNESS was born from the vision of our founder, Nandiji, whose
+                  life and teachings embody conscious living. He believed that
+                  true growth goes beyond fleeting online inspiration — it’s
+                  about nurturing the soul and connecting with others on a
+                  deeper level. Guided by this belief, he envisioned a space
+                  where people could be authentic, nourish their spirits, and
+                  support one another on a shared journey toward mindful,
+                  meaningful living. That space became CNESS.
+                </p>
 
                 <div className="flex flex-wrap justify-center sm:justify-start items-center gap-4 mt-6">
-  <a
-    onClick={() => setOpenSignup(true)}
-    className="inline-flex items-center justify-center rounded-full px-5 py-3 text-[16px]
+                  <a
+                    onClick={() => setOpenSignup(true)}
+                    className="inline-flex items-center justify-center rounded-full px-5 py-3 text-[16px]
                font-['Plus Jakarta Sans'] font-medium text-white shadow-md hover:shadow-lg
                bg-gradient-to-r from-[#7077FE] to-[#F07EFF] transition-all duration-300"
-  >
-    Join the Journey
-  </a>
+                  >
+                    Join the Journey
+                  </a>
 
-<Button
-        variant="white-outline"
-        size="md"
-        onClick={() => setIsVideoOpen(true)}
-        className="hero-section-btn flex items-center gap-2 w-full sm:w-auto py-3 px-4 sm:py-4 sm:px-8 
+                  <Button
+                    variant="white-outline"
+                    size="md"
+                    onClick={() => setIsVideoOpen(true)}
+                    className="hero-section-btn flex items-center gap-2 w-full sm:w-auto py-3 px-4 sm:py-4 sm:px-8 
                    text-[16px] sm:text-base font-['Plus Jakarta Sans'] font-medium leading-[100%] 
                    tracking-[0px] text-center rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.1)]"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-          className="w-4 h-4 sm:w-5 sm:h-5"
-        >
-          <path d="M6.5 5.5v9l7-4.5-7-4.5z" />
-        </svg>
-        Play Video
-      </Button>
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                    >
+                      <path d="M6.5 5.5v9l7-4.5-7-4.5z" />
+                    </svg>
+                    Play Video
+                  </Button>
 
-      {/* 🎬 Video Modal */}
-     {isVideoOpen && (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center  p-4"
-    onClick={() => setIsVideoOpen(false)}
-  >
-    {/* Auto layout container */}
-    <div
-      className={`relative w-full ${
-        isPortrait ? "max-w-[900px] aspect-video" : "max-w-[900px] aspect-video"
-      } rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)] bg-black`}
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* Close Button */}
-      <button
-        onClick={() => setIsVideoOpen(false)}
-        className="absolute top-3 right-3 z-10 text-white/80 hover:text-white bg-black/40 hover:bg-black/60
+                  {/* 🎬 Video Modal */}
+                  {isVideoOpen && (
+                    <div
+                      className="fixed inset-0 z-50 flex items-center justify-center  p-4"
+                      onClick={() => setIsVideoOpen(false)}
+                    >
+                      {/* Auto layout container */}
+                      <div
+                        className={`relative w-full ${
+                          isPortrait
+                            ? "max-w-[900px] aspect-video"
+                            : "max-w-[900px] aspect-video"
+                        } rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)] bg-black`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {/* Close Button */}
+                        <button
+                          onClick={() => setIsVideoOpen(false)}
+                          className="absolute top-3 right-3 z-10 text-white/80 hover:text-white bg-black/40 hover:bg-black/60
                    w-8 h-8 flex items-center justify-center rounded-full backdrop-blur-sm transition-all duration-200"
-      >
-        ×
-      </button>
+                        >
+                          ×
+                        </button>
 
-      {/* Portrait Video: Blurred Background Layer */}
-      {isPortrait && (
-        <video
-          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40"
-          src={videoUrl}
-          muted
-          loop
-          autoPlay
-        />
-      )}
+                        {/* Portrait Video: Blurred Background Layer */}
+                        {isPortrait && (
+                          <video
+                            className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40"
+                            src={videoUrl}
+                            muted
+                            loop
+                            autoPlay
+                          />
+                        )}
 
-      {/* Main Video (auto detect portrait or landscape) */}
-      <video
-        ref={videoRef}
-        className={`relative z-10 rounded-3xl ${
-          isPortrait
-            ? "w-auto h-full mx-auto object-contain" // Portrait → center with height fit
-            : "w-full h-full object-cover" // Landscape → fill the container
-        }`}
-        src={videoUrl}
-        controls
-        autoPlay
-        onLoadedMetadata={(e) => {
-          const video = e.target as HTMLVideoElement;
-setIsPortrait(video.videoHeight > video.videoWidth);
-        }}
-      />
-    </div>
-  </div>
-)}
-
-              </div>
+                        {/* Main Video (auto detect portrait or landscape) */}
+                        <video
+                          ref={videoRef}
+                          className={`relative z-10 rounded-3xl ${
+                            isPortrait
+                              ? "w-auto h-full mx-auto object-contain" // Portrait → center with height fit
+                              : "w-full h-full object-cover" // Landscape → fill the container
+                          }`}
+                          src={videoUrl}
+                          controls
+                          autoPlay
+                          onLoadedMetadata={(e) => {
+                            const video = e.target as HTMLVideoElement;
+                            setIsPortrait(video.videoHeight > video.videoWidth);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -265,9 +271,9 @@ setIsPortrait(video.videoHeight > video.videoWidth);
                   Mission
                 </h4>
                 <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#242424] font-light">
-                 To connect people and organizations who care about 
-mindful living so they can learn, grow and make a positive impact 
-together.
+                  To connect people and organizations who care about mindful
+                  living so they can learn, grow and make a positive impact
+                  together.
                 </p>
               </div>
 
@@ -276,8 +282,8 @@ together.
                   Vision
                 </h4>
                 <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#242424] font-light">
-                  A world where opportunities are open to everyone and 
-growth is guided by heart and conscience.
+                  A world where opportunities are open to everyone and growth is
+                  guided by heart and conscience.
                 </p>
               </div>
             </div>
@@ -289,7 +295,7 @@ growth is guided by heart and conscience.
       </LazySection>
 
       <LazySection effect="fade-up" delay={0.2}>
-<section className="w-full bg-white py-10 sm:py-14 md:py-20 px-4 sm:px-8 md:px-[60px]">
+        <section className="w-full bg-white py-10 sm:py-14 md:py-20 px-4 sm:px-8 md:px-[60px]">
           <div className="w-full 2xl:w-[1300px] mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-12 xl:px-[120px]">
             <div className="grid xl:grid-cols-2 gap-2 w-full items-center">
               {/* Left copy */}
@@ -391,7 +397,7 @@ growth is guided by heart and conscience.
         </section>
       </LazySection>
 
-        {/*<LazySection effect="fade-up" delay={0.2}>
+      {/*<LazySection effect="fade-up" delay={0.2}>
        {/* <section className="w-full max-w-7xl flex mx-auto flex-col justify-center items-center py-16 px-4">
           <div className="w-full text-center">
             <h3
@@ -579,7 +585,7 @@ growth is guided by heart and conscience.
                   className="jakarta font-medium w-fit rounded-[100px] h-[42px] py-1 px-8 self-stretch text-[16px] "
                   onClick={() => setOpenSignup(true)}
                 >
-                Start Your Journey
+                  Start Your Journey
                 </Button>
               </div>
             </div>
@@ -587,11 +593,11 @@ growth is guided by heart and conscience.
         </section>
       </LazySection>
 
-      <LazySection effect="fade-up" delay={0.2}>
+      {/* <LazySection effect="fade-up" delay={0.2}>
         <section id="getintouch" className="...">
           <GetInTouch />
         </section>
-      </LazySection>
+      </LazySection> */}
 
       {/*<LazySection effect="fade-up" delay={0.2}>
         <section>

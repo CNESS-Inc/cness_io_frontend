@@ -24,7 +24,8 @@ export default function Why() {
             Why CNESS?
           </h1>
           <p className="openSans text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
-            The world's first conscious business platform — where individuals and organizations certify, connect, grow, and lead with integrity.
+            The world's first conscious business platform — where individuals
+            and organizations certify, connect, grow, and lead with integrity.
           </p>
         </div>
       </section>
@@ -51,9 +52,12 @@ export default function Why() {
               "Through each day of building our vision is our intent — CNESS recognizes, aspires, inspires, and showcases organizations and individuals whose intent and action are for the greater good.",
               "As the Consciousness SuperApp, through the ecosystem of social media, directory, community, networking, brand enhancing, development hacks, best practice, guidance and AI.",
               "CNESS recognizes itself as the world’s most valuable company that offers the ultimate experience of transformation, interactions, trust and reliability, opportunities and growth. Our goal—Empower conscious individuals and organizations.",
-              "The \"Good Guy\" wins in being the reckoning brand, trusted as reliable and dependable, inspired & innovative, ethically run with greater goodness as intent and empowered in prosperity that serves humanity."
+              'The "Good Guy" wins in being the reckoning brand, trusted as reliable and dependable, inspired & innovative, ethically run with greater goodness as intent and empowered in prosperity that serves humanity.',
             ].map((para, idx) => (
-              <p key={idx} className="openSans text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed mb-4">
+              <p
+                key={idx}
+                className="openSans text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed mb-4"
+              >
                 {para}
               </p>
             ))}
@@ -65,8 +69,10 @@ export default function Why() {
       <section className="bg-[#F4F1FF] py-20 px-6 sm:px-8">
         <div className="max-w-5xl mx-auto text-center mb-16">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#232323] leading-snug openSans mb-5">
-            CNESS constitutes the new paradigm that platforms<br />
-            individuals and organizations that are ethical and with<br />
+            CNESS constitutes the new paradigm that platforms
+            <br />
+            individuals and organizations that are ethical and with
+            <br />
             vision of betterment of all.
           </h2>
 
@@ -80,23 +86,28 @@ export default function Why() {
             {[
               {
                 title: "To Set a Global Benchmark for Conscious Enterprises",
-                content: "CNESS is collective hub of conscious individuals and organizations who envision, operate and serve to upgrade, evolve, innovate and grow as in brand, connectivity, global community and market, attract the best talent, lead and guide with best practices, and care about sustainability and earth.",
+                content:
+                  "CNESS is collective hub of conscious individuals and organizations who envision, operate and serve to upgrade, evolve, innovate and grow as in brand, connectivity, global community and market, attract the best talent, lead and guide with best practices, and care about sustainability and earth.",
               },
               {
                 title: "To Bridge Purpose and Practice",
-                content: "CNESS inspires the greater mindset that evolves all members who engage and interact by way of self leadership in initiatives and to uplift the industry of operations through best practices and to prod revolutionary change globally as community.",
+                content:
+                  "CNESS inspires the greater mindset that evolves all members who engage and interact by way of self leadership in initiatives and to uplift the industry of operations through best practices and to prod revolutionary change globally as community.",
               },
               {
                 title: "To Reward the Right Kind of Success",
-                content: "CNESS celebrates success as in impactful existence of individuals and organizations that strive - by collective empowerment, wisdom and practical strategies of collaboration, partnerships and associations.",
+                content:
+                  "CNESS celebrates success as in impactful existence of individuals and organizations that strive - by collective empowerment, wisdom and practical strategies of collaboration, partnerships and associations.",
               },
               {
                 title: "To Build a Community of Future-Ready Enterprises",
-                content: "CNESS is the new paradigm recognizing purpose driven, conscious capitalism, innovative dynamic changes, human values and intent beyond profit.",
+                content:
+                  "CNESS is the new paradigm recognizing purpose driven, conscious capitalism, innovative dynamic changes, human values and intent beyond profit.",
               },
               {
                 title: "To Humanise the Workplace, Systematically",
-                content: "CNESS is the new paradigm recognizing purpose driven, conscious capitalism, innovative dynamic changes, human values and intent beyond profit.",
+                content:
+                  "CNESS is the new paradigm recognizing purpose driven, conscious capitalism, innovative dynamic changes, human values and intent beyond profit.",
               },
             ].map((item, index) => (
               <div
@@ -122,7 +133,9 @@ export default function Why() {
             The Ultimate Why
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed openSans">
-            CNESS epitomizes consciousness that is mindful, abundant & prosperous, resourceful, evolving, strategic, intelligent & smart, sustainable and uplifting to humanity.
+            CNESS epitomizes consciousness that is mindful, abundant &
+            prosperous, resourceful, evolving, strategic, intelligent & smart,
+            sustainable and uplifting to humanity.
           </p>
         </div>
       </section>

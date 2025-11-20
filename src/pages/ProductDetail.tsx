@@ -56,6 +56,10 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         const response = await GetMarketPlaceBuyerProductById(id);
         const productData = response?.data?.data;
         setProduct(productData);
+        console.log("ART SAMPLE → ",
+  productData?.product_details?.sample_image_url
+);
+console.log("FULL PRODUCT → ", productData);
         setIsLiked(productData?.is_in_wishlist || false);
         setIsCarted(productData?.is_in_cart || false);
       } catch (error: any) {
@@ -697,6 +701,30 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           </div>
         </div>
 
+
+
+
+ {product?.product_details?.sample_image_url && (
+    <div className="bg-white rounded-xl shadow-md p-6 mt-6">
+      <h2 className="font-[Poppins] font-semibold text-[20px] text-[#242E3A] mb-4">
+        Sample Preview
+      </h2>
+
+      <div className="w-full flex justify-center">
+        <img
+          src={product.product_details.sample_image_url}
+          alt="Art Sample Preview"
+          className="max-w-[400px] rounded-lg shadow-md border object-cover"
+        />
+      </div>
+
+      <p className="text-center mt-2 text-gray-500 text-sm">
+        Watermarked sample preview
+      </p>
+    </div>
+)}
+
+
         {(product?.category?.slug === 'music' || product?.category?.slug === 'podcast') &&
           product?.product_details?.sample_track && (
             <div className="bg-white rounded-xl shadow-md p-6 mt-6">
@@ -998,7 +1026,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                           originalPrice: product?.price,
                           discount: product.discount_percentage,
                           duration: product.video_details?.duration || product.music_details?.total_duration || "00:00:00",
-                          mood: product?.mood_name,
+                         moods: product?.moods || [],
                           image:
                             product.thumbnail_url ||
                             "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",

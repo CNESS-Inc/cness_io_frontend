@@ -13,6 +13,7 @@ import {
   Flag,
   Link as LinkIcon,
   MoreHorizontal,
+  UserRoundPlus,
 } from "lucide-react";
 import Modal from "../components/ui/Modal";
 import TopicModal from "../components/Social/Topicmodel";
@@ -30,7 +31,7 @@ import {
   SendFollowRequest,
   UnFriend,
   SendFriendRequest,
-  GetFriendStatus,
+  // GetFriendStatus,
   SavePost,
   UnsavePost,
   ReportPost,
@@ -59,12 +60,20 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import FollowedUsersList from "./FollowedUsersList";
 import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
-import SharePopup from "../components/Social/SharePopup";
-import { buildShareUrl, copyPostLink } from "../lib/utils";
+import { copyPostLink } from "../lib/utils";
 import CreditAnimation from "../Common/CreditAnimation";
+import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { MdContentCopy } from "react-icons/md";
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+} from "react-share";
 // import { buildShareUrl } from "../lib/utils";
 
 interface Post {
+  friend_request_status: string;
   product_id: any;
   id: string;
   user_id: string;
@@ -300,12 +309,12 @@ export default function SocialTopBar() {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [_apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
-  // const [copy, setCopy] = useState<Boolean>(false);
+  const [copy, setCopy] = useState<Boolean>(false);
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
-  const [userPosts, setUserPosts] = useState<Post[]>([]);
-  console.log("🚀 ~ SocialTopBar ~ userPosts:", userPosts);
+  const [userPosts, setUserPosts] = useState<any[]>([]);
+
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -343,11 +352,11 @@ export default function SocialTopBar() {
   const { showToast } = useToast();
   const userProfilePicture = localStorage.getItem("profile_picture");
 
-  const [friendRequests, setFriendRequests] = useState<{
+  const [friendRequests, _setFriendRequests] = useState<{
     [key: string]: string;
   }>({});
 
-  const [connectingUsers, setConnectingUsers] = useState<{
+  const [connectingUsers, _setConnectingUsers] = useState<{
     [key: string]: boolean;
   }>({});
 
@@ -362,6 +371,7 @@ export default function SocialTopBar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [animations, setAnimations] = useState<any[]>([]);
   const [isPosting, setIsPosting] = useState(false);
+  const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
 
   useEffect(() => {
     if (location.state?.openPostPopup) {
@@ -410,127 +420,104 @@ export default function SocialTopBar() {
     }, 1400);
   };
 
-  const handleConnect = async (userId: string) => {
-    try {
-      setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
+const handleConnect = async (userId: string) => {
+  try {
+    // Find the post to get current status
+    const post = userPosts.find(p => p.user_id === userId);
+    if (!post) return;
 
-      const currentStatus = friendRequests[userId];
-
-      // If already connected or requested, remove the connection/request
-      if (currentStatus === "connected" || currentStatus === "requested") {
-        const formattedData = {
-          friend_id: userId,
-        };
-
-        const response = await UnFriend(formattedData);
-
-        if (response.success) {
-          setFriendRequests((prev) => ({
-            ...prev,
-            [userId]: "connect", // Change back to "connect" after removing
-          }));
-          showToast({
-            message: "Friend request removed successfully",
-            type: "success",
-            duration: 3000,
-          });
-        }
-      } else {
-        // If not connected, send friend request
-        const formattedData = {
-          friend_id: userId,
-        };
-
-        const response = await SendFriendRequest(formattedData);
-
-        if (response.success) {
-          setFriendRequests((prev) => ({
-            ...prev,
-            [userId]: "requested",
-          }));
-          showToast({
-            message:
-              response.success.message || "Friend request sent successfully",
-            type: "success",
-            duration: 3000,
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error handling connect:", error);
+    // Case 1: No existing connection or pending request - Send new connection request
+    if (
+      post.friend_request_status !== "ACCEPT" &&
+      post.friend_request_status !== "PENDING" &&
+      !post.if_friend
+    ) {
+      const formattedData = {
+        friend_id: userId,
+      };
+      const res = await SendFriendRequest(formattedData);
       showToast({
-        message: "Something went wrong. Please try again.",
-        type: "error",
-        duration: 3000,
+        message: res?.success?.message,
+        type: "success",
+        duration: 2000,
       });
-    } finally {
-      setConnectingUsers((prev) => ({ ...prev, [userId]: false }));
+      // Update the post in state
+      setUserPosts(prev => prev.map(p => 
+        p.user_id === userId 
+          ? { 
+              ...p, 
+              if_friend: false, 
+              friend_request_status: "PENDING",
+              is_requested: true
+            } 
+          : p
+      ));
     }
-  };
+    // Case 2: Cancel pending request (when status is PENDING)
+    else if (
+      post.friend_request_status === "PENDING" &&
+      !post.if_friend
+    ) {
+      const formattedData = {
+        friend_id: userId,
+      };
+      const res = await UnFriend(formattedData);
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 2000,
+      });
+      setUserPosts(prev => prev.map(p => 
+        p.user_id === userId 
+          ? { 
+              ...p, 
+              if_friend: false, 
+              friend_request_status: null,
+              is_requested: false
+            } 
+          : p
+      ));
+    }
+    // Case 3: Remove existing friend connection
+    else if (
+      post.friend_request_status === "ACCEPT" &&
+      post.if_friend
+    ) {
+      const formattedData = {
+        friend_id: userId,
+      };
+      const res = await UnFriend(formattedData);
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 2000,
+      });
+      setUserPosts(prev => prev.map(p => 
+        p.user_id === userId 
+          ? { 
+              ...p, 
+              if_friend: false, 
+              friend_request_status: null,
+              is_requested: false
+            } 
+          : p
+      ));
+    }
+  } catch (error: any) {
+    console.error("Error handling friend request:", error);
+    showToast({
+      message: error?.response?.data?.error?.message || "Failed to update connection",
+      type: "error",
+      duration: 3000,
+    });
+  }
+};
 
   // Function to get friend status
   const getFriendStatus = (userId: string) => {
     return friendRequests[userId] || "connect";
   };
 
-  // Function to check if user is friend (you'll need to implement this based on your API)
-  const checkFriendStatus = async (userId: string) => {
-    try {
-      const response = await GetFriendStatus(userId);
-      if (response.success) {
-        // The API returns data.data.rows array with all friends
-        const friendsList = response.data.data.rows || [];
-
-        // Find if this specific user is in the friends list
-        const friendRecord = friendsList.find(
-          (friend: any) =>
-            friend.friend_id === userId || friend.user_id === userId
-        );
-        if (friendRecord) {
-          // Check the request_status from the database
-          const status = friendRecord.request_status;
-
-          if (status === "ACCEPT") {
-            setFriendRequests((prev) => ({
-              ...prev,
-              [userId]: "connected",
-            }));
-          } else if (status === "PENDING") {
-            setFriendRequests((prev) => ({
-              ...prev,
-              [userId]: "requested",
-            }));
-          } else if (status === "REJECT") {
-            setFriendRequests((prev) => ({
-              ...prev,
-              [userId]: "connect",
-            }));
-          } else {
-            setFriendRequests((prev) => ({
-              ...prev,
-              [userId]: "connect",
-            }));
-          }
-        } else {
-          // No friend record found, set to connect
-          console.log(
-            "🚀 ~ checkFriendStatus ~ No friend record found, set to connect"
-          );
-          setFriendRequests((prev) => ({
-            ...prev,
-            [userId]: "connect",
-          }));
-        }
-      }
-    } catch (error) {
-      console.error("Error checking friend status:", error);
-      // Set default status if API fails
-      setFriendRequests((prev) => ({
-        ...prev,
-        [userId]: "connect",
-      }));
-    }
-  };
 
   // Add this function to fetch followed users
   const fetchFollowedUsers = async () => {
@@ -607,6 +594,7 @@ export default function SocialTopBar() {
   };
 
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const shareMenuRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
@@ -689,28 +677,6 @@ export default function SocialTopBar() {
     getUserPosts();
     fetchStory();
   }, []);
-
-  useEffect(() => {
-    if (userPosts.length > 0) {
-      userPosts.forEach((post) => {
-        if (post.user_id !== loggedInUserID) {
-          checkFriendStatus(post.user_id);
-        }
-      });
-    }
-  }, [userPosts, loggedInUserID]);
-
-  // Add another useEffect to check friend status on component mount
-  useEffect(() => {
-    // Check friend status for all posts when component mounts
-    if (userPosts.length > 0 && loggedInUserID) {
-      userPosts.forEach((post) => {
-        if (post.user_id !== loggedInUserID) {
-          checkFriendStatus(post.user_id);
-        }
-      });
-    }
-  }, []); // Empty dependency array to run only on mount
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -876,6 +842,7 @@ export default function SocialTopBar() {
               last_name: newPost.profile.last_name,
               profile_picture: newPost.profile.profile_picture,
             },
+            friend_request_status: ""
           };
 
           // Add the new post to the beginning of the array
@@ -1134,11 +1101,19 @@ export default function SocialTopBar() {
     const key = `${openMenu.postId}-${openMenu.type}`;
     const currentMenu = menuRef.current[key];
 
+    // Close options menu if click is outside
     if (currentMenu && !currentMenu.contains(event.target as Node)) {
       setOpenMenu({ postId: null, type: null });
     }
-  };
 
+    // Close share menu if click is outside
+    if (
+      shareMenuRef.current &&
+      !shareMenuRef.current.contains(event.target as Node)
+    ) {
+      setOpenMenu({ postId: null, type: null });
+    }
+  };
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -1782,36 +1757,25 @@ export default function SocialTopBar() {
                         {post.user_id !== loggedInUserID && (
                           <div className="flex gap-2">
                             {/* Connect Button */}
-                            <button
-                              onClick={() => handleConnect(post.user_id)}
-                              disabled={connectingUsers[post.user_id] || false}
-                              className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px]
-                              ${
-                                getFriendStatus(post.user_id) === "connected"
-                                  ? "bg-gray-400 text-white cursor-not-allowed"
-                                  : getFriendStatus(post.user_id) ===
-                                    "requested"
-                                  ? "bg-gray-400 text-white" // Remove cursor-not-allowed to make it clickable
-                                  : "bg-white text-black shadow-md"
-                              }`}
-                            >
-                              <span className="flex items-center gap-1 text-[#0B3449]">
-                                <img
-                                  src={iconMap["userplus"]}
-                                  alt="userplus"
-                                  className="w-4 h-4"
-                                />
-                                {connectingUsers[post.user_id]
-                                  ? "Loading..."
-                                  : getFriendStatus(post.user_id) ===
-                                    "connected"
-                                  ? "Connected"
-                                  : getFriendStatus(post.user_id) ===
-                                    "requested"
-                                  ? "Requested" // This will now change back to "Connect" when clicked again
-                                  : "Connect"}
-                              </span>
-                            </button>
+                             <button
+      onClick={() => handleConnect(post.user_id)}
+      className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${
+        post.if_friend && post.friend_request_status === "ACCEPT"
+          ? "bg-green-100 text-green-700 border border-green-300"
+          : !post.if_friend && post.friend_request_status === "PENDING"
+          ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
+          : "bg-white text-black shadow-md border border-gray-200"
+      }`}
+    >
+      <span className="flex items-center gap-1">
+        <UserRoundPlus className="w-4 h-4" />
+        {post.if_friend && post.friend_request_status === "ACCEPT"
+          ? "Connected"
+          : !post.if_friend && post.friend_request_status === "PENDING"
+          ? "Requested"
+          : "Connect"}
+      </span>
+    </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(post.user_id)}
@@ -2033,15 +1997,15 @@ export default function SocialTopBar() {
                               // Split and filter valid URLs
                               const urls = post.file
                                 .split(",")
-                                .map((url) => url.trim())
-                                .filter((url) => isValidMediaUrl(url)); // Filter out invalid URLs
+                                .map((url: string) => url.trim())
+                                .filter((url: string) => isValidMediaUrl(url)); // Filter out invalid URLs
 
                               // If no valid media URLs after filtering, don't render anything
                               if (urls.length === 0) {
                                 return null;
                               }
 
-                              const mediaItems = urls.map((url) => ({
+                              const mediaItems = urls.map((url: string) => ({
                                 url,
                                 type: (isVideoFile(url) ? "video" : "image") as
                                   | "video"
@@ -2215,12 +2179,66 @@ export default function SocialTopBar() {
                           </button>
                           {openMenu.postId === post.id &&
                             openMenu.type === "share" && (
-                              <SharePopup
-                                isOpen={true}
-                                onClose={() => toggleMenu(post.id, "share")}
-                                url={buildShareUrl()} // or pass your own URL if needed
-                                position="bottom"
-                              />
+                              <div
+                                className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                                ref={shareMenuRef}
+                              >
+                                <ul className="flex items-center gap-4">
+                                  <li>
+                                    <FacebookShareButton
+                                      url={`${window.location.origin}/post/${post.id}`}
+                                    >
+                                      <FaFacebook size={32} color="#4267B2" />
+                                    </FacebookShareButton>
+                                  </li>
+                                  <li>
+                                    <LinkedinShareButton
+                                      url={`${window.location.origin}/post/${post.id}`}
+                                    >
+                                      <FaLinkedin size={32} color="#0077B5" />
+                                    </LinkedinShareButton>
+                                  </li>
+                                  {/* <li>
+                                                          <FaInstagram size={32} color="#C13584" />
+                                                        </li> */}
+                                  <TwitterShareButton
+                                    url={`${window.location.origin}/post/${post.id}`}
+                                    title={tweetText}
+                                  >
+                                    <FaTwitter size={32} color="#1DA1F2" />
+                                  </TwitterShareButton>
+                                  <li>
+                                    <WhatsappShareButton
+                                      url={`${window.location.origin}/post/${post.id}`}
+                                    >
+                                      <FaWhatsapp size={32} color="#1DA1F2" />
+                                    </WhatsappShareButton>
+                                  </li>
+                                  <li>
+                                    <button
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(
+                                          `${window.location.origin}/post/${post.id}`
+                                        );
+                                        setCopy(true);
+                                        setTimeout(() => setCopy(false), 1500);
+                                      }}
+                                      className="flex items-center relative"
+                                      title="Copy link"
+                                    >
+                                      <MdContentCopy
+                                        size={30}
+                                        className="text-gray-600"
+                                      />
+                                      {copy && (
+                                        <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                                          Link Copied!
+                                        </div>
+                                      )}
+                                    </button>
+                                  </li>
+                                </ul>
+                              </div>
                             )}
                         </div>
 

@@ -6,19 +6,19 @@ import ellipse3 from "../../assets/Ellipse 3.svg";
 const cards = [
   {
     id: 1,
-    title: "CNESS Web",
-    subtitle: "(Individual)",
+    title: "CNESS Life",
+    subtitle: "",
     content: "Your Personal Hub To Learn, Certified, And Grow Visibility.",
   },
   {
     id: 2,
-    title: "CNESS Web",
-    subtitle: "(Business)",
+    title: "CNESS Works",
+    subtitle: "",
     content: "For Training, Certification, And Conscious Growth.",
   },
   {
     id: 3,
-    title: "CNESS Application",
+    title: "CNESS Social Media Super App",
     content: "The Entire CNESS Ecosystem In Your Pocket.",
   },
   {
@@ -30,10 +30,11 @@ const cards = [
 
 const rightCards = [
   {
-    title: "CNESS Web ",
-    info: "(Individual)",
+    title: "CNESS Life ",
+    info: "",
     subtitle: "Empowering Conscious Creators",
-    description:"Learn new skills, earn certifications and meet mentors who’ve been on this journey before.",
+    description:
+      "Learn new skills, earn certifications and meet mentors who’ve been on this journey before.",
     list: [
       "Validate Their Conscious Identity",
       "Set Up A Storefront With Digital Goods And Services",
@@ -49,10 +50,11 @@ const rightCards = [
     },
   },
   {
-    title: "CNESS Web ",
-    info: "(Organizations)",
+    title: "CNESS Works ",
+    info: "",
     subtitle: "Trust, Transformation & Training",
-    description:"Tools for training your team, certifying your organization and aligning your company values.",
+    description:
+      "Tools for training your team, certifying your organization and aligning your company values.",
     list: [
       "3-Level Certification: With Transparent Criteria And Public Visibility",
       "Conscious Impact Score: A Proprietary Metric To Quantify Values Alignment",
@@ -68,10 +70,11 @@ const rightCards = [
     },
   },
   {
-    title: "CNESS",
+    title: "CNESS Social Media Super App",
     info: "(Mobile App)",
     subtitle: "Ecosystem — in your pocket.",
-    description:"Stay connected wherever you are. Join conscious circles, share your journey, and soon buy  meaningful products in a built-in marketplace — all from your phone.",
+    description:
+      "Stay connected wherever you are. Join conscious circles, share your journey, and soon buy  meaningful products in a built-in marketplace — all from your phone.",
     list: [
       "Conscious Profile: A Digital Reflection Of One’s Values And Intent",
       "Moments: Thoughtful, Bite-Sized Posts For Sharing Experiences",
@@ -87,9 +90,10 @@ const rightCards = [
     },
   },
   {
-    title: "Ariome",
+    title: "AriOme Application",
     subtitle: "Conscious Betterment App",
-    description:"A daily companion that offers reflections, mindful prompts and journaling suggestions so you can grow a little every day.",
+    description:
+      "A daily companion that offers reflections, mindful prompts and journaling suggestions so you can grow a little every day.",
     list: [
       "Guided Growth Journeys: Multi-Day Themed Programs",
       "Masterclasses: From World-Class Thought Leaders And Coaches",
@@ -109,12 +113,12 @@ const rightCards = [
 export default function EcoSystemApp() {
   const [activeCard, setActiveCard] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
-  const isSmallScreen = window.innerWidth < 640; 
+  const isSmallScreen = window.innerWidth < 640;
 
   // autoplay through cards until user interacts
   useEffect(() => {
     if (!autoPlay) return;
-   const order = isSmallScreen ? [0, 1, 2, 3] : [0, 2, 3, 1]; // 1,3,4,2 visual order
+    const order = isSmallScreen ? [0, 1, 2, 3] : [0, 2, 3, 1]; // 1,3,4,2 visual order
     // start from current index inside order
     let step = Math.max(0, order.indexOf(activeCard));
     const id = setInterval(() => {
@@ -143,7 +147,7 @@ export default function EcoSystemApp() {
         background: "linear-gradient(180deg, #FAFAFA 0%, #F6F5FA 100%)",
       }}
     >
-      <div className="w-full max-w-7xl flex mx-auto grid grid-cols-1 xl:grid-cols-2 gap-[60px] justify-center items-center">
+      <div className="w-full max-w-8xl flex mx-auto grid grid-cols-1 xl:grid-cols-2 gap-[60px] justify-center items-center">
         {/* left card  */}
         <div className="flex flex-col sm:flex-row justify-center items-center mx-auto gap-[30px] relative max-w-2xl lg:w-full">
           <div
@@ -197,19 +201,24 @@ export default function EcoSystemApp() {
                   }}
                 />
                 <div className="relative z-10">
-
                   <div className="lg:block md:block flex align-center gap-2">
-                    <h3 style={{ fontFamily: "Poppins, sans-serif" }} className={`font-medium text-2xl ${activeCard === i ? "text-white" : "text-black"}`}>
+                    <h3
+                      style={{ fontFamily: "Poppins, sans-serif" }}
+                      className={`font-medium text-2xl ${
+                        activeCard === i ? "text-white" : "text-black"
+                      }`}
+                    >
                       {cards[i].title}
                     </h3>
                     <span
                       style={{ fontFamily: "Poppins, sans-serif" }}
-                      className={`text-sm lg:mt-0 md:mt-0 mt-2  font-semibold ${activeCard === i ? "text-white" : "text-[#6F41FD]"}`}
+                      className={`text-sm lg:mt-0 md:mt-0 mt-2  font-semibold ${
+                        activeCard === i ? "text-white" : "text-[#6F41FD]"
+                      }`}
                     >
                       {cards[i].subtitle}
                     </span>
                   </div>
-                  
 
                   <p
                     className={`mt-2 text-base font-light font-['Open_Sans'] ${
@@ -296,8 +305,8 @@ export default function EcoSystemApp() {
                   style={{ fontFamily: "Poppins, sans-serif" }}
                   className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent text-[42px] font-medium bg-clip-text flex lg:flex-row md:flex-row flex-col"
                 >
-                  <span>{rightCards[activeCard].title}</span>
-                  <span>{rightCards[activeCard].info}</span>
+                      {rightCards[activeCard].title}
+                      {rightCards[activeCard].info}
                 </span>
               </h3>
               <h3
@@ -307,14 +316,14 @@ export default function EcoSystemApp() {
                 {rightCards[activeCard].subtitle}
               </h3>
             </div>
-{rightCards[activeCard].description && (
-  <p
-    style={{ fontFamily: "Open Sans, sans-serif" }}
-    className="font-light text-[16px] leading-[26px] text-[#242424] mt-3 max-w-[65ch]"
-  >
-    {rightCards[activeCard].description}
-  </p>
-)}
+            {rightCards[activeCard].description && (
+              <p
+                style={{ fontFamily: "Open Sans, sans-serif" }}
+                className="font-light text-[16px] leading-[26px] text-[#242424] mt-3 max-w-[65ch]"
+              >
+                {rightCards[activeCard].description}
+              </p>
+            )}
             <ul className="flex flex-col gap-3 py-8">
               {rightCards[activeCard].list.map((item, idx) => (
                 <li

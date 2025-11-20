@@ -7,6 +7,10 @@ import {
   // PostChildCommentLike,
   GetChildComments,
   getFriendsForTagging,
+  // DeleteComment,
+  // DeleteChildComment,
+  // UpdateComment,
+  // UpdateChildComment,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useMention } from "../hooks/useMention";
@@ -79,8 +83,15 @@ const CommentBox = ({
   const [replySuggestions, setReplySuggestions] = useState<any[]>([]);
   const [showReplySuggestions, setShowReplySuggestions] = useState(false);
   const [selectedReplyMentionIndex, setSelectedReplyMentionIndex] = useState(0);
-  //const postLottieRef = useRef<LottieRefCurrentProps | null>(null);
-  //const [showPostAnimation, setShowPostAnimation] = useState(false);
+  
+  // Edit states
+  const [editingComment, setEditingComment] = useState<string | null>(null);
+  const [editingReply, setEditingReply] = useState<{commentId: string, replyId: string} | null>(null);
+  const [editText, setEditText] = useState("");
+  const [editMentions, setEditMentions] = useState<any[]>([]);
+  const [editSuggestions, setEditSuggestions] = useState<any[]>([]);
+  const [showEditSuggestions, setShowEditSuggestions] = useState(false);
+  const [selectedEditMentionIndex, setSelectedEditMentionIndex] = useState(0);
 
   // Mention functionality for comments
   const {
@@ -112,6 +123,57 @@ const CommentBox = ({
     } catch (error) {
       console.error("Error fetching friend suggestions:", error);
     }
+  };
+
+  // Fetch friend suggestions for edit
+  const fetchEditFriendSuggestions = async (search: string) => {
+    try {
+      const response = await getFriendsForTagging({ search, limit: 10 });
+      if (response?.data?.data) {
+        setEditSuggestions(response.data.data);
+        setShowEditSuggestions(true);
+        setSelectedEditMentionIndex(0);
+      }
+    } catch (error) {
+      console.error("Error fetching friend suggestions for edit:", error);
+    }
+  };
+
+  // Handle edit mention selection
+  const selectEditMention = (user: any) => {
+    const textarea = document.querySelector(
+      `textarea[data-edit-field]`
+    ) as HTMLTextAreaElement;
+    if (!textarea) return;
+
+    const cursorPos = textarea.selectionStart;
+    const textBeforeCursor = textarea.value.substring(0, cursorPos);
+    const textAfterCursor = textarea.value.substring(cursorPos);
+
+    // Find the last @ symbol before cursor
+    const lastAtIndex = textBeforeCursor.lastIndexOf("@");
+    const textBeforeAt = textBeforeCursor.substring(0, lastAtIndex);
+    const newText = textBeforeAt + `@${user.username} ` + textAfterCursor;
+
+    // Update the textarea value
+    textarea.value = newText;
+
+    // Set cursor position after the mention
+    const newCursorPos = textBeforeAt.length + user.username.length + 2;
+    textarea.setSelectionRange(newCursorPos, newCursorPos);
+
+    // Update state
+    setShowEditSuggestions(false);
+    setSelectedEditMentionIndex(0);
+
+    // Add to mentions if not already present
+    if (!editMentions.find((m) => m.id === user.id)) {
+      const newMentions = [...editMentions, user];
+      setEditMentions(newMentions);
+    }
+
+    // Update edit text
+    setEditText(newText);
   };
 
   // Handle reply mentions
@@ -203,23 +265,6 @@ const CommentBox = ({
     }
   }, [postId]);
 
-  // Close reply suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (showReplySuggestions) {
-        const target = event.target as HTMLElement;
-        if (!target.closest(".reply-suggestion-container")) {
-          setShowReplySuggestions(false);
-        }
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showReplySuggestions]);
-
   const handleSubmitComment = async () => {
     if (!commentText.trim()) return;
 
@@ -234,25 +279,6 @@ const CommentBox = ({
 
       if (response?.data?.data) {
         console.log("response.data.data", response.data.data);
-
-        // Get the comment button element to use as animation source
-        // const commentButton = document.querySelector(
-        //   "[data-comment-button]"
-        // ) as HTMLElement;
-
-        // if (
-        //   import.meta.env.VITE_ENV_STAGE === "test" ||
-        //   import.meta.env.VITE_ENV_STAGE === "uat"
-        // ) {
-        //   if (triggerCreditAnimation && commentButton) {
-        //     localStorage.setItem(
-        //       "karma_credits",
-        //       response.data.data.karma_credits.toString()
-        //     );
-        //     triggerCreditAnimation(commentButton, 10); // 10 credits for creating a comment
-        //   }
-        // }
-        // Trigger credit animation for creating a comment if the function is provided
 
         setComments((prev) => [
           {
@@ -403,67 +429,188 @@ const CommentBox = ({
     }
   };
 
-  // const handleLikeComment = async (
-  //   commentId: string,
-  //   isReply: boolean = false,
-  //   replyId: string | null = null
-  // ) => {
-  //   try {
-  //     console.log("click to like");
-  //     const formattedData = {
-  //       post_id: postId,
-  //       comment_id: commentId,
-  //     };
+  // Edit Comment Functions
+  const handleEditComment = (comment: Comment) => {
+    setEditingComment(comment.id);
+    setEditText(comment.text);
+    setEditMentions([]); // You might want to extract existing mentions here
+  };
 
-  //     const chaildFormData = {
-  //       post_id: postId,
-  //       parent_comment_id: commentId,
-  //       child_comment_id: replyId,
-  //     };
+  const handleEditReply = (commentId: string, reply: Reply) => {
+    setEditingReply({ commentId, replyId: reply.id });
+    setEditText(reply.text);
+    setEditMentions([]); // You might want to extract existing mentions here
+  };
 
-  //     if (isReply) {
-  //       await PostChildCommentLike(chaildFormData);
-  //     } else {
-  //       await PostCommentLike(formattedData);
-  //     }
+  const handleUpdateComment = async () => {
+    if (!editText.trim() || !editingComment) return;
 
-  //     setComments((prev) =>
-  //       prev.map((comment) => {
-  //         if (isReply) {
-  //           // Handle reply like
-  //           const updatedReplies = comment?.replies?.map((reply) => {
-  //             if (reply.id === replyId) {
-  //               return {
-  //                 ...reply,
-  //                 likes_count: reply.is_liked
-  //                   ? reply.likes_count - 1
-  //                   : reply.likes_count + 1,
-  //                 is_liked: !reply.is_liked,
-  //               };
-  //             }
-  //             return reply;
-  //           });
-  //           return { ...comment, replies: updatedReplies };
-  //         } else {
-  //           console.log(comment.id, commentId, "commentId commentId");
-  //           // Handle main comment like
-  //           if (comment.id === commentId) {
-  //             return {
-  //               ...comment,
-  //               likes_count: comment.is_liked
-  //                 ? comment.likes_count - 1
-  //                 : comment.likes_count + 1,
-  //               is_liked: !comment.is_liked,
-  //             };
-  //           }
-  //           return comment;
-  //         }
-  //       })
-  //     );
-  //   } catch (error: any) {
-  //     console.error("Error liking comment:", error.message || error);
-  //   }
-  // };
+    try {
+      // const formattedData = {
+      //   text: editText,
+      //   mentioned_user_ids: editMentions.map((mention) => mention.id),
+      // };
+
+      // const response = await UpdateComment(editingComment, formattedData);
+
+      // if (response?.data?.data) {
+      //   setComments((prev) =>
+      //     prev.map((comment) =>
+      //       comment.id === editingComment
+      //         ? { ...comment, text: editText }
+      //         : comment
+      //     )
+      //   );
+      //   setEditingComment(null);
+      //   setEditText("");
+      //   setEditMentions([]);
+      //   showToast({
+      //     message: "Comment updated successfully",
+      //     type: "success",
+      //     duration: 3000,
+      //   });
+      // }
+    } catch (error: any) {
+      console.error("Error updating comment:", error.message || error);
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to update comment",
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const handleUpdateReply = async () => {
+    if (!editText.trim() || !editingReply) return;
+
+    try {
+      // const formattedData = {
+      //   text: editText,
+      //   mentioned_user_ids: editMentions.map((mention) => mention.id),
+      // };
+
+      // const response = await UpdateChildComment(editingReply.replyId, formattedData);
+
+      // if (response?.data?.data) {
+      //   setComments((prev) =>
+      //     prev.map((comment) =>
+      //       comment.id === editingReply.commentId
+      //         ? {
+      //             ...comment,
+      //             replies: comment.replies?.map((reply) =>
+      //               reply.id === editingReply.replyId
+      //                 ? { ...reply, text: editText }
+      //                 : reply
+      //             ),
+      //           }
+      //         : comment
+      //     )
+      //   );
+      //   setEditingReply(null);
+      //   setEditText("");
+      //   setEditMentions([]);
+      //   showToast({
+      //     message: "Reply updated successfully",
+      //     type: "success",
+      //     duration: 3000,
+      //   });
+      // }
+    } catch (error: any) {
+      console.error("Error updating reply:", error.message || error);
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to update reply",
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingComment(null);
+    setEditingReply(null);
+    setEditText("");
+    setEditMentions([]);
+    setShowEditSuggestions(false);
+  };
+
+  // Delete Comment Functions
+  const handleDeleteComment = async (_commentId: string) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) {
+      return;
+    }
+
+    try {
+      // await DeleteComment(commentId);
+      
+      // setComments((prev) => prev.filter((comment) => comment.id !== commentId));
+      // setUserPosts((prevPosts: any) =>
+      //   prevPosts.map((post: any) =>
+      //     post.id === postId
+      //       ? {
+      //           ...post,
+      //           comments_count: Math.max(0, post.comments_count - 1),
+      //         }
+      //       : post
+      //   )
+      // );
+      
+      // showToast({
+      //   message: "Comment deleted successfully",
+      //   type: "success",
+      //   duration: 3000,
+      // });
+
+      // if (onCommentAdded) {
+      //   onCommentAdded();
+      // }
+    } catch (error: any) {
+      console.error("Error deleting comment:", error.message || error);
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to delete comment",
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const handleDeleteReply = async (_commentId: string, _replyId: string) => {
+    if (!window.confirm("Are you sure you want to delete this reply?")) {
+      return;
+    }
+
+    try {
+      // await DeleteChildComment(replyId);
+      
+      // setComments((prev) =>
+      //   prev.map((comment) =>
+      //     comment.id === commentId
+      //       ? {
+      //           ...comment,
+      //           replies: comment.replies?.filter((reply) => reply.id !== replyId) || [],
+      //           child_comment_count: Math.max(0, comment.child_comment_count - 1),
+      //         }
+      //       : comment
+      //   )
+      // );
+      
+      // showToast({
+      //   message: "Reply deleted successfully",
+      //   type: "success",
+      //   duration: 3000,
+      // });
+
+      // if (onCommentAdded) {
+      //   onCommentAdded();
+      // }
+    } catch (error: any) {
+      console.error("Error deleting reply:", error.message || error);
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to delete reply",
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
 
   const handleClose = () => {
     setIsClosing(true);
@@ -538,6 +685,16 @@ const CommentBox = ({
     setExpandedComments((prev) => ({ ...prev, [commentId]: true }));
   };
 
+  // Get current user ID (you might need to adjust this based on your auth system)
+  const getCurrentUserId = () => {
+    // This should return the current logged-in user's ID
+    return localStorage.getItem("Id"); // Adjust based on your auth storage
+  };
+
+  const isCurrentUserComment = (userId: string) => {
+    return userId === getCurrentUserId();
+  };
+
   return (
     <div
       className={`fixed inset-0 z-50 flex items-end justify-center bg-black/50 transition-opacity duration-300 m-0 ${
@@ -556,10 +713,6 @@ const CommentBox = ({
           animation: !isClosing ? "slideUp 0.3s ease-out forwards" : "none",
         }}
       >
-        {/* <div className="flex justify-center py-2">
-          <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
-        </div> */}
-
         <div className="flex justify-between items-center p-3 border-b border-[#ECEEF2] sticky top-0 bg-white z-10">
           <h3 className="font-semibold text-[16px]">Reflection</h3>
           <button
@@ -651,33 +804,119 @@ const CommentBox = ({
                           >
                             Reply
                           </button>
+                          {/* Edit/Delete buttons for comment owner */}
+                          {isCurrentUserComment(comment.user_id) && (
+                            <>
+                              <button
+                                onClick={() => handleEditComment(comment)}
+                                className="hover:underline text-[#7077FE] text-[12px]"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteComment(comment.id)}
+                                className="hover:underline text-[#E1056D] text-[12px]"
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
-                      <p className="mt-1 wrap-break-word bg-[#F7F7F7] rounded-lg py-3.5 pl-6">
-                        <TextWithMentions
-                          text={comment.text}
-                          commentId={comment.id}
-                        />
-                      </p>
+
+                      {/* Comment Content or Edit Field */}
+                      {editingComment === comment.id ? (
+                        <div className="mt-1 relative">
+                          <textarea
+                            data-edit-field
+                            className="w-full rounded-lg px-4 py-2 focus:outline-none bg-gray-100 border border-gray-300 resize-none"
+                            value={editText}
+                            onChange={(e) => {
+                              setEditText(e.target.value);
+                              // Fetch suggestions when user types @
+                              if (e.target.value.includes("@")) {
+                                const mentionText =
+                                  e.target.value.match(/@(\w*)$/)?.[1] || "";
+                                if (mentionText) {
+                                  fetchEditFriendSuggestions(mentionText);
+                                }
+                              } else {
+                                setShowEditSuggestions(false);
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              if (!showEditSuggestions) return;
+
+                              switch (e.key) {
+                                case "ArrowDown":
+                                  e.preventDefault();
+                                  setSelectedEditMentionIndex((prev) =>
+                                    prev < editSuggestions.length - 1
+                                      ? prev + 1
+                                      : 0
+                                  );
+                                  break;
+                                case "ArrowUp":
+                                  e.preventDefault();
+                                  setSelectedEditMentionIndex((prev) =>
+                                    prev > 0
+                                      ? prev - 1
+                                      : editSuggestions.length - 1
+                                  );
+                                  break;
+                                case "Enter":
+                                  e.preventDefault();
+                                  if (editSuggestions[selectedEditMentionIndex]) {
+                                    selectEditMention(
+                                      editSuggestions[selectedEditMentionIndex]
+                                    );
+                                  }
+                                  break;
+                                case "Escape":
+                                  setShowEditSuggestions(false);
+                                  break;
+                              }
+                            }}
+                            rows={3}
+                          />
+                          
+                          {/* Edit Friend Suggestions */}
+                          {showEditSuggestions && editSuggestions.length > 0 && (
+                            <div className="edit-suggestion-container">
+                              <FriendSuggestion
+                                suggestions={editSuggestions}
+                                selectedIndex={selectedEditMentionIndex}
+                                onSelect={selectEditMention}
+                                position={{ top: -200, left: 0 }}
+                              />
+                            </div>
+                          )}
+                          
+                          <div className="flex gap-2 mt-2">
+                            <button
+                              onClick={handleUpdateComment}
+                              className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={handleCancelEdit}
+                              className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="mt-1 wrap-break-word bg-[#F7F7F7] rounded-lg py-3.5 pl-6">
+                          <TextWithMentions
+                            text={comment.text}
+                            commentId={comment.id}
+                          />
+                        </p>
+                      )}
+
                       <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
-                        {/* <button
-                          onClick={() => handleLikeComment(comment.id)}
-                          className={`hover:underline ${
-                            comment.is_liked ? "text-blue-500" : ""
-                          }`}
-                        >
-                          Like ({comment.likes_count})
-                        </button>
-                        <button
-                          onClick={() =>
-                            setShowReply(
-                              showReply === comment.id ? null : comment.id
-                            )
-                          }
-                          className="hover:underline"
-                        >
-                          Reply
-                        </button> */}
                         {comment.child_comment_count > 0 && (
                           <button
                             className="hover:underline flex items-center pl-[52px] mt-2"
@@ -697,7 +936,7 @@ const CommentBox = ({
                     </div>
                   </div>
 
-                  {/* Rest of your code (reply input and replies display) remains the same */}
+                  {/* Reply Input */}
                   {showReply === comment.id && (
                     <div className="ml-12 mb-2 flex gap-2">
                       <img
@@ -813,11 +1052,14 @@ const CommentBox = ({
                     </div>
                   )}
 
+                  {/* Replies */}
                   {expandedComments[comment.id] &&
                     comment.replies &&
                     comment.replies.length > 0 && (
                       <div className="ml-12 space-y-3 border-0 border-gray-200 pl-3">
                         {comment.replies.map((reply) => (
+                          <>
+                          
                           <div key={reply.id} className="flex gap-3 pt-2">
                             <img
                               src={reply.profile.profile_picture}
@@ -829,44 +1071,126 @@ const CommentBox = ({
                               }}
                             />
                             <div className="flex items-center justify-between w-full">
-                              <div className="flex items-baseline  gap-2">
+                              <div className="flex items-baseline gap-2 flex-1">
                                 <span className="font-semibold text-sm me-3">
                                   {reply.profile.first_name}{" "}
                                   {reply.profile.last_name}
                                 </span>
-                                {/* <span className="text-xs text-gray-500">
-                                  {formatTimeAgo(reply.createdAt)}
-                                </span> */}
-                                <p className="text-sm wrap-break-word">
-                                  <TextWithMentions
-                                    text={reply.text}
-                                    commentId={comment.id}
-                                  />
-                                </p>
                               </div>
-                              {/* <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
-                                <button
-                                  onClick={() =>
-                                    handleLikeComment(
-                                      comment.id,
-                                      true,
-                                      reply.id
-                                    )
-                                  }
-                                  className={`hover:underline ${
-                                    reply.is_liked ? "text-blue-500" : ""
-                                  }`}
-                                >
-                                  Like ({reply.likes_count})
-                                </button>
-                              </div> */}
-                              <div className="flex items-center text-xs text-gray-500 mt-1 gap-2">
-                                <button className="hover:underline text-[#E1056D]">
-                                  Delete
-                                </button>
-                              </div>
+                              
+                              
+                              {/* Edit/Delete buttons for reply owner */}
+                              {isCurrentUserComment(reply.user_id) && (
+                                <div className="flex items-center text-xs text-gray-500 mt-1 gap-2 ml-2">
+                                  <button
+                                    onClick={() => handleEditReply(comment.id, reply)}
+                                    className="hover:underline text-[#7077FE] text-[12px]"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteReply(comment.id, reply.id)}
+                                    className="hover:underline text-[#E1056D] text-[12px]"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              )}
                             </div>
+                            
                           </div>
+                          {/* Reply Content or Edit Field */}
+                                {editingReply?.commentId === comment.id && editingReply?.replyId === reply.id ? (
+                                  <div className="flex-1 relative">
+                                    <textarea
+                                      data-edit-field
+                                      className="w-full rounded-lg px-4 py-2 focus:outline-none bg-gray-100 border border-gray-300 resize-none text-sm"
+                                      value={editText}
+                                      onChange={(e) => {
+                                        setEditText(e.target.value);
+                                        // Fetch suggestions when user types @
+                                        if (e.target.value.includes("@")) {
+                                          const mentionText =
+                                            e.target.value.match(/@(\w*)$/)?.[1] || "";
+                                          if (mentionText) {
+                                            fetchEditFriendSuggestions(mentionText);
+                                          }
+                                        } else {
+                                          setShowEditSuggestions(false);
+                                        }
+                                      }}
+                                      onKeyDown={(e) => {
+                                        if (!showEditSuggestions) return;
+
+                                        switch (e.key) {
+                                          case "ArrowDown":
+                                            e.preventDefault();
+                                            setSelectedEditMentionIndex((prev) =>
+                                              prev < editSuggestions.length - 1
+                                                ? prev + 1
+                                                : 0
+                                            );
+                                            break;
+                                          case "ArrowUp":
+                                            e.preventDefault();
+                                            setSelectedEditMentionIndex((prev) =>
+                                              prev > 0
+                                                ? prev - 1
+                                                : editSuggestions.length - 1
+                                            );
+                                            break;
+                                          case "Enter":
+                                            e.preventDefault();
+                                            if (editSuggestions[selectedEditMentionIndex]) {
+                                              selectEditMention(
+                                                editSuggestions[selectedEditMentionIndex]
+                                              );
+                                            }
+                                            break;
+                                          case "Escape":
+                                            setShowEditSuggestions(false);
+                                            break;
+                                        }
+                                      }}
+                                      rows={2}
+                                    />
+                                    
+                                    {/* Edit Friend Suggestions */}
+                                    {showEditSuggestions && editSuggestions.length > 0 && (
+                                      <div className="edit-suggestion-container">
+                                        <FriendSuggestion
+                                          suggestions={editSuggestions}
+                                          selectedIndex={selectedEditMentionIndex}
+                                          onSelect={selectEditMention}
+                                          position={{ top: -200, left: 0 }}
+                                        />
+                                      </div>
+                                    )}
+                                    
+                                    <div className="flex gap-2 mt-2">
+                                      <button
+                                        onClick={handleUpdateReply}
+                                        className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={handleCancelEdit}
+                                        className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <p className="text-sm wrap-break-word flex-1">
+                                    <TextWithMentions
+                                      text={reply.text}
+                                      commentId={comment.id}
+                                    />
+                                  </p>
+                                )}
+                          </>
                         ))}
                       </div>
                     )}
@@ -878,15 +1202,6 @@ const CommentBox = ({
 
         <div className="p-4 border-t sticky bottom-0 border-[#ECEEF2] bg-white">
           <div className="flex items-center gap-2">
-            {/* <img
-              src={profilePicture}
-              alt="Your profile"
-              className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "/profile.png";
-              }}
-            /> */}
             <div className="flex-1 relative">
               <textarea
                 ref={commentTextareaRef}

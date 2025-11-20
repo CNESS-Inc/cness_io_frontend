@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Lock } from "lucide-react";
 import aspired from "../../../assets/asplocked1.svg";
 import inspired from "../../../assets/insplocked1.svg";
 import { useNavigate } from "react-router-dom";
@@ -26,11 +26,54 @@ interface Card {
   selected: boolean;
   ctaType: string;
   badge: string;
+  isLocked: boolean;
 }
 
-function TopBadge({ src, alt }: { src: string; alt: string }) {
-  return <img src={src} alt={alt} className="w-13 h-13" />;
+function TopBadge({ src, alt, isLocked }: { src: string; alt: string; isLocked: boolean }) {
+  return (
+    <div className="relative">
+      <img src={src} alt={alt} className="w-13 h-13" />
+      {isLocked && (
+        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+          <Lock className="h-6 w-6 text-white" />
+        </div>
+      )}
+    </div>
+  );
 }
+
+const LockOverlay = ({ cardTitle }: { cardTitle: string }) => {
+  const getLockMessage = (title: string) => {
+    switch (title) {
+      case "Inspired":
+        return "Complete Aspire level to unlock";
+      case "Leader":
+        return "Complete Inspire level to unlock";
+      default:
+        return "Complete previous level to unlock";
+    }
+  };
+
+  return (
+    <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-xl shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+      <svg
+        className="w-8 h-8 text-gray-700 opacity-80 mb-2"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fill="#4F46E5"
+          d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
+        />
+        <path
+          fill="#4F46E5"
+          d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
+        />
+      </svg>
+      <p className="text-sm text-gray-700 font-medium">{getLockMessage(cardTitle)}</p>
+    </div>
+  );
+};
 
 function PricingCard({
   card,
@@ -57,43 +100,62 @@ function PricingCard({
         borderColor: "#E1E1E1",
       };
 
+  // const lockedStyles: React.CSSProperties = card.isLocked
+  //   ? {
+  //       opacity: 0.6,
+  //       background: "#F9F9F9",
+  //     }
+  //   : {};
+
   return (
     <div
-      className="flex p-6 flex-col bg-white mx-auto w-full h-full overflow-hidden border border-[#E1E1E1] rounded-[18px]"
+      className="flex p-6 flex-col bg-white mx-auto w-full h-full overflow-hidden border border-[#E1E1E1] rounded-[18px] relative"
       style={{
         ...selectedStyles,
+        // ...lockedStyles,
       }}
     >
+      {card.isLocked && (
+        <LockOverlay cardTitle={card.title} />
+      )}
+      
       <div className="w-full flex flex-col justify-center items-center gap-3">
-        {card.badge && <TopBadge src={card.badge} alt={card.title} />}
+        <TopBadge src={card.badge} alt={card.title} isLocked={card.isLocked} />
 
-        <h5 className="font-['Poppins',Helvetica] text-lg font-semibold text-[#222224]">
+        <h5 className={`font-['Poppins',Helvetica] text-lg font-semibold ${
+          card.isLocked ? "text-gray-500" : "text-[#222224]"
+        }`}>
           {card.title}
         </h5>
 
-        <h3 className="font-['Open_Sans',Helvetica] text-sm font-normal text-[#7A7A7A]">
+        <h3 className={`font-['Open_Sans',Helvetica] text-sm font-normal ${
+          card.isLocked ? "text-gray-400" : "text-[#7A7A7A]"
+        }`}>
           {card.subtitle}
         </h3>
       </div>
-      {/* <div className="w-full h-full border-b border-black/10 my-6"></div>*/}
 
-      <div className="flex flex-col justify-start text-left gap-[32px]">
+      <div className="flex flex-col justify-start text-left gap-8">
         <div className="flex flex-col justify-start text-left gap-6">
-       {/*<h3 className="font-['Poppins',Helvetica] text-base text-[#102821]">
-            Includes:
-          </h3>*/}
-
           <div className="flex-1 space-y-[18px] space-x-3">
             {card.features.map((f, idx) => (
               <div
                 key={idx}
-                className="font-['Open_Sans',Helvetica] flex items-center gap-3 font-normal text-base"
+                className={`font-['Open_Sans',Helvetica] flex items-center gap-3 font-normal text-base ${
+                  card.isLocked ? "text-gray-400" : ""
+                }`}
               >
                 <div
                   className="flex items-center justify-center h-6 w-6 rounded-full"
-                  style={{ background: "rgba(0,201,80,0.1)" }}
+                  style={{ 
+                    background: card.isLocked 
+                      ? "rgba(0,0,0,0.1)" 
+                      : "rgba(0,201,80,0.1)" 
+                  }}
                 >
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className={`h-4 w-4 ${
+                    card.isLocked ? "text-gray-400" : "text-green-500"
+                  }`} />
                 </div>
                 <div>{f}</div>
               </div>
@@ -101,54 +163,64 @@ function PricingCard({
           </div>
         </div>
         <div>
-          {card.ctaType === "pending" && (
+          {card.isLocked ? (
             <button
               disabled
-              className="w-full rounded-full bg-[#F3F3F3] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-[#64748B] flex items-center justify-center"
+              className="w-full rounded-full bg-[#F3F3F3] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-[#64748B] flex items-center justify-center cursor-not-allowed"
             >
-              Pending for Approval
+              Locked
             </button>
-          )}
-          {card.ctaType === "completed" && (
-            <button
-              disabled
-              className="w-full rounded-full bg-[#F3F3F3] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-[#64748B] flex items-center justify-center"
-            >
-              Completed
-            </button>
-          )}
+          ) : (
+            <>
+              {card.ctaType === "pending" && (
+                <button
+                  disabled
+                  className="w-full rounded-full bg-[#F3F3F3] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-[#64748B] flex items-center justify-center"
+                >
+                  Pending for Approval
+                </button>
+              )}
+              {card.ctaType === "completed" && (
+                <button
+                  disabled
+                  className="w-full rounded-full bg-[#F3F3F3] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-[#64748B] flex items-center justify-center"
+                >
+                  Completed
+                </button>
+              )}
 
-          {card.ctaType === "continue" && (
-            <button
-              disabled
-              className="w-full rounded-full bg-gradient-to-r from-[#7077FE] to-[#F07EFF] hover:from-[#897aff] hover:to-[#897aff] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-white flex items-center justify-center"
-            >
-              Continue Assessment
-            </button>
-          )}
+              {card.ctaType === "continue" && (
+                <button
+                  disabled
+                  className="w-full rounded-full bg-linear-to-r from-[#7077FE] to-[#F07EFF] hover:from-[#897aff] hover:to-[#897aff] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-white flex items-center justify-center"
+                >
+                  Continue Assessment
+                </button>
+              )}
 
-          {card.ctaType === "upgrade" && (
-            <button
-              onClick={() => onUpgrade(card.title)}
-              disabled={isUpgradeDisabled}
-              className={`w-full rounded-full font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-white flex items-center justify-center ${
-                isUpgradeDisabled
-                  ? "bg-[#C7C7C7] cursor-not-allowed"
-                  : "bg-[#7077FE] hover:bg-[#897aff]"
-              }`}
-            >
-              {isUpgradeDisabled ? "Upgrade" : "Upgrade"}
-            </button>
-          )}
+              {card.ctaType === "upgrade" && (
+                <button
+                  onClick={() => onUpgrade(card.title)}
+                  disabled={isUpgradeDisabled}
+                  className={`w-full rounded-full font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-white flex items-center justify-center ${
+                    isUpgradeDisabled
+                      ? "bg-[#C7C7C7] cursor-not-allowed"
+                      : "bg-[#7077FE] hover:bg-[#897aff]"
+                  }`}
+                >
+                  {isUpgradeDisabled ? "Upgrade" : "Upgrade"}
+                </button>
+              )}
 
-          {/* NEW: Start Assessment button for when user has no badge */}
-          {card.ctaType === "start" && (
-            <button
-              onClick={() => onUpgrade(card.title)}
-              className="w-full rounded-full bg-[#7077FE] hover:bg-[#897aff] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-white flex items-center justify-center"
-            >
-              Start Assessment
-            </button>
+              {card.ctaType === "start" && (
+                <button
+                  onClick={() => onUpgrade(card.title)}
+                  className="w-full rounded-full bg-[#7077FE] hover:bg-[#897aff] font-['Plus Jakarta Sans'] px-6 py-4 text-sm font-medium text-white flex items-center justify-center"
+                >
+                  Start Assessment
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -161,7 +233,7 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const handleUpgrade = (plan: string) => {
-    if (isUpgradeDisabled && plan !== "Aspired") return; // Don't proceed if upgrade is disabled for other plans
+    if (isUpgradeDisabled && plan !== "Aspired") return;
 
     if (plan === "Inspired") {
       navigate("/dashboard/assesmentcertification");
@@ -169,7 +241,6 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       navigate("/dashboard/assesmentcertification");
     } else if (plan === "Leader") {
       navigate("/dashboard/assesmentcertification");
-      // setIsOpenModal(true);
     }
   };
 
@@ -177,7 +248,6 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
   const getBadgeImage = (cardTitle: string) => {
     const userBadgeLevel = data?.badge?.level;
 
-    // If user has no badge (null or undefined)
     if (!userBadgeLevel) {
       if (cardTitle === "Aspired") {
         return aspired;
@@ -188,7 +258,6 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       }
     }
 
-    // User has Aspiring badge
     if (userBadgeLevel === "Aspiring") {
       if (cardTitle === "Aspired") {
         return "https://cdn.cness.io/aspiringlogo.svg";
@@ -199,7 +268,6 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       }
     }
 
-    // User has Inspired badge
     if (userBadgeLevel === "Inspired") {
       if (cardTitle === "Aspired") {
         return "https://cdn.cness.io/aspiringlogo.svg";
@@ -210,7 +278,6 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       }
     }
 
-    // User has Leader badge or any other level
     if (cardTitle === "Aspired") {
       return "https://cdn.cness.io/aspiringlogo.svg";
     } else if (cardTitle === "Inspired") {
@@ -219,8 +286,35 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       return "https://cdn.cness.io/leader.webp";
     }
 
-    // Fallback to local assets if needed
     return aspired;
+  };
+
+  // Helper function to determine if a card should be locked
+  const getCardLockedStatus = (cardTitle: string) => {
+    const userBadgeLevel = data?.badge?.level;
+
+    // If user has no badge, only Aspired is unlocked
+    if (!userBadgeLevel) {
+      return cardTitle !== "Aspired";
+    }
+
+    // User has Aspiring badge - Inspired is unlocked, Leader is locked
+    if (userBadgeLevel === "Aspiring") {
+      return cardTitle === "Leader";
+    }
+
+    // User has Inspired badge - All are unlocked
+    if (userBadgeLevel === "Inspired") {
+      return false;
+    }
+
+    // User has Leader badge - All are unlocked
+    if (userBadgeLevel === "Leader") {
+      return false;
+    }
+
+    // Default: only Aspired is unlocked
+    return cardTitle !== "Aspired";
   };
 
   // Helper function to determine card states based on API data
@@ -228,18 +322,30 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
     const userBadgeLevel = data?.badge?.level;
     const isAssessmentSubmitted = data?.is_assessment_submited;
     const isSubmittedByHead = data?.is_submitted_by_head;
+    const isLocked = getCardLockedStatus(cardTitle);
+
+    // If card is locked, return locked state
+    if (isLocked) {
+      return {
+        selected: false,
+        ctaType: "upgrade",
+        isLocked: true,
+      };
+    }
 
     // If user has no badge at all - FIRST TIME USER
     if (!userBadgeLevel) {
       if (cardTitle === "Aspired") {
         return {
           selected: true,
-          ctaType: "start", // Changed from "upgrade" to "start" for first time users
+          ctaType: "start",
+          isLocked: false,
         };
       } else {
         return {
           selected: false,
           ctaType: "upgrade",
+          isLocked: true,
         };
       }
     }
@@ -250,6 +356,7 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
         return {
           selected: false,
           ctaType: "completed",
+          isLocked: false,
         };
       } else if (cardTitle === "Inspired") {
         return {
@@ -259,39 +366,54 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
               ? "completed"
               : "pending"
             : "upgrade",
+          isLocked: false,
         };
       } else if (cardTitle === "Leader") {
         return {
           selected: false,
           ctaType: "upgrade",
+          isLocked: true,
         };
       }
     }
 
-    // User has Inspired badge (from your API data)
+    // User has Inspired badge
     if (userBadgeLevel === "Inspired") {
       if (cardTitle === "Aspired") {
         return {
           selected: false,
           ctaType: "completed",
+          isLocked: false,
         };
       } else if (cardTitle === "Inspired") {
         return {
           selected: false,
           ctaType: "completed",
+          isLocked: false,
         };
       } else if (cardTitle === "Leader") {
         return {
           selected: true,
           ctaType: "upgrade",
+          isLocked: false,
         };
       }
+    }
+
+    // User has Leader badge
+    if (userBadgeLevel === "Leader") {
+      return {
+        selected: cardTitle === "Leader",
+        ctaType: "completed",
+        isLocked: false,
+      };
     }
 
     // Default fallback
     return {
       selected: false,
       ctaType: "upgrade",
+      isLocked: true,
     };
   };
 
@@ -301,11 +423,10 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       title: "Aspired",
       subtitle: "Foundation level certification",
       price: "",
-     features: [
-        //"Basic profile creation",
-        //"Community Access",
-       // "Resources Library",
-       // "Basic profile creation",
+      features: [
+        // "Basic profile creation",
+        // "Community Access",
+        // "Resources Library",
       ],
       ...getCardState("Aspired"),
       badge: getBadgeImage("Aspired"),
@@ -316,10 +437,10 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       subtitle: "Professional level certification",
       price: "",
       features: [
-       // "Unlock True Profile",
-       // "Community Access",
-       // "Resources Library",
-       // "Social media Access",
+        // "Unlock True Profile",
+        // "Community Access",
+        // "Resources Library",
+        // "Social media Access",
       ],
       ...getCardState("Inspired"),
       badge: getBadgeImage("Inspired"),
@@ -330,10 +451,10 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       subtitle: "Expert level certification",
       price: "",
       features: [
-       // "Basic profile creation",
-       // "Community Access",
-       // "Resources Library",
-       // "Basic profile creation",
+        // "Advanced Analytics",
+        // "Priority Support",
+        // "Exclusive Resources",
+        // "Mentorship Program",
       ],
       ...getCardState("Leader"),
       badge: getBadgeImage("Leader"),
@@ -367,7 +488,7 @@ export default function CertificationPlans({ data }: { data: ApiResponse }) {
       </div>
       <Modal isOpen={isOpenModal} onClose={() => setIsOpenModal(false)}>
         <div className="text-center max-w-md">
-          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#F07EFF] mb-4">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-linear-to-r from-[#7077FE] to-[#F07EFF] mb-4">
             <svg
               className="h-10 w-10 text-white"
               fill="none"
