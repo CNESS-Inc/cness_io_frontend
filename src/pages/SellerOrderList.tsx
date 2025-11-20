@@ -238,7 +238,7 @@ const OrderList: React.FC = () => {
         Order List
       </h2>
 
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-x-auto shadow-sm">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-[#F7F7F7] border-b border-gray-200">
