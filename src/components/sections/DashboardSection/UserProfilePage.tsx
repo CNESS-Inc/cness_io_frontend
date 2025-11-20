@@ -569,50 +569,27 @@ const UserProfilePage = () => {
           .array()
           .of(
             yup.object().shape({
-              degree: yup
-                .string()
-                // .required("Degree is required")
-                .matches(
-                  /^[a-zA-Z\s.,-]+$/,
-                  "Degree contains invalid characters"
-                ),
-              institution: yup
-                .string()
-                // .required("Institution is required")
-                .matches(
-                  /^[a-zA-Z0-9\s.,'-]+$/,
-                  "Institution name contains invalid characters"
-                ),
-              start_date: yup
-                .string()
-                // .required("Start date is required")
-                .test(
-                  "is-valid-date",
-                  "Start date must be a valid date",
-                  (value) => {
-                    if (!value) return false;
-                    const date = new Date(value);
-                    const today = new Date();
-                    // today.setHours(0, 0, 0, 0); // Reset time to compare dates only
-                    return !isNaN(date.getTime()) && date <= today;
-                  }
-                ),
-              end_date: yup
-                .string()
-                .optional()
-                .test(
-                  "is-after-start",
-                  "End date must be after start date",
-                  function (value) {
-                    const { start_date } = this.parent;
-                    if (!value) return true; // end_date is optional
-                    if (!start_date) return true; // if no start date, skip
-                    return new Date(value) > new Date(start_date);
-                  }
-                ),
+              degree: yup.string(),
+              institution: yup.string(),
+              start_date: yup.string(),
+              end_date: yup.string(),
             })
           )
-          .min(1, "At least one education entry is required"),
+          .test(
+            "at-least-one-field",
+            "At least one education field must be filled",
+            function (educations) {
+              if (!educations || educations.length === 0) return true;
+
+              return educations.some(
+                (edu) =>
+                  edu.degree ||
+                  edu.institution ||
+                  edu.start_date ||
+                  edu.end_date
+              );
+            }
+          ),
       })
     ),
   });
@@ -645,71 +622,43 @@ const UserProfilePage = () => {
           .array()
           .of(
             yup.object().shape({
-              company: yup
-                .string()
-                .required("Company name is required")
-                .matches(
-                  /^[a-zA-Z0-9\s.,'-]+$/,
-                  "Company name contains invalid characters"
-                ),
-              position: yup
-                .string()
-                .required("Position is required")
-                .matches(
-                  /^[a-zA-Z\s.,-]+$/,
-                  "Position contains invalid characters"
-                ),
-              start_date: yup
-                .string()
-                .required("Start date is required")
-                .test(
-                  "is-valid-date",
-                  "Start date must be a valid date",
-                  (value) => {
-                    if (!value) return false;
-                    const date = new Date(value);
-                    const today = new Date();
-                    return !isNaN(date.getTime()) && date <= today;
-                  }
-                ),
-              end_date: yup
-                .string()
-                .optional()
-                .test(
-                  "min-duration",
-                  "Work duration must be at least 1 day",
-                  function (value) {
-                    if (!value) return true; // optional field
-                    const startDate = this.parent.start_date;
-                    if (!startDate) return true; // if no start date, validation passes
-
-                    const start = new Date(startDate);
-                    const end = new Date(value);
-
-                    const diffMs = end.getTime() - start.getTime();
-                    const oneDayMs = 24 * 60 * 60 * 1000;
-
-                    return diffMs >= oneDayMs;
-                  }
-                )
-
-                .test(
-                  "is-after-start",
-                  "End date must be after start date",
-                  function (value) {
-                    if (!value) return true;
-                    const startDate = this.parent.start_date;
-                    if (!startDate) return true;
-
-                    return new Date(value) > new Date(startDate);
-                  }
-                ),
+              company: yup.string(),
+              position: yup.string(),
+              roles_responsibilities: yup.string(),
+              work_city: yup.string(),
+              work_state: yup.string(),
+              work_country: yup.string(),
+              currently_working: yup.boolean(),
+              start_date: yup.string(),
+              end_date: yup.string(),
             })
           )
-          .required("At least one work experience is required"),
+          .test(
+            "at-least-one-field",
+            "At least one work experience field must be filled",
+            function (workExperiences) {
+              if (!workExperiences || workExperiences.length === 0) return true;
+
+              return workExperiences.some(
+                (exp) =>
+                  exp.company ||
+                  exp.position ||
+                  exp.start_date ||
+                  exp.end_date ||
+                  exp.roles_responsibilities ||
+                  exp.work_city ||
+                  exp.work_state ||
+                  exp.work_country
+              );
+            }
+          ),
       })
-    ),
+    ) as any, // Use type assertion to bypass TypeScript error
   });
+  console.log(
+    "🚀 ~ UserProfilePage ~ workExperienceForm:",
+    workExperienceForm.formState.errors.workExperiences
+  );
   const publicProfileForm = useForm();
 
   const handleImageChange = async (
@@ -985,7 +934,12 @@ const UserProfilePage = () => {
       } else {
         isAdult = false;
       }
-      localStorage.setItem("isAdult", response?.data?.data?.user?.is_adult ? response?.data?.data?.user?.is_adult : JSON.stringify(isAdult));
+      localStorage.setItem(
+        "isAdult",
+        response?.data?.data?.user?.is_adult
+          ? response?.data?.data?.user?.is_adult
+          : JSON.stringify(isAdult)
+      );
       localStorage.setItem(
         "margaret_name",
         response?.data?.data?.user.margaret_name
@@ -1076,14 +1030,20 @@ const UserProfilePage = () => {
   const handleEducationSubmit = async (data: any) => {
     setIsSubmitting((prev) => ({ ...prev, education: true }));
 
+    // Filter out completely empty education entries
     const payload = {
       education: data.educations.filter(
-        (edu: any) => edu.degree && edu.institution // filter out empty entries
+        (edu: any) =>
+          edu.degree || edu.institution || edu.start_date || edu.end_date
       ),
     };
 
+    // If no education data at all, submit empty array
+    const finalPayload =
+      payload.education.length > 0 ? payload : { education: [] };
+
     try {
-      const response = await SubmitProfileDetails(payload);
+      const response = await SubmitProfileDetails(finalPayload);
       showToast({
         message: response?.success?.message,
         type: "success",
@@ -1106,14 +1066,20 @@ const UserProfilePage = () => {
   const handleWorkExperienceSubmit = async (data: any) => {
     setIsSubmitting((prev) => ({ ...prev, work: true }));
 
+    // Filter out completely empty work experience entries
     const payload = {
       work_experience: data.workExperiences.filter(
-        (exp: any) => exp.company && exp.position // filter out empty entries
+        (exp: any) =>
+          exp.company || exp.position || exp.start_date || exp.end_date
       ),
     };
 
+    // If no work experience data at all, submit empty array
+    const finalPayload =
+      payload.work_experience.length > 0 ? payload : { work_experience: [] };
+
     try {
-      const response = await SubmitProfileDetails(payload);
+      const response = await SubmitProfileDetails(finalPayload);
       showToast({
         message: response?.success?.message,
         type: "success",
@@ -2755,194 +2721,189 @@ const UserProfilePage = () => {
                   >
                     {educationForm
                       .watch("educations")
-                      ?.map((_education: any, index) => (
-                        <div
-                          key={index}
-                          className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative"
-                        >
-                          {/* Add remove button */}
-                          {index > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const educations =
-                                  educationForm.getValues("educations");
-                                if (educations) {
-                                  const newEducations = [...educations];
-                                  newEducations.splice(index, 1);
-                                  educationForm.setValue(
-                                    "educations",
-                                    newEducations
-                                  );
-                                }
-                              }}
-                              className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
+                      ?.map((_education: any, index) => {
+                        const educationErrors =
+                          educationForm.formState.errors?.educations?.[index];
+                        const hasEducationError =
+                          educationErrors &&
+                          (educationErrors.degree ||
+                            educationErrors.institution ||
+                            educationErrors.start_date ||
+                            educationErrors.end_date);
+
+                        return (
+                          <div
+                            key={index}
+                            className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative"
+                          >
+                            {/* Add remove button */}
+                            {index > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const educations =
+                                    educationForm.getValues("educations");
+                                  if (educations) {
+                                    const newEducations = [...educations];
+                                    newEducations.splice(index, 1);
+                                    educationForm.setValue(
+                                      "educations",
+                                      newEducations
+                                    );
+                                  }
+                                }}
+                                className="absolute top-2 right-2 text-red-500 hover:text-red-700"
                               >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </button>
-                          )}
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-5 w-5"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </button>
+                            )}
 
-                          {/* Degree */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Degree
-                              {/* <span className="text-red-500">*</span> */}
-                            </label>
-                            <input
-                              type="text"
-                              {...educationForm.register(
-                                `educations.${index}.degree`
+                            {/* Degree */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                Degree
+                              </label>
+                              <input
+                                type="text"
+                                {...educationForm.register(
+                                  `educations.${index}.degree`
+                                )}
+                                placeholder="Enter your degree"
+                                className={`w-full px-4 py-2 border bg-white ${
+                                  educationErrors?.degree
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  educationErrors?.degree
+                                    ? "focus:ring-red-500"
+                                    : "focus:ring-purple-500"
+                                }`}
+                              />
+                              {educationErrors?.degree && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {educationErrors.degree.message}
+                                </p>
                               )}
-                              placeholder="Enter your degree"
-                              className={`w-full px-4 py-2 border bg-white ${
-                                educationForm.formState.errors?.educations?.[
-                                  index
-                                ]?.degree
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                educationForm.formState.errors?.educations?.[
-                                  index
-                                ]?.degree
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                              }`}
-                            />
-                            {educationForm.formState.errors?.educations?.[index]
-                              ?.degree && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  educationForm.formState.errors.educations[
-                                    index
-                                  ]?.degree?.message
-                                }
-                              </p>
+                            </div>
+
+                            {/* Institution */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                Institution
+                              </label>
+                              <input
+                                type="text"
+                                {...educationForm.register(
+                                  `educations.${index}.institution`
+                                )}
+                                placeholder="Enter institution name"
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  educationErrors?.institution
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  educationErrors?.institution
+                                    ? "focus:ring-red-500"
+                                    : "focus:ring-purple-500"
+                                }`}
+                              />
+                              {educationErrors?.institution && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {educationErrors.institution.message}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Start Date */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                Start Date
+                              </label>
+                              <input
+                                type="date"
+                                {...educationForm.register(
+                                  `educations.${index}.start_date`
+                                )}
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  educationErrors?.start_date
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                  educationErrors?.start_date
+                                    ? "focus:ring-red-500"
+                                    : "focus:ring-purple-500"
+                                }`}
+                              />
+                              {educationErrors?.start_date && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {educationErrors.start_date.message}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* End Date */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                End Date
+                              </label>
+                              <input
+                                type="date"
+                                {...educationForm.register(
+                                  `educations.${index}.end_date`
+                                )}
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  educationErrors?.end_date
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                  educationErrors?.end_date
+                                    ? "focus:ring-red-500"
+                                    : "focus:ring-purple-500"
+                                }`}
+                              />
+                              {educationErrors?.end_date && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {educationErrors.end_date.message}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Individual education entry error */}
+                            {hasEducationError && (
+                              <div className="md:col-span-2">
+                                <p className="text-sm text-red-500 mt-2 text-center">
+                                  Please fill at least one field for this
+                                  education entry
+                                </p>
+                              </div>
                             )}
                           </div>
+                        );
+                      })}
 
-                          {/* Institution */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Institution{" "}
-                              {/* <span className="text-red-500">*</span> */}
-                            </label>
-                            <input
-                              type="text"
-                              {...educationForm.register(
-                                `educations.${index}.institution`
-                              )}
-                              placeholder="Enter institution name"
-                              className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                educationForm.formState.errors?.educations?.[
-                                  index
-                                ]?.institution
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                educationForm.formState.errors?.educations?.[
-                                  index
-                                ]?.institution
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                              }`}
-                            />
-                            {educationForm.formState.errors?.educations?.[index]
-                              ?.institution && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  educationForm.formState.errors.educations[
-                                    index
-                                  ]?.institution?.message
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Start Date */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Start Date
-                              {/* <span className="text-red-500">*</span> */}
-                            </label>
-                            <input
-                              type="date"
-                              {...educationForm.register(
-                                `educations.${index}.start_date`
-                              )}
-                              className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                educationForm.formState.errors?.educations?.[
-                                  index
-                                ]?.start_date
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                educationForm.formState.errors?.educations?.[
-                                  index
-                                ]?.start_date
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                              }`}
-                            />
-                            {educationForm.formState.errors?.educations?.[index]
-                              ?.start_date && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  educationForm.formState.errors.educations[
-                                    index
-                                  ]?.start_date?.message
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          {/* End Date */}
-                          <div>
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              End Date
-                            </label>
-                            <input
-                              type="date"
-                              {...educationForm.register(
-                                `educations.${index}.end_date`
-                              )}
-                              className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                educationForm.formState.errors?.educations?.[
-                                  index
-                                ]?.end_date
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                educationForm.formState.errors?.educations?.[
-                                  index
-                                ]?.end_date
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                              }`}
-                            />
-                            {educationForm.formState.errors?.educations?.[index]
-                              ?.end_date && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  educationForm.formState.errors.educations[
-                                    index
-                                  ]?.end_date?.message
-                                }
-                              </p>
-                            )}
-                          </div>
+                    {/* Global education form error */}
+                    {educationForm.formState.errors.educations &&
+                      educationForm.formState.errors.educations.root && (
+                        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                          <p className="text-sm text-red-600 text-center">
+                            {
+                              educationForm.formState.errors.educations.root
+                                ?.message
+                            }
+                          </p>
                         </div>
-                      ))}
+                      )}
 
                     <div className="flex justify-between items-center mt-4">
                       <button
@@ -2982,8 +2943,8 @@ const UserProfilePage = () => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-                            hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-                            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+            hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => educationForm.reset()}
                       >
@@ -3010,402 +2971,419 @@ const UserProfilePage = () => {
                   >
                     {workExperienceForm
                       .watch("workExperiences")
-                      ?.map((_experience, index) => (
-                        <div
-                          key={index}
-                          className="flex flex-wrap bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative"
-                        >
-                          {/* Add remove button */}
-                          {index > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const experiences = [
-                                  ...workExperienceForm.getValues(
-                                    "workExperiences"
-                                  ),
-                                ];
-                                experiences.splice(index, 1);
-                                workExperienceForm.setValue(
-                                  "workExperiences",
-                                  experiences
-                                );
-                              }}
-                              className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </button>
-                          )}
+                      ?.map((_experience, index) => {
+                        const experienceErrors =
+                          workExperienceForm.formState.errors
+                            ?.workExperiences?.[index];
+                        const hasExperienceError =
+                          experienceErrors &&
+                          (experienceErrors.company ||
+                            experienceErrors.position ||
+                            experienceErrors.start_date ||
+                            experienceErrors.end_date ||
+                            experienceErrors.roles_responsibilities ||
+                            experienceErrors.work_city ||
+                            experienceErrors.work_state ||
+                            experienceErrors.work_country);
 
-                          {/* Company */}
-                          <div className="lg:w-[48%] md:w-[48%] w-full">
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Company
-                              {/* <span className="text-red-500">*</span> */}
-                            </label>
-                            <input
-                              type="text"
-                              {...workExperienceForm.register(
-                                `workExperiences.${index}.company`
-                              )}
-                              maxLength={40}
-                              placeholder="Enter Company Name"
-                              className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                workExperienceForm.formState.errors
-                                  ?.workExperiences?.[index]?.company
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                workExperienceForm.formState.errors
-                                  ?.workExperiences?.[index]?.company
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                              }`}
-                            />
-                            {workExperienceForm.formState.errors
-                              ?.workExperiences?.[index]?.company && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  workExperienceForm.formState.errors
-                                    .workExperiences[index]?.company?.message
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Position */}
-                          <div className="lg:w-[48%] md:w-[48%] w-full">
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Position
-                              {/* <span className="text-red-500">*</span> */}
-                            </label>
-                            <input
-                              type="text"
-                              {...workExperienceForm.register(
-                                `workExperiences.${index}.position`
-                              )}
-                              maxLength={40}
-                              placeholder="Enter your Designation"
-                              className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                workExperienceForm.formState.errors
-                                  ?.workExperiences?.[index]?.position
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                workExperienceForm.formState.errors
-                                  ?.workExperiences?.[index]?.position
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                              }`}
-                            />
-                            {workExperienceForm.formState.errors
-                              ?.workExperiences?.[index]?.position && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  workExperienceForm.formState.errors
-                                    .workExperiences[index]?.position?.message
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Roles & Responsibilities */}
-                          <div className="lg:w-[48%] md:w-[48%] w-full">
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Roles & Responsibilities{" "}
-                              {/* <span className="text-red-500">*</span> */}
-                            </label>
-                            <textarea
-                              {...workExperienceForm.register(
-                                `workExperiences.${index}.roles_responsibilities`
-                              )}
-                              rows={5}
-                              placeholder="Describe your key roles and responsibilities"
-                              className={`w-full px-4 py-2 border bg-white ${
-                                workExperienceForm.formState.errors
-                                  ?.workExperiences?.[index]
-                                  ?.roles_responsibilities
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                workExperienceForm.formState.errors
-                                  ?.workExperiences?.[index]
-                                  ?.roles_responsibilities
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                              }`}
-                            />
-                            {workExperienceForm.formState.errors
-                              ?.workExperiences?.[index]
-                              ?.roles_responsibilities && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  workExperienceForm.formState.errors
-                                    .workExperiences[index]
-                                    ?.roles_responsibilities?.message
-                                }
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Country */}
-                          <div className="lg:w-[48%] md:w-[48%] w-full">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              Country
-                              {/* <span className="text-red-500">*</span> */}
-                            </label>
-                            <Select
-                              options={
-                                Country?.map((country: any) => ({
-                                  value: country.name,
-                                  label: country.name,
-                                })) || []
-                              }
-                              value={
-                                workExperienceForm.watch(
-                                  `workExperiences.${index}.work_country`
-                                )
-                                  ? {
-                                      value: workExperienceForm.watch(
-                                        `workExperiences.${index}.work_country`
-                                      ),
-                                      label: workExperienceForm.watch(
-                                        `workExperiences.${index}.work_country`
-                                      ),
-                                    }
-                                  : null
-                              }
-                              onChange={(selectedOption) => {
-                                const countryName = selectedOption?.value || "";
-                                workExperienceForm.setValue(
-                                  `workExperiences.${index}.work_country`,
-                                  countryName
-                                );
-                                const countryId = Country?.find(
-                                  (c: any) => c.name === countryName
-                                )?.id;
-                                if (countryId) {
-                                  GetState(countryId);
-                                } else {
-                                  setStates([]);
-                                }
-                                workExperienceForm.setValue(
-                                  `workExperiences.${index}.work_state`,
-                                  ""
-                                );
-                              }}
-                              onBlur={() =>
-                                workExperienceForm.trigger(
-                                  `workExperiences.${index}.work_country`
-                                )
-                              }
-                              styles={customSelectStyles}
-                              placeholder="Select your country"
-                              isSearchable
-                              classNamePrefix="react-select"
-                            />
-                          </div>
-
-                          {/* State */}
-                          <div className="lg:w-[48%] md:w-[48%] w-full relative">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              State
-                              {/* <span className="text-red-500">*</span> */}
-                            </label>
-                            <Select
-                              options={
-                                states?.map((state: any) => ({
-                                  value: state.name,
-                                  label: state.name,
-                                })) || []
-                              }
-                              value={
-                                workExperienceForm.watch(
-                                  `workExperiences.${index}.work_state`
-                                )
-                                  ? {
-                                      value: workExperienceForm.watch(
-                                        `workExperiences.${index}.work_state`
-                                      ),
-                                      label: workExperienceForm.watch(
-                                        `workExperiences.${index}.work_state`
-                                      ),
-                                    }
-                                  : null
-                              }
-                              onChange={(selectedOption) => {
-                                workExperienceForm.setValue(
-                                  `workExperiences.${index}.work_state`,
-                                  selectedOption?.value || ""
-                                );
-                              }}
-                              onBlur={() =>
-                                workExperienceForm.trigger(
-                                  `workExperiences.${index}.work_state`
-                                )
-                              }
-                              styles={customSelectStyles}
-                              placeholder="Select your state"
-                              isSearchable
-                              classNamePrefix="react-select"
-                              menuPortalTarget={document.body}
-                              menuPosition="fixed"
-                              maxMenuHeight={200}
-                            />
-                          </div>
-
-                          {/* City */}
-                          <div className="lg:w-[48%] md:w-[48%] w-full">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                              City
-                            </label>
-                            <input
-                              type="text"
-                              {...workExperienceForm.register(
-                                `workExperiences.${index}.work_city`
-                              )}
-                              placeholder="Enter city"
-                              className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            />
-                          </div>
-
-                          {/* Currently Working */}
-                          <div className="w-full flex items-center gap-1">
-                            <input
-                              type="checkbox"
-                              checked={
-                                !!workExperienceForm.watch(
-                                  `workExperiences.${index}.currently_working`
-                                )
-                              }
-                              onChange={(e) => {
-                                const checked = (e.target as HTMLInputElement)
-                                  .checked;
-                                workExperienceForm.setValue(
-                                  `workExperiences.${index}.currently_working`,
-                                  checked
-                                );
-                                if (checked)
+                        return (
+                          <div
+                            key={index}
+                            className="flex flex-wrap bg-[#F8F3FF] gap-6 mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative"
+                          >
+                            {/* Add remove button */}
+                            {index > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const experiences = [
+                                    ...workExperienceForm.getValues(
+                                      "workExperiences"
+                                    ),
+                                  ];
+                                  experiences.splice(index, 1);
                                   workExperienceForm.setValue(
-                                    `workExperiences.${index}.end_date`,
-                                    ""
+                                    "workExperiences",
+                                    experiences
                                   );
-                              }}
-                              className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                              id={`currently_working_${index}`}
-                            />
-                            <label
-                              htmlFor={`currently_working_${index}`}
-                              className="ml-2 block text-sm text-gray-800"
-                            >
-                              Currently Working
-                            </label>
-                          </div>
-
-                          {/* Start Date */}
-                          <div className="lg:w-[48%] md:w-[48%] w-full">
-                            <label className="block text-sm font-medium text-gray-800 mb-2">
-                              Start Date
-                              {/* <span className="text-red-500">*</span> */}
-                            </label>
-                            <input
-                              type="date"
-                              {...workExperienceForm.register(
-                                `workExperiences.${index}.start_date`
-                              )}
-                              className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                workExperienceForm.formState.errors
-                                  ?.workExperiences?.[index]?.start_date
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                workExperienceForm.formState.errors
-                                  ?.workExperiences?.[index]?.start_date
-                                  ? "focus:ring-red-500"
-                                  : "focus:ring-purple-500"
-                              }`}
-                            />
-                            {workExperienceForm.formState.errors
-                              ?.workExperiences?.[index]?.start_date && (
-                              <p className="text-sm text-red-500 mt-1">
-                                {
-                                  workExperienceForm.formState.errors
-                                    .workExperiences[index]?.start_date?.message
-                                }
-                              </p>
+                                }}
+                                className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-5 w-5"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </button>
                             )}
-                          </div>
 
-                          {/* End Date (hide when currently working) */}
-                          {!workExperienceForm.watch(
-                            `workExperiences.${index}.currently_working`
-                          ) && (
+                            {/* Company */}
                             <div className="lg:w-[48%] md:w-[48%] w-full">
                               <label className="block text-sm font-medium text-gray-800 mb-2">
-                                End Date
+                                Company
                               </label>
                               <input
-                                type="date"
-                                min={
-                                  workExperienceForm.watch(
-                                    `workExperiences.${index}.start_date`
-                                  )
-                                    ? new Date(
-                                        new Date(
-                                          workExperienceForm.watch(
-                                            `workExperiences.${index}.start_date`
-                                          )
-                                        ).setDate(
-                                          new Date(
-                                            workExperienceForm.watch(
-                                              `workExperiences.${index}.start_date`
-                                            )
-                                          ).getDate() + 1
-                                        )
-                                      )
-                                        .toISOString()
-                                        .split("T")[0]
-                                    : ""
-                                }
+                                type="text"
                                 {...workExperienceForm.register(
-                                  `workExperiences.${index}.end_date`
+                                  `workExperiences.${index}.company`
                                 )}
+                                maxLength={40}
+                                placeholder="Enter Company Name"
                                 className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  workExperienceForm.formState.errors
-                                    ?.workExperiences?.[index]?.end_date
+                                  experienceErrors?.company
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                  workExperienceForm.formState.errors
-                                    ?.workExperiences?.[index]?.end_date
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  experienceErrors?.company
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
                                 }`}
                               />
-                              {workExperienceForm.formState.errors
-                                ?.workExperiences?.[index]?.end_date && (
+                              {experienceErrors?.company && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {experienceErrors.company.message}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Position */}
+                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                Position
+                              </label>
+                              <input
+                                type="text"
+                                {...workExperienceForm.register(
+                                  `workExperiences.${index}.position`
+                                )}
+                                maxLength={40}
+                                placeholder="Enter your Designation"
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  experienceErrors?.position
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  experienceErrors?.position
+                                    ? "focus:ring-red-500"
+                                    : "focus:ring-purple-500"
+                                }`}
+                              />
+                              {experienceErrors?.position && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {experienceErrors.position.message}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Roles & Responsibilities */}
+                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                Roles & Responsibilities
+                              </label>
+                              <textarea
+                                {...workExperienceForm.register(
+                                  `workExperiences.${index}.roles_responsibilities`
+                                )}
+                                rows={5}
+                                placeholder="Describe your key roles and responsibilities"
+                                className={`w-full px-4 py-2 border bg-white ${
+                                  experienceErrors?.roles_responsibilities
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  experienceErrors?.roles_responsibilities
+                                    ? "focus:ring-red-500"
+                                    : "focus:ring-purple-500"
+                                }`}
+                              />
+                              {experienceErrors?.roles_responsibilities && (
                                 <p className="text-sm text-red-500 mt-1">
                                   {
-                                    workExperienceForm.formState.errors
-                                      .workExperiences[index]?.end_date?.message
+                                    experienceErrors.roles_responsibilities
+                                      .message
                                   }
                                 </p>
                               )}
                             </div>
-                          )}
+
+                            {/* Country */}
+                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Country
+                              </label>
+                              <Select
+                                options={
+                                  Country?.map((country: any) => ({
+                                    value: country.name,
+                                    label: country.name,
+                                  })) || []
+                                }
+                                value={
+                                  workExperienceForm.watch(
+                                    `workExperiences.${index}.work_country`
+                                  )
+                                    ? {
+                                        value: workExperienceForm.watch(
+                                          `workExperiences.${index}.work_country`
+                                        ),
+                                        label: workExperienceForm.watch(
+                                          `workExperiences.${index}.work_country`
+                                        ),
+                                      }
+                                    : null
+                                }
+                                onChange={(selectedOption) => {
+                                  const countryName =
+                                    selectedOption?.value || "";
+                                  workExperienceForm.setValue(
+                                    `workExperiences.${index}.work_country`,
+                                    countryName
+                                  );
+                                  const countryId = Country?.find(
+                                    (c: any) => c.name === countryName
+                                  )?.id;
+                                  if (countryId) {
+                                    GetState(countryId);
+                                  } else {
+                                    setStates([]);
+                                  }
+                                  workExperienceForm.setValue(
+                                    `workExperiences.${index}.work_state`,
+                                    ""
+                                  );
+                                }}
+                                styles={customSelectStyles}
+                                placeholder="Select your country"
+                                isSearchable
+                                classNamePrefix="react-select"
+                              />
+                              {experienceErrors?.work_country && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {experienceErrors.work_country.message}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* State */}
+                            <div className="lg:w-[48%] md:w-[48%] w-full relative">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                State
+                              </label>
+                              <Select
+                                options={
+                                  states?.map((state: any) => ({
+                                    value: state.name,
+                                    label: state.name,
+                                  })) || []
+                                }
+                                value={
+                                  workExperienceForm.watch(
+                                    `workExperiences.${index}.work_state`
+                                  )
+                                    ? {
+                                        value: workExperienceForm.watch(
+                                          `workExperiences.${index}.work_state`
+                                        ),
+                                        label: workExperienceForm.watch(
+                                          `workExperiences.${index}.work_state`
+                                        ),
+                                      }
+                                    : null
+                                }
+                                onChange={(selectedOption) => {
+                                  workExperienceForm.setValue(
+                                    `workExperiences.${index}.work_state`,
+                                    selectedOption?.value || ""
+                                  );
+                                }}
+                                styles={customSelectStyles}
+                                placeholder="Select your state"
+                                isSearchable
+                                classNamePrefix="react-select"
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                maxMenuHeight={200}
+                              />
+                              {experienceErrors?.work_state && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {experienceErrors.work_state.message}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* City */}
+                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                City
+                              </label>
+                              <input
+                                type="text"
+                                {...workExperienceForm.register(
+                                  `workExperiences.${index}.work_city`
+                                )}
+                                placeholder="Enter city"
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  experienceErrors?.work_city
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  experienceErrors?.work_city
+                                    ? "focus:ring-red-500"
+                                    : "focus:ring-purple-500"
+                                }`}
+                              />
+                              {experienceErrors?.work_city && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {experienceErrors.work_city.message}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Currently Working */}
+                            <div className="w-full flex items-center gap-1">
+                              <input
+                                type="checkbox"
+                                checked={
+                                  !!workExperienceForm.watch(
+                                    `workExperiences.${index}.currently_working`
+                                  )
+                                }
+                                onChange={(e) => {
+                                  const checked = (e.target as HTMLInputElement)
+                                    .checked;
+                                  workExperienceForm.setValue(
+                                    `workExperiences.${index}.currently_working`,
+                                    checked
+                                  );
+                                  if (checked)
+                                    workExperienceForm.setValue(
+                                      `workExperiences.${index}.end_date`,
+                                      ""
+                                    );
+                                }}
+                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                id={`currently_working_${index}`}
+                              />
+                              <label
+                                htmlFor={`currently_working_${index}`}
+                                className="ml-2 block text-sm text-gray-800"
+                              >
+                                Currently Working
+                              </label>
+                            </div>
+
+                            {/* Start Date */}
+                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                Start Date
+                              </label>
+                              <input
+                                type="date"
+                                {...workExperienceForm.register(
+                                  `workExperiences.${index}.start_date`
+                                )}
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  experienceErrors?.start_date
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                  experienceErrors?.start_date
+                                    ? "focus:ring-red-500"
+                                    : "focus:ring-purple-500"
+                                }`}
+                              />
+                              {experienceErrors?.start_date && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {experienceErrors.start_date.message}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* End Date (hide when currently working) */}
+                            {!workExperienceForm.watch(
+                              `workExperiences.${index}.currently_working`
+                            ) && (
+                              <div className="lg:w-[48%] md:w-[48%] w-full">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  End Date
+                                </label>
+                                <input
+                                  type="date"
+                                  min={
+                                    workExperienceForm.watch(
+                                      `workExperiences.${index}.start_date`
+                                    )
+                                      ? new Date(
+                                          new Date(
+                                            workExperienceForm.watch(
+                                              `workExperiences.${index}.start_date`
+                                            )
+                                          ).setDate(
+                                            new Date(
+                                              workExperienceForm.watch(
+                                                `workExperiences.${index}.start_date`
+                                              )
+                                            ).getDate() + 1
+                                          )
+                                        )
+                                          .toISOString()
+                                          .split("T")[0]
+                                      : ""
+                                  }
+                                  {...workExperienceForm.register(
+                                    `workExperiences.${index}.end_date`
+                                  )}
+                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                    experienceErrors?.end_date
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                    experienceErrors?.end_date
+                                      ? "focus:ring-red-500"
+                                      : "focus:ring-purple-500"
+                                  }`}
+                                />
+                                {experienceErrors?.end_date && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {experienceErrors.end_date.message}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Individual work experience entry error */}
+                            {hasExperienceError && (
+                              <div className="md:col-span-2 w-full">
+                                <p className="text-sm text-red-500 mt-2 text-center">
+                                  Please fill at least one field for this work
+                                  experience entry
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+
+                    {/* Global work experience form error */}
+                    {workExperienceForm.formState.errors.workExperiences &&
+                      workExperienceForm.formState.errors.workExperiences
+                        .root && (
+                        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                          <p className="text-sm text-red-600 text-center">
+                            {
+                              workExperienceForm.formState.errors
+                                .workExperiences.root?.message
+                            }
+                          </p>
                         </div>
-                      ))}
+                      )}
 
                     <div className="flex justify-between items-center mt-4">
                       <button
@@ -3443,8 +3421,8 @@ const UserProfilePage = () => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-             hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+         hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+         shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => workExperienceForm.reset()}
                       >
@@ -3789,8 +3767,6 @@ const UserProfilePage = () => {
                           </p>
                         )}
                       </div>*/}
-
-
                     </div>
                     <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                       <Button

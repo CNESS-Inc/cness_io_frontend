@@ -59,9 +59,16 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import FollowedUsersList from "./FollowedUsersList";
 import CollectionList from "./CollectionList";
 import Button from "../components/ui/Button";
-import SharePopup from "../components/Social/SharePopup";
-import { buildShareUrl, copyPostLink } from "../lib/utils";
+import { copyPostLink } from "../lib/utils";
 import CreditAnimation from "../Common/CreditAnimation";
+import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { MdContentCopy } from "react-icons/md";
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+} from "react-share";
 // import { buildShareUrl } from "../lib/utils";
 
 interface Post {
@@ -300,12 +307,12 @@ export default function SocialTopBar() {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [_apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
-  // const [copy, setCopy] = useState<Boolean>(false);
+  const [copy, setCopy] = useState<Boolean>(false);
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const [userPosts, setUserPosts] = useState<Post[]>([]);
-  console.log("🚀 ~ SocialTopBar ~ userPosts:", userPosts);
+
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -362,6 +369,7 @@ export default function SocialTopBar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [animations, setAnimations] = useState<any[]>([]);
   const [isPosting, setIsPosting] = useState(false);
+  const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
 
   useEffect(() => {
     if (location.state?.openPostPopup) {
@@ -607,6 +615,7 @@ export default function SocialTopBar() {
   };
 
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const shareMenuRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
@@ -1134,11 +1143,19 @@ export default function SocialTopBar() {
     const key = `${openMenu.postId}-${openMenu.type}`;
     const currentMenu = menuRef.current[key];
 
+    // Close options menu if click is outside
     if (currentMenu && !currentMenu.contains(event.target as Node)) {
       setOpenMenu({ postId: null, type: null });
     }
-  };
 
+    // Close share menu if click is outside
+    if (
+      shareMenuRef.current &&
+      !shareMenuRef.current.contains(event.target as Node)
+    ) {
+      setOpenMenu({ postId: null, type: null });
+    }
+  };
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -2215,12 +2232,66 @@ export default function SocialTopBar() {
                           </button>
                           {openMenu.postId === post.id &&
                             openMenu.type === "share" && (
-                              <SharePopup
-                                isOpen={true}
-                                onClose={() => toggleMenu(post.id, "share")}
-                                url={buildShareUrl()} // or pass your own URL if needed
-                                position="bottom"
-                              />
+                              <div
+                                className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                                ref={shareMenuRef}
+                              >
+                                <ul className="flex items-center gap-4">
+                                  <li>
+                                    <FacebookShareButton
+                                      url={`${window.location.origin}/post/${post.id}`}
+                                    >
+                                      <FaFacebook size={32} color="#4267B2" />
+                                    </FacebookShareButton>
+                                  </li>
+                                  <li>
+                                    <LinkedinShareButton
+                                      url={`${window.location.origin}/post/${post.id}`}
+                                    >
+                                      <FaLinkedin size={32} color="#0077B5" />
+                                    </LinkedinShareButton>
+                                  </li>
+                                  {/* <li>
+                                                          <FaInstagram size={32} color="#C13584" />
+                                                        </li> */}
+                                  <TwitterShareButton
+                                    url={`${window.location.origin}/post/${post.id}`}
+                                    title={tweetText}
+                                  >
+                                    <FaTwitter size={32} color="#1DA1F2" />
+                                  </TwitterShareButton>
+                                  <li>
+                                    <WhatsappShareButton
+                                      url={`${window.location.origin}/post/${post.id}`}
+                                    >
+                                      <FaWhatsapp size={32} color="#1DA1F2" />
+                                    </WhatsappShareButton>
+                                  </li>
+                                  <li>
+                                    <button
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(
+                                          `${window.location.origin}/post/${post.id}`
+                                        );
+                                        setCopy(true);
+                                        setTimeout(() => setCopy(false), 1500);
+                                      }}
+                                      className="flex items-center relative"
+                                      title="Copy link"
+                                    >
+                                      <MdContentCopy
+                                        size={30}
+                                        className="text-gray-600"
+                                      />
+                                      {copy && (
+                                        <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                                          Link Copied!
+                                        </div>
+                                      )}
+                                    </button>
+                                  </li>
+                                </ul>
+                              </div>
                             )}
                         </div>
 

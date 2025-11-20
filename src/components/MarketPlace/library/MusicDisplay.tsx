@@ -380,7 +380,7 @@ console.log('productProgress', productProgress)
             <div className="w-full border border-slate-200 rounded-xl p-6 bg-white shadow-sm mb-6">
                 <div className="flex gap-6 items-start">
                     {/* Album Art */}
-                    <div className="w-56 h-56 rounded-lg overflow-hidden shadow-lg flex-shrink-0">
+                    <div className="w-56 h-56 rounded-lg overflow-hidden shadow-lg shrink-0">
                         <img
                             src={thumbnail || "https://cdn.cness.io/music-placeholder.svg"}
                             alt={title}

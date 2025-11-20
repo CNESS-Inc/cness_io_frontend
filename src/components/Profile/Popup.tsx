@@ -102,7 +102,7 @@ const PostPopup: React.FC<PopupProps> = ({
   }>({ postId: null, type: null });
 
   const myid = localStorage.getItem("Id");
-  const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
+  const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
 
   const { showToast } = useToast();
 
