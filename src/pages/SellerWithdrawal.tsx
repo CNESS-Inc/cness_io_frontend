@@ -1,12 +1,13 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import availablebalance from "../assets/availablebalance.svg";
 import pendingbalance from "../assets/pendingbalance.svg";
 import totalbalance from "../assets/totalbalance.svg";
-import { get_wallet, update_bank_details } from "../Common/ServerAPI";
+import { get_wallet, update_bank_details, get_withdrawal_history, submit_withdrawal } from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
-// Proper type for bank details
+// Type for bank details
 type BankDetails = {
   bank_name?: string;
   account_number?: string;
@@ -14,7 +15,7 @@ type BankDetails = {
   account_type?: string;
 };
 
-// Fix here!
+// Type for wallet
 type Wallet = {
   total_balance: string;
   available_balance: string;
@@ -22,29 +23,38 @@ type Wallet = {
   bank_details: BankDetails | null;
 };
 
+// Type for withdrawal history item
+interface WithdrawalHistoryItem {
+  id: string;
+  withdrawal_amount: string;
+  date: string;
+  status: "completed" | "cancelled" | "pending";
+}
+
 interface WithdrawalRowProps {
   amount: string;
   date: string;
-  status: "Completed" | "Cancelled" | "Pending";
+  status: "completed" | "cancelled" | "pending";
 }
-
-const withdrawalData: WithdrawalRowProps[] = [
-  { amount: "$1259", date: "12/12/2024", status: "Completed" },
-  // ...other data
-];
 
 // Status style helper
 const getStatusStyle = (status: string) => {
-  switch (status) {
-    case "Completed":
+  const lowerStatus = status.toLowerCase();
+  switch (lowerStatus) {
+    case "completed":
       return "bg-[#3D9A7D33] text-[#3D9A7D]";
-    case "Cancelled":
+    case "cancelled":
       return "bg-[#E5E5E5] text-[#8D8D8D]";
-    case "Pending":
+    case "pending":
       return "bg-[#E2E4FF] text-[#7077FE]";
     default:
       return "bg-gray-100 text-gray-700";
   }
+};
+
+// Format status for display
+const formatStatus = (status: string) => {
+  return status.charAt(0).toUpperCase() + status.slice(1);
 };
 
 // Table row component
@@ -53,7 +63,7 @@ const WithdrawalRow: React.FC<WithdrawalRowProps> = ({ amount, date, status }) =
     <td className="py-4 px-6 text-center align-middle font-['Open_Sans'] text-[14px] text-[#1A1A1A]">{amount}</td>
     <td className="py-4 px-6 text-center align-middle font-['Open_Sans'] text-[14px] text-[#1A1A1A]">{date}</td>
     <td className="py-4 px-6 text-center align-middle">
-      <span className={`inline-block w-full py-[6px] rounded-full text-[13px] font-semibold leading-[18px] ${getStatusStyle(status)}`}>{status}</span>
+      <span className={`inline-block w-full py-[6px] rounded-full text-[13px] font-semibold leading-[18px] ${getStatusStyle(status)}`}>{formatStatus(status)}</span>
     </td>
   </tr>
 );
@@ -61,11 +71,20 @@ const WithdrawalRow: React.FC<WithdrawalRowProps> = ({ amount, date, status }) =
 // Main component
 const SellerWithdrawal: React.FC = () => {
   const navigate = useNavigate();
-  const { seller_id } = useParams<{ seller_id: string }>();
+  const { showToast } = useToast();
+
   // Wallet state
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [loadingWallet, setLoadingWallet] = useState(false);
   const [walletError, setWalletError] = useState<string | null>(null);
+
+  // Withdrawal history state
+  const [withdrawalHistory, setWithdrawalHistory] = useState<WithdrawalHistoryItem[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
+  // Withdrawal form state
+  const [withdrawalAmount, setWithdrawalAmount] = useState("");
+  const [submittingWithdrawal, setSubmittingWithdrawal] = useState(false);
 
   // Bank edit state
   const [bankName, setBankName] = useState("");
@@ -80,13 +99,14 @@ const SellerWithdrawal: React.FC = () => {
 
   // Fetch wallet on mount
   useEffect(() => {
-    if (!seller_id) return;
     const fetchWallet = async () => {
       try {
         setLoadingWallet(true);
         setWalletError(null);
-        const res = await get_wallet(seller_id);
-        const data: Wallet = res.data.data.data;
+        const res = await get_wallet();
+        console.log('res.data.data', res.data.data)
+        const data: any = res.data.data;
+        console.log('data', data)
         setWallet(data);
 
         // Pre-fill bank edit fields if data exists
@@ -96,25 +116,113 @@ const SellerWithdrawal: React.FC = () => {
           setSwiftCode(data.bank_details.swift_code || "");
           setAccountType(data.bank_details.account_type || "");
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
         setWalletError("Failed to load wallet");
+        showToast({
+          message: err?.response?.data?.error?.message || "Failed to load wallet",
+          type: "error"
+        });
       } finally {
         setLoadingWallet(false);
       }
     };
     fetchWallet();
-  }, [seller_id]);
+  }, []);
 
-  // Update after PUT
+  // Fetch withdrawal history on mount
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setLoadingHistory(true);
+        const res = await get_withdrawal_history();
+        console.log('res.data.data', res.data.data)
+        const data: WithdrawalHistoryItem[] = res.data.data;
+        setWithdrawalHistory(data);
+      } catch (err: any) {
+        console.error(err);
+        showToast({
+          message: err?.response?.data?.error?.message || "Failed to load withdrawal history",
+          type: "error"
+        });
+      } finally {
+        setLoadingHistory(false);
+      }
+    };
+    fetchHistory();
+  }, []);
+
+  // Refresh wallet data
   const refreshWalletData = async () => {
     try {
       setLoadingWallet(true);
-      const res = await get_wallet(seller_id as string);
+      const res = await get_wallet();
       const data: Wallet = res.data.data.data;
       setWallet(data);
     } finally {
       setLoadingWallet(false);
+    }
+  };
+
+  // Refresh withdrawal history
+  const refreshWithdrawalHistory = async () => {
+    try {
+      setLoadingHistory(true);
+      const res = await get_withdrawal_history();
+      const data: WithdrawalHistoryItem[] = res.data.data;
+      setWithdrawalHistory(data);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  // Handle withdrawal request
+  const handleWithdraw = async () => {
+    // Validation
+    const amount = parseFloat(withdrawalAmount);
+    if (!withdrawalAmount || isNaN(amount)) {
+      showToast({
+        message: "Please enter a valid amount",
+        type: "error"
+      });
+      return;
+    }
+
+    if (amount < 100) {
+      showToast({
+        message: "Minimum withdrawal amount is $100",
+        type: "error"
+      });
+      return;
+    }
+
+    if (amount > 500000) {
+      showToast({
+        message: "Maximum withdrawal amount is $500,000",
+        type: "error"
+      });
+      return;
+    }
+
+    try {
+      setSubmittingWithdrawal(true);
+      await submit_withdrawal({ amount });
+      showToast({
+        message: "Withdrawal request submitted successfully!",
+        type: "success"
+      });
+      setWithdrawalAmount("");
+      // Refresh data
+      await refreshWalletData();
+      await refreshWithdrawalHistory();
+    } catch (err: any) {
+      const errorMsg = err?.response?.data?.error?.message || "Failed to submit withdrawal request";
+      showToast({
+        message: errorMsg,
+        type: "error"
+      });
+    } finally {
+      setSubmittingWithdrawal(false);
     }
   };
 
@@ -125,9 +233,26 @@ const SellerWithdrawal: React.FC = () => {
     { title: "Pending Balance", amount: wallet?.pending_balance ?? "0.00", iconBg: "#E8F3F0", icon: pendingbalance },
   ], [wallet]);
 
+  // Format date from ISO to readable format
+  const formatDate = (isoDate: string) => {
+    const date = new Date(isoDate);
+    return date.toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric'
+    });
+  };
+
   // Withdrawals sorting
   const sortedWithdrawals = useMemo(() => {
-    let sorted = [...withdrawalData];
+    // Map withdrawal history to table format
+    let sorted = withdrawalHistory.map(item => ({
+      id: item.id,
+      amount: `$${item.withdrawal_amount}`,
+      date: formatDate(item.date),
+      status: item.status
+    }));
+
     if (sortConfig) {
       sorted.sort((a, b) => {
         const key = sortConfig.key as keyof WithdrawalRowProps;
@@ -137,8 +262,8 @@ const SellerWithdrawal: React.FC = () => {
           return sortConfig.direction === "asc" ? amountA - amountB : amountB - amountA;
         }
         if (key === "date") {
-          const [dayA, monthA, yearA] = a.date.split("/").map(Number);
-          const [dayB, monthB, yearB] = b.date.split("/").map(Number);
+          const [monthA, dayA, yearA] = a.date.split("/").map(Number);
+          const [monthB, dayB, yearB] = b.date.split("/").map(Number);
           const dateA = new Date(yearA, monthA - 1, dayA);
           const dateB = new Date(yearB, monthB - 1, dayB);
           return sortConfig.direction === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
@@ -153,7 +278,7 @@ const SellerWithdrawal: React.FC = () => {
       });
     }
     return sorted;
-  }, [sortConfig]);
+  }, [withdrawalHistory, sortConfig]);
 
   const requestSort = (key: string) => {
     let direction: "asc" | "desc" = "asc";
@@ -184,11 +309,19 @@ const SellerWithdrawal: React.FC = () => {
         swift_code: swiftCode,
         account_type: accountType,
       });
+      showToast({
+        message: "Bank details updated successfully!",
+        type: "success"
+      });
       setIsEdit(false);
       await refreshWalletData();
     } catch (err: any) {
-      const apiMsg = err?.response?.data?.message || err?.response?.statusText || err.message || "Failed to save bank details";
+      const apiMsg = err?.response?.data?.error?.message || err?.response?.data?.message || "Failed to save bank details";
       setBankError(apiMsg);
+      showToast({
+        message: apiMsg,
+        type: "error"
+      });
     } finally {
       setSavingBank(false);
     }
@@ -291,14 +424,28 @@ const SellerWithdrawal: React.FC = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-[#E2E8F0] bg-white">
-                                        {sortedWithdrawals.map((withdrawal, index) => (
-                                            <WithdrawalRow
-                                                key={index}
-                                                amount={withdrawal.amount}
-                                                date={withdrawal.date}
-                                                status={withdrawal.status}
-                                            />
-                                        ))}
+                                        {loadingHistory ? (
+                                            <tr>
+                                                <td colSpan={3} className="py-8 text-center text-gray-500">
+                                                    Loading withdrawal history...
+                                                </td>
+                                            </tr>
+                                        ) : sortedWithdrawals.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={3} className="py-8 text-center text-gray-500">
+                                                    No withdrawal history found
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            sortedWithdrawals.map((withdrawal) => (
+                                                <WithdrawalRow
+                                                    key={withdrawal.id}
+                                                    amount={withdrawal.amount}
+                                                    date={withdrawal.date}
+                                                    status={withdrawal.status}
+                                                />
+                                            ))
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -357,11 +504,7 @@ const SellerWithdrawal: React.FC = () => {
                                 id="swiftCode"
                                 type="text"
                                 value={swiftCode}
-                                onChange={(e) => {
-                                    setSwiftCode(e.target.value);
-                                    console.log("Input changed, swiftCode:", e.target.value);
-                                }}
-                                
+                                onChange={(e) => setSwiftCode(e.target.value)}
                                 className="border border-[#CBD5E1] rounded-md w-full py-[10px] ps-[15px] placeholder-[rgba(19, 19, 19, 0.6)] placeholder:text-sm placeholder:font-light focus:outline-none focus:ring-2 focus:ring-[rgba(19, 19, 19, 0.6)]"
                                 placeholder="Enter your swift code"
                             />
@@ -422,13 +565,23 @@ const SellerWithdrawal: React.FC = () => {
                                     </h2>
                                 </div>
                                 <input
-                                    type="text"
+                                    type="number"
+                                    value={withdrawalAmount}
+                                    onChange={(e) => setWithdrawalAmount(e.target.value)}
                                     className="border border-[#CBD5E1] rounded-md w-full py-[10px] ps-[15px] placeholder-[rgba(19, 19, 19, 0.6)] placeholder:text-sm placeholder:font-light focus:outline-none focus:ring-2 focus:ring-[rgba(19, 19, 19, 0.6)]"
-                                    placeholder="$0"
+                                    placeholder="0"
+                                    min="100"
+                                    max="500000"
                                 />
                             </div>
                             <div>
-                                <button className="mt-6 font-['Plus Jakarta Sans'] w-full px-5 py-3 bg-[#7077FE] rounded-md cursor-pointer text-white text-base font-semibold">Withdraw now</button>
+                                <button
+                                    onClick={handleWithdraw}
+                                    disabled={submittingWithdrawal}
+                                    className="mt-6 font-['Plus Jakarta Sans'] w-full px-5 py-3 bg-[#7077FE] rounded-md cursor-pointer text-white text-base font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                    {submittingWithdrawal ? "Processing..." : "Withdraw now"}
+                                </button>
                                 <h2 className="pt-2 text-[#494949] font-['Poppins'] font-normal text-[13px]">
                                     Usual processing time: 15 mins
                                 </h2>
