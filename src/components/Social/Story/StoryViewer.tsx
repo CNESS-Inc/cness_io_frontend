@@ -393,9 +393,9 @@ export function StoryViewer({
 
   const buildStoryShareUrl = () => {
     if (storyId && userId) {
-      return `https://dev.cness.io/story-design?user=${userId}&story=${storyId}`;
+      return `${window.location.origin}/story-design?user=${userId}&story=${storyId}`;
     }
-    return `https://dev.cness.io/story-design`;
+    return `${window.location.origin}/story-design`;
   };
 
   if (!currentStory) return null;

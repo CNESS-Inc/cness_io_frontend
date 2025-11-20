@@ -1,5 +1,5 @@
 import { useState } from "react";
-import GetInTouch from "../components/sections/GetInTouch";
+// import GetInTouch from "../components/sections/GetInTouch";
 //import Subscribe from "../components/sections/Subscribe";
 import LazySection from "../components/ui/LazySection";
 import Footer from "../layout/Footer/Footer";
@@ -354,7 +354,7 @@ export default function Faqs() {
           contact us. we will answer to you shortly
         </p>
       </div>
-      <GetInTouch />
+      {/* <GetInTouch /> */}
       {/*<LazySection effect="fade-up" delay={0.2}>
         <Subscribe />
       </LazySection>*/}

@@ -31,8 +31,6 @@ import {
   GetAllStory,
   FeedPostsDetails,
 } from "../../../Common/ServerAPI";
-
-import createstory from "../../../assets/createstory.jpg";
 import carosuel1 from "../../../assets/carosuel1.png";
 // import comment from "../../../assets/comment.png";
 import Image from "../../../components/ui/Image";
@@ -40,8 +38,15 @@ import CommentBox from "../../../pages/CommentBox";
 import { useToast } from "../../../components/ui/Toast/ToastProvider";
 import FollowedUsersList from "../../../pages/FollowedUsersList";
 import CollectionList from "../../../pages/CollectionList";
-import SharePopup from "../../../components/Social/SharePopup";
-import { buildShareUrl } from "../../../lib/utils";
+import { copyPostLink } from "../../../lib/utils";
+import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { MdContentCopy } from "react-icons/md";
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+} from "react-share";
 
 interface Post {
   id: string;
@@ -127,6 +132,7 @@ interface Story {
     profile_picture: string;
   };
   stories: {
+    thumbnail: string;
     id: string;
     user_id: string;
     description: string;
@@ -268,8 +274,8 @@ export default function SocialFeed() {
   );
   const [isUploading, setIsUploading] = useState(false);
   const [_apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
-  // const [copy, setCopy] = useState<Boolean>(false);
-
+  const [copy, setCopy] = useState<Boolean>(false);
+  const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -299,7 +305,7 @@ export default function SocialFeed() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
-  console.log("🚀 ~ SocialFeed ~ userInfo:", userInfo)
+  console.log("🚀 ~ SocialFeed ~ userInfo:", userInfo);
   // const [isAdult, setIsAdult] = useState<Boolean>(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -388,6 +394,7 @@ export default function SocialFeed() {
   };
 
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const shareMenuRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
@@ -645,16 +652,22 @@ export default function SocialFeed() {
     return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (!openMenu.postId || !openMenu.type) return;
+const handleClickOutside = (event: MouseEvent) => {
+  if (!openMenu.postId || !openMenu.type) return;
 
-    const key = `${openMenu.postId}-${openMenu.type}`;
-    const currentMenu = menuRef.current[key];
+  const key = `${openMenu.postId}-${openMenu.type}`;
+  const currentMenu = menuRef.current[key];
 
-    if (currentMenu && !currentMenu.contains(event.target as Node)) {
-      setOpenMenu({ postId: null, type: null });
-    }
-  };
+  // Close options menu if click is outside
+  if (currentMenu && !currentMenu.contains(event.target as Node)) {
+    setOpenMenu({ postId: null, type: null });
+  }
+  
+  // Close share menu if click is outside
+  if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+    setOpenMenu({ postId: null, type: null });
+  }
+};
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -808,24 +821,6 @@ export default function SocialFeed() {
     }
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!openMenu.postId || !openMenu.type) return;
-
-      const key = `${openMenu.postId}-${openMenu.type}`;
-      const currentMenu = menuRef.current[key];
-
-      if (currentMenu && !currentMenu.contains(event.target as Node)) {
-        setOpenMenu({ postId: null, type: null });
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
   const [topics, setTopics] = useState<Topic[]>([]); // list of topics
 
@@ -863,7 +858,8 @@ export default function SocialFeed() {
                   <div className="flex items-center gap-3">
                     <img
                       src={
-                        localStorage.getItem("profile_picture") || createstory
+                        localStorage.getItem("profile_picture") ||
+                        "/profile.png"
                       }
                       alt="User"
                       className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
@@ -920,7 +916,7 @@ export default function SocialFeed() {
                   className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start"
                 >
                   <img
-                    src={createstory}
+                    src="/profile.png"
                     alt="Create Story Background"
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -954,36 +950,37 @@ export default function SocialFeed() {
                   <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
                 </div>
 
-                {loggedInUserID && storiesData.map((story) => (
-                  <div
-                    key={story.id}
-                    className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative mohan"
-                    onClick={() => setOpenSignup(true)}
-                  >
-                    <StoryCard
-                      id={story.id}
-                      userIcon={story.profile.profile_picture}
-                      userName={`${story.profile.first_name} ${story.profile.last_name}`}
-                      title={story.stories[0].description || "Untitled Story"}
-                      videoSrc={story.stories[0].video_file}
-                    />
-
-                    <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
-                      <img
-                        src={story.profile.profile_picture}
-                        alt={`${story.profile.first_name} ${story.profile.last_name}`}
-                        className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/profile.png";
-                        }}
+                {
+                  storiesData.map((story) => (
+                    <div
+                      key={story.id}
+                      className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative mohan"
+                      onClick={() => setOpenSignup(true)}
+                    >
+                      <StoryCard
+                        id={story.id}
+                        userIcon={story.profile.profile_picture}
+                        userName={`${story.profile.first_name} ${story.profile.last_name}`}
+                        title={story.stories[0].description || "Untitled Story"}
+                        videoSrc={story.stories[0].thumbnail}
                       />
-                      <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
-                        {story.username}
-                      </span>
+
+                      <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
+                        <img
+                          src={story.profile.profile_picture || "./public.png"}
+                          alt={`${story.profile.first_name} ${story.profile.last_name}`}
+                          className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/profile.png";
+                          }}
+                        />
+                        <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
+                          {story.username}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
               <div className="w-full border-t border-[#C8C8C8] mt-4 md:mt-6"></div>
 
@@ -1127,7 +1124,24 @@ export default function SocialFeed() {
                                   </li>
                                   <li>
                                     <button
-                                      onClick={() => setOpenSignup(true)}
+                                      // onClick={() => setOpenSignup(true)}
+                                      onClick={() => {
+                                        copyPostLink(
+                                          `${window.location.origin}/post/${post.id}`,
+                                          (msg) =>
+                                            showToast({
+                                              type: "success",
+                                              message: msg,
+                                              duration: 2000,
+                                            }),
+                                          (msg) =>
+                                            showToast({
+                                              type: "error",
+                                              message: msg,
+                                              duration: 2000,
+                                            })
+                                        );
+                                      }}
                                       className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                                     >
                                       <LinkIcon className="w-4 h-4" />
@@ -1365,7 +1379,8 @@ export default function SocialFeed() {
 
                     <div className="relative">
                       <button
-                        onClick={() => setOpenSignup(true)}
+                        // onClick={() => setOpenSignup(true)}
+                            onClick={() => toggleMenu(post.id, "share")}
                         className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-normal text-sm md:text-base rounded-md hover:bg-gray-50 text-black"
                       >
                         <Share2 className="w-5 h-5 md:w-6 md:h-6" />
@@ -1373,12 +1388,66 @@ export default function SocialFeed() {
                       </button>
                       {openMenu.postId === post.id &&
                         openMenu.type === "share" && (
-                          <SharePopup
-                            isOpen={true}
-                            onClose={() => navigate("/log-in")}
-                            url={buildShareUrl()} // or pass your own URL if needed
-                            position="bottom"
-                          />
+                          <div
+                            className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                            ref={shareMenuRef}
+                          >
+                            <ul className="flex items-center gap-4">
+                              <li>
+                                <FacebookShareButton
+                                  url={`${window.location.origin}/post/${post.id}`}
+                                >
+                                  <FaFacebook size={32} color="#4267B2" />
+                                </FacebookShareButton>
+                              </li>
+                              <li>
+                                <LinkedinShareButton
+                                  url={`${window.location.origin}/post/${post.id}`}
+                                >
+                                  <FaLinkedin size={32} color="#0077B5" />
+                                </LinkedinShareButton>
+                              </li>
+                              {/* <li>
+                                                                                    <FaInstagram size={32} color="#C13584" />
+                                                                                  </li> */}
+                              <TwitterShareButton
+                                url={`${window.location.origin}/post/${post.id}`}
+                                title={tweetText}
+                              >
+                                <FaTwitter size={32} color="#1DA1F2" />
+                              </TwitterShareButton>
+                              <li>
+                                <WhatsappShareButton
+                                  url={`${window.location.origin}/post/${post.id}`}
+                                >
+                                  <FaWhatsapp size={32} color="#1DA1F2" />
+                                </WhatsappShareButton>
+                              </li>
+                              <li>
+                                <button
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(
+                                      `${window.location.origin}/post/${post.id}`
+                                    );
+                                    setCopy(true);
+                                    setTimeout(() => setCopy(false), 1500);
+                                  }}
+                                  className="flex items-center relative"
+                                  title="Copy link"
+                                >
+                                  <MdContentCopy
+                                    size={30}
+                                    className="text-gray-600"
+                                  />
+                                  {copy && (
+                                    <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                                      Link Copied!
+                                    </div>
+                                  )}
+                                </button>
+                              </li>
+                            </ul>
+                          </div>
                         )}
                     </div>
                   </div>

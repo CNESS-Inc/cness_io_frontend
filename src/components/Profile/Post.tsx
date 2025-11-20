@@ -352,7 +352,7 @@ export default function PostCard({
     );
   };
   const myid = localStorage.getItem("Id");
-  const urldata = `https://dev.cness.io/directory/user-profile/${myid}`;
+  const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
 
   const toggleMenu = (id: any) => {
     setOpenMenuPostId((prev: any) => (prev === id ? null : id));

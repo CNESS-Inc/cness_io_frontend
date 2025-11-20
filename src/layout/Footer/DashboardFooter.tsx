@@ -58,8 +58,8 @@ const Footer = () => {
               />
             </Link>
             <p className="text-[16px] font-[400] font-openSans leading-[160%] text-[#1E1E1E] hidden md:block">
-              CNESS is a consciousness-based certification and growth platform
-              designed to empower purpose-driven individuals and organizations.
+Your global conscious hub where social connection,<br/> meaningful commerce, and community growth come together.
+
             </p>
           </div>
 
