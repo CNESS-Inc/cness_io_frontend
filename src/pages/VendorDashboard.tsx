@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Play, Download, Star, Pencil, X, Video, Music, BookOpen, FileAudio, FileText, Palette } from "lucide-react";
-import { DeleteSellerProduct, GetSellerProducts } from "../Common/ServerAPI";
+import { DeleteSellerProduct, GetSellerDashboard, GetSellerProducts} from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
-//import { useState } from "react";
+
 interface StatCardProps {
   title: string;
   value: string;
@@ -69,22 +69,21 @@ const ProductItem: React.FC<ProductItemProps> = ({
 }) => {
   return (
     <div className="
-  
-  gap-1 py-1              /* XS (extra small, very compact) */
-  sm:gap-3 sm:py-3        /* Small and up */
-  md:gap-2 md:py-2   
-  lg:flex     /* Medium and up */
-  border-b border-gray-100 last:border-none
-">
+      gap-1 py-1              /* XS (extra small, very compact) */
+      sm:gap-3 sm:py-3        /* Small and up */
+      md:gap-2 md:py-2   
+      lg:flex     /* Medium and up */
+      border-b border-gray-100 last:border-none
+    ">
       <img
         src={image}
         alt={title}
         className="
-  gap-1 py-1              /* XS (extra small, very compact) */
-  sm:w-20  sm:h-16       /* Small and up */
-  md:w-20 md:h-16   /* Medium and up */
-  border-b border-gray-100 last:border-none
-rounded-lg object-cover flex-shrink-0"
+        gap-1 py-1              /* XS (extra small, very compact) */
+        sm:w-20  sm:h-16       /* Small and up */
+        md:w-20 md:h-16   /* Medium and up */
+        border-b border-gray-100 last:border-none
+        rounded-lg object-cover flex-shrink-0"
       />
       <div className="flex-1 space-y-1">
         <h4 className="text-gray-900 sm:text-[12px] md:text-[12px] lg:text-[12px] font-medium line-clamp-2">
@@ -329,14 +328,22 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string
 const VendorDashboard: React.FC = () => {
   const [productData, setProductData] = useState<ProductRowProps[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+   const [dashboard, setDashboard] = useState<any>(null);
+  const [isLoadingDashboard, setIsLoadingDashboard] = useState(false);
+
+  useEffect(() => {
+    // reference isLoadingDashboard so it's not reported as "declared but never read"
+    // Replace this no-op with UI handling (e.g. show a spinner) if desired.
+  }, [isLoadingDashboard]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteProductId, setDeleteProductId] = useState<string | null>(null);
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchProductsData();
-  }, [])
+useEffect(() => {
+  fetchDashboard();       // <--- नया API call
+  fetchProductsData();    // यह product वाला existing call है
+}, []);
 
   const fetchProductsData = async () => {
     setIsLoadingProducts(true);
@@ -386,6 +393,23 @@ const VendorDashboard: React.FC = () => {
     setShowDeleteModal(true);
   };
 
+  const fetchDashboard = async () => {
+  try {
+    setIsLoadingDashboard(true);
+
+    const res = await GetSellerDashboard();   // <-- API hit
+
+    const data = res?.data?.data?.data;       // <-- तुमने जो JSON भेजा था
+    setDashboard(data);
+
+  } catch (err) {
+    console.log("Dashboard fetch error:", err);
+  } finally {
+    setIsLoadingDashboard(false);
+  }
+};
+
+
   const confirmDelete = async () => {
     if (deleteProductId) {
       try {
@@ -409,14 +433,14 @@ const VendorDashboard: React.FC = () => {
     }
   };
 
-  const chartData = [
-    { week: "Week 6", date: "1 - 7 Oct, 2025", value: "$1200", height: 180 },
-    { week: "Week 5", date: "8 - 14 Oct, 2025", value: "$950", height: 140 },
-    { week: "Week 4", date: "15 - 21 Oct, 2025", value: "$1210", height: 200 },
-    { week: "Week 3", date: "12 - 18 October, 2025", value: "$2435", height: 240 },
-    { week: "Week 2", date: "22 - 28 Oct, 2025", value: "$1280", height: 210 },
-    { week: "Week 1", date: "29 Oct - 4 Nov, 2025", value: "$700", height: 110 },
-  ];
+ const chartData =
+  dashboard?.revenue_trends?.last_5_weeks?.map((w: any) => ({
+    week: w.week,
+    date: `${w.week_start} - ${w.week_end}`,
+    value: `$${w.revenue}`,
+    height: Math.min(250, w.revenue * 2)  
+  })) || [];
+
 
   //const [hovered, setHovered] = useState<number | null>(null);
 
@@ -426,22 +450,25 @@ const VendorDashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Revenue"
-          value="$23,456"
+        value={`$${dashboard?.earnings?.lifetime_sales || "0.00"}`}
+
           icon="https://static.codia.ai/image/2025-10-29/6i7pEM917T.png"
         />
         <StatCard
           title="Pending Amount"
-          value="$2341"
+         value={`$${dashboard?.earnings?.pending_withdrawals || "0.00"}`}
+
           icon="https://static.codia.ai/image/2025-10-29/e3MnRCeett.png"
         />
-        <StatCard
-          title="Total Purchases"
-          value="456"
-          icon="https://static.codia.ai/image/2025-10-29/t5WgNvrOim.png"
-        />
+       <StatCard
+  title="Total Purchases"
+  value={dashboard?.business_metrics?.total_orders ?? 0}
+  icon="https://static.codia.ai/image/2025-10-29/t5WgNvrOim.png"
+/>
+
         <StatCard
           title="Total Products"
-          value="12"
+          value={dashboard?.business_metrics?.total_products ?? 0}
           icon="https://static.codia.ai/image/2025-10-29/2Z99YrY7fk.png"
         />
       </div>
@@ -462,7 +489,7 @@ const VendorDashboard: React.FC = () => {
           {/* CHART */}
           <div className="relative h-[350px] px-3 pb-6 flex items-end gap-1 overflow-hidden">
 
-            {chartData.map((bar, i) => {
+            {chartData.map((bar: any, i:number) => {
               const CIRCLE_OFFSET = 15;
               const CHART_MAX_HEIGHT = 330;
 
