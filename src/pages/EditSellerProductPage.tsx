@@ -380,14 +380,38 @@ const EditSellerProductPage: React.FC = () => {
   console.log("contentItems", contentItems);
   const [deletingItems, setDeletingItems] = useState<Set<string>>(new Set());
 
+type FormDataType = {
+  product_title: string;
+  price: number;
+  discount_percentage: number;
+  mood_ids: string[];
+  overview: string;
+  highlights: string[];
+  language: string;
+  thumbnail_url: string;
+  video_url: string;
+  duration: string;
+  short_video_url: string;
+  summary: string;
+  total_duration: string;
+  format: string;
+  theme: string;
+  author: string;
+  pages: number;
+  storytelling: string;
+  requirements: string;
+  mediums: string;
+  modern_trends: string;
+};
+
   // Form Data State (dynamic based on category)
-  const [formData, setFormData] = useState<any>({
+const [formData, setFormData] = useState<FormDataType>({
     product_title: "",
     price: 0,
     discount_percentage: 0,
-    mood_id: "",
+   mood_ids:  [],
     overview: "",
-    highlights: [] as string[],
+    highlights:  [],
     language: "",
     thumbnail_url: "",
     // Video specific
@@ -430,10 +454,10 @@ const EditSellerProductPage: React.FC = () => {
             discount_percentage: parseFloat(
               productData.discount_percentage || "0"
             ),
-            mood_id:
+            mood_ids:
               category === "ebook"
                 ? productData?.mood?.id || ""
-                : productData.mood_id || "",
+                : productData.mood_ids || "",
             overview: productData.overview || "",
             highlights: productData.highlights || [],
             language: productData.language || "",
@@ -1492,8 +1516,9 @@ const EditSellerProductPage: React.FC = () => {
       newErrors.discount_percentage =
         "Discount percentage must be between 0 and 100.";
     }
-    if (!formData.mood_id.trim())
-      newErrors.mood_id = "Mood Selection is required.";
+   if (!formData.mood_ids || formData.mood_ids.length === 0) {
+  newErrors.mood_ids = "Mood Selection is required.";
+}
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
     if (formData.highlights.length === 0) {
@@ -1504,10 +1529,10 @@ const EditSellerProductPage: React.FC = () => {
     if (category === "video") {
       if (!formData.video_url && !mainVideoPreview)
         newErrors.video_url = "Main video is required.";
-      if (formData.duration && !/^\d{2}:\d{2}:\d{2}$/.test(formData.duration)) {
-        newErrors.duration =
-          "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
-      }
+      //if (formData.duration && !/^\d{2}:\d{2}:\d{2}$/.test(formData.duration)) {
+        //newErrors.duration =
+          //"Duration must be in HH:MM:SS format (e.g., 01:10:00)";
+     // }
       if (!formData.summary?.trim()) newErrors.summary = "Summary is required.";
     } else {
       // Non-video categories need thumbnail
@@ -1532,15 +1557,15 @@ const EditSellerProductPage: React.FC = () => {
       }
 
       // Music/Podcast specific
-      if (category === "music" || category === "podcast") {
-        if (
-          formData.total_duration &&
-          !/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)
-        ) {
-          newErrors.total_duration =
-            "Total duration must be in HH:MM:SS format (e.g., 30:00:00)";
-        }
-      }
+      //if (category === "music" || category === "podcast") {
+      //  if (
+      //    formData.total_duration &&
+         // !/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)
+      //  ) {
+         // newErrors.total_duration =
+         //   "Total duration must be in HH:MM:SS format (e.g., 30:00:00)";
+      //  }
+      //}
 
       // Ebook specific
       if (category === "ebook") {
@@ -1866,6 +1891,99 @@ const EditSellerProductPage: React.FC = () => {
     }
   };
 
+
+{/*mood multi select*/}
+const MultiSelect = ({
+  label,
+  options,
+  selectedValues,
+  onChange,
+  required = false,
+}: any) => {
+  const [open, setOpen] = useState(false);
+
+  const toggleOption = (value: string) => {
+    if (selectedValues.includes(value)) {
+      onChange(selectedValues.filter((v: string) => v !== value));
+    } else {
+      onChange([...selectedValues, value]);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <label className="block font-['Open_Sans'] font-semibold text-[16px] mb-2 text-[#242E3A]">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+
+      {/* Input Box */}
+      <div
+        className="border border-gray-300 rounded-md px-3 py-2 bg-white cursor-pointer flex flex-wrap gap-2 min-h-[42px]"
+        onClick={() => setOpen(!open)}
+      >
+        {selectedValues.length === 0 ? (
+          <span className="text-gray-400">Select Mood</span>
+        ) : (
+          selectedValues.map((val: string) => {
+            const item = options.find((o: any) => o.id === val);
+            return (
+              <span
+                key={val}
+                className="bg-[#7077FE] text-white px-2 py-1 rounded-md text-sm flex items-center gap-1"
+              >
+                {item?.name}
+                <X
+                  size={14}
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleOption(val);
+                  }}
+                />
+              </span>
+            );
+
+            
+          })
+          
+        )}
+        <svg
+  className="w-4 h-4 absolute right-3 text-gray-500 pointer-events-none"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2"
+  viewBox="0 0 24 24"
+>
+  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+</svg>
+      </div>
+
+      {/* Dropdown List */}
+      {open && (
+        <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-md z-20">
+          {options.map((opt: any) => (
+            <div
+              key={opt.id}
+              onClick={() => toggleOption(opt.id)}
+              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                selectedValues.includes(opt.id)
+                  ? "bg-[#EEF3FF] text-[#7077FE]"
+                  : "text-gray-700"
+              }`}
+            >
+              {opt.name}
+            </div>
+          ))}
+        </div>
+      )}
+      
+    </div>
+    
+  );
+};
+
+
+
   return (
     <>
       <div
@@ -1914,29 +2032,34 @@ const EditSellerProductPage: React.FC = () => {
                 onChange={handleChange}
                 error={errors.discount_percentage}
               />
-              <div>
-                <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                  Mood <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="mood_id"
-                  value={formData.mood_id}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent cursor-pointer"
-                >
-                  <option value="">Select Mood</option>
-                  {moods?.map((mood: any) => (
-                    <option key={mood.id} value={mood.id}>
-                      {mood.name}
-                    </option>
-                  ))}
-                </select>
-                {errors.mood_id && (
-                  <span className="text-red-500 text-sm mt-1">
-                    {errors.mood_id}
-                  </span>
-                )}
-              </div>
+    {/*multipleselected*/}          
+<div>
+<MultiSelect
+  label="Mood"
+  required
+  options={moods}
+  selectedValues={formData.mood_ids}
+  onChange={(values: string[]) => {
+    setFormData((prev) => ({
+      ...prev,
+      mood_ids: values,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      mood_ids: "",
+    }));
+  }}
+/>
+
+{errors.mood_ids && (
+  <span className="text-red-500 text-sm">{errors.mood_ids}</span>
+)}
+</div>
+
+
+
+
             </div>
 
             {/* Video Category - Main Video Upload */}
@@ -2256,7 +2379,7 @@ const EditSellerProductPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Video Category - Duration */}
+              {/* Video Category - Duration 
               {category === "video" && (
                 <InputField
                   label="Duration (HH:MM:SS)"
@@ -2266,9 +2389,9 @@ const EditSellerProductPage: React.FC = () => {
                   onChange={handleChange}
                   error={errors.duration}
                 />
-              )}
+              )}*/}
 
-              {/* Music & Podcast - Total Duration */}
+              {/* Music & Podcast - Total Duration
               {(category === "music" || category === "podcast") && (
                 <InputField
                   label="Total Duration (HH:MM:SS)"
@@ -2278,7 +2401,7 @@ const EditSellerProductPage: React.FC = () => {
                   onChange={handleChange}
                   error={errors.total_duration}
                 />
-              )}
+              )} */}
 
               {/* Ebook - Author */}
               {category === "ebook" && (
@@ -2380,7 +2503,7 @@ const EditSellerProductPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Music/Podcast/Ebook/Course - Theme */}
+              {/* Music/Podcast/Ebook/Course - Theme 
               {(category === "music" ||
                 category === "podcast" ||
                 category === "ebook" ||
@@ -2394,7 +2517,7 @@ const EditSellerProductPage: React.FC = () => {
                   onChange={handleChange}
                   error={errors.theme}
                 />
-              )}
+              )}*/}
 
               {/* Art - Mediums */}
               {category === "art" && (
@@ -2407,7 +2530,7 @@ const EditSellerProductPage: React.FC = () => {
                 />
               )}
 
-              {/* Art - Modern Trends */}
+              {/* Art - Modern Trends 
               {category === "art" && (
                 <InputField
                   label="Modern Trends"

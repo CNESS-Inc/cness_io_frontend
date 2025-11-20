@@ -146,7 +146,7 @@ const handleSampleUpload = (index: number, url: string) => {
     product_title: "",
     price: 0,
     discount_percentage: 0,
-mood_id: [] as string[],
+mood_ids: [] as string[],
     thumbnail_url: "",
     overview: "",
     highlights: [] as string[],
@@ -554,8 +554,8 @@ mood_id: [] as string[],
         "Discount percentage must be between 0 and 100.";
     }
 
-if (!formData.mood_id || formData.mood_id.length === 0) {
-  newErrors.mood_id = "Please select at least one mood.";
+if (!formData.mood_ids || formData.mood_ids.length === 0) {
+  newErrors.mood_ids = "Please select at least one mood.";
 }
     if (!formData.thumbnail_url.trim())
       newErrors.thumbnail_url = "Thumbnail is required.";
@@ -606,7 +606,7 @@ if (!formData.mood_id || formData.mood_id.length === 0) {
         if (!valStr || parseFloat(valStr) <= 0)
           message = "Price must be greater than 0";
         break;
-      case "mood_id":
+      case "mood_ids":
         if (!valStr) message = "Please select a mood";
         break;
       case "thumbnail_url":
@@ -980,27 +980,27 @@ const MultiSelect = ({
   label="Mood"
   required
   options={moods}
-  selectedValues={formData.mood_id}
+  selectedValues={formData.mood_ids}
   onChange={(values: string[]) => {
     setFormData((prev) => ({
       ...prev,
-      mood_id: values,
+      mood_ids: values,
     }));
 
     setErrors((prev) => ({
       ...prev,
-      mood_id: "",
+      mood_ids: "",
     }));
   }}
 />
 
-{errors.mood_id && (
-  <span className="text-red-500 text-sm">{errors.mood_id}</span>
+{errors.mood_ids && (
+  <span className="text-red-500 text-sm">{errors.mood_ids}</span>
 )}
 
-              {errors.mood_id && (
+              {errors.mood_ids && (
                 <span className="text-red-500 text-sm mt-1">
-                  {errors.mood_id}
+                  {errors.mood_ids}
                 </span>
               )}
             </div>

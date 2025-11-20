@@ -116,7 +116,7 @@ const [storySummary, setStorySummary] = useState("");
     product_title: "",
     price: 0,
     discount_percentage: 0,
-   mood_id: [] as string[],
+   mood_ids: [] as string[],
     overview: "",
     highlights: [] as string[],
     total_duration: "",
@@ -388,8 +388,8 @@ const removeSample = (index: number) =>
       newErrors.discount_percentage = "Discount percentage must be between 0 and 100.";
     }
 
-if (!formData.mood_id || formData.mood_id.length === 0) {
-  newErrors.mood_id = "Please select at least one mood.";
+if (!formData.mood_ids || formData.mood_ids.length === 0) {
+  newErrors.mood_ids = "Please select at least one mood.";
 }
     if (!formData.thumbnail_url.trim()) newErrors.thumbnail_url = "Thumbnail url is required.";
 
@@ -399,12 +399,12 @@ if (!formData.mood_id || formData.mood_id.length === 0) {
       newErrors.highlights = "At least one highlight is required.";
     }
 
-    if (formData.total_duration) {
-      if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)) {
-        newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
-      }
-    }
-    if (!formData.total_duration.trim()) newErrors.total_duration = "Duration is required.";
+   // if (formData.total_duration) {
+     // if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)) {
+     //   newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
+    //  }
+    //}
+    //if (!formData.total_duration.trim()) newErrors.total_duration = "Duration is required.";
 
     const validFormats = ["MP3", "AAC", "WAV", "FLAC", "OGG"];
     if (!formData.format || !validFormats.includes(formData.format.toUpperCase())) {
@@ -471,7 +471,7 @@ if (!formData.mood_id || formData.mood_id.length === 0) {
         }
         break;
 
-      case "mood_id":
+      case "mood_ids":
         if (!valStr) message = "Mood Selection is required";
         break;
 
@@ -677,7 +677,7 @@ if (!formData.mood_id || formData.mood_id.length === 0) {
         product_title: formData.product_title,
         price: formData.price,
         discount_percentage: formData.discount_percentage,
-        mood_id: formData.mood_id,
+        mood_ids: formData.mood_ids,
         overview: formData.overview,
         highlights: formData.highlights,
         total_duration: formData.total_duration || "00:00",
@@ -972,22 +972,22 @@ const MultiSelect = ({
   label="Mood"
   required
   options={moods}
-  selectedValues={formData.mood_id}
+  selectedValues={formData.mood_ids}
   onChange={(values: string[]) => {
     setFormData((prev) => ({
       ...prev,
-      mood_id: values,
+      mood_ids: values,
     }));
 
     setErrors((prev) => ({
       ...prev,
-      mood_id: "",
+      mood_ids: "",
     }));
   }}
 />
 
-{errors.mood_id && (
-  <span className="text-red-500 text-sm">{errors.mood_id}</span>
+{errors.mood_ids && (
+  <span className="text-red-500 text-sm">{errors.mood_ids}</span>
 )}
             </div>
 

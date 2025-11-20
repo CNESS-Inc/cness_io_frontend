@@ -1,22 +1,15 @@
 import React, { useEffect, useState } from "react";
-<<<<<<< HEAD
-import { Star, ArrowRight, Heart, Video, 
-  //Clock,
-   Music, BookOpen, FileAudio, FileText, Palette } from "lucide-react";
-=======
 import {
   Star,
   ArrowRight,
   Heart,
   Video,
-  Clock,
   Music,
   BookOpen,
   FileAudio,
   FileText,
   Palette,
 } from "lucide-react";
->>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../ui/Toast/ToastProvider";
 import {
@@ -221,19 +214,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         overflow-hidden cursor-pointer flex flex-col 
         hover:shadow-lg transition-transform hover:scale-[1.02]
 
-<<<<<<< HEAD
-    /* Responsive card width */
-    w-full
-    max-w-[350px]
-    lg:max-w-[310px] 
-    md:max-w-[310px]                         /* desktop */
-    sm:max-w-[260px]        /* small tablets */
-    xs:max-w-[210px]        /* phones below 500px */
-    
-    /* Let height scale automatically */
-    h-auto
-  "
-=======
         /* Responsive card width */
         w-full
         max-w-[300px]
@@ -244,7 +224,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         /* Let height scale automatically */
         h-auto
       "
->>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
     >
       {/* Product Image */}
       <div className="relative w-full aspect-266/149 rounded-t-[14px] overflow-hidden">
@@ -273,11 +252,28 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Info */}
       <div className="p-4 flex flex-col justify-between space-y-3 flex-1">
         <div className="flex items-center justify-between">
-                    {product?.moods && product?.moods.length > 0 ? product?.moods?.map((i:any)=>{
-            return  <span className="bg-purple-50 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
-            {i?.icon} {i?.name}
-          </span>
-          }) :<></>}
+                    <div className="flex items-center gap-2 flex-wrap">
+  {product?.moods && product.moods.length > 0 && (
+    <>
+      {/* Show only first 2 moods */}
+      {product.moods.slice(0, 1).map((mood: any) => (
+        <span
+          key={mood.id}
+          className="bg-purple-50 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold"
+        >
+          {mood.icon} {mood.name}
+        </span>
+      ))}
+
+      {/* If more than 2, show +N badge */}
+      {product.moods.length > 1 && (
+        <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">
+          +{product.moods.length - 1}
+        </span>
+      )}
+    </>
+  )}
+</div>
          
           <div className="flex items-center space-x-1">
             <Star className="w-4 h-4 text-[#7077FE] fill-[#7077FE]" />
@@ -287,16 +283,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
         <div>
-          <h3 className="font-['Open_Sans'] font-semibold text-[14px] leading-[20px] text-[#1A1A1A] truncate">
+          <h3 className="font-semibold text-sm md:text-base text-gray-800 leading-tight mb-1 line-clamp-2">
             {product.title}
           </h3>
-<<<<<<< HEAD
-          <p className="font-['Open_Sans'] font-normal text-[11px] leading-[20px] text-gray-500 truncate">{product.author}</p>
-=======
           <p className="text-xs md:text-sm text-gray-500 truncate">
             {product.author}
           </p>
->>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
         </div>
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
@@ -306,53 +298,32 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </span>
             )}
             <div className="flex items-center space-x-1">
-<span className="font-['Open_Sans'] font-semibold text-gray-800 text-sm md:text-[14px] leading-none">
+              <span className="font-semibold text-gray-800 text-sm md:text-base">
                 ${product.currentPrice}
               </span>
               {product.discount && product?.discount > 0 && (
-<<<<<<< HEAD
-                <span className="text-[10px] text-[#7077FE]">({product.discount}%)</span>
-=======
                 <span className="text-xs text-blue-500">
                   ({product.discount}%)
                 </span>
->>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
               )}
             </div>
           </div>
 
-<<<<<<< HEAD
-
-<div className="flex items-center gap-1 w-full justify-end">
-  
-  {/* Cart Button */}
-  <button
-    onClick={handleAddToCart}
-    disabled={isAddingToCart}
-    className="flex items-center justify-center
-    rounded-full
-    border border-[#7077FE]/40
-    bg-white
-    hover:bg-blue-50
-    transition-transform hover:scale-110
-=======
           <div className="flex items-center gap-1 w-full justify-end">
             {/* Cart Button */}
             <button
               onClick={handleAddToCart}
               disabled={isAddingToCart}
               className="flex items-center justify-center 
-     
                 hover:bg-blue-50 transition-transform hover:scale-110
->>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
 
-                w-7 h-7        /* mobile */
+                w-8 h-8        /* mobile */
                 sm:w-8 sm:h-8  /* tablet */
                 md:w-8 md:h-8  /* desktop */
               "
             >
               <FiShoppingCart
-                className={`w-4 h-4 ${
+                className={`w-5 h-5 ${
                   carted ? "text-[#7077FE] fill-[#7077FE]" : "text-[#7077FE]"
                 }`}
               />
@@ -365,37 +336,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 relative bg-[#7077FE] text-white rounded-full font-semibold flex items-center
                 overflow-hidden group whitespace-nowrap shrink
 
-<<<<<<< HEAD
-    h-8 px-3
-    sm:h-8 sm:px-3
-    md:h-9 md:px-4
-=======
                 h-8 px-3
                 sm:h-8 sm:px-4
                 md:h-9 md:px-4
->>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
 
                 text-[10px] sm:text-[11px] md:text-[11px]
               "
             >
               {/* Text that can shrink */}
-              <span className="mr-4 sm:mr-5 md:mr-6 shrink">Buy Now</span>
+              <span className="mr-4 sm:mr-4 md:mr-4 shrink">Buy Now</span>
 
-<<<<<<< HEAD
-    flex-shrink
-  "
->
-  {/* Text that can shrink */}
-  <span className="mr-4 sm:mr-4 md:mr-4 flex-shrink">
-    Buy Now
-  </span>
-=======
               {/* Arrow circle — also flexible */}
               <span
                 className="
                   absolute right-1 top-1/2 -translate-y-1/2
                   bg-white rounded-full flex items-center justify-center shadow
->>>>>>> 1e6641104d518df6e31532780ebabe43b2d52aea
 
                   w-5 h-5
                   sm:w-6 sm:h-6
@@ -430,7 +385,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {product.category}
               </span>
             </div>
-           {/* <div className="flex items-center space-x-1">
+            {/*<div className="flex items-center space-x-1">
               <Clock className="w-4 h-4 text-[#7077FE]" />
               <span className="text-xs md:text-sm text-gray-800">
                 {product.duration}

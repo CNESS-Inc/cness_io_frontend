@@ -429,7 +429,7 @@ const handleSelectCategory = (categoryName: string) => {
     product_title: "",
     price: 0,
     discount_percentage: 0,
-     mood_id: [] as string[],
+     mood_ids: [] as string[],
     video_url: "", // video_id
     overview: "",
     highlights: [] as string[],
@@ -547,8 +547,8 @@ const handleSampleTrackUpload = (sampleId: string, index: number) => {
       newErrors.discount_percentage =
         "Discount percentage must be between 0 and 100.";
     }
-if (!formData.mood_id || formData.mood_id.length === 0) {
-  newErrors.mood_id = "Mood selection is required.";
+if (!formData.mood_ids || formData.mood_ids.length === 0) {
+  newErrors.mood_ids = "Mood selection is required.";
 }
 
 
@@ -631,7 +631,7 @@ if (mainVideos.length === 0) {
         }
         break;
 
-      case "mood_id":
+      case "mood_ids":
         if (!valStr) message = "Mood Selection is required";
         break;
 
@@ -1022,22 +1022,22 @@ const MultiSelect = ({
   label="Mood"
   required
   options={moods}
-  selectedValues={formData.mood_id}
+  selectedValues={formData.mood_ids}
   onChange={(values: string[]) => {
     setFormData((prev) => ({
       ...prev,
-      mood_id: values,
+      mood_ids: values,
     }));
 
     setErrors((prev) => ({
       ...prev,
-      mood_id: "",
+      mood_ids: "",
     }));
   }}
 />
 
-{errors.mood_id && (
-  <span className="text-red-500 text-sm">{errors.mood_id}</span>
+{errors.mood_ids && (
+  <span className="text-red-500 text-sm">{errors.mood_ids}</span>
 )}
             </div>
           </div>
