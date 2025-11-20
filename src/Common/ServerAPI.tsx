@@ -262,7 +262,10 @@ export const EndPoint = {
   get_products: "/vendor/products",
   get_seller_products: "/seller-onboarding/my-products",
   delete_seller_products: "/marketplace-product/product",
-  get_wallet: "/marketplace-product/wallet",
+  get_wallet: "/seller-sales/wallet",
+  get_withdrawal_history: "/seller-sales/withdrawals",
+  submit_withdrawal: "/seller-sales/withdraw",
+  update_bank_details: "/seller-sales/bank-details",
 
   // marketplace product endpoints
   get_categories: "/marketplace-product/product-categories",
@@ -1940,11 +1943,27 @@ export const DeleteSellerProduct = (id: any) => {
   return executeAPI(ServerAPI.APIMethod.DELETE, {}, `${EndPoint.delete_seller_products}/${id}`);
 };
 
-export const get_wallet = (id: string | number) => {
+export const get_wallet = () => {
   return executeAPI(
     ServerAPI.APIMethod.GET,
     {},
-    `${EndPoint.get_wallet}/${id}`
+    EndPoint.get_wallet
+  );
+};
+
+export const get_withdrawal_history = () => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.get_withdrawal_history
+  );
+};
+
+export const submit_withdrawal = (payload: { amount: number }) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    payload,
+    EndPoint.submit_withdrawal
   );
 };
 
@@ -1957,7 +1976,7 @@ export const update_bank_details = (payload: {
   return executeAPI(
     ServerAPI.APIMethod.PUT,
     payload,
-    "/seller-sales/bank-details"
+    EndPoint.update_bank_details
   );
 };
 
