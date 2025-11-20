@@ -36,7 +36,7 @@ interface Product {
   duration: string;
   category: string;
   mood_icon?: any;
-  mood?: string;
+  moods?: { name: string; icon: string, id: string,slug:string}[];
   isLike?: boolean;
   isCarted?: boolean;
 }
@@ -50,6 +50,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onWishlistUpdate,
 }) => {
+  console.log('product', product)
   const [liked, setLiked] = useState(false);
   const [carted, setCarted] = useState(false);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
@@ -252,9 +253,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Info */}
       <div className="p-4 flex flex-col justify-between space-y-3 flex-1">
         <div className="flex items-center justify-between">
-          <span className="bg-purple-50 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
-            {product.mood_icon} {product.mood}
+                    {product?.moods && product?.moods.length > 0 ? product?.moods?.map((i:any)=>{
+            return  <span className="bg-purple-50 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
+            {i?.icon} {i?.name}
           </span>
+          }) :<></>}
+         
           <div className="flex items-center space-x-1">
             <Star className="w-4 h-4 text-[#7077FE] fill-[#7077FE]" />
             <span className="text-xs font-semibold text-gray-800">

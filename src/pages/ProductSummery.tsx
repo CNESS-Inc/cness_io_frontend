@@ -9,7 +9,7 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import ReviewsTab from "../components/MarketPlace/library/ReviewsTab";
 
 export default function ProductSummery() {
-    const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const pid = searchParams.get("pid") || "";
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -24,7 +24,7 @@ export default function ProductSummery() {
   const fetchOrderItemItems = async () => {
     setIsLoading(true);
     try {
-      const response = await GetOrderDetailsByOrdId(id || "",pid || "");
+      const response = await GetOrderDetailsByOrdId(id || "", pid || "");
       console.log('response', response)
       const items = response?.data?.data?.items || [];
       setOrderItems(response?.data?.data || []);
@@ -105,7 +105,9 @@ export default function ProductSummery() {
                     {/* Peaceful */}
                     <span className="flex items-center gap-0.5">
                       {/* <MdOutlineEmojiNature className="w-3 h-3 text-gray-500" /> */}
-                      <span className="text-xs text-[#7077FE]">{`${item?.mood?.icon} ${item?.mood?.name}`}</span>
+                      {item?.moods && item?.moods.length > 0 ? item?.moods?.map((i: any) => {
+                        return <span className="text-xs text-[#7077FE]">{`${i?.icon} ${i?.name}`}</span>
+                      }) : <></>}
                     </span>
                     <span className="text-indigo-200 mx-1">•</span>
                     {/* Purchased Date */}

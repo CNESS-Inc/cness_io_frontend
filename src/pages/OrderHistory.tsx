@@ -29,12 +29,12 @@ type OrderItem = {
   product_thumbnail: string | null;
   category: string;
   shop_name: string;
-  mood: {
+  moods: {
     id: string;
     name: string;
-    // icon: string;
+    icon: string;
     slug: string;
-  };
+  }[];
   shop_logo: string | null;
   quantity: number;
   price: string;
@@ -318,9 +318,12 @@ const OrderHistory = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                                   {getCategoryIcon(item.category)}
                                   {item.category}
                                 </span>
-                                <span>
-                                  {/* {item.mood.icon} */}
-                                  {item.mood.name}</span>
+                                {item?.moods && item?.moods.length > 0 ? item?.moods?.map((i: any) => {
+                                  return <span>
+                                    {i?.icon}
+                                    {i?.name}</span>
+                                }) : <></>}
+
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-4 h-4 text-[#7077FE]" />
                                   Purchased on <strong> {new Date(
