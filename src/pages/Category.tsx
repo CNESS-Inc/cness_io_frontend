@@ -100,7 +100,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   return (
     <div
       className={`transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-        } pt-[30px] px-6`}
+        } pt-[10px] px-6`}
     >
       <h2 className="font-[Poppins] font-semibold text-[20px] leading-[100%] text-[#242E3A] mb-8">
         Shop by Categories
@@ -136,7 +136,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       </div>
 
       {/* 📦 Main Section */}
-<div className="flex w-full max-w-[1600px] mx-auto px-1 py-10 gap-8 relative">
+<div className="flex w-full mx-auto px-1 gap-8 relative">
         <div className="flex-1">
           {/* Mobile Filter Button */}
           <button
@@ -152,7 +152,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
               <LoadingSpinner />
             </div>
           ) : (
-            <div className="grid gap-6 
+            <div className="grid gap-3
     grid-cols-[repeat(auto-fill,minmax(250px,1fr))]">
               {products.length > 0 ? (
                 products.map((product) => (
@@ -160,7 +160,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                     key={product.id}
                     product={{
                       id: product.id,
-                      title: product.product_title,
+                      title: product.product_name,                      
                       author: product.seller?.shop_name || product.author ||"Unknown",
                       rating: product?.rating?.average,
                       reviews: product?.rating?.total_reviews,
@@ -192,9 +192,19 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
         {/* 🧰 Right Sidebar Filter */}
 {/* 🧰 Right Sidebar Filter (Desktop Fixed) */}
-<div className="hidden md:block w-[280px] sticky top-[100px] h-fit">
-          <Filter filters={filters} onFilterChange={handleFilterChange} />
-        </div>
+<div
+  className="
+    hidden md:block w-[260px] 
+    sticky 
+    top-[90px]        /* Default */
+    md:top-[70px]     /* Tablet */
+    lg:top-[30px]     /* Laptop */
+    xl:top-[30px]     /* Large screen */
+    -mt-[10px]        /* Pull slightly upward */
+    h-fit
+  "
+>  <Filter filters={filters} onFilterChange={handleFilterChange} />
+</div>
       </div>
 
       {/* 📱 Mobile Filter Drawer */}
