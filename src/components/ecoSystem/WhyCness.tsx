@@ -34,8 +34,7 @@ export default function WhyCness() {
     <div
       className="w-full flex mx-auto flex-col justify-center items-center py-16 px-4"
       style={{
-        background:
-          "linear-gradient(101.22deg, #ACA0F8 -6.56%, #CE8FFC 61.3%, #FFF2C0 129.16%)",
+        background: "linear-gradient(101.22deg, #7661FB -6.56%, #9E2BF1 61.3%)",
       }}
     >
       <div className="invisible lg:visible hidden lg:flex absolute top-0 left-0 w-60">

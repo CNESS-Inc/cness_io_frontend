@@ -259,7 +259,7 @@ export const EndPoint = {
   delete_seller_documents: "/seller-onboarding/remove",
   save_extra_banners: "/seller-onboarding/save-extra-banners",
   remove_extra_banners: "/seller-onboarding/remove/extra-banners",
-  seller_sales_history: "/api/seller-sales/history",
+  seller_sales_history: "/seller-sales/history",
   seller_dashboard: "/seller-sales/dashboard",
   remove_specific_extra_banners: "/seller-onboarding/remove/extra-banners",
   remove_team_member_image: "/seller-onboarding/remove/team-member-image",
@@ -1179,6 +1179,20 @@ export const GetUsersearchProfileDetails = (
     page_no: page,
     limit: limit,
     badge: selectedCert,
+  };
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_search_profile
+  );
+};
+export const GetPublicDetails = (
+  page: any,
+  limit: any,
+): ApiResponse => {
+  const data: Partial<any> = {
+    page_no: page,
+    limit: limit,
   };
   return executeAPI(
     ServerAPI.APIMethod.POST,

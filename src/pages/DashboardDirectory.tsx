@@ -9,6 +9,7 @@ import {
   GetBadgeListDetails,
   GetInspiringCompanies,
   GetPopularCompanyDetails,
+  GetPublicDetails,
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
@@ -60,6 +61,7 @@ export default function DashboardDirectory() {
   const [order, setOrder] = useState<"asc" | "desc">("asc");
 
   const [isLoading, setIsLoading] = useState({
+    public: false,
     popular: false,
     aspiring: false,
     inspiring: false,
@@ -122,6 +124,57 @@ export default function DashboardDirectory() {
     }
   };
 
+  const fetchPublicCompany = async (page: number = 1) => {
+    setIsLoading((prev) => ({ ...prev, popular: true }));
+    try {
+      const res = await GetPublicDetails(
+        page,
+        popularPagination.itemsPerPage
+      );
+      console.log("🚀 ~ fetchPopularCompany ~ res:", res);
+
+      if (res?.data?.data) {
+        const transformedCompanies = res.data.data.rows.map((company: any) => {
+          return {
+            id: company.id,
+            name: company.name,
+            location: company.location || "",
+            domain: company.domain || "General",
+            category: "Popular",
+            logo: company.profile_picture || iconMap["companylogo1"],
+            banner: company.profile_banner || iconMap["companycard1"],
+            description: company.bio || "No description available",
+            tags: company.tags || [],
+            rating: company.average,
+            isCertified: company.is_certified || true,
+            is_person: company.is_person,
+            is_organization: company.is_organization,
+            level: company?.level?.level,
+            professions: company?.professions,
+            interests: company?.interests,
+          };
+        });
+
+        setPopularCompanies(transformedCompanies);
+
+        setPopularPagination((prev) => ({
+          ...prev,
+          currentPage: page,
+          totalPages: Math.ceil(res.data.data.count / prev.itemsPerPage),
+          totalItems: res.data.data.count,
+        }));
+      }
+    } catch (error: any) {
+      console.error("Error fetching popular companies:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsLoading((prev) => ({ ...prev, popular: false }));
+    }
+  };
   const fetchPopularCompany = async (page: number = 1) => {
     setIsLoading((prev) => ({ ...prev, popular: true }));
     try {
@@ -279,9 +332,10 @@ export default function DashboardDirectory() {
     if (!hasFetched.current) {
       fetchBadge();
       fetchDomain();
-      fetchPopularCompany();
-      fetchInspiringCompany();
-      fetchAspiringCompany();
+      fetchPublicCompany()
+      // fetchPopularCompany();
+      // fetchInspiringCompany();
+      // fetchAspiringCompany();
       hasFetched.current = true;
     }
   }, []);
@@ -521,9 +575,54 @@ export default function DashboardDirectory() {
         </section>
       ) : (
         <>
-          <section className="py-12 px-1 bg-[#f9f9f9] border-t border-gray-100 pt-2">
+        <section className="py-12 px-1 bg-[#f9f9f9] border-t border-gray-100 pt-2">
             <div className="w-full mx-auto">
-              {/*<h3 className="text-lg font-semibold mb-4">Popular People</h3>*/}
+              {/* <h3 className="text-lg font-semibold mb-4">Popular People</h3> */}
+              {isLoading.public ? (
+                <div className="flex justify-center py-10">
+                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+                </div>
+              ) : popularCompanies.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
+                    {sortByName(popularCompanies).map((company) => {
+                      console.log("🚀 ~ DashboardDirectory ~ company:", company)
+                      return <CompanyCard
+                        id={company.id}
+                        key={company.id}
+                        name={company.name}
+                        domain={company.domain}
+                        logoUrl={company.logo}
+                        bannerUrl={company.banner}
+                        location={company.location}
+                        description={company.description}
+                        tags={company.tags}
+                        rating={company.rating}
+                        isCertified={company.isCertified}
+                        is_organization={company.is_organization}
+                        is_person={company.is_person}
+                        routeKey={company.id}
+                        level={company.level}
+                        interest={company.interests}
+                        profession={company.professions}
+                      />;
+                    })}
+                  </div>
+                  <Pagination
+                    pagination={popularPagination}
+                    isLoading={isLoading.popular}
+                    onPageChange={fetchPopularCompany}
+                    align="end"
+                  />
+                </>
+              ) : (
+                <p className="text-gray-500">No popular people found.</p>
+              )}
+            </div>
+          </section>
+          {/* <section className="py-12 px-1 bg-[#f9f9f9] border-t border-gray-100 pt-2">
+            <div className="w-full mx-auto">
+              <h3 className="text-lg font-semibold mb-4">Popular People</h3>
               {isLoading.popular ? (
                 <div className="flex justify-center py-10">
                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
@@ -554,23 +653,23 @@ export default function DashboardDirectory() {
                       />;
                     })}
                   </div>
-                  {/* <Pagination
+                  <Pagination
                     pagination={popularPagination}
                     isLoading={isLoading.popular}
                     onPageChange={fetchPopularCompany}
                     align="end"
-                  />*/}
+                  />
                 </>
               ) : (
                 <p className="text-gray-500">No popular people found.</p>
               )}
             </div>
-          </section>
+          </section> */}
 
           {/* Aspiring */}
-          <section className="py-12 border-t border-gray-100">
+          {/* <section className="py-12 border-t border-gray-100">
             <div className="w-full mx-auto">
-              {/*<h3 className="text-lg font-semibold mb-4">Aspiring People</h3>*/}
+              <h3 className="text-lg font-semibold mb-4">Aspiring People</h3>
               {isLoading.aspiring ? (
                 <div className="flex justify-center py-10">
                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
@@ -598,23 +697,23 @@ export default function DashboardDirectory() {
                       />
                     ))}
                   </div>
-                  {/* <Pagination
+                  <Pagination
                     pagination={aspiringPagination}
                     isLoading={isLoading.aspiring}
                     onPageChange={fetchAspiringCompany}
                     align="end"
-                  />*/}
+                  />
                 </>
               ) : (
                 <p className="text-gray-500">No aspiring people found.</p>
               )}
             </div>
-          </section>
+          </section> */}
 
           {/* Inspiring */}
-          <section className="py-12 border-t border-gray-100">
+          {/* <section className="py-12 border-t border-gray-100">
             <div className="w-full mx-auto">
-              {/*<h3 className="text-lg font-semibold mb-4">Inspiring People</h3> */}
+              <h3 className="text-lg font-semibold mb-4">Inspiring People</h3>
               {isLoading.inspiring ? (
                 <div className="flex justify-center py-10">
                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
@@ -653,7 +752,7 @@ export default function DashboardDirectory() {
                 <p className="text-gray-500">No inspiring people found.</p>
               )}
             </div>
-          </section>
+          </section> */}
         </>
       )}
     </>

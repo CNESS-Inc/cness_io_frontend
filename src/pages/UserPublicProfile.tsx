@@ -124,6 +124,7 @@ export default function UserProfileView() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mineBestPractices, setmineBestPractices] = useState<any[]>([]);
+
   const [expandedDescriptions] = useState<Record<string, boolean>>({});
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
