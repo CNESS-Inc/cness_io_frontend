@@ -8,34 +8,35 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "./AwarenessSection.css";
+import creation1 from "../../../assets/creation1.jpg"
+import creation2 from "../../../assets/creation2.jpg"
+import creation3 from "../../../assets/creation3.jpg"
+import creation4 from "../../../assets/creation4.png"
 
 export default function AwarenessSection() {
   const cards = [
     {
-      title: "E Books",
+      title: "E-books",
       description:
         "Discover our 21-day guided journaling ebook designed to help you reset your mindset and embrace a positive outlook.",
-      image:
-        "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911069/ebooks_1_nbnpop.webp",
+      image:creation3,
       altText: "Individual joining certification program",
       bg_image:
         "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
     },
     {
-      title: "Digital Books",
+      title: "Musics",
       description:
-        "Join our 21-day guided journaling webinar to refresh your mindset and cultivate positivity.",
-      image:
-        "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911353/digitalbooks_xg8gvc.webp",
+        "Perfect for slow evenings, mindful moments, or letting your space fill with timeless groove.",
+      image:creation1,
       altText: "Organization certification process",
       bg_image:
         "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911482/product-bg-2_pyjtzl.png')",
     },
     {
-      title: "Library",
-      description: "High-resolution images capturing the beauty of nature",
-      image:
-        "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911302/library_gpys6o.webp",
+      title: "Podcasts",
+      description: "From mindful talks to inspiring stories, each episode brings knowledge, clarity, and depth to your everyday listening.",
+      image:creation4,
       altText:
         "Check out our 21-day guided journaling ebook, crafted to help you shift your mindset and cultivate a more positive perspective.",
       bg_image:
@@ -45,22 +46,21 @@ export default function AwarenessSection() {
       title: "Our specially curated audio tapes.",
       description:
         "Listen to our 21-day guided journaling audio series, designed to help you transform your mindset and foster a more positive outlook.",
-      image:
-        "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911382/audiotapes_pw1bsr.webp",
+      image:creation2,
       altText: "Mentorship and partnership opportunities",
       bg_image:
         "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
     },
-    {
-      title: "Library",
-      description:
-        "Discover our 21-day guided journaling ebook designed to help you reset your mindset and embrace a positive outlook",
-      image:
-        "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911302/library_gpys6o.webp",
-      altText: "Individual joining certification program",
-      bg_image:
-        "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
-    },
+    // {
+    //   title: "Library",
+    //   description:
+    //     "Discover our 21-day guided journaling ebook designed to help you reset your mindset and embrace a positive outlook",
+    //   image:
+    //     "https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911302/library_gpys6o.webp",
+    //   altText: "Individual joining certification program",
+    //   bg_image:
+    //     "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
+    // },
   ];
 
   const navigate = useNavigate();
