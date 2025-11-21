@@ -1186,6 +1186,20 @@ export const GetUsersearchProfileDetails = (
     EndPoint.directory_search_profile
   );
 };
+export const GetPublicDetails = (
+  page: any,
+  limit: any,
+): ApiResponse => {
+  const data: Partial<any> = {
+    page_no: page,
+    limit: limit,
+  };
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_search_profile
+  );
+};
 
 // Social APIS
 export const GetPostsDetails = (page: any) => {
