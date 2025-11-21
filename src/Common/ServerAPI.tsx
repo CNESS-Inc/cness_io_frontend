@@ -1313,10 +1313,12 @@ export const PostsLike = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.like);
 };
 
-export const GetComment = (id: any) => {
+export const GetComment = (id: any,page:any) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["post_id"] = id;
+  params["page_no"] = page;
+
   return executeAPI(
     ServerAPI.APIMethod.GET,
     data,

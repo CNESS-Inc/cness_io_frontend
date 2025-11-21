@@ -824,7 +824,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       <div className=" px-4 pt-5 pb-4 sm:p-6 sm:pb-4 z-10 relative">
         <h1
           className="poppins text-xl sm:text-xl md:text-2xl text-center font-bold mb-6 
-           bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
+           bg-linear-to-b from-[#4E4E4E] to-[#232323] 
            text-transparent bg-clip-text"
         >
           Login
@@ -854,7 +854,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
               name="email"
               required
               placeholder="Enter your email"
-              className={`w-full px-3 py-2 rounded-[12px] border ${
+              className={`w-full px-3 py-2 rounded-xl border ${
                 loginErrors.email ? "border-red-500" : "border-[#CBD5E1]"
               } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
             />
@@ -876,7 +876,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
               name="password"
               required
               placeholder="Enter your Password"
-              className={`w-full px-3 py-2 rounded-[12px] border ${
+              className={`w-full px-3 py-2 rounded-xl border ${
                 loginErrors.password ? "border-red-500" : "border-[#CBD5E1]"
               } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
             />
@@ -932,7 +932,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             <Button
               type="submit"
               onClick={() => handleTypeSelection(1)}
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 py-[16px] px-[24px] rounded-full transition-colors text-white duration-500 ease-in-out"
+              className="bg-linear-to-r from-indigo-500 to-purple-500 py-4 px-6 rounded-full transition-colors text-white duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >
@@ -940,7 +940,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             </Button>
             <Button
               onClick={() => handleTypeSelection(2)}
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 py-[16px] px-[24px] rounded-full transition-colors text-white duration-500 ease-in-out"
+              className="bg-linear-to-r from-indigo-500 to-purple-500 py-4 px-6 rounded-full transition-colors text-white duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >
@@ -1270,7 +1270,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                 className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                  <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                     Popular
                   </div>
                 )}
@@ -1314,7 +1314,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                   checked={isAnnual}
                   onChange={() => setIsAnnual(!isAnnual)}
                 />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
               </div>
               <span className="ml-3 text-sm font-medium text-gray-700">
                 Annual billing
@@ -1349,7 +1349,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                 className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                  <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                     Popular
                   </div>
                 )}
@@ -1393,7 +1393,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                   checked={isAnnual}
                   onChange={() => setIsAnnual(!isAnnual)}
                 />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
               </div>
               <span className="ml-3 text-sm font-medium text-gray-700">
                 Annual billing
@@ -1442,7 +1442,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                 name="email"
                 required
                 placeholder="Enter your email"
-                className={`w-full px-3 py-2 rounded-[12px] border ${
+                className={`w-full px-3 py-2 rounded-xl border ${
                   resetPasswordErrors.email
                     ? "border-red-500"
                     : "border-[#CBD5E1]"
@@ -1477,7 +1477,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
       <Modal isOpen={activeModal === "success"} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
-          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
+          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-linear-to-r from-[#7077FE] to-[#9747FF] ">
             <svg
               className="h-30 w-30 text-white"
               fill="none"

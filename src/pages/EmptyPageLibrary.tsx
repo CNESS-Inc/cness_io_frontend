@@ -51,7 +51,7 @@ export default function EmptyPageLibrary() {
         </h2>
         {/* Empty state */}
         <div className="w-full flex justify-center items-center flex-1">
-          <div className="w-[280px] w-full h-auto flex flex-col items-center text-center gap-4
+          <div className="w-[280px] h-auto flex flex-col items-center text-center gap-4
             sm:w-[320px] sm:gap-5 sm:mt-2
             md:w-[350px] md:gap-6 md:mt-4
             lg:w-[367px] lg:mt-8

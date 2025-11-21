@@ -70,14 +70,14 @@ export default function FeaturedSection() {
   const heading = (
     <h2 
       style={{ fontFamily: "Poppins, sans-serif" }}
-      className="poppins featured-heading lg:text-[42px] md:text-[42px] text-[28px] font-medium bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text overflow-x-hidden"
+      className="poppins featured-heading lg:text-[42px] md:text-[42px] text-[28px] font-medium bg-linear-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text overflow-x-hidden"
     >
       Share Your Voice with a <br />
       Supportive{" "}
       <span
         className={
           step >= 1
-            ? "bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text transition-all duration-500"
+            ? "bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text transition-all duration-500"
             : "text-[#232323] transition-all duration-500"
         }
       >
@@ -87,7 +87,7 @@ export default function FeaturedSection() {
   );
 
   return (
-    <section className="bg-[#fff] px-4 sm:px-6 pb-8 sm:pb-12 lg:py-[72px] pt-10" ref={sectionRef}>
+    <section className="bg-white px-4 sm:px-6 pb-8 sm:pb-12 lg:py-[72px] pt-10" ref={sectionRef}>
       <div className="max-w-[1336px] mx-auto relative h-[600px]">
         <div className="w-full text-center absolute lg:top-[50%] md:top-[35%] top-[30%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-10">
           {heading}
@@ -140,10 +140,10 @@ export default function FeaturedSection() {
             (step >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")
           }
         >
-          <h5 className="poppins font-[500] text-[18px] font-semibold mb-2">
+          <h5 className="poppins font-medium text-[18px] mb-2">
             Go live. Share your voice. Be seen by the conscious world.
           </h5>
-          <p className="font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424]">
+          <p className="font-['Open_Sans'] font-light text-[16px] leading-6 tracking-[0px] text-[#242424]">
             Host Live Talks. Stream Music. Share Reflections. Submit Your Content <br className="lg:block md:block hidden" />
             To Be Featured On AriOme — Our Curated Stream Of Purpose-Led <br className="lg:block md:block hidden" />
             Creators, Artists, And Changemakers.
