@@ -55,10 +55,9 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
     };
 
 const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];   // ✅ Only ONE file
+    const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file size (50MB max)
     if (file.size > 50 * 1024 * 1024) {
         showToast({
             message: "Sample file size should be less than 50MB",
@@ -71,50 +70,62 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsUploading(true);
 
     try {
-        // ------------------------
-        // 🎨 ART SAMPLE UPLOAD
-        // ------------------------
+        let fd = new FormData();
+        let apiKey = "";
+        let sampleUrl = "";
+
+        // 🎨 ART SAMPLE
         if (productType === "art") {
-            const fd = new FormData();
             fd.append("sample_image", file);
 
             const res = await UploadArtSampleImage(fd);
-            const sampleUrl = res.data.data.sample_image_url;
+            sampleUrl = res?.data?.data?.sample_image_url;
 
-            onUploadSuccess(sampleUrl, sampleUrl, sampleUrl); // send to parent
-
+            onUploadSuccess(sampleUrl, sampleUrl, sampleUrl);
             setUploadedFile(file.name);
-            showToast({
-                message: "Sample image uploaded successfully!",
-                type: "success",
-                duration: 3000,
-            });
 
+            showToast({ message: "Sample image uploaded!", type: "success" });
             return;
         }
 
-        // ------------------------
-        // 🎵 OTHER CATEGORIES - AUDIO/VIDEO
-        // ------------------------
+        // 🎥 VIDEO / COURSE SAMPLE
+        if (productType === "video" || productType === "course") {
+            fd.append("sample_video", file);
+            apiKey = "sample-video";
+
+            const res = await UploadProductDocument(apiKey, fd);
+            sampleUrl = res?.data?.data?.sample_video_url;
+
+            onUploadSuccess(sampleUrl, sampleUrl, sampleUrl);
+            setUploadedFile(file.name);
+
+            showToast({ message: "Sample video uploaded!", type: "success" });
+            return;
+        }
+
+        // 🎵 MUSIC / PODCAST SAMPLE (audio)
+        if (productType === "music") {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    for (const file of files) {
         const fd = new FormData();
         fd.append("sample_track", file);
 
         const res = await UploadProductDocument("sample-track", fd);
-        const data = res?.data?.data;
 
-        const url =
-            data.sample_track_url ||
-            data.sample_audio_url ||
-            data.sample_video_url;
+        onUploadSuccess(
+            res?.data?.data?.sample_track_public_id,   // public id
+            res?.data?.data?.sample_track_url,         // url
+            file.name
+        );
+    }
 
-        onUploadSuccess(url, url, url);
-
-        setUploadedFile(file.name);
-        showToast({
-            message: "Sample file uploaded successfully!",
-            type: "success",
-            duration: 3000,
-        });
+    setUploadedFile(`${files.length} files uploaded`);
+    showToast({ message: "Sample audio uploaded!", type: "success" });
+    setIsUploading(false);
+    return;
+}
 
     } catch (error) {
         showToast({
@@ -127,7 +138,6 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (fileRef.current) fileRef.current.value = "";
     }
 };
-
     const handleRemove = () => {
         setUploadedFile(null);
         setIsDonated(false);
@@ -187,13 +197,14 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
                     />
                 </svg>
 
-                <input
+     <input
   ref={fileRef}
   type="file"
   accept={getAcceptTypes()}
   onChange={handleFileChange}
   className="hidden"
   disabled={isUploading}
+  multiple={productType === "music"}   
 />
 
                 {uploadedFile ? (
