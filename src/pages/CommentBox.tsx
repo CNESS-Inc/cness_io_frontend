@@ -7,10 +7,10 @@ import {
   // PostChildCommentLike,
   GetChildComments,
   getFriendsForTagging,
-  // DeleteComment,
-  // DeleteChildComment,
-  // UpdateComment,
-  // UpdateChildComment,
+  DeleteComment,
+  DeleteChildComment,
+  UpdateComment,
+  UpdateChildComment,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useMention } from "../hooks/useMention";
@@ -446,30 +446,31 @@ const CommentBox = ({
     if (!editText.trim() || !editingComment) return;
 
     try {
-      // const formattedData = {
-      //   text: editText,
-      //   mentioned_user_ids: editMentions.map((mention) => mention.id),
-      // };
+      const formattedData = {
+        id:editingComment,
+        text: editText,
+        mentioned_user_ids: editMentions.map((mention) => mention.id),
+      };
 
-      // const response = await UpdateComment(editingComment, formattedData);
+      const response = await UpdateComment(formattedData);
 
-      // if (response?.data?.data) {
-      //   setComments((prev) =>
-      //     prev.map((comment) =>
-      //       comment.id === editingComment
-      //         ? { ...comment, text: editText }
-      //         : comment
-      //     )
-      //   );
-      //   setEditingComment(null);
-      //   setEditText("");
-      //   setEditMentions([]);
-      //   showToast({
-      //     message: "Comment updated successfully",
-      //     type: "success",
-      //     duration: 3000,
-      //   });
-      // }
+      if (response?.data?.data) {
+        setComments((prev) =>
+          prev.map((comment) =>
+            comment.id === editingComment
+              ? { ...comment, text: editText }
+              : comment
+          )
+        );
+        setEditingComment(null);
+        setEditText("");
+        setEditMentions([]);
+        showToast({
+          message: "Comment updated successfully",
+          type: "success",
+          duration: 3000,
+        });
+      }
     } catch (error: any) {
       console.error("Error updating comment:", error.message || error);
       showToast({
@@ -484,37 +485,38 @@ const CommentBox = ({
     if (!editText.trim() || !editingReply) return;
 
     try {
-      // const formattedData = {
-      //   text: editText,
-      //   mentioned_user_ids: editMentions.map((mention) => mention.id),
-      // };
+      const formattedData = {
+        id:editingReply.replyId,
+        text: editText,
+        mentioned_user_ids: editMentions.map((mention) => mention.id),
+      };
 
-      // const response = await UpdateChildComment(editingReply.replyId, formattedData);
+      const response = await UpdateChildComment(formattedData);
 
-      // if (response?.data?.data) {
-      //   setComments((prev) =>
-      //     prev.map((comment) =>
-      //       comment.id === editingReply.commentId
-      //         ? {
-      //             ...comment,
-      //             replies: comment.replies?.map((reply) =>
-      //               reply.id === editingReply.replyId
-      //                 ? { ...reply, text: editText }
-      //                 : reply
-      //             ),
-      //           }
-      //         : comment
-      //     )
-      //   );
-      //   setEditingReply(null);
-      //   setEditText("");
-      //   setEditMentions([]);
-      //   showToast({
-      //     message: "Reply updated successfully",
-      //     type: "success",
-      //     duration: 3000,
-      //   });
-      // }
+      if (response?.data?.data) {
+        setComments((prev) =>
+          prev.map((comment) =>
+            comment.id === editingReply.commentId
+              ? {
+                  ...comment,
+                  replies: comment.replies?.map((reply) =>
+                    reply.id === editingReply.replyId
+                      ? { ...reply, text: editText }
+                      : reply
+                  ),
+                }
+              : comment
+          )
+        );
+        setEditingReply(null);
+        setEditText("");
+        setEditMentions([]);
+        showToast({
+          message: "Reply updated successfully",
+          type: "success",
+          duration: 3000,
+        });
+      }
     } catch (error: any) {
       console.error("Error updating reply:", error.message || error);
       showToast({
@@ -534,35 +536,38 @@ const CommentBox = ({
   };
 
   // Delete Comment Functions
-  const handleDeleteComment = async (_commentId: string) => {
-    if (!window.confirm("Are you sure you want to delete this comment?")) {
-      return;
-    }
+  const handleDeleteComment = async (commentId: string) => {
+    // if (!window.confirm("Are you sure you want to delete this comment?")) {
+    //   return;
+    // }
 
     try {
-      // await DeleteComment(commentId);
+      const formattedData = {
+        id:commentId,
+      };
+      await DeleteComment(formattedData);
       
-      // setComments((prev) => prev.filter((comment) => comment.id !== commentId));
-      // setUserPosts((prevPosts: any) =>
-      //   prevPosts.map((post: any) =>
-      //     post.id === postId
-      //       ? {
-      //           ...post,
-      //           comments_count: Math.max(0, post.comments_count - 1),
-      //         }
-      //       : post
-      //   )
-      // );
+      setComments((prev) => prev.filter((comment) => comment.id !== commentId));
+      setUserPosts((prevPosts: any) =>
+        prevPosts.map((post: any) =>
+          post.id === postId
+            ? {
+                ...post,
+                comments_count: Math.max(0, post.comments_count - 1),
+              }
+            : post
+        )
+      );
       
-      // showToast({
-      //   message: "Comment deleted successfully",
-      //   type: "success",
-      //   duration: 3000,
-      // });
+      showToast({
+        message: "Comment deleted successfully",
+        type: "success",
+        duration: 3000,
+      });
 
-      // if (onCommentAdded) {
-      //   onCommentAdded();
-      // }
+      if (onCommentAdded) {
+        onCommentAdded();
+      }
     } catch (error: any) {
       console.error("Error deleting comment:", error.message || error);
       showToast({
@@ -573,35 +578,38 @@ const CommentBox = ({
     }
   };
 
-  const handleDeleteReply = async (_commentId: string, _replyId: string) => {
-    if (!window.confirm("Are you sure you want to delete this reply?")) {
-      return;
-    }
+  const handleDeleteReply = async (commentId: string, replyId: string) => {
+    // if (!window.confirm("Are you sure you want to delete this reply?")) {
+    //   return;
+    // }
 
     try {
-      // await DeleteChildComment(replyId);
+      const formattedData = {
+        id:replyId,
+      };
+      await DeleteChildComment(formattedData);
       
-      // setComments((prev) =>
-      //   prev.map((comment) =>
-      //     comment.id === commentId
-      //       ? {
-      //           ...comment,
-      //           replies: comment.replies?.filter((reply) => reply.id !== replyId) || [],
-      //           child_comment_count: Math.max(0, comment.child_comment_count - 1),
-      //         }
-      //       : comment
-      //   )
-      // );
+      setComments((prev) =>
+        prev.map((comment) =>
+          comment.id === commentId
+            ? {
+                ...comment,
+                replies: comment.replies?.filter((reply) => reply.id !== replyId) || [],
+                child_comment_count: Math.max(0, comment.child_comment_count - 1),
+              }
+            : comment
+        )
+      );
       
-      // showToast({
-      //   message: "Reply deleted successfully",
-      //   type: "success",
-      //   duration: 3000,
-      // });
+      showToast({
+        message: "Reply deleted successfully",
+        type: "success",
+        duration: 3000,
+      });
 
-      // if (onCommentAdded) {
-      //   onCommentAdded();
-      // }
+      if (onCommentAdded) {
+        onCommentAdded();
+      }
     } catch (error: any) {
       console.error("Error deleting reply:", error.message || error);
       showToast({

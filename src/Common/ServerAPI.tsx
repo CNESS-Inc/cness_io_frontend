@@ -155,6 +155,8 @@ export const EndPoint = {
   create_post: "/user/posts",
   delete_post: "/user/posts",
   postComments: "/user/post/comments",
+  delete_comment: "/user/post/comments/delete",
+  child_delete_comment: "/user/post/comments/delete/child",
   postChildComment: "/user/post/comments/child",
   postCommentLike: "/user/post/comments/like",
   postchildCommentLike: "/user/post/comments/reply/like",
@@ -206,9 +208,11 @@ export const EndPoint = {
   get_bestpractice_by_user_profile: "/best-practice/get-by-user-profile",
   //get_followbestpractices:"/best-practice/folow"
   create_bestpracticescomment: "/best-practice/comment",
+  delete_bestpracticescomment: "/best-practice/comment/delete",
   get_bestpracticescomment: "/best-practice/comment",
   bp_comment_like: "/best-practice/comment/like",
   bp_comment_reply: "/best-practice/comment/reply",
+  delete_bp_comment_reply: "/best-practice/comment/reply/delete",
   bp_comment_reply_like: "/best-practice/comment/reply/like",
   singleBp: "/best-practice/get",
   followBp: "/best-practice/follow",
@@ -971,11 +975,39 @@ export const CreateBestpracticesComment = (formData: any): ApiResponse => {
     EndPoint.create_bestpracticescomment
   );
 };
+export const UpdateBestpracticesComment = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    formData,
+    EndPoint.create_bestpracticescomment
+  );
+};
+export const DeleteBestpracticesComment = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.delete_bestpracticescomment
+  );
+};
 export const CreateBestpracticesCommentReply = (formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
     formData,
     EndPoint.bp_comment_reply
+  );
+};
+export const UpdateBestpracticesCommentReply = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    formData,
+    EndPoint.bp_comment_reply
+  );
+};
+export const DeleteBestpracticesCommentReply = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.delete_bp_comment_reply
   );
 };
 export const CreateBestpracticesCommentReplyLike = (formData: any): ApiResponse => {
@@ -1219,11 +1251,39 @@ export const PostComments = (formattedData: any) => {
     EndPoint.postComments
   );
 };
+export const UpdateComment = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    formattedData,
+    EndPoint.postComments
+  );
+};
+export const DeleteComment = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.delete_comment
+  );
+};
 export const PostChildComments = (formattedData: any) => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
     formattedData,
     EndPoint.postChildComment
+  );
+};
+export const UpdateChildComment = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    formattedData,
+    EndPoint.postChildComment
+  );
+};
+export const DeleteChildComment = (formattedData: any) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formattedData,
+    EndPoint.child_delete_comment
   );
 };
 export const GetChildComments = (id: any) => {
