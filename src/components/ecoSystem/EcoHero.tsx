@@ -1,5 +1,4 @@
 import Button from "../ui/Button";
-import frame1 from "../../assets/eco-hero.png";
 import EcoHero1 from "../../assets/EcoHero1.jpg";
 import EcoHero2 from "../../assets/EcoHero2.jpg";
 import EcoHero3 from "../../assets/EcoHero3.jpg";

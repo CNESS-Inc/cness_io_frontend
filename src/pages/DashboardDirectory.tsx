@@ -10,7 +10,6 @@ import {
   GetInspiringCompanies,
   GetPopularCompanyDetails,
   GetPublicDetails,
-  GetUsersearchProfileDetails,
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
