@@ -136,7 +136,7 @@ const PostPopup: React.FC<PopupProps> = ({
       // Refresh comments after posting
       const refreshData = isReel
         ? FetchCommentStory(post.id)
-        : GetComment(post.id);
+        : GetComment(post.id,1);
       refreshData
         .then((data) => {
           const rows = data.data.data?.rows || [];
@@ -210,7 +210,7 @@ const PostPopup: React.FC<PopupProps> = ({
         .finally(() => setIsCommentsLoading(false));
     } else {
       // Use post comment APIs (existing code)
-      GetComment(post.id)
+      GetComment(post.id,1)
         .then((data) => {
           const rows = data.data.data?.rows || [];
           const mapped: CommentItem[] = rows.map((item: any) => ({
@@ -247,7 +247,7 @@ const PostPopup: React.FC<PopupProps> = ({
       setReplyInput("");
       setShowReplyBoxFor("");
       // Refresh comments after posting
-      GetComment(post.id)
+      GetComment(post.id,1)
         .then((data) => {
           const rows = data.data.data?.rows || [];
           const mapped: CommentItem[] = rows.map((item: any) => ({

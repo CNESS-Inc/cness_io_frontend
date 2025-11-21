@@ -271,8 +271,8 @@ const SocialNavbar: React.FC<LeftSocialProps> = () => {
         <button
           className={`
           flex items-center gap-3 px-3 py-4 w-full rounded-[100px] cursor-pointer
-          font-poppins font-normal text-[14px] leading-[20px]
-          bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white
+          font-poppins font-normal text-[14px] leading-5
+          bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white
           transition duration-200 ease-in-out
         `}
           onClick={() => {
@@ -333,12 +333,12 @@ const SocialNavbar: React.FC<LeftSocialProps> = () => {
         className="fixed inset-0 bg-transparent z-40 md:hidden"
       />
       <nav
-        className={` h-full flex pt-8 pb-8 flex-col justify-between items-start w-full bg-white rounded-[12px]
+        className={` h-full flex pt-8 pb-8 flex-col justify-between items-start w-full bg-white rounded-xl
           transform transition-transform duration-300 ease-in-out translate-x-0
           `}
           // ${isMobileNavOpen ? "translate-x-0" : "-translate-x-full"}
       >
-        <div className="flex flex-col w-full font-poppins leading-[20px] h-full">
+        <div className="flex flex-col w-full font-poppins leading-5 h-full">
           <div className="flex flex-col justify-between items-start space-y-3 px-3 w-full h-full">
             {mainNavItems.map((item, index) => (
               <NavItem

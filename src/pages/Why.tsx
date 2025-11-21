@@ -10,7 +10,7 @@ export default function Why() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative h-[400px] rounded-[12px] overflow-hidden mx-4 md:mx-8 lg:mx-[12px]">
+      <section className="relative h-[400px] rounded-xl overflow-hidden mx-4 md:mx-8 lg:mx-3">
         <WhypgAnimation />
 
         <img
@@ -20,7 +20,7 @@ export default function Why() {
         />
 
         <div className="relative z-10 text-center px-5 sm:px-6 lg:px-8 py-16 md:py-20 max-w-4xl mx-auto">
-          <h1 className="poppins text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
+          <h1 className="poppins text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-linear-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text">
             Why CNESS?
           </h1>
           <p className="openSans text-base sm:text-lg md:text-xl text-neutral-600 mb-10 max-w-2xl mx-auto">
@@ -112,7 +112,7 @@ export default function Why() {
             ].map((item, index) => (
               <div
                 key={index}
-                className="group bg-white rounded-xl p-6 shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 hover:bg-[#E8CDFD] flex flex-col gap-4 min-h-[320px]"
+                className="group bg-white rounded-xl p-6 shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 hover:bg-[#E8CDFD] flex flex-col gap-4 min-h-80"
               >
                 <h3 className="text-xl font-semibold text-[#232323] mb-2 openSans">
                   {item.title}

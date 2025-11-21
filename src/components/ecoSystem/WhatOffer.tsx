@@ -67,7 +67,7 @@ export default function WhatOffer() {
           className="font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize text-centerp"
         >
           What{" "}
-          <span className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent bg-clip-text">
+          <span className="bg-linear-to-r from-[#D747EA] to-[#7741FB] text-transparent bg-clip-text">
             We Offer
           </span>
         </h3>

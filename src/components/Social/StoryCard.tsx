@@ -37,7 +37,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
 
   return (
     <>
-      <div onClick={() => handleReel()}>
+      <div className="cursor-pointer" onClick={() => handleReel()}>
         {/* <div onClick={() => handleReel(id)}> */}
         <div className="relative w-40 h-80 rounded-lg overflow-hidden shadow-md">
           <LazyLoadComponent>

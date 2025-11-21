@@ -97,7 +97,7 @@ export default function WhyCness() {
           <div className="mx-auto max-w-[1100px] px-6 text-center">
             <h1
               style={{ fontFamily: "Poppins, sans-serif" }}
-              className="font-medium text-[32px] md:text-[42px] leading-[120%] md:leading-[130%] tracking-[-0.02em] text-center antialiased bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+              className="font-medium text-[32px] md:text-[42px] leading-[120%] md:leading-[130%] tracking-[-0.02em] text-center antialiased bg-linear-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
             >
               Grow With Purpose, Together.
             </h1>
@@ -124,12 +124,12 @@ export default function WhyCness() {
 
           {/* Image container (centered with spacing on sides)
           <div className="w-full px-4 lg:px-16 pb-12 pt-20">
-            <div className="mx-auto max-w-[1900px] rounded-[32px] overflow-hidden">
+            <div className="mx-auto max-w-[1900px] rounded-4xl overflow-hidden">
               <img
                 src="https://cdn.cness.io/whycness.webp"
                 alt="CNESS Marketplace preview"
                 className="
-          mx-auto w-full max-w-[1900px] rounded-[32px]
+          mx-auto w-full max-w-[1900px] rounded-4xl
               object-cover
              
               h-[220px] sm:h-[280px] md:h-[360px] lg:h-[405px] xl:h-[460px] 2xl:h-[460px]
@@ -150,13 +150,13 @@ export default function WhyCness() {
 
       {/* --- Our Story + Mission / Vision (Section 2) --- 
       <LazySection effect="fade-up" delay={0.2}>
-        <section className="relative w-full py-16 lg:py-20 bg-gradient-to-r from-[#FAFAFA] to-[#F6F5FA]">
+        <section className="relative w-full py-16 lg:py-20 bg-linear-to-r from-[#FAFAFA] to-[#F6F5FA]">
           <div className="mx-auto max-w-[1200px] px-6">
             {/* Top row 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-start px-4 sm:px-6">
               {/* Left: title
               <div className="text-center lg:text-left">
-                <p className="text-[32px] md:text-[38px] lg:text-[42px] font-semibold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                <p className="text-[32px] md:text-[38px] lg:text-[42px] font-semibold bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                   Our Story
                 </p>
                 <h3 className="mt-2 font-['Poppins'] font-medium text-[30px] md:text-[36px] lg:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#1F2937]">
@@ -182,7 +182,7 @@ export default function WhyCness() {
                     onClick={() => setOpenSignup(true)}
                     className="inline-flex items-center justify-center rounded-full px-5 py-3 text-[16px]
                font-['Plus Jakarta Sans'] font-medium text-white shadow-md hover:shadow-lg
-               bg-gradient-to-r from-[#7077FE] to-[#F07EFF] transition-all duration-300"
+               bg-linear-to-r from-[#7077FE] to-[#F07EFF] transition-all duration-300"
                   >
                     Join the Journey
                   </a>
@@ -266,22 +266,22 @@ export default function WhyCness() {
 
             {/* Bottom row: Mission / Vision cards 
             <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[32px] border border-[#ECEEF2] bg-white/90 shadow-[0_6px_28px_rgba(16,24,40,0.06)] p-[24px] md:p-[30px] flex flex-col gap-[10px]">
+              <div className="rounded-4xl border border-[#ECEEF2] bg-white/90 shadow-[0_6px_28px_rgba(16,24,40,0.06)] p-6 md:p-[30px] flex flex-col gap-2.5">
                 <h4 className="font-['Poppins'] font-medium text-[20px] md:text-[24px] leading-[1.2] text-[#111827]">
                   Mission
                 </h4>
-                <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#242424] font-light">
+                <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-6 text-[#242424] font-light">
                   To connect people and organizations who care about mindful
                   living so they can learn, grow and make a positive impact
                   together.
                 </p>
               </div>
 
-              <div className="rounded-[32px] border border-[#ECEEF2] bg-white/90 shadow-[0_6px_28px_rgba(16,24,40,0.06)] p-[24px] md:p-[30px] flex flex-col gap-[10px]">
+              <div className="rounded-4xl border border-[#ECEEF2] bg-white/90 shadow-[0_6px_28px_rgba(16,24,40,0.06)] p-6 md:p-[30px] flex flex-col gap-2.5">
                 <h4 className="font-['Poppins'] font-medium text-[20px] md:text-[24px] leading-[1.2] text-[#111827]">
                   Vision
                 </h4>
-                <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#242424] font-light">
+                <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-6 text-[#242424] font-light">
                   A world where opportunities are open to everyone and growth is
                   guided by heart and conscience.
                 </p>
@@ -520,13 +520,13 @@ gap-2
 
       <LazySection effect="fade-up" delay={0.2}>
         <section className="w-full bg-white py-10 sm:py-14 md:py-20 px-4 sm:px-8 md:px-[60px]">
-          <div className="w-full 2xl:w-[1300px] mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-12 xl:px-[120px]">
+          <div className="w-full 2xl:w-[1300px] mx-auto bg-[#F5F7F9] rounded-3xl md:rounded-4xl px-6 sm:px-10 md:px-12 xl:px-[120px]">
             <div className="grid xl:grid-cols-2 gap-2 w-full items-center">
               {/* Left copy */}
               <div className="text-center xl:text-left py-8 sm:py-12 md:py-[50px]">
-                <h2 className="font-poppins font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#000]">
+                <h2 className="font-poppins font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-black">
                   What Makes Us{" "}
-                  <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                     Different
                   </span>
                 </h2>
@@ -565,7 +565,7 @@ gap-2
                         <h3 className="font-['Open_Sans'] font-semibold text-[16px] text-black">
                           {item.title}
                         </h3>
-                        <p className="font-['Open_Sans'] text-[14px] leading-[20px] text-[#242424] mt-1 font-light">
+                        <p className="font-['Open_Sans'] text-[14px] leading-5 text-[#242424] mt-1 font-light">
                           {item.desc}
                         </p>
                       </div>
@@ -606,7 +606,7 @@ gap-2
           <div className="w-full">
             <h2 className="text-center lg:text-left font-['Poppins'] font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#111] px-6 md:px-10 lg:px-16">
               Our{" "}
-              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 Road ahead
               </span>
             </h2>

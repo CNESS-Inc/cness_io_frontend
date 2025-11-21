@@ -40,6 +40,66 @@ import home from "../assets/home1.svg";
 import thumbs from "../assets/thumbsup.svg";
 import cnessicon from "../assets/cnessi.svg";
 
+const Modal = ({ isOpen, onClose, children }: any) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50">
+      <div className="absolute inset-0" onClick={onClose} />
+      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+        {children}
+      </div>
+    </div>
+  );
+};
+
+interface ButtonProps {
+  onClick?: () => void;
+  children: React.ReactNode;
+  variant?: "primary" | "white-outline";
+  className?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  type?: "button" | "submit" | "reset";
+}
+
+const Button = ({
+  onClick,
+  children,
+  variant = "primary",
+  className = "",
+  disabled = false,
+  loading = false,
+  ...props
+}: ButtonProps) => {
+  const baseStyles =
+    "flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-4 py-2 rounded-full transition-colors";
+  const variants = {
+    primary:
+      "bg-[#7077FE] text-white hover:bg-[#7077FE] disabled:bg-gray-400 disabled:cursor-not-allowed",
+    "white-outline":
+      "border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed",
+  };
+
+  return (
+    <button
+      className={`${baseStyles} ${variants[variant]} ${className}`}
+      onClick={onClick}
+      disabled={disabled || loading}
+      {...props}
+    >
+      {loading ? (
+        <>
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+          Deleting...
+        </>
+      ) : (
+        children
+      )}
+    </button>
+  );
+};
+
 const SingleBP = () => {
   const [isSaved, setIs_saved] = useState<boolean>(false);
   const [commentCount, setCommentCount] = useState(0);
@@ -58,23 +118,111 @@ const SingleBP = () => {
   const [replyErrors, setReplyErrors] = useState<{ [key: string]: string }>({});
   const [animations, _setAnimations] = useState<any[]>([]);
   const [relatedBestPractices, setRelatedBestPractices] = useState<any[]>([]);
-  
+
   // Loading states
   const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false);
-  const [isAppreciateLoading, setIsAppreciateLoading] = useState<boolean>(false);
+  const [isAppreciateLoading, setIsAppreciateLoading] =
+    useState<boolean>(false);
   const [isSaveLoading, setIsSaveLoading] = useState<boolean>(false);
   const [isCommentLoading, setIsCommentLoading] = useState<boolean>(false);
-  const [isReplyLoading, setIsReplyLoading] = useState<{ [key: string]: boolean }>({}); // NEW: Reply loading state
+  const [isReplyLoading, setIsReplyLoading] = useState<{
+    [key: string]: boolean;
+  }>({}); // NEW: Reply loading state
 
-   const [editingComment, setEditingComment] = useState<string | null>(null);
+  const [editingComment, setEditingComment] = useState<string | null>(null);
   const [editingReply, setEditingReply] = useState<string | null>(null);
   const [editCommentText, setEditCommentText] = useState("");
   const [editReplyText, setEditReplyText] = useState("");
-  const [isEditCommentLoading, setIsEditCommentLoading] = useState<{ [key: string]: boolean }>({});
-  const [isDeleteCommentLoading, setIsDeleteCommentLoading] = useState<{ [key: string]: boolean }>({});
-  const [isEditReplyLoading, setIsEditReplyLoading] = useState<{ [key: string]: boolean }>({});
-  const [isDeleteReplyLoading, setIsDeleteReplyLoading] = useState<{ [key: string]: boolean }>({});
+  const [isEditCommentLoading, setIsEditCommentLoading] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [isDeleteCommentLoading, setIsDeleteCommentLoading] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [isEditReplyLoading, setIsEditReplyLoading] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [isDeleteReplyLoading, setIsDeleteReplyLoading] = useState<{
+    [key: string]: boolean;
+  }>({});
 
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    type: "comment" | "reply";
+    commentId?: string;
+    replyId?: string;
+    text?: string;
+  }>({
+    isOpen: false,
+    type: "comment",
+    commentId: undefined,
+    replyId: undefined,
+    text: "",
+  });
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const showDeleteConfirmation = (
+    type: "comment" | "reply",
+    commentId: string,
+    replyId?: string,
+    text?: string
+  ) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      type,
+      commentId,
+      replyId,
+      text: text || "",
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const { type, commentId, replyId } = deleteConfirmation;
+
+    if (!commentId) return;
+
+    setIsDeleting(true);
+
+    try {
+      if (type === "comment") {
+        await handleDeleteComment(commentId);
+      } else if (type === "reply" && replyId) {
+        await handleDeleteReply(replyId);
+      }
+
+      // Close the confirmation modal
+      setDeleteConfirmation({
+        isOpen: false,
+        type: "comment",
+        commentId: undefined,
+        replyId: undefined,
+        text: "",
+      });
+    } catch (error) {
+      console.error(`Error deleting ${type}:`, error);
+      showToast({
+        message: `Failed to delete ${type}`,
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Handle delete cancel
+  const handleDeleteCancel = () => {
+    if (isDeleting) return; // Prevent closing while deleting
+
+    setDeleteConfirmation({
+      isOpen: false,
+      type: "comment",
+      commentId: undefined,
+      replyId: undefined,
+      text: "",
+    });
+  };
 
   const handleEditCommentClick = (comment: any) => {
     setEditingComment(comment.id);
@@ -132,10 +280,6 @@ const SingleBP = () => {
   // Delete Comment Function
   const handleDeleteComment = async (commentId: string) => {
     try {
-      if (!window.confirm("Are you sure you want to delete this comment?")) {
-        return;
-      }
-
       setIsDeleteCommentLoading((prev) => ({ ...prev, [commentId]: true }));
 
       await DeleteBestpracticesComment({ id: commentId });
@@ -150,11 +294,7 @@ const SingleBP = () => {
       });
     } catch (error) {
       console.error("Error deleting comment:", error);
-      showToast({
-        message: "Failed to delete comment",
-        type: "error",
-        duration: 3000,
-      });
+      throw error; // Re-throw to handle in the confirmation function
     } finally {
       setIsDeleteCommentLoading((prev) => ({ ...prev, [commentId]: false }));
     }
@@ -217,10 +357,6 @@ const SingleBP = () => {
   // Delete Reply Function
   const handleDeleteReply = async (replyId: string) => {
     try {
-      if (!window.confirm("Are you sure you want to delete this reply?")) {
-        return;
-      }
-
       setIsDeleteReplyLoading((prev) => ({ ...prev, [replyId]: true }));
 
       await DeleteBestpracticesCommentReply({
@@ -236,11 +372,7 @@ const SingleBP = () => {
       });
     } catch (error) {
       console.error("Error deleting reply:", error);
-      showToast({
-        message: "Failed to delete reply",
-        type: "error",
-        duration: 3000,
-      });
+      throw error; // Re-throw to handle in the confirmation function
     } finally {
       setIsDeleteReplyLoading((prev) => ({ ...prev, [replyId]: false }));
     }
@@ -254,7 +386,9 @@ const SingleBP = () => {
 
   // Update the comments list rendering to include edit/delete functionality
   const renderComments = () => {
-    const commentsToRender = sortLatest ? [...postComment].reverse() : postComment;
+    const commentsToRender = sortLatest
+      ? [...postComment].reverse()
+      : postComment;
 
     return commentsToRender.map((comment: any) => (
       <div key={comment.id} className="space-y-4">
@@ -279,7 +413,7 @@ const SingleBP = () => {
                   <span className="text-xs text-gray-400 ml-2">(edited)</span>
                 )} */}
               </div>
-              
+
               {/* Edit/Delete Buttons for Comment */}
               {isCurrentUserAuthor(comment.user_id) && (
                 <div className="flex items-center space-x-2">
@@ -313,7 +447,14 @@ const SingleBP = () => {
                         <FaEdit className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleDeleteComment(comment.id)}
+                        onClick={() =>
+                          showDeleteConfirmation(
+                            "comment",
+                            comment.id,
+                            undefined,
+                            comment.text
+                          )
+                        }
                         disabled={isDeleteCommentLoading[comment.id]}
                         className="text-red-600 hover:text-red-800 p-1 rounded"
                       >
@@ -340,7 +481,9 @@ const SingleBP = () => {
                   maxLength={2000}
                 />
                 <div className="flex justify-between items-center mt-1 text-xs text-gray-500">
-                  <span>{2000 - editCommentText.length} characters remaining</span>
+                  <span>
+                    {2000 - editCommentText.length} characters remaining
+                  </span>
                 </div>
               </div>
             ) : (
@@ -376,23 +519,32 @@ const SingleBP = () => {
                   onChange={(e) => handleReplyChange(e, comment.id)}
                   disabled={isReplyLoading[comment.id]}
                   className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${
-                    isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
+                    isReplyLoading[comment.id]
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
                   }`}
                 ></textarea>
 
                 {replyErrors[comment.id] && (
-                  <p className="text-red-500 text-xs mt-1">{replyErrors[comment.id]}</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    {replyErrors[comment.id]}
+                  </p>
                 )}
                 <div className="flex justify-end items-center text-xs text-gray-400 gap-2 mt-2">
                   <span>{2000 - replyText.length} Characters remaining</span>
                   <button
-                    onClick={() => handleReplySubmit(comment.id, comment.post_id)}
+                    onClick={() =>
+                      handleReplySubmit(comment.id, comment.post_id)
+                    }
                     disabled={isReplyLoading[comment.id]}
                     className={`bg-linear-to-r from-purple-500 to-pink-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 ${
-                      isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
+                      isReplyLoading[comment.id]
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
                     }`}
                     style={{
-                      background: "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+                      background:
+                        "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
                     }}
                   >
                     {isReplyLoading[comment.id] ? (
@@ -408,7 +560,9 @@ const SingleBP = () => {
                     onClick={() => setReplyingTo(null)}
                     disabled={isReplyLoading[comment.id]}
                     className={`text-gray-500 px-3 py-1 rounded-full text-sm border border-gray-300 ${
-                      isReplyLoading[comment.id] ? "opacity-50 cursor-not-allowed" : ""
+                      isReplyLoading[comment.id]
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
                     }`}
                   >
                     Cancel
@@ -443,7 +597,7 @@ const SingleBP = () => {
                         <span className="text-xs text-gray-400 ml-2">(edited)</span>
                       )} */}
                     </div>
-                    
+
                     {/* Edit/Delete Buttons for Reply */}
                     {isCurrentUserAuthor(reply.user_id) && (
                       <div className="flex items-center space-x-2">
@@ -477,7 +631,14 @@ const SingleBP = () => {
                               <FaEdit className="w-3 h-3" />
                             </button>
                             <button
-                              onClick={() => handleDeleteReply(reply.id)}
+                              onClick={() =>
+                                showDeleteConfirmation(
+                                  "reply",
+                                  comment.id,
+                                  reply.id,
+                                  reply.text
+                                )
+                              }
                               disabled={isDeleteReplyLoading[reply.id]}
                               className="text-red-600 hover:text-red-800 p-1 rounded"
                             >
@@ -504,16 +665,26 @@ const SingleBP = () => {
                         maxLength={2000}
                       />
                       <div className="flex justify-between items-center mt-1 text-xs text-gray-500">
-                        <span>{2000 - editReplyText.length} characters remaining</span>
+                        <span>
+                          {2000 - editReplyText.length} characters remaining
+                        </span>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-[12px] text-gray-700 mt-1">{reply.text}</p>
+                    <p className="text-[12px] text-gray-700 mt-1">
+                      {reply.text}
+                    </p>
                   )}
 
                   <div className="flex items-center space-x-4 mt-3 text-xs text-gray-600">
                     <button
-                      onClick={() => handleReplyCommentLike(reply.id, comment.post_id, comment.id)}
+                      onClick={() =>
+                        handleReplyCommentLike(
+                          reply.id,
+                          comment.post_id,
+                          comment.id
+                        )
+                      }
                       className="flex items-center space-x-1 hover:text-gray-700"
                     >
                       <HandThumbUpIcon className="w-5 h-5" />
@@ -529,7 +700,8 @@ const SingleBP = () => {
     ));
   };
 
-  const profile_picture = localStorage.getItem("profile_picture") || "/profile.png";
+  const profile_picture =
+    localStorage.getItem("profile_picture") || "/profile.png";
   const name = localStorage.getItem("name") || "";
   const { id } = useParams();
   const { showToast } = useToast();
@@ -561,14 +733,14 @@ const SingleBP = () => {
         setCommentError("Please enter a comment.");
         return;
       }
-      
+
       setIsCommentLoading(true); // Start loading
       const payload = { post_id: id, text: comment };
       await CreateBestpracticesComment(payload);
       setCommentCount((prev) => prev + 1);
       setComment("");
       fetchComments();
-      
+
       showToast({
         message: "Comment posted successfully!",
         type: "success",
@@ -632,7 +804,9 @@ const SingleBP = () => {
         const isNowFollowing = res?.data?.data !== null;
         setIsFollowing(isNowFollowing);
         showToast({
-          message: isNowFollowing ? "Successfully followed" : "Successfully unfollowed",
+          message: isNowFollowing
+            ? "Successfully followed"
+            : "Successfully unfollowed",
           type: "success",
           duration: 3000,
         });
@@ -741,7 +915,7 @@ const SingleBP = () => {
       setReplyingTo(null);
       setReplyText("");
       fetchComments(); // Refresh comments to show the new reply
-      
+
       showToast({
         message: "Reply posted successfully!",
         type: "success",
@@ -986,7 +1160,11 @@ const SingleBP = () => {
                           isLiked
                             ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
                             : "border-[#7B78FE] text-dark hover:bg-gray-100"
-                        } ${isAppreciateLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                        } ${
+                          isAppreciateLoading
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }`}
                       >
                         {isAppreciateLoading ? (
                           <div className="w-4 h-4 border-2 border-[#7178FF] border-t-transparent rounded-full animate-spin"></div>
@@ -1112,7 +1290,9 @@ const SingleBP = () => {
                         onChange={handleCommentChange}
                         disabled={isCommentLoading} // Disable textarea during loading
                         className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${
-                          isCommentLoading ? "opacity-50 cursor-not-allowed" : ""
+                          isCommentLoading
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
                         }`}
                       ></textarea>
 
@@ -1129,7 +1309,9 @@ const SingleBP = () => {
                           onClick={handleCommentSubmit}
                           disabled={isCommentLoading}
                           className={`bg-linear-to-r me-2 from-purple-500 to-pink-400 text-white px-4 py-2 pb-2 rounded-full text-sm flex items-center gap-2 ${
-                            isCommentLoading ? "opacity-50 cursor-not-allowed" : ""
+                            isCommentLoading
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
                           }`}
                           style={{
                             background:
@@ -1180,12 +1362,12 @@ const SingleBP = () => {
                     {/* Comments List */}
                     <div className="space-y-6">
                       {postComment.length > 0 ? (
-        renderComments()
-      ) : (
-        <div className="text-center py-8 text-gray-500">
-          No comments yet. Be the first to comment!
-        </div>
-      )}
+                        renderComments()
+                      ) : (
+                        <div className="text-center py-8 text-gray-500">
+                          No comments yet. Be the first to comment!
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1240,6 +1422,45 @@ const SingleBP = () => {
           </div>
         </div>
       </div>
+
+      <Modal isOpen={deleteConfirmation.isOpen} onClose={handleDeleteCancel}>
+        <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
+          <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
+          <p className="mb-6">
+            Are you sure you want to delete this {deleteConfirmation.type}? This
+            action cannot be undone.
+          </p>
+
+          {/* Optional: Show a preview of the content being deleted
+          {deleteConfirmation.text && (
+            <div className="mb-4 p-3 bg-gray-100 rounded-lg max-h-32 overflow-y-auto">
+              <p className="text-sm text-gray-700 line-clamp-3">
+                {deleteConfirmation.text}
+              </p>
+            </div>
+          )} */}
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
+            <Button
+              type="button"
+              onClick={handleDeleteCancel}
+              variant="white-outline"
+              className="w-full sm:w-auto"
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleDeleteConfirm}
+              className="w-full sm:w-auto py-2 px-6 sm:py-3 sm:px-8"
+              loading={isDeleting}
+              disabled={isDeleting}
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };
