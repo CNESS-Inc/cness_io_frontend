@@ -64,7 +64,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
       ></div>
 
       {/* Modal */}
-      <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-[20px] w-[832px] h-[612px] flex flex-col items-center justify-start animate-fadeIn">
+      <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-5 w-[832px] h-[612px] flex flex-col items-center justify-start animate-fadeIn">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -100,7 +100,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
     handleSelect(cat.name);
   }}
   className={`
-    group relative flex flex-col items-center justify-center rounded-[12px] border-[0.5px]
+    group relative flex flex-col items-center justify-center rounded-xl border-[0.5px]
     transition-all duration-300 ease-in-out text-[16px] font-['Open_Sans'] font-semibold
     w-[253px] h-[211px]
     ${selected === cat.id

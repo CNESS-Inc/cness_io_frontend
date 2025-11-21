@@ -387,11 +387,11 @@ export default function PostCard({
                   target.src = "/profile.png";
                 }}
               />
-              <span className="absolute -bottom-0 -right-0 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white" />
+              <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white" />
             </span>
 
             <div>
-              <div className="font-medium text-[#000] text-[16px]">{name}</div>
+              <div className="font-medium text-black text-[16px]">{name}</div>
               <div className="text-xs text-[#606060]">{time}</div>
             </div>
           </div>

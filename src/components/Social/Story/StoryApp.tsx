@@ -20,7 +20,7 @@ interface StoryUser {
 interface Story {
   is_liked: unknown;
   id: string;
-  userId?: string; // Add userId for sharing
+  userId?: string;
   user: StoryUser;
   hasNewStory: boolean;
   createdAt?: Date;
@@ -43,19 +43,20 @@ export function StoriesApp() {
   );
   const currentStory = stories[currentStoryIndex];
 
+
   const [currentContentIndex, setCurrentContentIndex] = useState(0);
 
-  // Reset content index when switching between users
+  // Reset content index when switching between stories
   useEffect(() => {
     setCurrentContentIndex(0);
   }, [currentStoryIndex]);
 
   const handlePrevious = () => {
     if (currentContentIndex > 0) {
-      // Move to previous content in current user's stories
+      // Move to previous content in current story
       setCurrentContentIndex(currentContentIndex - 1);
     } else if (currentStoryIndex > 0) {
-      // Move to previous user
+      // Move to previous story
       setActiveStoryId(stories[currentStoryIndex - 1].id);
       setCurrentContentIndex(0);
     }
@@ -64,156 +65,102 @@ export function StoriesApp() {
   const handleNext = () => {
     const currentStory = stories[currentStoryIndex];
     if (currentContentIndex < currentStory.content.length - 1) {
-      // Move to next content in current user's stories
+      // Move to next content in current story
       setCurrentContentIndex(currentContentIndex + 1);
     } else if (currentStoryIndex < stories.length - 1) {
-      // Move to next user
+      // Move to next story
       setActiveStoryId(stories[currentStoryIndex + 1].id);
       setCurrentContentIndex(0);
     }
   };
 
-  // const transformApiDataToStories = (apiData: any[]): Story[] => {
-  //   return apiData.map((story) => {
-  //     // Get initials from first name and last name with proper null checks
-  //     const firstName = story.storyuser?.profile?.first_name || "";
-  //     const lastName = story.storyuser?.profile?.last_name || "";
-  //     const firstNameInitial = firstName?.[0] || "";
-  //     const lastNameInitial = lastName?.[0] || "";
-  //     const initials = `${firstNameInitial}${lastNameInitial}`.toUpperCase();
-
-  //     return {
-  //       id: story.id, // Now using the actual story ID
-  //       userId: story.user_id, // Add userId for sharing
-  //       is_liked: story.is_liked || false,
-  //       user: {
-  //         name: `${firstName} ${lastName}`.trim() || "Unknown User",
-  //         avatar: story.storyuser?.profile?.profile_picture || "",
-  //         initials: initials || "U",
-  //       },
-  //       hasNewStory: !story.is_viewed, // Use is_viewed instead of is_liked
-  //       isViewed: story.is_viewed || false,
-  //       createdAt: story.createdAt ? new Date(story.createdAt) : undefined,
-  //       content: [
-  //         {
-  //           id: story.id,
-  //           type: "video", // Assuming all are videos from the API
-  //           url: story.video_file || "",
-  //           duration: story?.duration || 5000, // Default duration, you might want to calculate this
-  //         },
-  //       ],
-  //     };
-  //   });
-  // };
-
   const GetStoryData = async () => {
-  try {
-    setIsLoading(true);
-    const res = await GetStory();
+    try {
+      setIsLoading(true);
+      const res = await GetStory();
 
-    if (Array.isArray(res?.data?.data)) {
-      let apiStories = res.data.data;
+      if (Array.isArray(res?.data?.data)) {
+        let apiStories = res.data.data;
 
-      // Group all stories per user
-      const groupedStories: any = groupStoriesByUser(apiStories);
-      setStories(groupedStories);
+        // Transform each API story into individual Story objects
+        const individualStories = transformApiDataToStories(apiStories);
+        setStories(individualStories);
 
-      // Set active story based on URL parameters
-      if (groupedStories.length > 0) {
-        let targetStoryId = activeStoryId;
+        // Set active story based on URL parameters
+        if (individualStories.length > 0) {
+          let targetStoryId = activeStoryId;
 
-        // Priority 1: If specific story ID is provided in URL
-        if (selectedStoryId) {
-          // Find which user group contains this story
-          const storyGroup = groupedStories.find((group: any) =>
-            group.content.some((content: any) => content.id === selectedStoryId)
-          );
-          
-          if (storyGroup) {
-            targetStoryId = storyGroup.id; // Use the group ID for activeStoryId
-            // Find the content index for the specific story
-            const contentIndex = storyGroup.content.findIndex(
-              (content: any) => content.id === selectedStoryId
+          // Priority 1: If specific story ID is provided in URL
+          if (selectedStoryId) {
+            const storyExists = individualStories.some(
+              (story: any) => story.id === selectedStoryId
             );
-            setCurrentContentIndex(Math.max(0, contentIndex));
+            if (storyExists) {
+              targetStoryId = selectedStoryId;
+              setCurrentContentIndex(0);
+            }
           }
-        }
-        // Priority 2: If specific user is provided in URL
-        else if (selectedUserId) {
-          const userGroup = groupedStories.find(
-            (group: any) => group.userId === selectedUserId
-          );
-          if (userGroup) {
-            targetStoryId = userGroup.id;
+          // Priority 2: If specific user is provided in URL, show their first story
+          else if (selectedUserId) {
+            const userStory = individualStories.find(
+              (story: any) => story.userId === selectedUserId
+            );
+            if (userStory) {
+              targetStoryId = userStory.id;
+              setCurrentContentIndex(0);
+            }
+          }
+
+          // If no target found or still null, use first story
+          if (!targetStoryId && individualStories.length > 0) {
+            targetStoryId = individualStories[0].id;
             setCurrentContentIndex(0);
           }
-        }
 
-        // If no target found or still null, use first story
-        if (!targetStoryId && groupedStories.length > 0) {
-          targetStoryId = groupedStories[0].id;
-          setCurrentContentIndex(0);
+          setActiveStoryId(targetStoryId);
         }
-
-        setActiveStoryId(targetStoryId);
+      } else {
+        setStories([]);
       }
-    } else {
+    } catch (e) {
+      console.error(e);
       setStories([]);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (e) {
-    console.error(e);
-    setStories([]);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
-
-  // Function to group stories by user and return the most recent story per user
-  const groupStoriesByUser = (apiData: any[]) => {
-    const userMap: any = {};
-
-    apiData.forEach((story) => {
+  // Function to transform each API story into individual Story objects
+  const transformApiDataToStories = (apiData: any[]): Story[] => {
+    return apiData.map((story) => {
       const firstName = story.storyuser?.profile?.first_name || "";
       const lastName = story.storyuser?.profile?.last_name || "";
-      const initials = `${firstName[0] || ""}${
-        lastName[0] || ""
-      }`.toUpperCase();
+      const firstNameInitial = firstName?.[0] || "";
+      const lastNameInitial = lastName?.[0] || "";
+      const initials = `${firstNameInitial}${lastNameInitial}`.toUpperCase();
 
-      // If user isn't created in map, create entry
-      if (!userMap[story.user_id]) {
-        userMap[story.user_id] = {
-          id: story.user_id, // sidebar group ID
-          userId: story.user_id,
-          is_liked: false,
-          user: {
-            name: `${firstName} ${lastName}`.trim() || "Unknown User",
-            avatar: story.storyuser?.profile?.profile_picture || "",
-            initials: initials || "U",
+      return {
+        id: story.id, // Each story has its own ID
+        userId: story.user_id,
+        is_liked: story.is_liked || false,
+        user: {
+          name: `${firstName} ${lastName}`.trim() || "Unknown User",
+          avatar: story.storyuser?.profile?.profile_picture || "",
+          initials: initials || "U",
+        },
+        hasNewStory: !story.is_viewed,
+        isViewed: story.is_viewed || false,
+        createdAt: story.createdAt ? new Date(story.createdAt) : undefined,
+        content: [
+          {
+            id: story.id,
+            type: "video",
+            url: story.video_file || "",
+            duration: story?.duration || 5000,
           },
-          hasNewStory: false,
-          isViewed: false,
-          createdAt: new Date(story.createdAt),
-          content: [], // will push many stories
-        };
-      }
-
-      // Push story content into content array
-      userMap[story.user_id].content.push({
-        id: story.id,
-        type: "video",
-        url: story.video_file,
-        duration: story.duration || 5000,
-      });
-
-      // If ANY story is not viewed → user story group has new content
-      if (!story.is_viewed) {
-        userMap[story.user_id].hasNewStory = true;
-      }
+        ],
+      };
     });
-
-    // Convert map → array
-    return Object.values(userMap);
   };
 
   useEffect(() => {
@@ -222,8 +169,8 @@ export function StoriesApp() {
 
   useEffect(() => {
     console.log(
-      "Stories order:",
-      stories.map((s) => ({ id: s.id, createdAt: s.createdAt }))
+      "Stories:",
+      stories.map((s) => ({ id: s.id, user: s.user.name, createdAt: s.createdAt }))
     );
     console.log("Active story ID:", activeStoryId);
     console.log("Current story index:", currentStoryIndex);
@@ -268,19 +215,20 @@ export function StoriesApp() {
       <div className="h-screen bg-background flex justify-center items-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-foreground mb-2">
-            {selectedUserId
-              ? "No stories available from this user"
+            {selectedUserId || selectedStoryId
+              ? "No stories available"
               : "No stories available"}
           </h2>
           <p className="text-muted-foreground">
-            {selectedUserId
-              ? "This user hasn't posted any stories yet."
+            {selectedUserId || selectedStoryId
+              ? "The requested story is not available."
               : "Check back later for new stories!"}
           </p>
         </div>
       </div>
     );
   }
+
   return (
     <div className="h-screen bg-background flex">
       <StorySidebar
@@ -305,7 +253,7 @@ export function StoriesApp() {
           onPrevious={handlePrevious}
           onNext={handleNext}
           hasPrevious={currentContentIndex > 0 || currentStoryIndex > 0}
-          timeAgo="1 hour ago"
+          timeAgo={currentStory.createdAt} // You might want to calculate this based on createdAt
           hasNext={
             currentContentIndex < currentStory.content.length - 1 ||
             currentStoryIndex < stories.length - 1

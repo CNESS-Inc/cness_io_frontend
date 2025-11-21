@@ -85,7 +85,7 @@ export default function WhyCness() {
   return (
     <>
       <Header />
-      <LazySection effect="fade-up" delay={0.2}>
+      {/* <LazySection effect="fade-up" delay={0.2}>
         <section
           className="relative w-full py-12 sm:py-16 md:py-20 px-4"
           style={{
@@ -93,11 +93,11 @@ export default function WhyCness() {
               "linear-gradient(135deg, #FFFFFF 10%, #FDEDED 70%, #F9D3F2 100%)",
           }}
         >
-          {/* Text container */}
+          {/* Text container 
           <div className="mx-auto max-w-[1100px] px-6 text-center">
             <h1
               style={{ fontFamily: "Poppins, sans-serif" }}
-              className="font-medium text-[32px] md:text-[42px] leading-[120%] md:leading-[130%] tracking-[-0.02em] text-center antialiased bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+              className="font-medium text-[32px] md:text-[42px] leading-[120%] md:leading-[130%] tracking-[-0.02em] text-center antialiased bg-linear-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
             >
               Grow With Purpose, Together.
             </h1>
@@ -122,19 +122,19 @@ export default function WhyCness() {
             </Button>
           </div>
 
-          {/* Image container (centered with spacing on sides) */}
+          {/* Image container (centered with spacing on sides)
           <div className="w-full px-4 lg:px-16 pb-12 pt-20">
-            <div className="mx-auto max-w-[1900px] rounded-[32px] overflow-hidden">
+            <div className="mx-auto max-w-[1900px] rounded-4xl overflow-hidden">
               <img
                 src="https://cdn.cness.io/whycness.webp"
                 alt="CNESS Marketplace preview"
                 className="
-          mx-auto w-full max-w-[1900px] rounded-[32px]
+          mx-auto w-full max-w-[1900px] rounded-4xl
               object-cover
-              /* heights per breakpoint */
+             
               h-[220px] sm:h-[280px] md:h-[360px] lg:h-[405px] xl:h-[460px] 2xl:h-[460px]
-              /* keep the man’s face in frame as width grows */
-              object-[58%_50%]       /* base: a bit right of center */
+           
+              object-[58%_50%]       
               sm:object-[60%_50%]
               md:object-[62%_50%]
               lg:object-[64%_50%]
@@ -146,17 +146,17 @@ export default function WhyCness() {
             </div>
           </div>
         </section>
-      </LazySection>
+      </LazySection> */}
 
-      {/* --- Our Story + Mission / Vision (Section 2) --- */}
+      {/* --- Our Story + Mission / Vision (Section 2) --- 
       <LazySection effect="fade-up" delay={0.2}>
-        <section className="relative w-full py-16 lg:py-20 bg-gradient-to-r from-[#FAFAFA] to-[#F6F5FA]">
+        <section className="relative w-full py-16 lg:py-20 bg-linear-to-r from-[#FAFAFA] to-[#F6F5FA]">
           <div className="mx-auto max-w-[1200px] px-6">
-            {/* Top row */}
+            {/* Top row 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-start px-4 sm:px-6">
-              {/* Left: title */}
+              {/* Left: title
               <div className="text-center lg:text-left">
-                <p className="text-[32px] md:text-[38px] lg:text-[42px] font-semibold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                <p className="text-[32px] md:text-[38px] lg:text-[42px] font-semibold bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                   Our Story
                 </p>
                 <h3 className="mt-2 font-['Poppins'] font-medium text-[30px] md:text-[36px] lg:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#1F2937]">
@@ -164,7 +164,7 @@ export default function WhyCness() {
                 </h3>
               </div>
 
-              {/* Right: copy + CTA */}
+              {/* Right: copy + CTA 
               <div className="flex flex-col items-center lg:items-start gap-6">
                 <p className="max-w-[620px] font-['Open_Sans'] text-[15px] md:text-[16px] leading-[26px] text-[#242424] font-light text-justify">
                   CNESS was born from the vision of our founder, Nandiji, whose
@@ -182,7 +182,7 @@ export default function WhyCness() {
                     onClick={() => setOpenSignup(true)}
                     className="inline-flex items-center justify-center rounded-full px-5 py-3 text-[16px]
                font-['Plus Jakarta Sans'] font-medium text-white shadow-md hover:shadow-lg
-               bg-gradient-to-r from-[#7077FE] to-[#F07EFF] transition-all duration-300"
+               bg-linear-to-r from-[#7077FE] to-[#F07EFF] transition-all duration-300"
                   >
                     Join the Journey
                   </a>
@@ -206,13 +206,13 @@ export default function WhyCness() {
                     Play Video
                   </Button>
 
-                  {/* 🎬 Video Modal */}
+                  {/* 🎬 Video Modal 
                   {isVideoOpen && (
                     <div
                       className="fixed inset-0 z-50 flex items-center justify-center  p-4"
                       onClick={() => setIsVideoOpen(false)}
                     >
-                      {/* Auto layout container */}
+                      {/* Auto layout container 
                       <div
                         className={`relative w-full ${
                           isPortrait
@@ -221,7 +221,7 @@ export default function WhyCness() {
                         } rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)] bg-black`}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {/* Close Button */}
+                        {/* Close Button 
                         <button
                           onClick={() => setIsVideoOpen(false)}
                           className="absolute top-3 right-3 z-10 text-white/80 hover:text-white bg-black/40 hover:bg-black/60
@@ -230,7 +230,7 @@ export default function WhyCness() {
                           ×
                         </button>
 
-                        {/* Portrait Video: Blurred Background Layer */}
+                        {/* Portrait Video: Blurred Background Layer 
                         {isPortrait && (
                           <video
                             className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40"
@@ -241,7 +241,7 @@ export default function WhyCness() {
                           />
                         )}
 
-                        {/* Main Video (auto detect portrait or landscape) */}
+                        {/* Main Video (auto detect portrait or landscape) 
                         <video
                           ref={videoRef}
                           className={`relative z-10 rounded-3xl ${
@@ -264,24 +264,24 @@ export default function WhyCness() {
               </div>
             </div>
 
-            {/* Bottom row: Mission / Vision cards */}
+            {/* Bottom row: Mission / Vision cards 
             <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[32px] border border-[#ECEEF2] bg-white/90 shadow-[0_6px_28px_rgba(16,24,40,0.06)] p-[24px] md:p-[30px] flex flex-col gap-[10px]">
+              <div className="rounded-4xl border border-[#ECEEF2] bg-white/90 shadow-[0_6px_28px_rgba(16,24,40,0.06)] p-6 md:p-[30px] flex flex-col gap-2.5">
                 <h4 className="font-['Poppins'] font-medium text-[20px] md:text-[24px] leading-[1.2] text-[#111827]">
                   Mission
                 </h4>
-                <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#242424] font-light">
+                <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-6 text-[#242424] font-light">
                   To connect people and organizations who care about mindful
                   living so they can learn, grow and make a positive impact
                   together.
                 </p>
               </div>
 
-              <div className="rounded-[32px] border border-[#ECEEF2] bg-white/90 shadow-[0_6px_28px_rgba(16,24,40,0.06)] p-[24px] md:p-[30px] flex flex-col gap-[10px]">
+              <div className="rounded-4xl border border-[#ECEEF2] bg-white/90 shadow-[0_6px_28px_rgba(16,24,40,0.06)] p-6 md:p-[30px] flex flex-col gap-2.5">
                 <h4 className="font-['Poppins'] font-medium text-[20px] md:text-[24px] leading-[1.2] text-[#111827]">
                   Vision
                 </h4>
-                <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-[24px] text-[#242424] font-light">
+                <p className="font-['Open_Sans'] text-[15px] md:text-[16px] leading-6 text-[#242424] font-light">
                   A world where opportunities are open to everyone and growth is
                   guided by heart and conscience.
                 </p>
@@ -289,20 +289,244 @@ export default function WhyCness() {
             </div>
           </div>
 
-          {/* Signup Popup Modal */}
+          {/* Signup Popup Modal 
           <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
         </section>
-      </LazySection>
+      </LazySection>*/}
+
+{/*new hersection*/}
+<LazySection effect="fade-up" delay={0.2}>
+      <section className="w-full bg-hero-gradient"
+        style={{
+        background:
+          "linear-gradient(129.63deg, #FFFFFF 27.35%, #FEDEDE 91.53%, #EE9CE5 99.09%)",
+      }}>
+        
+<div className="flex items-center justify-center 
+  px-6 sm:px-10 lg:px-20 
+  py-10 sm:py-16 lg:py-20 
+  min-h-[auto] lg:min-h-[722px]">
+<div className="flex flex-col-reverse lg:flex-row items-center gap-10 lg:gap-0 max-w-screen-xl w-full">
+<div className="flex-1 max-w-[729px] text-center lg:text-left">
+            <div className="space-y-5">
+              <div className="space-y-2">
+<h1
+              style={{ fontFamily: "Poppins, sans-serif" }}
+              className="font-medium 
+text-[26px] sm:text-[32px] md:text-[38px] lg:text-[42px]
+leading-[120%] tracking-[-0.02em]
+bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text"
+            >                  Empowering Growth. Connecting People. Creating Impact.
+                </h1>
+                <p className="font-['Open_Sans'] 
+text-[14px] sm:text-[15px] md:text-[16px] font-light
+leading-[24px] text-[#242424]
+mt-4 sm:mt-6 max-w-[620px] mx-auto lg:mx-0">
+                  We're building more than a platform—we're shaping an ecosystem. From certifications and learning tools for professionals, to communities, marketplaces, and entertainment for individuals, our super app is designed to help you grow, connect, and thrive with purpose.
+                </p>              
+            <Button
+              variant="gradient-primary"
+              size="md"
+              onClick={scrollToGetInTouch}
+              className="mt-5 sm:mt-6 
+px-5 sm:px-6 
+py-3 sm:py-4 
+text-[14px] sm:text-[16px] font-['Plus Jakarta Sans'] font-medium text-[16px] leading-[100%] tracking-[0px] text-center"
+            >
+              Contact Us
+            </Button>                
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex-shrink-0 flex justify-center lg:justify-end w-full lg:w-auto">
+            <img 
+              src="https://cdn.cness.io/whycnesshero.svg" 
+              alt="Hero Illustration" 
+              className="w-[260px] sm:w-[340px] md:w-[420px] lg:w-[509px] 
+               h-auto object-contain"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+</LazySection>
+
+      <LazySection effect="fade-up" delay={0.2}>
+
+ <section className="w-full bg-gradient-to-r from-[#FAFAFA] to-[#F6F5FA]">
+<div className="px-6 sm:px-10 lg:px-20 py-10 sm:py-16 lg:py-[86px] max-w-screen-xl mx-auto">
+        <div className="space-y-8">
+<div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-[54px]">
+            <div className="flex-shrink-0">
+              <img 
+                src="https://cdn.cness.io/nandhiji.svg" 
+                alt="Our Story" 
+              className="w-[90%] sm:w-[450px] md:w-[550px] lg:w-[628px] 
+           h-auto object-cover mx-auto"
+              />
+            </div>
+            
+            <div className="flex-1 max-w-[596px] space-y-[22px]">
+              <div className="text-center lg:text-left">
+                <p className="text-[32px] md:text-[38px] lg:text-[42px] font-semibold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                  Our Story
+                </p>
+<h3 className="mt-2 font-['Poppins'] font-medium
+    text-[24px] sm:text-[30px] md:text-[36px] lg:text-[42px]
+    leading-[1.3] tracking-[-0.02em] text-[#1F2937]
+    text-center lg:text-left
+    whitespace-normal lg:whitespace-nowrap">
+                  Begins With a Simple Belief
+                </h3>
+              </div>
+              
+                <p className="max-w-[620px] text-[14px] sm:text-[15px] md:text-[16px]
+  leading-[24.4px] text-[#242424] capitalize font-['Open_Sans'] font-light
+  text-center lg:text-left mx-auto lg:mx-0">
+                CNESS was born from the vision of our founder, Nandiji, whose life and teachings embody conscious living. He believed that true growth goes beyond fleeting online inspiration — it's about nurturing the soul and connecting with others on a deeper level. Guided by this belief, he envisioned a space where people could be authentic, nourish their spirits, and support one another on a shared journey toward mindful, meaningful living. That space became CNESS.
+              </p>
+              
+<div className="flex flex-wrap justify-center lg:justify-start items-center gap-4 mt-5">
+                  <button className="bg-button-gradient rounded-[81.26px] px-5 py-[13px] hover:opacity-90 transition-opacity">
+                    <a
+                    onClick={() => setOpenSignup(true)}
+                    className="inline-flex items-center justify-center rounded-full
+px-6 sm:px-8 py-3 sm:py-4
+font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0px]
+  text-center text-white shadow-md hover:shadow-lg
+  bg-gradient-to-r from-[#7077FE] to-[#F07EFF] transition-all duration-300"
+                  >
+                    Join the Journey
+                  </a>              
+                    </button>
+
+                <Button
+  variant="white-outline"
+  size="md"
+  onClick={() => setIsVideoOpen(true)}
+  className="
+  inline-flex items-center justify-center
+px-6 sm:px-8 py-3 sm:py-4
+rounded-full border border-gray-300
+font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%]
+shadow-[0_1px_2px_rgba(0,0,0,0.1)]
+gap-2
+  "
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="currentColor"
+    viewBox="0 0 20 20"
+    className="w-4 h-4 sm:w-5 sm:h-5"
+  >
+    <path d="M6.5 5.5v9l7-4.5-7-4.5z" />
+  </svg>
+  Play Video
+</Button>
+
+ {isVideoOpen && (
+                    <div
+                      className="fixed inset-0 z-50 flex items-center justify-center  p-4"
+                      onClick={() => setIsVideoOpen(false)}
+                    >
+                      <div
+                        className={`relative w-full ${
+                          isPortrait
+                            ? "max-w-[900px] aspect-video"
+                            : "max-w-[900px] aspect-video"
+                        } rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)] bg-black`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                      
+                        <button
+                          onClick={() => setIsVideoOpen(false)}
+                          className="absolute top-3 right-3 z-10 text-white/80 hover:text-white bg-black/40 hover:bg-black/60
+                   w-8 h-8 flex items-center justify-center rounded-full backdrop-blur-sm transition-all duration-200"
+                        >
+                          ×
+                        </button>
+
+                
+                        {isPortrait && (
+                          <video
+                            className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40"
+                            src={videoUrl}
+                            muted
+                            loop
+                            autoPlay
+                          />
+                        )}
+
+                        <video
+                          ref={videoRef}
+                          className={`relative z-10 rounded-3xl ${
+                            isPortrait
+                              ? "w-auto h-full mx-auto object-contain" // Portrait → center with height fit
+                              : "w-full h-full object-cover" // Landscape → fill the container
+                          }`}
+                          src={videoUrl}
+                          controls
+                          autoPlay
+                          onLoadedMetadata={(e) => {
+                            const video = e.target as HTMLVideoElement;
+                            setIsPortrait(video.videoHeight > video.videoWidth);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+              </div>
+            </div>
+          </div>
+          
+<div className="flex flex-col lg:flex-row gap-6 lg:gap-[30px] mt-10">
+            <div className="flex-1 bg-white rounded-[32px] p-6 sm:p-[30px]">
+              <div className="space-y-[13px]">
+                <h3 className="font-poppins font-medium text-2xl tracking-tight-vision text-black">
+                  Mission
+                </h3>
+                <p className=" font-['Open_Sans'] font-light 
+  text-[16px] leading-[24.4px] 
+  capitalize text-[#242424]">
+                  We built our super app to unite learning, certifications, communities, and marketplaces in one ecosystem—helping people and businesses grow, connect, and thrive with purpose.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex-1 bg-white rounded-[32px] p-6 sm:p-[30px]">
+              <div className="space-y-[13px]">
+                <h3 className="font-poppins font-medium text-2xl tracking-tight-vision text-black">
+                  Vision
+                </h3>
+                <p className="font-['Open_Sans'] font-light 
+  text-[16px] leading-[24.4px] 
+  capitalize text-[#242424]">
+                  To be the world's most trusted ecosystem, where learning, business, and community come together seamlessly. Creating a future where opportunities are accessible to everyone.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     
+   <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
+
+    </section>
+
+</LazySection>
+
 
       <LazySection effect="fade-up" delay={0.2}>
         <section className="w-full bg-white py-10 sm:py-14 md:py-20 px-4 sm:px-8 md:px-[60px]">
-          <div className="w-full 2xl:w-[1300px] mx-auto bg-[#F5F7F9] rounded-[24px] md:rounded-[32px] px-6 sm:px-10 md:px-12 xl:px-[120px]">
+          <div className="w-full 2xl:w-[1300px] mx-auto bg-[#F5F7F9] rounded-3xl md:rounded-4xl px-6 sm:px-10 md:px-12 xl:px-[120px]">
             <div className="grid xl:grid-cols-2 gap-2 w-full items-center">
               {/* Left copy */}
               <div className="text-center xl:text-left py-8 sm:py-12 md:py-[50px]">
-                <h2 className="font-poppins font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#000]">
+                <h2 className="font-poppins font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-black">
                   What Makes Us{" "}
-                  <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                     Different
                   </span>
                 </h2>
@@ -341,7 +565,7 @@ export default function WhyCness() {
                         <h3 className="font-['Open_Sans'] font-semibold text-[16px] text-black">
                           {item.title}
                         </h3>
-                        <p className="font-['Open_Sans'] text-[14px] leading-[20px] text-[#242424] mt-1 font-light">
+                        <p className="font-['Open_Sans'] text-[14px] leading-5 text-[#242424] mt-1 font-light">
                           {item.desc}
                         </p>
                       </div>
@@ -382,7 +606,7 @@ export default function WhyCness() {
           <div className="w-full">
             <h2 className="text-center lg:text-left font-['Poppins'] font-medium text-[32px] md:text-[42px] leading-[1.3] tracking-[-0.02em] text-[#111] px-6 md:px-10 lg:px-16">
               Our{" "}
-              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 Road ahead
               </span>
             </h2>

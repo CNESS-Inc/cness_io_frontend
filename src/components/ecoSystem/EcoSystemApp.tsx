@@ -147,7 +147,7 @@ export default function EcoSystemApp() {
         background: "linear-gradient(180deg, #FAFAFA 0%, #F6F5FA 100%)",
       }}
     >
-      <div className="w-full max-w-8xl flex mx-auto grid grid-cols-1 xl:grid-cols-2 gap-[60px] justify-center items-center">
+      <div className="w-full max-w-8xl mx-auto grid grid-cols-1 xl:grid-cols-2 gap-[60px] justify-center items-center">
         {/* left card  */}
         <div className="flex flex-col sm:flex-row justify-center items-center mx-auto gap-[30px] relative max-w-2xl lg:w-full">
           <div
@@ -303,7 +303,7 @@ export default function EcoSystemApp() {
               <h3 className="font-poppins text-2xl font-light leading-[54px] tracking-[-0.02em] capitalize">
                 <span
                   style={{ fontFamily: "Poppins, sans-serif" }}
-                  className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent text-[42px] font-medium bg-clip-text flex lg:flex-row md:flex-row flex-col"
+                  className="bg-linear-to-r from-[#D747EA] to-[#7741FB] text-transparent text-[42px] font-medium bg-clip-text flex lg:flex-row md:flex-row flex-col"
                 >
                       {rightCards[activeCard].title}
                       {rightCards[activeCard].info}

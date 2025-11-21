@@ -655,7 +655,7 @@ useEffect(() => {
                 Pending
               </button>
               <button
-                className={`flex-shrink-0 
+                className={`shrink-0 
                       min-w-[120px]  
                         max-w-[200px] 
                       text-sm 
@@ -681,7 +681,7 @@ useEffect(() => {
                 Approved
               </button>
               <button
-                className={`flex-shrink-0 
+                className={`shrink-0 
                       min-w-[120px]  
                         max-w-[200px] 
                       text-sm 
@@ -854,7 +854,7 @@ useEffect(() => {
                             Overview
                           </p>
 
-                          <p className="text-sm text-gray-600 mb-2 leading-snug break-words whitespace-pre-line">
+                          <p className="text-sm text-gray-600 mb-2 leading-snug wrap-break-word whitespace-pre-line">
                             <span
                               dangerouslySetInnerHTML={{
                                 __html: DOMPurify.sanitize(
@@ -989,7 +989,7 @@ useEffect(() => {
                           Overview
                         </p>
 
-                        <p className="text-sm text-gray-600 mb-2 leading-snug break-words whitespace-pre-line">
+                        <p className="text-sm text-gray-600 mb-2 leading-snug wrap-break-word whitespace-pre-line">
                           {expandedDescriptions[company.id]
                             ? company.description
                             : truncateText(company.description, 100)}
