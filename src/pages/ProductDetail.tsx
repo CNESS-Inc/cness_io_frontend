@@ -449,36 +449,42 @@ console.log("FULL PRODUCT → ", productData);
   </div>
 )}
               {/* Author and Stats */}
-              <div className="flex items-center space-x-4 text-sm ">
-                <div className="flex items-center space-x-2">
-                  <img
-                    src={product?.seller?.shop_logo || 'https://static.codia.ai/image/2025-10-16/1Uq1yJR1AG.png'}
-                    alt={product?.seller?.shop_name}
-                    className="w-6 h-6 rounded-full"
-                  />
-                  <span className="font-medium text-gray-900">
-                    {product?.seller?.shop_name}
-                  </span>
-                  <img src="https://static.codia.ai/image/2025-10-16/4CY6MqmRhj.png" alt="Verified" className="w-4 h-4" />
-                </div>
+              <div className="flex flex-row items-center flex-nowrap space-x-1 text-sm">
+              {/* Seller + Verified */}
+              <div className="flex flex-row items-center space-x-2 flex-nowrap">
+                <img
+                  src={product?.seller?.shop_logo || 'https://static.codia.ai/image/2025-10-16/1Uq1yJR1AG.png'}
+                  alt={product?.seller?.shop_name}
+                  className="w-6 h-6 rounded-full self-center"
+                />
+                <span className="font-medium text-gray-900 whitespace-nowrap truncate max-w-[110px] px-1">
+                  {product?.seller?.shop_name}
+                </span>
+                <img src="https://static.codia.ai/image/2025-10-16/4CY6MqmRhj.png" alt="Verified" className="w-4 h-4 self-center" />
+              </div>
 
-                <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                {/* Divider */}
+                <div className="w-1 h-1 bg-gray-300 rounded-full self-center"></div>
 
-                <div className="flex items-center space-x-1">
-                  <img src="https://static.codia.ai/image/2025-10-16/yNGhX01DCH.png" alt="Star" className="w-5 h-5" />
-                  <span className="text-gray-900">
+                {/* Rating */}
+                <div className="flex flex-row items-center space-x-1 flex-nowrap">
+                  <img src="https://static.codia.ai/image/2025-10-16/yNGhX01DCH.png" alt="Star" className="w-5 h-5 self-center" />
+                  <span className="text-gray-900 whitespace-nowrap">
                     {product?.rating?.average} ({product?.rating?.total_reviews})
                   </span>
                 </div>
 
-                <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-
-                <div className="flex items-center space-x-1">
-                  <img src="https://static.codia.ai/image/2025-10-16/92zn9LKBU3.png" alt="Downloads" className="w-5 h-5" />
-                  <span className="text-gray-900">{product?.purchase_count} purchases</span>
+                {/* Divider */}
+                <div className="w-1 h-1 bg-gray-300 rounded-full self-center"></div>
+                
+                {/* Purchases */}
+                <div className="flex flex-row items-center space-x-1 flex-nowrap">
+                  <img src="https://static.codia.ai/image/2025-10-16/92zn9LKBU3.png" alt="Downloads" className="w-5 h-5 self-center" />
+                  <span className="text-gray-900 whitespace-nowrap">
+                    {product?.purchase_count} purchases
+                  </span>
                 </div>
               </div>
-
               {/* Price */}
               <div className="flex gap-2.5 items-center">
                 {parseFloat(product.discount_percentage) > 0 && (
@@ -499,24 +505,25 @@ console.log("FULL PRODUCT → ", productData);
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-row items-center justify-start space-x-2">
                 <button
                   onClick={handleBuyNow}
-                  className="flex items-center space-x-2 bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600">
-                  <img src="https://static.codia.ai/image/2025-10-16/LUafay60N9.png" alt="Buy" className="w-6 h-6" />
-                  <span>Buy Now</span>
+                  className="flex flex-nowrap items-center space-x-2 bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600 select-none"
+                >
+                  <img src="https://static.codia.ai/image/2025-10-16/LUafay60N9.png" alt="Buy" className="w-6 h-6 flex-shrink-0" />
+                 <span className="whitespace-nowrap">Buy Now</span>
                 </button>
 
                 <button
                   onClick={handleAddToCart}
                   disabled={isAddingToCart}
-                  className={`flex items-center space-x-2 border border-blue-500 text-blue-500 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+                  className={`flex items-center w-[150px] space-x-2 border border-blue-500 text-blue-500 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                 >
                   <img src="https://static.codia.ai/image/2025-10-16/VUQR3XLDmc.png" alt="Cart" className="w-6 h-6" />
-                  <span>
-                    {isAddingToCart ? 'Adding...' : isCarted ? 'Added to cart' : 'Add to cart'}
-                  </span>
+                  <span className="whitespace-nowrap">
+                  {isAddingToCart ? 'Adding...' : isCarted ? 'Added to cart' : 'Add to cart'}
+                </span>
                 </button>
 
                 <button className="p-3 border border-blue-500 rounded-lg hover:bg-blue-50">

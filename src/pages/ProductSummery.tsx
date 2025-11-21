@@ -82,11 +82,10 @@ export default function ProductSummery() {
             {/* Product Card */}
             {/* Column 2 - Details */}
             {orderItem && orderItem.items && orderItem.items.length > 0 && orderItem.items.map((item: any) => ((
-              <div className="bg-white rounded-lg shadow flex flex-col md:flex-row items-center gap-6 p-6">
+              <div className="bg-white rounded-lg shadow flex flex-col md:flex-row items-center gap-3 p-3">
                 {/* Column 1 - Image */}
                 <div className="flex-1 flex justify-center">
                   <img
-                    style={{ width: "60%" }}
                     src={item?.product_thumbnail || "https://cdn.cness.io/collection1.svg"}
                     alt={item?.product_name}
                     className="w-full h-full object-cover rounded"
@@ -147,9 +146,9 @@ export default function ProductSummery() {
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-6 mb-4">
-              <div className="font-bold text-gray-900 mb-2">Price Details</div>
-              <div className="space-y-2 mb-4">
+            <div className="font-bold font-[poppins] text-gray-900 mb-2">Price Details</div>
+            <div className="rounded-lg shadow p-6 mb-4" style={{ backgroundColor: '#F9F9F9' }}>
+              <div className="space-y-2 mb-4 font-[poppins]">
                 <div className=" flex justify-between items-center text-gray-700">
                   <span>{`Subtotal`}</span>
                   <span className="font-semibold">{orderItem?.subtotal_amount}</span>
