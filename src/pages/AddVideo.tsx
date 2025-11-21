@@ -1042,7 +1042,7 @@ const MultiSelect = ({
             </div>
           </div>
           <div>
-            <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+            <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2 mt-2">
               Thumbnail <span className="text-red-500">*</span>
             </label>
             {thumbnailData?.thumbnail_url ? (
