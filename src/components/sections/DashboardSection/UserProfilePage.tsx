@@ -1561,7 +1561,7 @@ const UserProfilePage = () => {
                   )}
               </div>
 
-              <div className="absolute -bottom-0 left-4 sm:left-6 md:left-8 z-20 group">
+              <div className="absolute bottom-0 left-4 sm:left-6 md:left-8 z-20 group">
                 <div className="relative w-24 h-24 sm:w-28 sm:h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
                   {uploadProgress.type === "profile" && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full">
@@ -1659,7 +1659,7 @@ const UserProfilePage = () => {
                         <Tab
                           key={index}
                           className={({ selected }) =>
-                            `flex-shrink-0 
+                            `shrink-0 
                                   min-w-[120px]  
                                     max-w-[200px] 
                                   text-sm 
@@ -2256,7 +2256,7 @@ const UserProfilePage = () => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-                                   hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+                                   hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
                                     shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         onClick={() => basicInfoForm.reset()}
                       >
@@ -2560,7 +2560,7 @@ const UserProfilePage = () => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-                            hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+                            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
                             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => contactInfoForm.reset()}
@@ -2695,7 +2695,7 @@ const UserProfilePage = () => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-                            hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+                            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
                             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => socialLinksForm.reset()}
@@ -2943,7 +2943,7 @@ const UserProfilePage = () => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-            hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => educationForm.reset()}
@@ -3421,7 +3421,7 @@ const UserProfilePage = () => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-         hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+         hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
          shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => workExperienceForm.reset()}
@@ -3772,7 +3772,7 @@ const UserProfilePage = () => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-                            hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+                            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
                             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => publicProfileForm.reset()}

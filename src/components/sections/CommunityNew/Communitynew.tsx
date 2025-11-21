@@ -9,16 +9,16 @@ const Communitynew: React.FC = () => {
       <div className="community-header text-center mb-12 px-4">
         <h2
           style={{ fontFamily: "Poppins, sans-serif" }}
-          className="poppins lg:leading-16 md:leading-14 leading-9 text-[32px] font-[500] bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
+          className="poppins lg:leading-16 md:leading-14 leading-9 text-[32px] font-medium bg-linear-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3 w-fit mx-auto"
         >
           Find Friends Who Share Your
-          <span className="bg-gradient-to-r from-[#a545f4] to-[#B646F1] text-transparent bg-clip-text">
+          <span className="bg-linear-to-r from-[#a545f4] to-[#B646F1] text-transparent bg-clip-text">
             {" "}
              Values.
           </span>
         </h2>
-        <p className="font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] text-center w-fit mx-auto">
+        <p className="font-['Open_Sans'] font-light text-[16px] leading-6 tracking-[0px] text-[#242424] text-center w-fit mx-auto">
           Whether you're here to grow your career, share your passion, or
           simply<br className="lg:block md:block hidden" />
           connect with others who care — CNESS gives you a space to belong,

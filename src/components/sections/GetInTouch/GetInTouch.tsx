@@ -59,7 +59,7 @@ export default function GetInTouch() {
 
           <p
             style={{ fontFamily: "open sans, sans-serif" }}
-            className="text-[16px] font-light  md:text-[16px] leading-[24px] md:leading-[24px] tracking-[-0.02em] text-[#242424] text-center"
+            className="text-[16px] font-light  md:text-[16px] leading-6 md:leading-6 tracking-[-0.02em] text-[#242424] text-center"
           >
             Whether you’re a business, a creator, or simply curious about CNESS.
             <br />
@@ -78,9 +78,9 @@ export default function GetInTouch() {
                 <p className="text-gray-500 text-left">Call Us</p>
                 <p
                   style={{ fontFamily: "Inter, sans-serif" }}
-                  className="text-[18px] md:text-[20px] font-semibold leading-[1]"
+                  className="text-[18px] md:text-[20px] font-semibold leading-none"
                 >
-                  <span className="bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
+                  <span className="bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
                     +1
                   </span>{" "}
                   456 334 445
@@ -102,9 +102,9 @@ export default function GetInTouch() {
                 <p className="text-gray-500 text-left">Mail Us</p>
                 <p
                   style={{ fontFamily: "Inter, sans-serif" }}
-                  className="text-[18px] md:text-[20px] font-semibold leading-[1]"
+                  className="text-[18px] md:text-[20px] font-semibold leading-none"
                 >
-                  <span className="bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
+                  <span className="bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
                     sales@
                   </span>
                   cness.co

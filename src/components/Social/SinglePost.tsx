@@ -100,7 +100,7 @@ const SinglePost = () => {
       //   text: comment,
       //   post_id: id,
       // };
-      const res = await GetComment(id);
+      const res = await GetComment(id,page);
       setPostComment(res?.data?.data?.rows);
       // const newComments = res?.data;
       // setCommentCount(res.meta?.pagination?.total);

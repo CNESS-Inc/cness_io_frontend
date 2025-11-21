@@ -91,7 +91,7 @@ export function StorySidebar({
             <div className="button">
               <button
                 onClick={handleClose}
-                className="w-[35px] h-[35px] rounded-[7px] border-[1px] border-strock border-[#ECEEF2] flex justify-center items-center hover:bg-gray-50 transition-colors"
+                className="w-[35px] h-[35px] rounded-[7px] border border-strock border-[#ECEEF2] flex justify-center items-center hover:bg-gray-50 transition-colors"
               >
                 <IoCloseOutline className="text-[#E1056D]" />
               </button>
@@ -114,7 +114,7 @@ export function StorySidebar({
                   className={cn(
                     "p-0.5 rounded-full",
                     story.hasNewStory && !story.isViewed
-                      ? "bg-gradient-to-r from-primary to-primary-glow"
+                      ? "bg-linear-to-r from-primary to-primary-glow"
                       : "bg-story-viewed"
                   )}
                 >
@@ -127,7 +127,7 @@ export function StorySidebar({
 
                   <div 
                    className={cn(
-                    "relative w-[73px] h-[73px]  rounded-full p-[1.83px] bg-gradient-to-r",
+                    "relative w-[73px] h-[73px]  rounded-full p-[1.83px] bg-linear-to-r",
                     story.hasNewStory && !story.isViewed
                       ? "from-[#6340FF]  to-[#D748EA]"
                       : "from-[gray]  to-[gray]"
@@ -140,7 +140,7 @@ export function StorySidebar({
                       />
                     </div>
 
-                    <span className="absolute bottom-[10px] right-[12px] w-[10px] h-[10px] rounded-full bg-green-500 border-[1.5px] border-white"></span>
+                    <span className="absolute bottom-2.5 right-3 w-2.5 h-2.5 rounded-full bg-green-500 border-[1.5px] border-white"></span>
                   </div>
                 </div>
               </div>
