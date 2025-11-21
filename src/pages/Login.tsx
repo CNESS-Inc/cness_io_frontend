@@ -1261,12 +1261,12 @@ export default function Login() {
 
         {/* Sign In Form */}
         <div className="min-h-[700px] ">
-          <div className="absolute top-[80px] sm:top-[120px] md:top-[160px] left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
-            <div className="w-[576px] h-[750px] sm:h-[650px] bg-white rounded-[24px] shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
-              <h2 className="font-poppins font-semibold text-[28px] leading-[32px] tracking-[-0.02em] text-gray-900">
+          <div className="absolute top-20 sm:top-[120px] md:top-40 left-0 right-0 z-10 flex justify-center px-4 sm:px-6">
+            <div className="w-xl h-[750px] sm:h-[650px] bg-white rounded-3xl shadow-xl border border-gray-200 px-[42px] py-[52px] flex flex-col gap-8">
+              <h2 className="font-poppins font-semibold text-[28px] leading-8 tracking-[-0.02em] text-gray-900">
                 Sign in to your account
                 <br />
-                <span className="font-publicSans font-normal text-[15px] leading-[20px] tracking-[-0.005em] text-[#281D1B]">
+                <span className="font-publicSans font-normal text-[15px] leading-5 tracking-[-0.005em] text-[#281D1B]">
                   Please enter your login details to access your account
                 </span>
               </h2>
@@ -1308,7 +1308,7 @@ export default function Login() {
                       <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="bg-white px-3 font-publicSans font-normal text-[15px] leading-[20px] text-[#281D1B]">
+                      <span className="bg-white px-3 font-publicSans font-normal text-[15px] leading-5 text-[#281D1B]">
                         Or sign in with
                       </span>
                     </div>
@@ -1329,7 +1329,7 @@ export default function Login() {
                       placeholder="Enter your email"
                       onFocus={() => setEmailFocused(true)}
                       onBlur={() => setEmailFocused(false)}
-                      className={`w-full px-3 py-2 rounded-[12px] border ${
+                      className={`w-full px-3 py-2 rounded-xl border ${
                         loginErrors.email
                           ? "border-red-500"
                           : "border-[#CBD5E1]"
@@ -1364,7 +1364,7 @@ export default function Login() {
                       name="password"
                       required
                       placeholder="Enter your Password"
-                      className={`w-full px-3 py-2 rounded-[12px] border ${
+                      className={`w-full px-3 py-2 rounded-xl border ${
                         loginErrors.password
                           ? "border-red-500"
                           : "border-[#CBD5E1]"
@@ -1422,7 +1422,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => login()}
-                  className="flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-md w-12 h-12 bg-white hover:shadow-md hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
+                  className="flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-md w-12 h-12 bg-white hover:shadow-md hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#F07EFF]"
                 >
                   <img
                     src="/google-icon-logo.svg"
@@ -1474,7 +1474,7 @@ export default function Login() {
             <Button
               type="submit"
               onClick={() => handleTypeSelection(1)}
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              className="bg-[#7077FE] py-4 px-6 rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >
@@ -1482,7 +1482,7 @@ export default function Login() {
             </Button>
             <Button
               onClick={() => handleTypeSelection(2)}
-              className="bg-[#7077FE] py-[16px] px-[24px] rounded-full transition-colors duration-500 ease-in-out"
+              className="bg-[#7077FE] py-4 px-6 rounded-full transition-colors duration-500 ease-in-out"
               variant="primary"
               withGradientOverlay
             >
@@ -1499,7 +1499,7 @@ export default function Login() {
           {/* Ensures center + padding on small screens */}
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -1791,7 +1791,7 @@ export default function Login() {
                                       value={option.option}
                                       checked={existingAnswer === option.option}
                                       onChange={handleOrganizationFormChange}
-                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
+                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 shrink-0 peer-checked:border-transparent peer-checked:bg-linear-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
@@ -1918,7 +1918,7 @@ export default function Login() {
                     <div className="flex justify-center">
                       <div className="relative w-full max-w-sm p-8 rounded-3xl border border-violet-300 shadow-xl bg-white hover:shadow-2xl transition-all duration-300">
                         {/* Ribbon */}
-                        <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-3 py-1 rounded-bl-xl rounded-tr-3xl font-semibold shadow-md">
+                        <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-3 py-1 rounded-bl-xl rounded-tr-3xl font-semibold shadow-md">
                           Popular
                         </div>
 
@@ -1963,7 +1963,7 @@ export default function Login() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2]  w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -2014,9 +2014,9 @@ export default function Login() {
                         value={personForm.first_name}
                         onChange={handlePersonFormChange}
                         className={`w-[440px] h-[41px]
-    rounded-[12px]
+    rounded-xl
     border-[0.82px]
-    p-[12px] mt-2 ${
+    p-3 mt-2 ${
       personErrors.first_name ? "border-red-500" : "border-gray-300"
     } rounded-md`}
                       />
@@ -2038,9 +2038,9 @@ export default function Login() {
                         value={personForm.last_name}
                         onChange={handlePersonFormChange}
                         className={`w-[440px] h-[41px]
-    rounded-[12px]
+    rounded-xl
     border-[0.82px]
-    p-[12px] mt-2 ${
+    p-3 mt-2 ${
       personErrors.last_name ? "border-red-500" : "border-gray-300"
     } rounded-md`}
                         placeholder="Enter your last name"
@@ -2208,7 +2208,7 @@ export default function Login() {
                                       value={option.option}
                                       checked={existingAnswer === option.option}
                                       onChange={handlePersonFormChange}
-                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
+                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 shrink-0 peer-checked:border-transparent peer-checked:bg-linear-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
                                     />
                                     <label
                                       htmlFor={`question_${question.id}_${option.id}`}
@@ -2324,7 +2324,7 @@ export default function Login() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -2367,7 +2367,7 @@ export default function Login() {
                     className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
                   >
                     {plan.popular && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                      <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                         Popular
                       </div>
                     )}
@@ -2413,7 +2413,7 @@ export default function Login() {
                       checked={isAnnual}
                       onChange={() => setIsAnnual(!isAnnual)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
                   </div>
                   <span className="ml-3 text-sm font-medium text-gray-700">
                     Annual billing
@@ -2441,7 +2441,7 @@ export default function Login() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
             {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
               <div>
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                   <svg
@@ -2544,7 +2544,7 @@ export default function Login() {
                     className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
                   >
                     {plan.popular && (
-                      <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                      <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                         Popular
                       </div>
                     )}
@@ -2590,7 +2590,7 @@ export default function Login() {
                       checked={isAnnual}
                       onChange={() => setIsAnnual(!isAnnual)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
                   </div>
                   <span className="ml-3 text-sm font-medium text-gray-700">
                     Annual billing
@@ -2641,7 +2641,7 @@ export default function Login() {
                 name="email"
                 required
                 placeholder="Enter your email"
-                className={`w-full px-3 py-2 rounded-[12px] border ${
+                className={`w-full px-3 py-2 rounded-xl border ${
                   resetPasswordErrors.email
                     ? "border-red-500"
                     : "border-[#CBD5E1]"
@@ -2676,7 +2676,7 @@ export default function Login() {
 
       <Modal isOpen={activeModal === "success"} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
-          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] ">
+          <div className="mx-auto flex items-center justify-center h-50 w-50 rounded-full bg-linear-to-r from-[#7077FE] to-[#9747FF] ">
             <svg
               className="h-30 w-30 text-white "
               fill="none"
@@ -2716,7 +2716,7 @@ export default function Login() {
 
       <Modal isOpen={activeModal === "disqualify"} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
-          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-[#7077FE] to-[#9747FF] mb-4">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-linear-to-r from-[#7077FE] to-[#9747FF] mb-4">
             <svg
               className="h-10 w-10 text-white"
               fill="none"

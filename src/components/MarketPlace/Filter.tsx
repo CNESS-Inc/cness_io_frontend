@@ -134,7 +134,7 @@ const FilterSidebar: React.FC<FilterProps> = ({
     onFilterChange(newFilters);
   };
 
-  const handleDurationToggle = (durationRange: any) => {
+  {/*const handleDurationToggle = (durationRange: any) => {
     const isDurationSelected =
       localFilters.min_duration === durationRange.min &&
       localFilters.max_duration === durationRange.max;
@@ -145,7 +145,7 @@ const FilterSidebar: React.FC<FilterProps> = ({
 
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
-  };
+  };*/}
 
   const handleRatingChange = (value: number) => {
     const newFilters = {
@@ -156,10 +156,10 @@ const FilterSidebar: React.FC<FilterProps> = ({
     onFilterChange(newFilters);
   };
 
-  const isDurationSelected = (durationRange: any) => {
-    return localFilters.min_duration === durationRange.min &&
-      localFilters.max_duration === durationRange.max;
-  };
+ /// const isDurationSelected = (durationRange: any) => {
+   // return localFilters.min_duration === durationRange.min &&
+  //    localFilters.max_duration === durationRange.max;
+//  };
 
   return (
     <>
@@ -331,7 +331,7 @@ const FilterSidebar: React.FC<FilterProps> = ({
           </div>
         )}
 
-        {/* ⏱️ Duration */}
+        {/* ⏱️ Duration
         {filterConfig.showDuration && filterOptions.duration_ranges && filterOptions.duration_ranges.length > 0 && (
           <div className="space-y-2 mb-8">
             <h3 className="text-[16px] font-semibold">Duration</h3>
@@ -350,7 +350,7 @@ const FilterSidebar: React.FC<FilterProps> = ({
               </label>
             ))}
           </div>
-        )}
+        )} */}
 
         {/* ⭐ Ratings */}
         {filterConfig.showRating && filterOptions.rating_range && (

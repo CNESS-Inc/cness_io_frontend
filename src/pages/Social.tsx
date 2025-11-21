@@ -23,7 +23,7 @@ const Social = () => {
 
       <div className="flex flex-col w-full bg-[#F7F7F7] gap-4 p-4 md:flex-row h-full">
         {/* First Part (1/3 width on medium screens and above) */}
-        <div className="w-full md:w-[20%] bg-white rounded-[12px] h-[300px]">
+        <div className="w-full md:w-[20%] bg-white rounded-xl h-[300px]">
           <LeftSocial
             // isMobileNavOpen={isMobileNavOpen}
             currentPath={location.pathname}

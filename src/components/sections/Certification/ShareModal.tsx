@@ -429,7 +429,7 @@ export default function ShareModal({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60"
+      className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 bg-black/60"
     >
       {/* Modal Container */}
       <div
@@ -440,22 +440,22 @@ export default function ShareModal({
           overflowY: "auto",
         }}
       >
-        <div className="w-full h-[600px] ps-[12px] pe-[14px] py-[18px]">
+        <div className="w-full h-[600px] ps-3 pe-3.5 py-[18px]">
           <div
             onClick={onClose}
-            className="absolute top-4 right-3 w-[20px] h-[20px] rounded-full flex items-center justify-center cursor-pointer border border-[#ECEEF2] shadow-[0px_0.56px_5.63px_0px_rgba(0,0,0,0.1)]"
+            className="absolute top-4 right-3 w-5 h-5 rounded-full flex items-center justify-center cursor-pointer border border-[#ECEEF2] shadow-[0px_0.56px_5.63px_0px_rgba(0,0,0,0.1)]"
           >
             <IoCloseOutline className="text-[#E1056D]" />
           </div>
           <div className="w-full h-full flex flex-col lg:flex-row gap-[18px]">
-            <div className="w-full lg:w-[35%] h-fit lg:h-full border-r border-[#ECEEF2] pr-[12px] flex flex-col gap-[18px]">
+            <div className="w-full lg:w-[35%] h-fit lg:h-full border-r border-[#ECEEF2] pr-3 flex flex-col gap-[18px]">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() =>
                     setActiveTab(tab.id as "tab1" | "tab2" | "tab3")
                   }
-                  className={`flex items-center py-[8px] px-[12px] gap-[12px] rounded-xl transition-all duration-200 whitespace-nowrap
+                  className={`flex items-center py-2 px-3 gap-3 rounded-xl transition-all duration-200 whitespace-nowrap
                    ${
                      activeTab === tab.id
                        ? "bg-[#FAFAFA]"
@@ -480,14 +480,14 @@ export default function ShareModal({
             </div>
             {activeTab === "tab1" ? (
               <div className="w-full lg:w-[65%] h-full pb-10 lg:pb-0 flex flex-col gap-[18px]">
-                <div className="grid md:grid-cols-3 gap-[12px] pb-[12px] border-b border-[#FAFAFA]">
+                <div className="grid md:grid-cols-3 gap-3 pb-3 border-b border-[#FAFAFA]">
                   {buttons.map((btn) => (
                     <button
                       key={btn.id}
                       onClick={() =>
                         setActiveButton(btn.id as "btn1" | "btn2" | "btn3")
                       }
-                      className={`relative flex items-center justify-center p-[12px] rounded-lg bg-[#FAFAFA4D] transition-all duration-200 whitespace-nowrap
+                      className={`relative flex items-center justify-center p-3 rounded-lg bg-[#FAFAFA4D] transition-all duration-200 whitespace-nowrap
                    ${
                      activeButton === btn.id
                        ? "shadow-[0_0_10px_0_rgba(0,0,0,0.1)]"
@@ -499,12 +499,12 @@ export default function ShareModal({
                       </p>
 
                       {activeButton === btn.id && (
-                        <span className="absolute bottom-[-13px] left-0 w-full h-[2px] bg-[#ECEEF2] rounded-t-sm"></span>
+                        <span className="absolute bottom-[-13px] left-0 w-full h-0.5 bg-[#ECEEF2] rounded-t-sm"></span>
                       )}
                     </button>
                   ))}
                 </div>
-                <div className="flex flex-col gap-[12px]">
+                <div className="flex flex-col gap-3">
                   <textarea
                     readOnly
                     value={activeCode || ""}
@@ -520,7 +520,7 @@ export default function ShareModal({
                       className="peer hidden"
                     />
                     <span
-                      className={`w-[16px] h-[16px] flex items-center justify-center border border-[#D0D5DD] rounded-sm transition-all
+                      className={`w-4 h-4 flex items-center justify-center border border-[#D0D5DD] rounded-sm transition-all
           ${
             checked
               ? "border-[#E1056D] bg-[#E1056D]"
@@ -568,7 +568,7 @@ export default function ShareModal({
                   onClick={handleCopy}
                   disabled={!checked || !activeCode}
                   variant="gradient-primary"
-                  className="rounded-full w-full py-[12px] px-[16px] self-stretch transition-colors duration-500 ease-in-out"
+                  className="rounded-full w-full py-3 px-4 self-stretch transition-colors duration-500 ease-in-out"
                 >
                   <span className="font-normal text-sm font-['Poppins',Helvetica]">
                     {copied ? "Copied!" : "Copy to clipboard"}
@@ -577,7 +577,7 @@ export default function ShareModal({
               </div>
             ) : activeTab === "tab2" ? (
               <div className="w-full lg:w-[65%] h-full pb-10 lg:pb-0 flex flex-col gap-[18px]">
-                <div className="flex flex-col gap-[12px]">
+                <div className="flex flex-col gap-3">
                   <div>
                     <label className="text-sm font-medium font-['Poppins',Helvetica] text-[#0D0D12] mb-2 block">
                       File Format
@@ -587,7 +587,7 @@ export default function ShareModal({
                       <select
                         value={selectedFormat}
                         onChange={(e) => setSelectedFormat(e.target.value)}
-                        className="w-full appearance-none p-[12px] text-sm border border-[#CBD5E1] rounded-xl font-['Poppins',Helvetica] text-[#64748B]"
+                        className="w-full appearance-none p-3 text-sm border border-[#CBD5E1] rounded-xl font-['Poppins',Helvetica] text-[#64748B]"
                       >
                         <option value="" disabled>
                           Select Format
@@ -624,7 +624,7 @@ export default function ShareModal({
                       <select
                         value={selectedRatio}
                         onChange={(e) => setSelectedRatio(e.target.value)}
-                        className="w-full appearance-none p-[12px] text-sm border border-[#CBD5E1] rounded-xl font-['Poppins',Helvetica] text-[#64748B]"
+                        className="w-full appearance-none p-3 text-sm border border-[#CBD5E1] rounded-xl font-['Poppins',Helvetica] text-[#64748B]"
                       >
                         <option value="" disabled>
                           Select Ratio
@@ -652,7 +652,7 @@ export default function ShareModal({
                     <label className="text-sm font-medium font-['Poppins',Helvetica] text-[#0D0D12] mb-2 block">
                       Preview
                     </label>
-                    <div className="relative w-full h-[160px] rounded-lg overflow-hidden">
+                    <div className="relative w-full h-40 rounded-lg overflow-hidden">
                       {/* Background frame */}
                       <img
                         src={frame}
@@ -693,7 +693,7 @@ export default function ShareModal({
                               onChange={(e) =>
                                 setLogoScale(Number(e.target.value))
                               }
-                              className="appearance-none px-2 py-[6px] pr-[28px] text-[10px] border border-[#ECEEF2] rounded-[6px] font-['Poppins',Helvetica] text-[#0D0D12] bg-white shadow-[0_1px_4px_0_rgba(0,0,0,0.1)] cursor-pointer hover:border-[#7077FE] transition-colors"
+                              className="appearance-none px-2 py-1.5 pr-7 text-[10px] border border-[#ECEEF2] rounded-md font-['Poppins',Helvetica] text-[#0D0D12] bg-white shadow-[0_1px_4px_0_rgba(0,0,0,0.1)] cursor-pointer hover:border-[#7077FE] transition-colors"
                             >
                               <option value={100}>100%</option>
                               <option value={75}>75%</option>
@@ -720,7 +720,7 @@ export default function ShareModal({
                   onClick={handleDownload}
                   disabled={isDownloading}
                   variant="gradient-primary"
-                  className="rounded-full w-full py-[12px] px-[16px] self-stretch transition-colors duration-500 ease-in-out"
+                  className="rounded-full w-full py-3 px-4 self-stretch transition-colors duration-500 ease-in-out"
                 >
                   <span className="font-normal text-sm font-['Poppins',Helvetica]">
                     {isDownloading ? "Downloading..." : `Download`}
@@ -729,7 +729,7 @@ export default function ShareModal({
               </div>
             ) : (
               <div className="w-full lg:w-[65%] h-full pb-10 lg:pb-0 flex flex-col gap-[18px]">
-                <div className="flex flex-col gap-[12px]">
+                <div className="flex flex-col gap-3">
                   <label className="text-sm font-medium font-['Poppins',Helvetica] text-[#0D0D12] mb-2 block">
                     Social Media
                   </label>
@@ -737,12 +737,12 @@ export default function ShareModal({
                     <li>
                       <button
                         key={"cness"}
-                        className="p-[10px] flex gap-[12px] items-center justify-center"
+                        className="p-2.5 flex gap-3 items-center justify-center"
                       >
                         <img
                           src={cness}
                           alt={"cness"}
-                          className="w-[32px] h-[32px] object-contain"
+                          className="w-8 h-8 object-contain"
                         />
                       </button>
                     </li>
@@ -809,7 +809,7 @@ export default function ShareModal({
         {showTermModal && (
           <div
             onClick={() => setShowTermModal(false)}
-            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60"
+            className="fixed inset-0 z-10000 flex items-center justify-center p-4 bg-black/60"
           >
             <div
               onClick={(e) => e.stopPropagation()}
@@ -857,7 +857,7 @@ export default function ShareModal({
         {showPrivacyModal && (
           <div
             onClick={() => setShowPrivacyModal(false)}
-            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60"
+            className="fixed inset-0 z-10000 flex items-center justify-center p-4 bg-black/60"
           >
             <div
               onClick={(e) => e.stopPropagation()}

@@ -4,8 +4,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import Mhome from "../../assets/Mhome.svg";
 import Mhome1 from "../../assets/mhome1.svg";
 import sellbag from "../../assets/ep_sell.svg";
-import { GetSellerShop, GetUserScoreResult } from "../../Common/ServerAPI";
-import { useToast } from "../ui/Toast/ToastProvider";
+import { GetSellerShop } from "../../Common/ServerAPI";
+//import { useToast } from "../ui/Toast/ToastProvider";
 import { IoCloseOutline } from "react-icons/io5";
 import Button from "../ui/Button";
 import { useCartWishlist } from "./context/CartWishlistContext";
@@ -17,11 +17,11 @@ interface MarketHeaderProps {
 
 const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isEligible, setIsEligible] = useState(false);
+  //const [isEligible, setIsEligible] = useState(false);
   const [eligibilityCard, setEligibilityCard] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
   const { cartCount, wishlistCount } = useCartWishlist();
-  const { showToast } = useToast();
+  //const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -35,10 +35,10 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
     { name: "FAQs", path: "/dashboard/faqs" },
   ];
 
-  useEffect(() => {
-    fetchRatingDetails();
-    loadShopData();
-  }, [])
+ // useEffect(() => {
+   // //fetchRatingDetails();
+    //loadShopData();
+//  }, [])
 
 
   const isActive = (path: string) => {
@@ -53,23 +53,27 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
     return location.pathname === path;
   };
 
-  const fetchRatingDetails = async () => {
-    try {
-      const res = await GetUserScoreResult();
-      const badge = res?.data?.data?.badge
-      if (badge === null) {
-        setIsEligible(false)
-      } else {
-        setIsEligible(true)
-      }
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
+ // const fetchRatingDetails = async () => {
+    //try {
+    //  const res = await GetUserScoreResult();
+    //  const badge = res?.data?.data?.badge
+    //  if (badge === null) {
+    //    setIsEligible(false)
+    //  } else {
+    //    setIsEligible(true)
+   //   }
+   // } catch (error: any) {
+   //   showToast({
+    //    message: error?.response?.data?.error?.message,
+     //   type: "error",
+      //  duration: 5000,
+     // });
+   // }
+  //};
+
+  useEffect(() => {
+  loadShopData();
+}, []);
 
   const loadShopData = async () => {
     try {
@@ -85,18 +89,13 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
       console.log("No existing shop data");
     }
   };
-
-  const handleBecomeSeller = () => {
-    if (isEligible) {
-      if (isApproved) {
-        navigate(`/dashboard/seller-dashboard`)
-      } else {
-        navigate(`/dashboard/createshop`)
-      }
-    } else {
-      setEligibilityCard(true);
-    }
+const handleBecomeSeller = () => {
+  if (isApproved) {
+    navigate(`/dashboard/seller-dashboard`);
+  } else {
+    navigate(`/dashboard/createshop`);
   }
+};
 
   useEffect(() => {
     document.body.style.overflow = eligibilityCard ? "hidden" : "";

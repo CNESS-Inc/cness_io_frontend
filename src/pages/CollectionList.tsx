@@ -347,7 +347,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
             <div className="flex items-center gap-2 md:gap-3">
               <Link
                 to={`/dashboard/userprofile/${item.originalData.profile.user_id}`}
-                className="flex-shrink-0"
+                className="shrink-0"
               >
                 <img
                   src={
@@ -375,7 +375,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
                     {item.originalData.profile.first_name}{" "}
                     {item.originalData.profile.last_name}
                   </Link>
-                  <span className="text-[#999999] text-xs md:text-[12px] font-[300]">
+                  <span className="text-[#999999] text-xs md:text-[12px] font-light">
                     {" "}
                     <Link
                       to={`/dashboard/userprofile/${item.originalData.profile.user_id}`}
@@ -396,7 +396,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
                 <button
                   onClick={() => handleConnect(item.originalData.user.id)}
                   disabled={connectingUsers[item.originalData.user.id] || false}
-                  className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-[12px] py-[6px] rounded-full transition-colors font-family-open-sans h-[35px]
+                  className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px]
                     ${getFriendStatus(item.originalData.user.id) === "connected"
                       ? "bg-gray-400 text-white cursor-not-allowed"
                       : getFriendStatus(item.originalData.user.id) === "requested"
@@ -443,7 +443,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
                 <div className="relative">
                   <button
                     onClick={() => toggleMenu(item.originalData.id, "options")}
-                    className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
                     title="More options"
                   >
                     <MoreHorizontal className="w-5 h-5 text-gray-600" />
@@ -522,7 +522,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
                 <div className="relative">
                   <button
                     onClick={() => toggleMenu(item.originalData.id, "options")}
-                    className="flex items-center border-[#ECEEF2] border shadow-sm justify-center w-8 h-8 rounded-[8px] hover:bg-gray-100 transition-colors"
+                    className="flex items-center border-[#ECEEF2] border shadow-sm justify-center w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
                     title="More options"
                   >
                     <MoreHorizontal className="w-5 h-5 text-gray-600" />
@@ -663,7 +663,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
               className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50`}
             >
               <ThumbsUp
-                className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
+                className="w-5 h-5 md:w-6 md:h-6 shrink-0"
                 fill={item.originalData.is_liked ? "#7077FE" : "none"}
                 stroke={item.originalData.is_liked ? "#7077FE" : "#000"}
               />

@@ -38,7 +38,7 @@ export default function WhyCness() {
           "linear-gradient(101.22deg, #ACA0F8 -6.56%, #CE8FFC 61.3%, #FFF2C0 129.16%)",
       }}
     >
-      <div className="invisible lg:visible hidden lg:flex absolute top-0 left-0 w-[15rem]">
+      <div className="invisible lg:visible hidden lg:flex absolute top-0 left-0 w-60">
         <img
           src={ellipse}
           alt=""
@@ -67,21 +67,21 @@ export default function WhyCness() {
         </p>
       </div>
       <div className="relative w-full flex flex-col items-center">
-        <img src={line1} alt="top-line" className="max-h-[64px]" />
+        <img src={line1} alt="top-line" className="max-h-16" />
         <div className="bg-white px-7 py-2 rounded-lg relative">
-          <img src={logo} alt="logo" className="w-[80px] h-auto" />
+          <img src={logo} alt="logo" className="w-20 h-auto" />
           <div className="absolute -top-8 -right-8 z-20">
             <img
               src={shine}
               alt="shine"
-              className="w-full max-h-[80px] object-contain pointer-events-none select-none"
+              className="w-full max-h-20 object-contain pointer-events-none select-none"
             />
           </div>
         </div>
         <img
           src={line2}
           alt="bottom-line"
-          className="max-h-[30px] sm:max-h-[50px] md:max-h-[80px] xl:max-h-[117px]"
+          className="max-h-[30px] sm:max-h-[50px] md:max-h-20 xl:max-h-[117px]"
         />
       </div>
       <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-5 xl:gap-18 pb-5">

@@ -48,7 +48,7 @@ const Footer = () => {
                 src="https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd"
                 alt="Company Logo"
                 width={144}
-                className="hidden md:block h-auto w-[144px]"
+                className="hidden md:block h-auto w-36"
               />
               <Image
                 src="/responsive-logo.png"
@@ -57,7 +57,7 @@ const Footer = () => {
                 className="block md:hidden h-auto max-w-[50px] w-auto"
               />
             </Link>
-            <p className="text-[16px] font-[400] font-openSans leading-[160%] text-[#1E1E1E] hidden md:block">
+            <p className="text-[16px] font-normal font-openSans leading-[160%] text-[#1E1E1E] hidden md:block">
 Your global conscious hub where social connection,<br/> meaningful commerce, and community growth come together.
 
             </p>
@@ -145,12 +145,12 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
       </footer>
 
       {/* Bottom Bar */}
-            <div className="py-4 lg:bg-[#373578] md:bg-[#373578] bg-[#fff] px-4 sm:px-6">
+            <div className="py-4 lg:bg-[#373578] md:bg-[#373578] bg-white px-4 sm:px-6">
 
         <div className="max-w-7xl mx-auto lg:flex flex-col md:flex-row justify-between items-center gap-2 hidden">
           {/* Left Side */}
           <div
-            className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
+            className="text-[15px] leading-[100%] font-medium font-[Plus Jakarta Sans] text-white"
             style={{
               letterSpacing: "-0.2px",
               fontStyle: "normal",
@@ -163,13 +163,13 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
           <div className="flex items-center gap-6 text-white font-semibold text-[15px]">
              <button
               onClick={() => setShowTermModal(true)}
-              className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white"
+              className="text-[15px] leading-[100%] font-semibold font-[Plus Jakarta Sans] text-white"
             >
               Terms & Conditions
             </button>
             <button
               onClick={() => setShowPrivacyModal(true)}
-              className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white"
+              className="text-[15px] leading-[100%] font-semibold font-[Plus Jakarta Sans] text-white"
             >
               Privacy Policy
             </button>
@@ -183,7 +183,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
               onClose={() => setShowTermModal(false)}
             >
               <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
-                <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
+                <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-medium text-black mb-4 text-center">
                   CNESS TERMS AND CONDITIONS
                 </h3>
                 <div
@@ -204,7 +204,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
               onClose={() => setShowPrivacyModal(false)}
             >
               <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
-                <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
+                <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-medium text-black mb-4 text-center">
                   CNESS PRIVACY POLICY
                 </h3>
                 <div

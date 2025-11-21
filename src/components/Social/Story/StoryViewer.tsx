@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import Button from "../../ui/Button";
 import { Input } from "../../ui/input";
 import Like from "../../../assets/story-like.png";
@@ -7,6 +7,7 @@ import comment from "../../../assets/story-comment.png";
 import share from "../../../assets/story-share.png";
 import ReelComment from "../Reels/ReelComment";
 import SharePopup from "../SharePopup";
+import moment from "moment";
 
 interface StoryContent {
   id: string;
@@ -23,7 +24,7 @@ interface StoryViewerProps {
   onNext: () => void;
   hasPrevious: boolean;
   hasNext: boolean;
-  timeAgo: string;
+  timeAgo: any;
   onLike: () => void;
   is_liked: any;
   allStories: { content: StoryContent[] }[];
@@ -34,6 +35,45 @@ interface StoryViewerProps {
   userId?: string;
   onStoryChange?: () => void;
 }
+
+interface TimeAgoProps {
+  date: string | Date;
+}
+
+moment.updateLocale("en-short", {
+  relativeTime: {
+    future: "in %s",
+    past: "%s ago",
+    s: "few sec",
+    ss: "%ds",
+    m: "1 min",
+    mm: "%d min",
+    h: "1 hr",
+    hh: "%d hrs",
+    d: "1 day",
+    dd: "%d days",
+    M: "1 mon",
+    MM: "%d mon",
+    y: "1 yr",
+    yy: "%d yrs",
+  },
+});
+
+const TimeAgo: React.FC<TimeAgoProps> = ({ date }) => {
+  const [timeAgo, setTimeAgo] = useState<string>("");
+
+  const updateTime = () => {
+    setTimeAgo(moment(date).locale("en-short").fromNow());
+  };
+
+  useEffect(() => {
+    updateTime(); // initial render
+    const interval = setInterval(updateTime, 60 * 1000); // update every 1 min
+    return () => clearInterval(interval); // cleanup
+  }, [date]);
+
+  return <span>{timeAgo}</span>;
+};
 
 export function StoryViewer({
   allStories,
@@ -67,7 +107,8 @@ export function StoryViewer({
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoDuration, setVideoDuration] = useState(duration);
-  const [isStoryReady, setIsStoryReady] = useState(false); // Add this state
+  const [isStoryReady, setIsStoryReady] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   const prevStory = hasPrevious
     ? allStories[currentStoryIndex - 1]?.content?.[0]
@@ -75,6 +116,21 @@ export function StoryViewer({
   const nextStory = hasNext
     ? allStories[currentStoryIndex + 1]?.content?.[0]
     : null;
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  };
+
+  // Update video element when mute state changes
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isMuted, currentStory]);
 
   // Reset everything when stories change
   useEffect(() => {
@@ -97,12 +153,12 @@ export function StoryViewer({
     }
   }, [stories]);
 
-   useEffect(() => {
+  useEffect(() => {
     console.log("🔄 Content changed:", currentContentIndex);
     setProgress(0);
     setIsPaused(false);
     setIsStoryReady(false);
-    
+
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -456,38 +512,38 @@ export function StoryViewer({
         <div className="relative z-10 w-full max-w-md h-[80%] mx-4">
           {/* Progress bars */}
           <div className="absolute top-4 left-4 right-4 flex gap-1 z-30">
-        {stories.map((_story, index) => (
-          <div
-            key={index}
-            className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden"
-          >
-            <div
-              className="h-full bg-white transition-all duration-100 ease-linear"
-              style={{
-                width: `${
-                  index < currentContentIndex
-                    ? 100
-                    : index === currentContentIndex
-                    ? progress
-                    : 0
-                }%`,
-              }}
-            />
+            {stories.map((_story, index) => (
+              <div
+                key={index}
+                className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden"
+              >
+                <div
+                  className="h-full bg-white transition-all duration-100 ease-linear"
+                  style={{
+                    width: `${
+                      index < currentContentIndex
+                        ? 100
+                        : index === currentContentIndex
+                        ? progress
+                        : 0
+                    }%`,
+                  }}
+                />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* Navigation areas */}
-      <button
-        onClick={handlePrevContent}
-        className="absolute left-0 top-0 w-1/4 h-full z-10 focus:outline-none"
-        disabled={!hasPrevious && currentContentIndex === 0}
-      />
-      <button
-        onClick={handleNextContent}
-        className="absolute right-0 top-0 w-1/4 h-full z-10 focus:outline-none"
-        disabled={!hasNext && currentContentIndex === stories.length - 1}
-      />
+          {/* Navigation areas */}
+          <button
+            onClick={handlePrevContent}
+            className="absolute left-0 top-0 w-1/4 h-full z-10 focus:outline-none"
+            disabled={!hasPrevious && currentContentIndex === 0}
+          />
+          <button
+            onClick={handleNextContent}
+            className="absolute right-0 top-0 w-1/4 h-full z-10 focus:outline-none"
+            disabled={!hasNext && currentContentIndex === stories.length - 1}
+          />
 
           {/* Story Content */}
           <div className="relative h-full w-full bg-black rounded-2xl overflow-hidden">
@@ -499,15 +555,28 @@ export function StoryViewer({
                 onClick={(e) => togglePause(e)}
               />
             ) : (
-              <video
-                ref={videoRef}
-                src={currentStory.url}
-                className="w-full h-full object-cover"
-                autoPlay
-                muted
-                loop={false}
-                onClick={(e) => togglePause(e)}
-              />
+              <div className="relative w-full h-full">
+                <video
+                  ref={videoRef}
+                  src={currentStory.url}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  muted={isMuted} // Use state instead of hardcoded muted
+                  loop={false}
+                  onClick={(e) => togglePause(e)}
+                />
+                {/* Mute/Unmute button */}
+                <button
+                  onClick={toggleMute}
+                  className="absolute top-10 right-5 z-30 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center"
+                >
+                  {isMuted ? (
+                    <VolumeX color="white" />
+                  ) : (
+                    <Volume2 color="white" />
+                  )}
+                </button>
+              </div>
             )}
 
             {/* Overlay gradient */}
@@ -529,7 +598,9 @@ export function StoryViewer({
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-white font-medium">{userName}</span>
-                <span className="text-white/70 text-sm">{timeAgo}</span>
+                <span className="text-white/70 text-sm">
+                  <TimeAgo date={timeAgo ? timeAgo : new Date()} />
+                </span>
               </div>
             </div>
           </div>

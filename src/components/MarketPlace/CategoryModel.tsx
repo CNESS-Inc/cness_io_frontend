@@ -13,7 +13,7 @@ import LoadingSpinner from "../ui/LoadingSpinner";
 interface CategoryModalProps {
   open: boolean;
   onClose: () => void;
-  onSelect: (categoryId: string, categoryName: string) => void;
+  onSelect: (categoryName: string) => void;
   loading?: boolean;
   error?: any;
   category?: any[];
@@ -47,10 +47,13 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
 
   if (!open) return null;
 
-  const handleSelect = (categoryId: string, categoryName: string) => {
-    setSelected(categoryId);
-    onSelect(categoryId, categoryName);
+  const handleSelect = (categoryName: string) => {
+    setSelected(categoryName);
+    onSelect(categoryName);
   };
+
+  const lockedCategories = ["Course", "eBook", "Podcast"];
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -61,7 +64,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
       ></div>
 
       {/* Modal */}
-      <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-[20px] w-[832px] h-[612px] flex flex-col items-center justify-start animate-fadeIn">
+      <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-5 w-[832px] h-[612px] flex flex-col items-center justify-start animate-fadeIn">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -90,35 +93,67 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
         ) : (
           <div className="grid grid-cols-3 gap-6">
             {category.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => handleSelect(cat.id, cat.name)}
-                className={`group flex flex-col items-center justify-center rounded-[12px] border-[0.5px]
-                transition-all duration-300 ease-in-out text-[16px] font-['Open_Sans'] font-semibold
-                w-[253px] h-[211px] 
-                ${selected === cat.id
-                    ? "bg-[#F3F1FF] text-[#242E3A] border-[#7077FE] shadow-md"
-                    : "bg-[#F3F1FF] text-[#242E3A] border-[#F3F1FF]"
-                  }
-                hover:border-[#7077FE] hover:bg-[#F6F5FF] hover:shadow-[0_0_0_2px_rgba(112,119,254,0.15)] hover:text-[#7077FE]
-              `}
-                style={{
-                  paddingTop: "46px",
-                  paddingRight: "94px",
-                  paddingBottom: "46px",
-                  paddingLeft: "94px",
-                }}
-              >
-                <div
-                  className={`transition-colors duration-200 ${selected === cat.id
-                      ? "text-[#242E3A]"
-                      : "text-[#242E3A] group-hover:text-[#7077FE]"
-                    }`}
-                >
-                  {getCategoryIcon(cat.name)}
-                </div>
-                <span className="mt-4">{cat.name}</span>
-              </button>
+             <button
+  key={cat.id}
+  onClick={() => {
+    if (lockedCategories.includes(cat.name)) return; // ❌ disable click
+    handleSelect(cat.name);
+  }}
+  className={`
+    group relative flex flex-col items-center justify-center rounded-xl border-[0.5px]
+    transition-all duration-300 ease-in-out text-[16px] font-['Open_Sans'] font-semibold
+    w-[253px] h-[211px]
+    ${selected === cat.id
+      ? "bg-[#F3F1FF] text-[#242E3A] border-[#7077FE] shadow-md"
+      : "bg-[#F3F1FF] text-[#242E3A] border-[#F3F1FF]"
+    }
+    hover:border-[#7077FE] hover:bg-[#F6F5FF] hover:shadow-[0_0_0_2px_rgba(112,119,254,0.15)] hover:text-[#7077FE]
+    ${lockedCategories.includes(cat.name)
+      ? "opacity-60 blur-[0.5px] cursor-not-allowed"
+      : ""
+    }
+  `}
+  style={{
+    paddingTop: "46px",
+    paddingRight: "94px",
+    paddingBottom: "46px",
+    paddingLeft: "94px",
+  }}
+>
+  {/* 🔒 LOCK OVERLAY */}
+  {lockedCategories.includes(cat.name) && (
+    <div className="absolute top-3 right-3 bg-[#00000080] backdrop-blur-sm p-2 rounded-full">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 text-white"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
+        <path d="M12 1a5 5 0 00-5 5v4H6a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V6a5 5 0 00-5-5zm-3 5a3 3 0 016 0v4H9V6zm-1 6h10v9H8v-9z" />
+      </svg>
+    </div>
+  )}
+
+  {/* Optional Tooltip */}
+  {lockedCategories.includes(cat.name) && (
+    <span className="absolute bottom-3 text-[12px] text-[#7077FE] font-medium">
+      Coming Soon
+    </span>
+  )}
+
+  {/* Icon */}
+  <div
+    className={`transition-colors duration-200 ${
+      selected === cat.id
+        ? "text-[#242E3A]"
+        : "text-[#242E3A] group-hover:text-[#7077FE]"
+    }`}
+  >
+    {getCategoryIcon(cat.name)}
+  </div>
+
+  <span className="mt-4">{cat.name}</span>
+</button>
             ))}
           </div>
         )}
