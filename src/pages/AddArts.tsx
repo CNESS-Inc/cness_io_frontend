@@ -97,7 +97,7 @@ const AddArtsForm: React.FC = () => {
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
 //const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
-const [sampleList, setSampleList] = useState<string[]>([""]);
+const [sampleList, setSampleList] = useState<string[]>([]);
 const [storyMedia, setStoryMedia] = useState<{
   type: "audio" | "video" | null;
   url: string;
@@ -681,12 +681,16 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
   status: isDraft ? "draft" : "published",
 
 
-  arts_details: {
-    theme: formData.theme,
-    mediums: formData.mediums,
-    modern_trends: formData.modern_trends,
-    sample_image_url: sampleList   ,  
-  },
+sample_files: sampleList
+  .filter((url) => url && url.trim() !== "") // remove empty slots
+  .map((url, index) => ({
+    file_url: url,
+    public_id: extractPublicId(url),
+    title: `Sample ${index + 1}`,
+    file_type: "image",
+    order_number: index,
+  })),
+
 
   chapters: chapters.map((chapter) => ({
     title: chapter.title,
@@ -731,6 +735,16 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
       setIsLoading(false);
     }
   };
+
+const extractPublicId = (url: string): string => {
+  try {
+    const parts = url.split("/");
+    const filename = parts.pop() || ""; // last part
+    return filename.split(".")[0]; // remove file extension
+  } catch {
+    return "";
+  }
+};
 
   const handleAddHighlight = () => {
     if (newHighlight.trim()) {

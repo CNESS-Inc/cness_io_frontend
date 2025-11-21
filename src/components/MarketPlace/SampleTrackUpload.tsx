@@ -54,8 +54,8 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
         }
     };
 
- const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];   // ✅ Only ONE file
     if (!file) return;
 
     // Validate file size (50MB max)
@@ -75,66 +75,56 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
         // 🎨 ART SAMPLE UPLOAD
         // ------------------------
         if (productType === "art") {
-    const formDataArt = new FormData();
-    formDataArt.append("sample_image", file);
+            const fd = new FormData();
+            fd.append("sample_image", file);
 
-    const response = await UploadArtSampleImage(formDataArt);
+            const res = await UploadArtSampleImage(fd);
+            const sampleUrl = res.data.data.sample_image_url;
 
-     const sampleImageUrl = response.data.data.sample_image_url;
+            onUploadSuccess(sampleUrl, sampleUrl, sampleUrl); // send to parent
 
+            setUploadedFile(file.name);
+            showToast({
+                message: "Sample image uploaded successfully!",
+                type: "success",
+                duration: 3000,
+            });
 
-    setUploadedFile(file.name);
+            return;
+        }
 
-    onUploadSuccess(
-        sampleImageUrl, // sampleId substitute
-        sampleImageUrl, // preview URL
-        sampleImageUrl  // thumbnail substitute
-    );
-
-    showToast({
-        message: "Sample art uploaded successfully!",
-        type: "success",
-        duration: 3000,
-    });
-
-    return; // STOP here => do NOT run audio upload logic
-}
         // ------------------------
-        // 🎵 ORIGINAL AUDIO/VIDEO UPLOAD
+        // 🎵 OTHER CATEGORIES - AUDIO/VIDEO
         // ------------------------
-        const formData = new FormData();
-        formData.append("sample_track", file);
+        const fd = new FormData();
+        fd.append("sample_track", file);
 
-        const response = await UploadProductDocument("sample-track", formData);
-        const sampleData = response?.data?.data;
+        const res = await UploadProductDocument("sample-track", fd);
+        const data = res?.data?.data;
+
+        const url =
+            data.sample_track_url ||
+            data.sample_audio_url ||
+            data.sample_video_url;
+
+        onUploadSuccess(url, url, url);
 
         setUploadedFile(file.name);
-
-        onUploadSuccess(
-            sampleData.sample_track_url,
-            sampleData.sample_track_url,
-            sampleData.sample_track_url
-        );
-
         showToast({
-            message: "Sample track uploaded successfully",
+            message: "Sample file uploaded successfully!",
             type: "success",
             duration: 3000,
         });
 
-    } catch (error: any) {
+    } catch (error) {
         showToast({
-            message:
-                error?.response?.data?.error?.message || "Failed to upload sample",
+            message: "Failed to upload sample",
             type: "error",
             duration: 3000,
         });
-        setUploadedFile(null);
     } finally {
         setIsUploading(false);
-        if (fileRef.current) {
-            fileRef.current.value = "";
-        }
+        if (fileRef.current) fileRef.current.value = "";
     }
 };
 
@@ -198,13 +188,13 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
                 </svg>
 
                 <input
-                    ref={fileRef}
-                    type="file"
-                    accept={getAcceptTypes()}
-                    onChange={handleFileChange}
-                    className="hidden"
-                    disabled={isUploading}
-                />
+  ref={fileRef}
+  type="file"
+  accept={getAcceptTypes()}
+  onChange={handleFileChange}
+  className="hidden"
+  disabled={isUploading}
+/>
 
                 {uploadedFile ? (
                     <div className="relative">
