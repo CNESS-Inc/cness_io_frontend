@@ -124,6 +124,7 @@ export default function UserProfileView() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mineBestPractices, setmineBestPractices] = useState<any[]>([]);
+
   const [expandedDescriptions] = useState<Record<string, boolean>>({});
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
@@ -1740,7 +1741,7 @@ export default function UserProfileView() {
                                         </span>
                                       )}
                                     </p>
-                                    <div className="mb-2">
+                                    {/* <div className="mb-2">
                                       {company.if_following ? (
                                       <button
                                         className="w-full inline-block rounded-full bg-[#F396FF] px-4 py-2
@@ -1760,7 +1761,7 @@ export default function UserProfileView() {
                                         Follow
                                       </button>
                                     )}
-                                    </div>
+                                    </div> */}
                                   </div>
                                 </div>
                               </div>

@@ -23,9 +23,9 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { StarRating } from "../components/ui/Rating";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
-import userlogo4 from "../assets/userlogo4.webp"
+import userlogo4 from "../assets/userlogo4.webp";
 
-import banner2 from "../assets/banner2.png"
+import banner2 from "../assets/banner2.png";
 
 interface Organization {
   organization_name: string;
@@ -52,7 +52,7 @@ export default function PublicCompanyProfile() {
   const [companyDetails, setCompanyDetails] = useState<Organization>();
   const { showToast } = useToast();
   const [activeModal, setActiveModal] = useState<"rating" | null>(null);
- const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const navigate = useNavigate();
 
   const fetchCompanyDetails = async () => {
@@ -246,7 +246,9 @@ export default function PublicCompanyProfile() {
         {/* Header Banner */}
         <div
           className="relative w-full h-[150px] mt-[1px] bg-cover bg-center"
-          style={{ backgroundImage: `url(${companyDetails?.banner_url|| banner2})` }}
+          style={{
+            backgroundImage: `url(${companyDetails?.banner_url || banner2})`,
+          }}
         >
           <button
             onClick={() => window.history.back()}
@@ -266,7 +268,7 @@ export default function PublicCompanyProfile() {
           <div className="absolute -top-20 left-1/2 -translate-x-1/2 z-20">
             <div className="w-40 h-40 md:w-52 md:h-52 rounded-full border-8 border-white shadow-lg bg-white overflow-hidden">
               <img
-                src={companyDetails?.profile_url|| userlogo4}
+                src={companyDetails?.profile_url || userlogo4}
                 alt="Logo"
                 className="w-full h-full object-cover"
               />
@@ -275,9 +277,9 @@ export default function PublicCompanyProfile() {
         </div>
 
         {/* Content Body – Centered and aligned */}
-<div className="w-full px-6 md:px-5 mt-6 flex flex-col md:flex-row gap-4">
+        <div className="w-full px-6 md:px-5 mt-6 flex flex-col md:flex-row gap-4">
           {/* LEFT COLUMN */}
-<div className="md:w-1/3 space-y-4">
+          <div className="md:w-1/3 space-y-4">
             {/* Profile Card */}
             <div className="bg-white rounded-xl shadow-sm p-6 pt-40 relative">
               <div className="text-center -mt-13">
@@ -323,17 +325,19 @@ export default function PublicCompanyProfile() {
             </div>
 
             {/* Badge Card */}
-<div className="bg-white rounded-xl shadow-sm px-4 py-4 md:py-6">
-  <div className="flex items-center justify-center gap-3">
-    <p className="text-sm font-medium whitespace-nowrap">CNESS Badge:</p>
-    <img
-      src={inspiredbadge}
-      alt="CNESS Badge"
-      className="w-[100px] sm:w-[120px] md:w-[150px] object-contain"
-    />
-  </div>
-</div>
-</div>
+            <div className="bg-white rounded-xl shadow-sm px-4 py-4 md:py-6">
+              <div className="flex items-center justify-center gap-3">
+                <p className="text-sm font-medium whitespace-nowrap">
+                  CNESS Badge:
+                </p>
+                <img
+                  src={inspiredbadge}
+                  alt="CNESS Badge"
+                  className="w-[100px] sm:w-[120px] md:w-[150px] object-contain"
+                />
+              </div>
+            </div>
+          </div>
           {/* RIGHT COLUMN */}
           <div className="md:w-2/3 flex flex-col gap-6">
             <div className="bg-white rounded-xl shadow-sm px-6 py-8">
@@ -605,45 +609,44 @@ export default function PublicCompanyProfile() {
       </div>
 
       <Footer />
- <Modal isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)}>
-  <div className="text-center space-y-4">
-    <h2 className="text-xl font-semibold text-gray-800">Login Required</h2>
-    <p className="text-sm text-gray-600">
-      To write a review, please log in to your account.
-    </p>
-    <button
-      className="bg-[#7077FE] text-white px-4 py-2 rounded-full"
-      onClick={() => {
-        navigate("/log-in");
-      }}
-    >
-      Go to Login
-    </button>
-    <button
-      className="block mx-auto mt-2 text-xs text-gray-400 underline"
-      onClick={() => setShowLoginPrompt(false)}
-    >
-      Cancel
-    </button>
-  </div>
-</Modal>
-
-
-
+      <Modal isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)}>
+        <div className="text-center space-y-4">
+          <h2 className="text-xl font-semibold text-gray-800">
+            Login Required
+          </h2>
+          <p className="text-sm text-gray-600">
+            To write a review, please log in to your account.
+          </p>
+          <button
+            className="bg-[#7077FE] text-white px-4 py-2 rounded-full"
+            onClick={() => {
+              navigate("/log-in");
+            }}
+          >
+            Go to Login
+          </button>
+          <button
+            className="block mx-auto mt-2 text-xs text-gray-400 underline"
+            onClick={() => setShowLoginPrompt(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      </Modal>
 
       <Modal isOpen={activeModal === "rating"} onClose={closeModal}>
-  <div className="p-6 max-w-xl w-full mx-auto bg-white rounded-xl">
-    <h2 className="text-3xl font-bold text-center text-purple-600 mb-8">
+        <div className="p-6 max-w-xl w-full mx-auto bg-white rounded-xl">
+          <h2 className="text-3xl font-bold text-center text-purple-600 mb-8">
             Leave a Review
           </h2>
           <form onSubmit={handleSubmit}>
             <div>
               {/* Breakdown Ratings */}
-<div className="flex items-center justify-between gap-4 mb-4">
-  <label className="w-1/2 text-sm font-medium text-purple-800">
-                   <span className="font-semibold">Mission & Vision:</span>
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <label className="w-1/2 text-sm font-medium text-purple-800">
+                  <span className="font-semibold">Mission & Vision:</span>
                 </label>
-  <div className="w-1/2 flex justify-start">
+                <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.one}
                     allowHalfStars={true}
@@ -666,11 +669,11 @@ export default function PublicCompanyProfile() {
                 )}
               </div>
 
-<div className="flex items-center justify-between gap-4 mb-4">
-  <label className="w-1/2 text-sm font-medium text-purple-800">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <label className="w-1/2 text-sm font-medium text-purple-800">
                   <span className="font-semibold">Team Spirit:</span>
                 </label>
-  <div className="w-1/2 flex justify-start">
+                <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.two}
                     allowHalfStars={true}
@@ -693,11 +696,13 @@ export default function PublicCompanyProfile() {
                 )}
               </div>
 
-<div className="flex items-center justify-between gap-4 mb-4">
-  <label className="w-1/2 text-sm font-medium text-purple-800">
-            <span className="font-semibold">Client / Customer / Consumer:</span>
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <label className="w-1/2 text-sm font-medium text-purple-800">
+                  <span className="font-semibold">
+                    Client / Customer / Consumer:
+                  </span>
                 </label>
-  <div className="w-1/2 flex justify-start">
+                <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.three}
                     allowHalfStars={true}
@@ -719,11 +724,13 @@ export default function PublicCompanyProfile() {
                   </p>
                 )}
               </div>
-<div className="flex items-center justify-between gap-4 mb-4">
-  <label className="w-1/2 text-sm font-medium text-purple-800">
-            <span className="font-semibold">Communities & Charities:</span>
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <label className="w-1/2 text-sm font-medium text-purple-800">
+                  <span className="font-semibold">
+                    Communities & Charities:
+                  </span>
                 </label>
-  <div className="w-1/2 flex justify-start">
+                <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.four}
                     allowHalfStars={true}
@@ -745,13 +752,13 @@ export default function PublicCompanyProfile() {
                   </p>
                 )}
               </div>
-<div className="flex items-center justify-between gap-4 mb-4">
-  <label className="w-1/2 text-sm font-medium text-purple-800">
- <span className="font-semibold">
-              Vision & Legacy – Long-Term Contribution:
-            </span>
-              </label>
-  <div className="w-1/2 flex justify-start">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <label className="w-1/2 text-sm font-medium text-purple-800">
+                  <span className="font-semibold">
+                    Vision & Legacy – Long-Term Contribution:
+                  </span>
+                </label>
+                <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.five}
                     allowHalfStars={true}
@@ -773,11 +780,13 @@ export default function PublicCompanyProfile() {
                   </p>
                 )}
               </div>
-<div className="flex items-center justify-between gap-4 mb-4">
-  <label className="w-1/2 text-sm font-medium text-purple-800">
-            <span className="font-semibold">Leadership Best Practices:</span>
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <label className="w-1/2 text-sm font-medium text-purple-800">
+                  <span className="font-semibold">
+                    Leadership Best Practices:
+                  </span>
                 </label>
-  <div className="w-1/2 flex justify-start">
+                <div className="w-1/2 flex justify-start">
                   <StarRating
                     initialRating={breakdowns.six}
                     allowHalfStars={true}
@@ -805,7 +814,6 @@ export default function PublicCompanyProfile() {
                 <label
                   htmlFor="review"
                   className="block text-sm font-semibold text-purple-800 mb-1"
-
                 >
                   Your Review:
                 </label>

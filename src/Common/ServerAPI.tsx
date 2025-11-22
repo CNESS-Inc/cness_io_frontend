@@ -285,7 +285,7 @@ export const EndPoint = {
   upload_product_thumbnail: "/marketplace-product/product/upload-thumbnail",
   upload_product_document: "/marketplace-product/upload",
   update_video: "/marketplace-product",
-
+upload_storytelling_video: "/marketplace-product/product/upload-storytelling-video",
 
   create_music_product: "/marketplace-product/music",
   update_music_product: "/marketplace-product",
@@ -1186,6 +1186,20 @@ export const GetUsersearchProfileDetails = (
     EndPoint.directory_search_profile
   );
 };
+export const GetPublicDetails = (
+  page: any,
+  limit: any,
+): ApiResponse => {
+  const data: Partial<any> = {
+    page_no: page,
+    limit: limit,
+  };
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_search_profile
+  );
+};
 
 // Social APIS
 export const GetPostsDetails = (page: any) => {
@@ -1865,6 +1879,14 @@ export const UploadProductDocument = (fileType: string, formData: any): ApiRespo
     ServerAPI.APIMethod.POST,
     formData,
     `${EndPoint.upload_product_document}/${fileType}`
+  );
+};
+
+export const UploadStoryTellingVideo = (formData: FormData): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.upload_storytelling_video
   );
 };
 

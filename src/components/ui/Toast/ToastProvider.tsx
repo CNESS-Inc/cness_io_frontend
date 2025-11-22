@@ -31,7 +31,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       {children}
       
       {/* Regular toasts (top center) */}
-      <div className="fixed z-50 w-full pointer-events-none top-0 left-0 flex flex-col items-center">
+      <div className="fixed z-99999 w-full pointer-events-none top-0 left-0 flex flex-col items-center">
         {toasts.map((toast, index) => 
           toast.type !== 'notification' && (
             <Toast

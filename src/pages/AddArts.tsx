@@ -11,6 +11,7 @@ import {
   GetMarketPlaceMoods,
   UploadProductDocument,
   UploadProductThumbnail,
+  UploadStoryTellingVideo
 } from "../Common/ServerAPI";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
@@ -97,10 +98,11 @@ const AddArtsForm: React.FC = () => {
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
 //const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
-const [sampleList, setSampleList] = useState<string[]>([""]);
+const [sampleList, setSampleList] = useState<string[]>([]);
 const [storyMedia, setStoryMedia] = useState<{
   type: "audio" | "video" | null;
   url: string;
+  public_id?: string;
   thumbnail?: string;
 }>({
   type: null,
@@ -680,13 +682,19 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
   thumbnail_url: formData.thumbnail_url,
   status: isDraft ? "draft" : "published",
 
+storytelling_video_url: storyMedia.url,
+storytelling_video_public_id: storyMedia.public_id,
+storytelling_description: storySummary,
+sample_files: sampleList
+  .filter((url) => url && url.trim() !== "") // remove empty slots
+  .map((url, index) => ({
+    file_url: url,
+    public_id: extractPublicId(url),
+    title: `Sample ${index + 1}`,
+    file_type: "image",
+    order_number: index,
+  })),
 
-  arts_details: {
-    theme: formData.theme,
-    mediums: formData.mediums,
-    modern_trends: formData.modern_trends,
-    sample_image_url: sampleList   ,  
-  },
 
   chapters: chapters.map((chapter) => ({
     title: chapter.title,
@@ -731,6 +739,16 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
       setIsLoading(false);
     }
   };
+
+const extractPublicId = (url: string): string => {
+  try {
+    const parts = url.split("/");
+    const filename = parts.pop() || ""; // last part
+    return filename.split(".")[0]; // remove file extension
+  } catch {
+    return "";
+  }
+};
 
   const handleAddHighlight = () => {
     if (newHighlight.trim()) {
@@ -795,41 +813,27 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
   };
 
 
-  const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
   if (!file) return;
 
-  const isAudio = file.type.startsWith("audio/");
-  const isVideo = file.type.startsWith("video/");
-
-  if (!isAudio && !isVideo) {
-    showToast({
-      message: "Please upload audio or video only",
-      type: "error",
-      duration: 3000,
-    });
-    return;
-  }
-
   const formData = new FormData();
-  formData.append(isAudio ? "story_audio" : "story_video", file);
+  formData.append("storytelling_video", file);  // ✅ EXACT MATCH
 
   try {
-    const response = await UploadProductDocument(
-      isAudio ? "story-audio" : "story-video",
-      formData
-    );
-
+    const response = await UploadStoryTellingVideo(formData);
     const data = response?.data?.data;
 
-    setStoryMedia({
-      type: isAudio ? "audio" : "video",
-      url: data.video_url || data.audio_url,
-      thumbnail: data.thumbnail || "",
-    });
+  setStoryMedia({
+  type: "video",
+  url: data.storytelling_video_url,   // cloudinary full URL
+  public_id: data.public_id,          // add this
+  thumbnail: data.thumbnail || ""     // optional
+});
+
 
     showToast({
-      message: `${isAudio ? "Audio" : "Video"} uploaded successfully`,
+      message: "Video uploaded successfully",
       type: "success",
       duration: 3000,
     });
@@ -841,6 +845,7 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
     });
   }
 };
+
 {/*mood multi select*/}
 const MultiSelect = ({
   label,
@@ -1271,14 +1276,14 @@ const MultiSelect = ({
 
 <FormSection
   title="Storytelling"
-  description="Add an audio or video message that explains the story or inspiration behind your artwork."
+  description="Add a video message that explains the story or inspiration behind your artwork."
 >
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
     {/* MEDIA UPLOAD */}
     <div>
       <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-        Upload Audio / Video (Optional)
+        Upload Video (Optional)
       </label>
 
       <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition">
@@ -1312,7 +1317,7 @@ const MultiSelect = ({
             <p className="text-sm font-[poppins] text-[#242E3A]">
               Drag & drop or click to upload
             </p>
-            <p className="text-xs text-[#665B5B]">Supports audio & video</p>
+            <p className="text-xs text-[#665B5B]">Supports video</p>
           </div>
         ) : (
           <div className="relative w-full">
