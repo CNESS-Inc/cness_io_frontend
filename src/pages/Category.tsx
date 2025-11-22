@@ -160,7 +160,7 @@ const Category = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                     key={product.id}
                     product={{
                       id: product.id,
-                      title: product.product_title,
+                      title: product.product_name,                      
                       author: product.seller?.shop_name || product.author ||"Unknown",
                       rating: product?.rating?.average,
                       reviews: product?.rating?.total_reviews,

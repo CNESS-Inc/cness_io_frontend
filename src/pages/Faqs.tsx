@@ -293,13 +293,13 @@ export default function Faqs() {
         <div className="flex flex-col items-center text-center z-10 py-16 px-4">
           <h1
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="font-medium text-[32px] md:text-[42px] leading-[115%] tracking-[0.03rem] text-center antialiased bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+            className="font-medium text-[32px] md:text-[42px] leading-[115%] tracking-[0.03rem] text-center antialiased bg-linear-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
           >
             Frequently Asked Questions
           </h1>
 
           <p
-            className="font-['Open_Sans'] lg:text-lg md:text-[16px] text-[12px] text-[#242424] mb-5 lg:mb-10 md:mb-12 mb-4 mt-4
+            className="font-['Open_Sans'] lg:text-lg md:text-[16px] text-[12px] text-[#242424] mb-5 lg:mb-10 md:mb-12 mt-4
             max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-light"
           >
             Find quick answers to common questions about our CNESS and <br />
@@ -340,7 +340,7 @@ export default function Faqs() {
       <div className="flex flex-col items-center text-center z-10 pb-10 px-4">
         <h1
           style={{ fontFamily: "Poppins, sans-serif" }}
-          className="font-medium text-[42px] md:text-[42px] leading-[115%] tracking-[0.03rem] text-center antialiased bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+          className="font-medium text-[42px] md:text-[42px] leading-[115%] tracking-[0.03rem] text-center antialiased bg-linear-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
         >
           Still have a question?
         </h1>

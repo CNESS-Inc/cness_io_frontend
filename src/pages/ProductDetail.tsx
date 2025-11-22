@@ -15,6 +15,16 @@ import ReviewModal from '../components/MarketPlace/ReviewModal';
 import DOMPurify from "dompurify";
 import { useCartWishlist } from '../components/MarketPlace/context/CartWishlistContext';
 
+
+interface SampleFile {
+  file_url: string;
+  file_type: string;
+  title?: string;
+  duration?: string;
+  order_number?: number;
+  is_ariome?: boolean;
+  public_id?: string;
+}
 const socialMediaPlatforms = [
   { key: 'facebook', name: 'Facebook', icon: <CiFacebook size={25} className='text-gray-500' /> },
   { key: 'instagram', name: 'Instagram', icon: <CiInstagram size={25} className='text-gray-500' /> },
@@ -594,7 +604,43 @@ console.log("FULL PRODUCT → ", productData);
             </div>
           </div>
 
-          {/* Storytelling Section */}
+
+{/* Storytelling Section */}
+{(product?.storytelling_video_url || product?.storytelling_description) && (
+  <div className="space-y-4 mt-6">
+    <h2 className="font-['Poppins'] font-semibold text-[18px] text-gray-900">
+      Storytelling
+    </h2>
+
+    <div className="space-y-4"> 
+      
+      {/* Video */}
+      {product?.storytelling_video_url && (
+        <div className="relative">
+          <video
+            src={product.storytelling_video_url}
+            controls
+            className="w-[450px] h-[220px] rounded-lg object-cover bg-black"
+          ></video>
+        </div>
+      )}
+
+      {/* Description BELOW video */}
+      {product?.storytelling_description && (
+        <div className="flex-1">
+          <p className="font-['Open_Sans'] text-[16px] text-black leading-[150%]">
+            {product.storytelling_description}
+          </p>
+        </div>
+      )}
+
+    </div>
+  </div>
+)}
+
+
+
+          {/* Storytelling Section 
           {product?.category?.slug === 'video' && (
             <div className="space-y-4">
               <h2 className="font-['Poppins'] font-semibold text-[18px] leading-[100%] tracking-[0] text-gray-900">Storytelling</h2>
@@ -609,7 +655,7 @@ console.log("FULL PRODUCT → ", productData);
                     <div className="absolute bottom-4 left-4 right-4">
                       {/* <p className="text-white text-xs text-center mb-2 font-['Inter']">
                       I was impressed with how seamless the entire process was. From discovery to delivery, everything felt smooth and intuitive.
-                    </p> */}
+                    </p> 
                       <div className="flex items-center justify-center space-x-2 bg-black/40 rounded-full px-5 py-1">
                         <img src="https://static.codia.ai/image/2025-10-16/UaQWMTnCVG.png" alt="Play" className="w-5 h-5" />
                         <span className="text-white text-xs font-['Inter']">00:19 / 20:00</span>
@@ -633,7 +679,9 @@ console.log("FULL PRODUCT → ", productData);
                 )}
               </div>
             </div>
-          )}
+
+          )}*/}
+
         </div>
 
         {/* Author Section */}
@@ -714,60 +762,90 @@ console.log("FULL PRODUCT → ", productData);
         </div>
 
 
+{/* SHOW SAMPLE PREVIEW ONLY FOR ART CATEGORY */}
+{product?.category?.slug === "art" &&
+ product?.sample_files &&
+ product.sample_files.length > 0 && (
+  <div className="bg-white rounded-xl shadow-md p-6 mt-6">
+    <h2 className="font-[Poppins] font-semibold text-[20px] text-[#242E3A] mb-4">
+      Sample Preview
+    </h2>
 
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {product.sample_files.map((file: any) => (
+        <div key={file.id} className="shadow-sm bg-gray-100">
 
- {product?.product_details?.sample_image_url && (
-    <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-      <h2 className="font-[Poppins] font-semibold text-[20px] text-[#242E3A] mb-4">
-        Sample Preview
-      </h2>
+          {/* IMAGE */}
+          {file.file_type === "image" && (
+            <img
+              src={file.file_url}
+              alt={file.title}
+              className="w-full h-[250px] object-cover rounded-lg"
+            />
+          )}
 
-      <div className="w-full flex justify-center">
-        <img
-          src={product.product_details.sample_image_url}
-          alt="Art Sample Preview"
-          className="max-w-[400px] rounded-lg shadow-md border object-cover"
-        />
-      </div>
+          {/* VIDEO */}
+          {file.file_type === "video" && (
+            <video
+              src={file.file_url}
+              controls
+              className="w-full h-[200px] object-cover rounded-lg bg-black"
+            ></video>
+          )}
 
-      <p className="text-center mt-2 text-gray-500 text-sm">
-        Watermarked sample preview
-      </p>
+          <p className="text-center mt-2 text-gray-600 text-sm">{file.title}</p>
+        </div>
+      ))}
     </div>
+  </div>
 )}
 
+      {/* SAMPLE TRACK FOR MUSIC / PODCAST */}
+{(product?.category?.slug === "music" || product?.category?.slug === "podcast") &&
+  product?.sample_files?.length > 0 && (() => {
 
-        {(product?.category?.slug === 'music' || product?.category?.slug === 'podcast') &&
-          product?.product_details?.sample_track && (
-            <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-              <h2 className="font-[Poppins] font-semibold text-[20px] text-[#242E3A] mb-4">
-                Sample {product?.category?.slug === 'music' ? 'Track' : 'Episode'}
-              </h2>
-              <div className="border border-gray-200 rounded-lg p-4 bg-[#F9FAFB]">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-[#7077FE]/10 rounded-lg flex items-center justify-center shrink-0">
-                    <PlayCircle className="w-8 h-8 text-[#7077FE]" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-[Poppins] font-medium text-[16px] text-[#242E3A] mb-1">
-                      Sample Preview
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Listen to a preview before purchasing
-                    </p>
-                  </div>
-                  <audio
-                    controls
-                    className="h-10"
-                    preload="metadata"
-                  >
-                    <source src={product?.product_details?.sample_track?.url} type="audio/mpeg" />
-                    Your browser does not support the audio element.
-                  </audio>
+    const audioSamples = product.sample_files.filter(
+      (f: SampleFile) => f.file_type === "audio"
+    );
+
+    if (audioSamples.length === 0) return null;
+
+    return (
+      <div className="bg-white rounded-xl shadow-md p-6 mt-6">
+        <h2 className="font-[Poppins] font-semibold text-[20px] text-[#242E3A] mb-4">
+          Sample {product?.category?.slug === "music" ? "Tracks" : "Episodes"}
+        </h2>
+
+        <div className="space-y-4">
+          {audioSamples.map((sample: SampleFile, index: number) => (
+            <div
+              key={index}
+              className="border border-gray-200 rounded-lg p-4 bg-[#F9FAFB]"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-[#7077FE]/10 rounded-lg flex items-center justify-center">
+                  <PlayCircle className="w-8 h-8 text-[#7077FE]" />
                 </div>
+
+                <div className="flex-1">
+                  <h3 className="font-[Poppins] font-medium text-[16px] text-[#242E3A]">
+                    {sample.title || `Sample ${index + 1}`}
+                  </h3>
+                </div>
+
+                <audio controls className="h-10" preload="metadata">
+                  <source src={sample.file_url} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
               </div>
             </div>
-          )}
+          ))}
+        </div>
+      </div>
+    );
+  })()}
+
+
 
         {product?.category?.slug !== 'video' && (
           <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mt-6 ">

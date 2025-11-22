@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import cloud from "../assets/cloud-add.svg";
 import {
-  MeDetails,
+  // MeDetails,
   PaymentDetails,
   QuestionDetails,
   QuestionFileDetails,
@@ -67,7 +67,7 @@ const InspiredAssessment = () => {
   const { showToast } = useToast();
   const [activeModal, setActiveModal] = useState<"price" | null>(null);
   const completed_step = localStorage.getItem("completed_step");
-  const [personPricing, setPersonPricing] = useState<any[]>([]);
+  const [personPricing, _setPersonPricing] = useState<any[]>([]);
   const [isAnnual, setIsAnnual] = useState(true);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const navigate = useNavigate();
@@ -366,74 +366,74 @@ const InspiredAssessment = () => {
         return;
       }
 
-      const res = await submitAssesmentAnswerDetails(payload);
-
+      // const res = await submitAssesmentAnswerDetails(payload);
+      await submitAssesmentAnswerDetails(payload);
       showToast({
         message: "Answers submitted successfully!",
         type: "success",
         duration: 3000,
       });
-      if (res) {
-        setActiveModal("price");
+      // if (res) {
+      //   setActiveModal("price");
 
-        const plansByRange: Record<string, any> = {};
-        res?.data?.data?.plan.forEach((plan: any) => {
-          if (!plansByRange[plan.plan_range]) {
-            plansByRange[plan.plan_range] = {};
-          }
-          plansByRange[plan.plan_range][plan.plan_type] = plan;
-        });
+      //   const plansByRange: Record<string, any> = {};
+      //   res?.data?.data?.plan.forEach((plan: any) => {
+      //     if (!plansByRange[plan.plan_range]) {
+      //       plansByRange[plan.plan_range] = {};
+      //     }
+      //     plansByRange[plan.plan_range][plan.plan_type] = plan;
+      //   });
 
-        const response = await MeDetails();
-        localStorage.setItem(
-          "profile_picture",
-          response?.data?.data?.user.profile_picture
-        );
-        localStorage.setItem("name", response?.data?.data?.user.name);
-        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
-        localStorage.setItem(
-          "margaret_name",
-          response?.data?.data?.user.margaret_name
-        );
+      //   const response = await MeDetails();
+      //   localStorage.setItem(
+      //     "profile_picture",
+      //     response?.data?.data?.user.profile_picture
+      //   );
+      //   localStorage.setItem("name", response?.data?.data?.user.name);
+      //   localStorage.setItem("main_name", response?.data?.data?.user.main_name);
+      //   localStorage.setItem(
+      //     "margaret_name",
+      //     response?.data?.data?.user.margaret_name
+      //   );
 
-        // Create combined plan objects with both monthly and yearly data
-        const updatedPlans = Object.values(plansByRange)?.map(
-          (planGroup: any) => {
-            const monthlyPlan = planGroup.monthly;
-            const yearlyPlan = planGroup.yearly;
+      //   // Create combined plan objects with both monthly and yearly data
+      //   const updatedPlans = Object.values(plansByRange)?.map(
+      //     (planGroup: any) => {
+      //       const monthlyPlan = planGroup.monthly;
+      //       const yearlyPlan = planGroup.yearly;
 
-            return {
-              id: monthlyPlan?.id || yearlyPlan?.id,
-              title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              description: "Customized pricing based on your selection",
-              monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-              yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-              period: isAnnual ? "/year" : "/month",
-              billingNote: yearlyPlan
-                ? isAnnual
-                  ? `billed annually ($${yearlyPlan.amount})`
-                  : `or $${monthlyPlan?.amount}/month`
-                : undefined,
-              features: [], // Add any features you need here
-              buttonText: "Get Started",
-              buttonClass: yearlyPlan
-                ? ""
-                : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-              borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-              popular: !!yearlyPlan,
-            };
-          }
-        );
+      //       return {
+      //         id: monthlyPlan?.id || yearlyPlan?.id,
+      //         title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
+      //         description: "Customized pricing based on your selection",
+      //         monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
+      //         yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
+      //         period: isAnnual ? "/year" : "/month",
+      //         billingNote: yearlyPlan
+      //           ? isAnnual
+      //             ? `billed annually ($${yearlyPlan.amount})`
+      //             : `or $${monthlyPlan?.amount}/month`
+      //           : undefined,
+      //         features: [], // Add any features you need here
+      //         buttonText: "Get Started",
+      //         buttonClass: yearlyPlan
+      //           ? ""
+      //           : "bg-gray-100 text-gray-800 hover:bg-gray-200",
+      //         borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
+      //         popular: !!yearlyPlan,
+      //       };
+      //     }
+      //   );
 
-        setPersonPricing(updatedPlans);
-        localStorage.setItem("is_disqualify", "fasle");
-      } else {
-        showToast({
-          message: res?.data?.message || "Failed to submit assessment.",
-          type: "error",
-          duration: 4000,
-        });
-      }
+      //   setPersonPricing(updatedPlans);
+      //   localStorage.setItem("is_disqualify", "fasle");
+      // } else {
+      //   showToast({
+      //     message: res?.data?.message || "Failed to submit assessment.",
+      //     type: "error",
+      //     duration: 4000,
+      //   });
+      // }
       console.log("Submission result:", result);
     } catch (error: any) {
       showToast({

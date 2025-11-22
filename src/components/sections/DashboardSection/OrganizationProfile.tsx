@@ -649,7 +649,7 @@ const OrganaizationProfilepage = () => {
                     )}
                   </div>
 
-                  <div className="absolute -bottom-0 left-6 sm:left-10 z-20 group">
+                  <div className="absolute bottom-0 left-6 sm:left-10 z-20 group">
                     <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
                       <img
                         src={logoPreview || "/default-logo.jpg"}
@@ -699,7 +699,7 @@ const OrganaizationProfilepage = () => {
                   >
                     <div className="px-4 sm:px-6 pt-6">
                       <div className="w-full overflow-x-auto no-scrollbar px-2 sm:px-4">
-                        <div className="inline-block min-w-[1024px] md:min-w-[1152px] lg:min-w-full px-4 sm:px-6 lg:px-8">
+                        <div className="inline-block min-w-5xl md:min-w-6xl lg:min-w-full px-4 sm:px-6 lg:px-8">
                           {/* Tab Header */}
                           <Tab.List className="flex gap-3 flex-wrap sm:flex-nowrap overflow-x-auto no-scrollbar px-2">
                             {tabNames.map((tab, index) => (
@@ -708,7 +708,7 @@ const OrganaizationProfilepage = () => {
                                 className={({ selected }) =>
                                   `px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 focus-visible:outline-none ${
                                     selected
-                                      ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-[1px]"
+                                      ? "text-purple-600 bg-white shadow-md border-t-2 border-x-2 border-purple-600 -mb-px"
                                       : "text-gray-500 bg-transparent hover:text-purple-500"
                                   }`
                                 }
@@ -1223,7 +1223,7 @@ const OrganaizationProfilepage = () => {
                               <Button
                                 variant="gradient-primary"
                                 type="submit"
-                                className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                className="px-6 py-2 rounded-full bg-linear-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                 disabled={isSubmitting.basic}
                               >
                                 {isSubmitting.basic
@@ -1411,7 +1411,7 @@ const OrganaizationProfilepage = () => {
                               <Button
                                 variant="gradient-primary"
                                 type="submit"
-                                className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                className="px-6 py-2 rounded-full bg-linear-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                 disabled={isSubmitting.contact}
                               >
                                 {isSubmitting.contact
@@ -1617,7 +1617,7 @@ const OrganaizationProfilepage = () => {
                               <Button
                                 variant="gradient-primary"
                                 type="submit"
-                                className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                className="px-6 py-2 rounded-full bg-linear-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                 disabled={isSubmitting.social}
                               >
                                 {isSubmitting.social
@@ -2156,7 +2156,7 @@ const OrganaizationProfilepage = () => {
                               <Button
                                 variant="gradient-primary"
                                 type="submit"
-                                className="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
+                                className="px-6 py-2 rounded-full bg-linear-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-md hover:opacity-90 transition disabled:opacity-50"
                                 disabled={isSubmitting.public}
                               >
                                 {isSubmitting.public

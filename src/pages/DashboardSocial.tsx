@@ -344,6 +344,7 @@ export default function SocialTopBar() {
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
+  console.log("🚀 ~ SocialTopBar ~ userInfo:", userInfo);
   // const [isAdult, setIsAdult] = useState<Boolean>(
   //   localStorage.getItem("isAdult") === "true" ? true : false
   // );
@@ -420,104 +421,105 @@ export default function SocialTopBar() {
     }, 1400);
   };
 
-const handleConnect = async (userId: string) => {
-  try {
-    // Find the post to get current status
-    const post = userPosts.find(p => p.user_id === userId);
-    if (!post) return;
+  const handleConnect = async (userId: string) => {
+    try {
+      // Find the post to get current status
+      const post = userPosts.find((p) => p.user_id === userId);
+      if (!post) return;
 
-    // Case 1: No existing connection or pending request - Send new connection request
-    if (
-      post.friend_request_status !== "ACCEPT" &&
-      post.friend_request_status !== "PENDING" &&
-      !post.if_friend
-    ) {
-      const formattedData = {
-        friend_id: userId,
-      };
-      const res = await SendFriendRequest(formattedData);
+      // Case 1: No existing connection or pending request - Send new connection request
+      if (
+        post.friend_request_status !== "ACCEPT" &&
+        post.friend_request_status !== "PENDING" &&
+        !post.if_friend
+      ) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await SendFriendRequest(formattedData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        // Update the post in state
+        setUserPosts((prev) =>
+          prev.map((p) =>
+            p.user_id === userId
+              ? {
+                  ...p,
+                  if_friend: false,
+                  friend_request_status: "PENDING",
+                  is_requested: true,
+                }
+              : p
+          )
+        );
+      }
+      // Case 2: Cancel pending request (when status is PENDING)
+      else if (post.friend_request_status === "PENDING" && !post.if_friend) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await UnFriend(formattedData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        setUserPosts((prev) =>
+          prev.map((p) =>
+            p.user_id === userId
+              ? {
+                  ...p,
+                  if_friend: false,
+                  friend_request_status: null,
+                  is_requested: false,
+                }
+              : p
+          )
+        );
+      }
+      // Case 3: Remove existing friend connection
+      else if (post.friend_request_status === "ACCEPT" && post.if_friend) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await UnFriend(formattedData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+        setUserPosts((prev) =>
+          prev.map((p) =>
+            p.user_id === userId
+              ? {
+                  ...p,
+                  if_friend: false,
+                  friend_request_status: null,
+                  is_requested: false,
+                }
+              : p
+          )
+        );
+      }
+    } catch (error: any) {
+      console.error("Error handling friend request:", error);
       showToast({
-        message: res?.success?.message,
-        type: "success",
-        duration: 2000,
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to update connection",
+        type: "error",
+        duration: 3000,
       });
-      // Update the post in state
-      setUserPosts(prev => prev.map(p => 
-        p.user_id === userId 
-          ? { 
-              ...p, 
-              if_friend: false, 
-              friend_request_status: "PENDING",
-              is_requested: true
-            } 
-          : p
-      ));
     }
-    // Case 2: Cancel pending request (when status is PENDING)
-    else if (
-      post.friend_request_status === "PENDING" &&
-      !post.if_friend
-    ) {
-      const formattedData = {
-        friend_id: userId,
-      };
-      const res = await UnFriend(formattedData);
-      showToast({
-        message: res?.success?.message,
-        type: "success",
-        duration: 2000,
-      });
-      setUserPosts(prev => prev.map(p => 
-        p.user_id === userId 
-          ? { 
-              ...p, 
-              if_friend: false, 
-              friend_request_status: null,
-              is_requested: false
-            } 
-          : p
-      ));
-    }
-    // Case 3: Remove existing friend connection
-    else if (
-      post.friend_request_status === "ACCEPT" &&
-      post.if_friend
-    ) {
-      const formattedData = {
-        friend_id: userId,
-      };
-      const res = await UnFriend(formattedData);
-      showToast({
-        message: res?.success?.message,
-        type: "success",
-        duration: 2000,
-      });
-      setUserPosts(prev => prev.map(p => 
-        p.user_id === userId 
-          ? { 
-              ...p, 
-              if_friend: false, 
-              friend_request_status: null,
-              is_requested: false
-            } 
-          : p
-      ));
-    }
-  } catch (error: any) {
-    console.error("Error handling friend request:", error);
-    showToast({
-      message: error?.response?.data?.error?.message || "Failed to update connection",
-      type: "error",
-      duration: 3000,
-    });
-  }
-};
+  };
 
   // Function to get friend status
   const getFriendStatus = (userId: string) => {
     return friendRequests[userId] || "connect";
   };
-
 
   // Add this function to fetch followed users
   const fetchFollowedUsers = async () => {
@@ -842,7 +844,7 @@ const handleConnect = async (userId: string) => {
               last_name: newPost.profile.last_name,
               profile_picture: newPost.profile.profile_picture,
             },
-            friend_request_status: ""
+            friend_request_status: "",
           };
 
           // Add the new post to the beginning of the array
@@ -1152,35 +1154,16 @@ const handleConnect = async (userId: string) => {
   }, [page, isLoading]);
 
   const MeDetail = async () => {
-    if (localStorage.getItem("isAdult") === "true") {
-      // setIsAdult(true);
-      return;
-    }
+    // if (localStorage.getItem("isAdult") === "true") {
+    //   // setIsAdult(true);
+    //   return;
+    // }
     try {
       const response = await MeDetails();
       if (response?.data?.data?.user) {
         setUserInfo(response?.data?.data?.user);
       }
-      const dobString = response?.data?.data?.user?.dob;
-      if (!dobString) {
-        // setIsAdult(false);
-        return;
-      }
-
-      const dob = new Date(dobString);
-      const today = new Date();
-
-      let age = today.getFullYear() - dob.getFullYear();
-      const m = today.getMonth() - dob.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-        age--;
-      }
-
-      if (age >= 18) {
-        // setIsAdult(true);
-      } else {
-        // setIsAdult(false);
-      }
+      localStorage.setItem("isAdult", response?.data?.data?.user?.is_adult);
     } catch (error) {
       console.error("Error fetching me details:", error);
       // setIsAdult(false);
@@ -1639,7 +1622,7 @@ const handleConnect = async (userId: string) => {
                       <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
                     </div>
 
-                    {storiesData.map((story) => (
+                    {storiesData.slice(0, 10).map((story) => (
                       <div
                         key={story.id}
                         className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative"
@@ -1655,47 +1638,45 @@ const handleConnect = async (userId: string) => {
                           userName={
                             `${story.storyuser?.profile?.first_name || ""} ${
                               story.storyuser?.profile?.last_name || ""
-                            }`.trim() || "Unknown User"
+                            }`.trim() || ""
                           }
                           title={story.description || "Untitled Story"}
                           videoSrc={story?.thumbnail || ""}
                         />
+                      </div>
+                    ))}
 
-                        <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
-                          <div className="relative">
-                            <img
-                              src={
-                                story.storyuser?.profile?.profile_picture
-                                  ? story.storyuser?.profile?.profile_picture
-                                  : "/profile.png"
-                              }
-                              alt={
-                                `${
-                                  story.storyuser?.profile?.first_name || ""
-                                } ${
-                                  story.storyuser?.profile?.last_name || ""
-                                }`.trim() || "Unknown User"
-                              }
-                              className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = "/profile.png";
-                              }}
-                            />
-                            {/* Show story count badge if user has multiple stories */}
-                            {story.totalStoriesCount &&
-                              story.totalStoriesCount > 1 && (
-                                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                                  {story.totalStoriesCount}
-                                </div>
-                              )}
+                    {/* Show "See More" button if there are more than 10 stories */}
+                    {storiesData.length > 10 && (
+                      <div
+                        onClick={() => navigate("/story-design")}
+                        className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start bg-gradient-to-br from-purple-400 to-pink-500 flex flex-col items-center justify-center"
+                      >
+                        <div className="text-white text-center p-4">
+                          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-3 mx-auto">
+                            <svg
+                              className="w-6 h-6 text-white"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 7l5 5m0 0l-5 5m5-5H6"
+                              />
+                            </svg>
                           </div>
-                          <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
-                            {story.storyuser?.username || "Unknown User"}
+                          <span className="text-sm font-semibold block">
+                            See More
+                          </span>
+                          <span className="text-xs opacity-90 mt-1 block">
+                            {storiesData.length - 10}+ more stories
                           </span>
                         </div>
                       </div>
-                    ))}
+                    )}
                   </div>
 
                   {/* Posts Section */}
@@ -1757,25 +1738,29 @@ const handleConnect = async (userId: string) => {
                         {post.user_id !== loggedInUserID && (
                           <div className="flex gap-2">
                             {/* Connect Button */}
-                             <button
-      onClick={() => handleConnect(post.user_id)}
-      className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${
-        post.if_friend && post.friend_request_status === "ACCEPT"
-          ? "bg-green-100 text-green-700 border border-green-300"
-          : !post.if_friend && post.friend_request_status === "PENDING"
-          ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
-          : "bg-white text-black shadow-md border border-gray-200"
-      }`}
-    >
-      <span className="flex items-center gap-1">
-        <UserRoundPlus className="w-4 h-4" />
-        {post.if_friend && post.friend_request_status === "ACCEPT"
-          ? "Connected"
-          : !post.if_friend && post.friend_request_status === "PENDING"
-          ? "Requested"
-          : "Connect"}
-      </span>
-    </button>
+                            <button
+                              onClick={() => handleConnect(post.user_id)}
+                              className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${
+                                post.if_friend &&
+                                post.friend_request_status === "ACCEPT"
+                                  ? "bg-green-100 text-green-700 border border-green-300"
+                                  : !post.if_friend &&
+                                    post.friend_request_status === "PENDING"
+                                  ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
+                                  : "bg-white text-black shadow-md border border-gray-200"
+                              }`}
+                            >
+                              <span className="flex items-center gap-1">
+                                <UserRoundPlus className="w-4 h-4" />
+                                {post.if_friend &&
+                                post.friend_request_status === "ACCEPT"
+                                  ? "Connected"
+                                  : !post.if_friend &&
+                                    post.friend_request_status === "PENDING"
+                                  ? "Requested"
+                                  : "Connect"}
+                              </span>
+                            </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(post.user_id)}

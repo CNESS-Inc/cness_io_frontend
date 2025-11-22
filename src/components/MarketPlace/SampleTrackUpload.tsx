@@ -54,11 +54,10 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
         }
     };
 
- const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file size (50MB max)
     if (file.size > 50 * 1024 * 1024) {
         showToast({
             message: "Sample file size should be less than 50MB",
@@ -71,73 +70,74 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
     setIsUploading(true);
 
     try {
-        // ------------------------
-        // 🎨 ART SAMPLE UPLOAD
-        // ------------------------
+        let fd = new FormData();
+        let apiKey = "";
+        let sampleUrl = "";
+
+        // 🎨 ART SAMPLE
         if (productType === "art") {
-    const formDataArt = new FormData();
-    formDataArt.append("sample_image", file);
+            fd.append("sample_image", file);
 
-    const response = await UploadArtSampleImage(formDataArt);
+            const res = await UploadArtSampleImage(fd);
+            sampleUrl = res?.data?.data?.sample_image_url;
 
-     const sampleImageUrl = response.data.data.sample_image_url;
+            onUploadSuccess(sampleUrl, sampleUrl, sampleUrl);
+            setUploadedFile(file.name);
 
+            showToast({ message: "Sample image uploaded!", type: "success" });
+            return;
+        }
 
-    setUploadedFile(file.name);
+        // 🎥 VIDEO / COURSE SAMPLE
+        if (productType === "video" || productType === "course") {
+            fd.append("sample_video", file);
+            apiKey = "sample-video";
 
-    onUploadSuccess(
-        sampleImageUrl, // sampleId substitute
-        sampleImageUrl, // preview URL
-        sampleImageUrl  // thumbnail substitute
-    );
+            const res = await UploadProductDocument(apiKey, fd);
+            sampleUrl = res?.data?.data?.sample_video_url;
 
-    showToast({
-        message: "Sample art uploaded successfully!",
-        type: "success",
-        duration: 3000,
-    });
+            onUploadSuccess(sampleUrl, sampleUrl, sampleUrl);
+            setUploadedFile(file.name);
 
-    return; // STOP here => do NOT run audio upload logic
-}
-        // ------------------------
-        // 🎵 ORIGINAL AUDIO/VIDEO UPLOAD
-        // ------------------------
-        const formData = new FormData();
-        formData.append("sample_track", file);
+            showToast({ message: "Sample video uploaded!", type: "success" });
+            return;
+        }
 
-        const response = await UploadProductDocument("sample-track", formData);
-        const sampleData = response?.data?.data;
+        // 🎵 MUSIC / PODCAST SAMPLE (audio)
+        if (productType === "music") {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-        setUploadedFile(file.name);
+    for (const file of files) {
+        const fd = new FormData();
+        fd.append("sample_track", file);
+
+        const res = await UploadProductDocument("sample-track", fd);
 
         onUploadSuccess(
-            sampleData.sample_track_url,
-            sampleData.sample_track_url,
-            sampleData.sample_track_url
+            res?.data?.data?.sample_track_public_id,   // public id
+            res?.data?.data?.sample_track_url,         // url
+            file.name
         );
+    }
 
-        showToast({
-            message: "Sample track uploaded successfully",
-            type: "success",
-            duration: 3000,
-        });
+    setUploadedFile(`${files.length} files uploaded`);
+    showToast({ message: "Sample audio uploaded!", type: "success" });
+    setIsUploading(false);
+    return;
+}
 
-    } catch (error: any) {
+    } catch (error) {
         showToast({
-            message:
-                error?.response?.data?.error?.message || "Failed to upload sample",
+            message: "Failed to upload sample",
             type: "error",
             duration: 3000,
         });
-        setUploadedFile(null);
     } finally {
         setIsUploading(false);
-        if (fileRef.current) {
-            fileRef.current.value = "";
-        }
+        if (fileRef.current) fileRef.current.value = "";
     }
 };
-
     const handleRemove = () => {
         setUploadedFile(null);
         setIsDonated(false);
@@ -197,14 +197,15 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
                     />
                 </svg>
 
-                <input
-                    ref={fileRef}
-                    type="file"
-                    accept={getAcceptTypes()}
-                    onChange={handleFileChange}
-                    className="hidden"
-                    disabled={isUploading}
-                />
+     <input
+  ref={fileRef}
+  type="file"
+  accept={getAcceptTypes()}
+  onChange={handleFileChange}
+  className="hidden"
+  disabled={isUploading}
+  multiple={productType === "music"}   
+/>
 
                 {uploadedFile ? (
                     <div className="relative">

@@ -11,6 +11,7 @@ import {
   GetMarketPlaceMoods,
   UploadProductDocument,
   UploadProductThumbnail,
+  UploadStoryTellingVideo
 } from "../Common/ServerAPI";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
@@ -680,6 +681,18 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
   thumbnail_url: formData.thumbnail_url,
   status: isDraft ? "draft" : "published",
 
+storytelling_video_url: storyMedia.url,
+storytelling_video_public_id: storyMedia.public_id,
+storytelling_description: storySummary,
+sample_files: sampleList
+  .filter((url) => url && url.trim() !== "") // remove empty slots
+  .map((url, index) => ({
+    file_url: url,
+    public_id: extractPublicId(url),
+    title: `Sample ${index + 1}`,
+    file_type: "image",
+    order_number: index,
+  })),
 
   arts_details: {
     theme: formData.theme,
@@ -731,6 +744,16 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
       setIsLoading(false);
     }
   };
+
+const extractPublicId = (url: string): string => {
+  try {
+    const parts = url.split("/");
+    const filename = parts.pop() || ""; // last part
+    return filename.split(".")[0]; // remove file extension
+  } catch {
+    return "";
+  }
+};
 
   const handleAddHighlight = () => {
     if (newHighlight.trim()) {

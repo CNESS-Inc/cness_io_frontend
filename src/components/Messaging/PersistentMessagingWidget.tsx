@@ -628,7 +628,7 @@ const PersistentMessagingWidget: React.FC = () => {
     <>
       {/* Conversation Panel - Left Side */}
       {showConversationPanel && selectedConnection && (
-        <div className="fixed bottom-0 lg:right-[calc(31vw+24px)] right-6 lg:w-[25vw] w-[90vw] lg:h-[80vh] h-[60vh] bg-white rounded-lg rounded-bl-none rounded-br-none rounded-br-none shadow-2xl border border-gray-200 z-100 flex flex-col">
+        <div className="fixed bottom-0 lg:right-[calc(31vw+24px)] right-6 lg:w-[25vw] w-[90vw] lg:h-[80vh] h-[60vh] bg-white rounded-lg rounded-bl-none rounded-br-none shadow-2xl border border-gray-200 z-100 flex flex-col">
           {/* Chat Header */}
           <div className="flex items-center justify-between p-3 border-b border-[#ddd] bg-[#7C81FF] rounded-t-lg">
             <div className="flex items-center gap-3">
@@ -704,7 +704,7 @@ const PersistentMessagingWidget: React.FC = () => {
                             : "/profile.png"
                         }
                         alt={isOwnMessage ? "You" : selectedConnection?.name}
-                        className="w-8 h-8 rounded-full object-cover flex-shrink-0 profile-image"
+                        className="w-8 h-8 rounded-full object-cover shrink-0 profile-image"
                       />
                       {/* Message Content */}
                       <div
@@ -935,7 +935,7 @@ const PersistentMessagingWidget: React.FC = () => {
             />
           </div>
           <div>
-            <h3 className="font-semibold text-[#fff]">Messaging</h3>
+            <h3 className="font-semibold text-white">Messaging</h3>
             {/* <p className="text-xs text-white">Your conversations</p> */}
           </div>
 

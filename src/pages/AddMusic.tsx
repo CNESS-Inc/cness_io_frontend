@@ -5,7 +5,7 @@ import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
 import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
+import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail, UploadStoryTellingVideo } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
@@ -171,12 +171,18 @@ const removeSample = (index: number) =>
     fetchCategories();
   }, []);
 
-  const handleSampleTrackUpload = (sampleId: string) => {
-    setFormData(prev => ({
-      ...prev,
-      sample_track_url: sampleId,
-    }));
-  };
+const handleSampleTrackUpload = (sampleUrl: string, publicId?: string, title?: string) => {
+  setSampleFiles(prev => [
+    ...prev,
+    {
+      file_url: sampleUrl,
+      public_id: publicId || "",
+      title: title || "",
+      file_type: "audio",
+      order_number: prev.length + 1
+    }
+  ]);
+};
 
   //const handleRemoveSampleTrack = () => {
    // setFormData(prev => ({
@@ -685,9 +691,13 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
         theme: formData.theme,
         format: formData.format,
         thumbnail_url: formData.thumbnail_url,
-        sample_track_url: formData.sample_track_url,
+sample_files: sampleFiles,
         status: isDraft ? 'draft' : 'published',
-        tracks: tracksData,
+storytelling_video_url: storyMedia.url,
+storytelling_video_public_id: storyMedia.public_id,
+storytelling_description: storySummary,
+
+        tracks: tracksData,       
       };
 
       const response = await CreateMusicProduct(payload);

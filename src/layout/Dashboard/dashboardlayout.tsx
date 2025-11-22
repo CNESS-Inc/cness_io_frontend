@@ -100,7 +100,7 @@ const DashboardLayout = () => {
           {!isMobileNavOpen && (
             <button
               onClick={toggleMobileNav}
-              className="hidden md:block fixed top-4 left-4 z-[100] p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+              className="hidden md:block fixed top-4 left-4 z-100 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
             >
               <img src={hambur} alt="Menu" className="w-6 h-6" />
             </button>
@@ -108,7 +108,7 @@ const DashboardLayout = () => {
 
           {/* Desktop Headers */}
           <div
-            className={`hidden md:block transition-all duration-300 ${isMobileNavOpen ? "md:ml-[240px]" : "md:ml-0"
+            className={`hidden md:block transition-all duration-300 ${isMobileNavOpen ? "md:ml-60" : "md:ml-0"
               }`}
           >
             {isMarketplacePage ? (
@@ -123,7 +123,7 @@ const DashboardLayout = () => {
 
                 {/* Market Header below */}
                 <div
-                  className={`fixed top-[80px] right-0 z-40 bg-white transition-all duration-300 ${isMobileNavOpen ? "left-[256px]" : "left-0"
+                  className={`fixed top-20 right-0 z-40 bg-white transition-all duration-300 ${isMobileNavOpen ? "left-64" : "left-0"
                     }`}
                 >
                   <MarketHeader
@@ -144,7 +144,7 @@ const DashboardLayout = () => {
 
                 {/* Seller Header below */}
                 <div
-                  className={`fixed top-[80px] right-0 z-40 bg-white transition-all duration-300 ${isMobileNavOpen ? "left-[256px]" : "left-0"
+                  className={`fixed top-20 right-0 z-40 bg-white transition-all duration-300 ${isMobileNavOpen ? "left-64" : "left-0"
                     }`}
                 >
                   <SellerHeader
@@ -175,7 +175,7 @@ const DashboardLayout = () => {
 
           {/* Main Content */}
           <div
-            className={`flex-1 flex flex-col transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+            className={`flex-1 flex flex-col transition-all duration-300 ${isMobileNavOpen ? "md:ml-64" : "md:ml-0"
               }`}
           >
             <main
@@ -183,9 +183,9 @@ const DashboardLayout = () => {
             flex-1 min-h-screen overflow-y-auto transition-all duration-300
             ${hasNoPadding || isCreateShopPage ? "px-2 py-2 pb-14" : "px-4 py-3 pb-14"}
             ${isMarketplacePage
-                  ? "sm:pt-[120px] md:pt-[160px] lg:pt-[160px] xl:pt-[160px] 2xl:pt-[160px]"
+                  ? "sm:pt-[120px] md:pt-40 lg:pt-40 xl:pt-40 2xl:pt-40"
                   : isSellerPage
-                    ? "sm:pt-[120px] md:pt-[160px] lg:pt-[160px] xl:pt-[160px] 2xl:pt-[160px]"
+                    ? "sm:pt-[120px] md:pt-40 lg:pt-40 xl:pt-40 2xl:pt-40"
                     : isCreateShopPage
                       ? "pt-0"
                       : ""
@@ -220,7 +220,7 @@ const DashboardLayout = () => {
 
         {/* Footer & Messaging */}
         <div
-          className={`transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+          className={`transition-all duration-300 ${isMobileNavOpen ? "md:ml-64" : "md:ml-0"
             }`}
         >
           <MessagingProvider>

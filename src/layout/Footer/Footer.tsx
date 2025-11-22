@@ -45,7 +45,7 @@ const Footer = () => {
                 className="h-auto w-[120px] md:w-[144.16px] lg:hidden md:hidden block"
               />
             </Link>
-            <p className="text-[16px] font-[400] font-openSans leading-[160%] text-[#1E1E1E] lg:block md:block hidden">
+            <p className="text-[16px] font-normal font-openSans leading-[160%] text-[#1E1E1E] lg:block md:block hidden">
 Your global conscious hub where social connection,<br/> meaningful commerce, and community growth come together.
             </p>
           </div>
@@ -71,7 +71,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
                   <li>
                     <Link
                       to="/ecosystem"
-                      className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      className="text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                       onClick={() =>
                         window.scrollTo({ top: 0, behavior: "smooth" })
                       }
@@ -82,7 +82,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
                   <li>
                     <Link
                       to="/social"
-                      className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      className="text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                       onClick={() =>
                         window.scrollTo({ top: 0, behavior: "smooth" })
                       }
@@ -93,7 +93,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
                   <li>
                     <Link
                       to="/certifications"
-                      className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      className="text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                       onClick={() =>
                         window.scrollTo({ top: 0, behavior: "smooth" })
                       }
@@ -115,7 +115,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
                   <li>
                     <Link
                       to="/whycness"
-                      className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      className="text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                       onClick={() =>
                         window.scrollTo({ top: 0, behavior: "smooth" })
                       }
@@ -126,7 +126,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
                   <li>
                     <Link
                       to="/cness-marketplace"
-                      className="text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      className="text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                       onClick={() =>
                         window.scrollTo({ top: 0, behavior: "smooth" })
                       }
@@ -158,7 +158,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
                     <a
                       href="https://www.facebook.com/share/1A8V21L6Qj"
                        target="_blank"
-                      className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaFacebookF className="me-2 md:me-3" />
                       Facebook
@@ -168,7 +168,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
                     <a
                       href="https://x.com/CnessInc"
                        target="_blank"
-                      className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <img
                         src={vector}
@@ -182,7 +182,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
                     <a
                       href="https://www.instagram.com/cness.inc"
                        target="_blank"
-                      className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaInstagram className="me-2 md:me-3" />
                       Instagram
@@ -192,7 +192,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
                     <a
                       href="https://www.youtube.com/@CNESSinc"
                        target="_blank"
-                      className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaYoutube className="me-2 md:me-3" />
                       YouTube
@@ -206,10 +206,10 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
       </footer>
 
       {/* Bottom section */}
-      <div className="py-4 lg:bg-[#373578] md:bg-[#373578] bg-[#fff] px-4 sm:px-6">
+      <div className="py-4 lg:bg-[#373578] md:bg-[#373578] bg-white px-4 sm:px-6">
         <div className="max-w-7xl mx-auto lg:flex flex-col md:flex-row justify-between items-center gap-2 hidden">
           <div
-            className="text-[15px] leading-[100%] font-[500] font-[Plus Jakarta Sans] text-white"
+            className="text-[15px] leading-[100%] font-medium font-[Plus Jakarta Sans] text-white"
             style={{
               letterSpacing: "-0.2px",
               fontStyle: "normal",
@@ -223,7 +223,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
             </Link> */}
             <button
               onClick={() => setShowTermModal(true)}
-              className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white"
+              className="text-[15px] leading-[100%] font-semibold font-[Plus Jakarta Sans] text-white"
             >
               Terms & Conditions
             </button>
@@ -232,7 +232,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
             </Link> */}
             <button
               onClick={() => setShowPrivacyModal(true)}
-              className="text-[15px] leading-[100%] font-[600] font-[Plus Jakarta Sans] text-white"
+              className="text-[15px] leading-[100%] font-semibold font-[Plus Jakarta Sans] text-white"
             >
               Privacy Policy
             </button>
@@ -269,7 +269,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
         onClose={() => setShowTermModal(false)}
       >
         <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
-          <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
+          <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-medium text-black mb-4 text-center">
             CNESS TERMS AND CONDITIONS
           </h3>
           <div
@@ -290,7 +290,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
         onClose={() => setShowPrivacyModal(false)}
       >
         <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
-          <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-[500] text-black mb-4 text-center">
+          <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-medium text-black mb-4 text-center">
             CNESS PRIVACY POLICY
           </h3>
           <div
