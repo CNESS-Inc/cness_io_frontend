@@ -10,8 +10,7 @@ import {
   GetMarketPlaceCategories,
   GetMarketPlaceMoods,
   UploadProductDocument,
-  UploadProductThumbnail,
-  UploadStoryTellingVideo
+  UploadProductThumbnail
 } from "../Common/ServerAPI";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
@@ -105,7 +104,7 @@ const [storyMedia, setStoryMedia] = useState<{
   thumbnail?: string;
 }>({
   type: null,
-  url: "",
+  url: ""
 });
 
 const [storySummary, setStorySummary] = useState("");
@@ -682,7 +681,7 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
   status: isDraft ? "draft" : "published",
 
 storytelling_video_url: storyMedia.url,
-storytelling_video_public_id: storyMedia.public_id,
+// storytelling_video_public_id: storyMedia.public_id,
 storytelling_description: storySummary,
 sample_files: sampleList
   .filter((url) => url && url.trim() !== "") // remove empty slots
