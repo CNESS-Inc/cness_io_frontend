@@ -34,6 +34,7 @@ const Managebestpractices = () => {
   const [isLoading, setIsLoading] = useState({
     save: false,
     my_added: false,
+    delete: false,
   });
 
   const [pagination, setPagination] = useState<any>({
@@ -256,19 +257,26 @@ useEffect(() => {
   );
 
   const handleDeleteBestPractice = async (id: any) => {
+    setIsLoading((prev) => ({ ...prev, delete: true }));
     try {
       await DeleteBestPractices(id);
-    } catch (error: any) {
-      console.error("Error fetching inspiring companies:", error);
       showToast({
-        message: error?.response?.data?.error?.message,
+        message: "Best practice deleted successfully!",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error: any) {
+      console.error("Error deleting best practice:", error);
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to delete best practice",
         type: "error",
         duration: 5000,
       });
     } finally {
-      setIsLoading((prev) => ({ ...prev, popular: false }));
+      setIsLoading((prev) => ({ ...prev, delete: false }));
     }
   };
+
 
   const handleEditBestPractice = async (id: any) => {
     try {
@@ -1399,6 +1407,7 @@ useEffect(() => {
               }
               variant="white-outline"
               className="w-full sm:w-auto"
+              disabled={isLoading.delete}
             >
               Cancel
             </Button>
@@ -1413,7 +1422,14 @@ useEffect(() => {
               }}
               className="w-full sm:w-auto py-2 px-6 sm:py-3 sm:px-8"
             >
-              Delete
+             {isLoading.delete ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
             </Button>
           </div>
         </div>

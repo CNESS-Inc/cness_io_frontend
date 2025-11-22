@@ -23,8 +23,10 @@ const StoryCard: React.FC<StoryCardProps> = ({
   id,
   userId,
 }) => {
+  console.log("🚀 ~ StoryCard ~ videoSrc:", videoSrc);
   const loggedInUserID = localStorage.getItem("Id");
   const [openSignup, setOpenSignup] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const navigate = useNavigate();
 
@@ -34,6 +36,9 @@ const StoryCard: React.FC<StoryCardProps> = ({
     }
     // Navigate with both user ID and story ID as query parameters
   };
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   return (
     <>
@@ -41,11 +46,16 @@ const StoryCard: React.FC<StoryCardProps> = ({
         {/* <div onClick={() => handleReel(id)}> */}
         <div className="relative w-40 h-80 rounded-lg overflow-hidden shadow-md">
           <LazyLoadComponent>
-            <img
-              src={videoSrc}
-              alt={userName}
-              className="w-full h-full object-cover absolute top-0 left-0"
-            />
+            {imageError ? (
+              <div className="absolute inset-0 bg-linear-to-r from-black/20 via-black/30 to-black/20 animate-shimmer"></div>
+            ) : (
+              <img
+                src={videoSrc}
+                alt={userName}
+                className="w-full h-full object-cover absolute top-0 left-0"
+                onError={handleImageError}
+              />
+            )}
             {/* <video
             className="w-full h-full object-cover absolute top-0 left-0"
             autoPlay
@@ -56,7 +66,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
             Your browser does not support the video tag.
           </video> */}
           </LazyLoadComponent>
-          <div className="absolute inset-0 bg-linear-to-r from-black/20 via-black/30 to-black/20 animate-shimmer"></div>
+           <div className={`absolute inset-0 bg-linear-to-r from-black/20 via-black/30 to-black/20 animate-shimmer ${imageError ? 'opacity-100' : 'opacity-0'}`}></div>
           <div className="absolute bottom-0 left-0 w-full p-4">
             <h3 className="text-white text-xs font-semibold mb-2">{title}</h3>
             <div className="flex items-center">

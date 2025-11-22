@@ -1622,7 +1622,7 @@ export default function SocialTopBar() {
                       <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
                     </div>
 
-                    {storiesData.map((story) => (
+                    {storiesData.slice(0, 10).map((story) => (
                       <div
                         key={story.id}
                         className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative"
@@ -1638,47 +1638,45 @@ export default function SocialTopBar() {
                           userName={
                             `${story.storyuser?.profile?.first_name || ""} ${
                               story.storyuser?.profile?.last_name || ""
-                            }`.trim() || "Unknown User"
+                            }`.trim() || ""
                           }
                           title={story.description || "Untitled Story"}
                           videoSrc={story?.thumbnail || ""}
                         />
+                      </div>
+                    ))}
 
-                        <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
-                          <div className="relative">
-                            <img
-                              src={
-                                story.storyuser?.profile?.profile_picture
-                                  ? story.storyuser?.profile?.profile_picture
-                                  : "/profile.png"
-                              }
-                              alt={
-                                `${
-                                  story.storyuser?.profile?.first_name || ""
-                                } ${
-                                  story.storyuser?.profile?.last_name || ""
-                                }`.trim() || "Unknown User"
-                              }
-                              className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = "/profile.png";
-                              }}
-                            />
-                            {/* Show story count badge if user has multiple stories */}
-                            {story.totalStoriesCount &&
-                              story.totalStoriesCount > 1 && (
-                                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                                  {story.totalStoriesCount}
-                                </div>
-                              )}
+                    {/* Show "See More" button if there are more than 10 stories */}
+                    {storiesData.length > 10 && (
+                      <div
+                        onClick={() => navigate("/story-design")}
+                        className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start bg-gradient-to-br from-purple-400 to-pink-500 flex flex-col items-center justify-center"
+                      >
+                        <div className="text-white text-center p-4">
+                          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-3 mx-auto">
+                            <svg
+                              className="w-6 h-6 text-white"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 7l5 5m0 0l-5 5m5-5H6"
+                              />
+                            </svg>
                           </div>
-                          <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
-                            {story.storyuser?.username || "Unknown User"}
+                          <span className="text-sm font-semibold block">
+                            See More
+                          </span>
+                          <span className="text-xs opacity-90 mt-1 block">
+                            {storiesData.length - 10}+ more stories
                           </span>
                         </div>
                       </div>
-                    ))}
+                    )}
                   </div>
 
                   {/* Posts Section */}

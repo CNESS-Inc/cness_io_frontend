@@ -346,20 +346,22 @@ const CommentBox = ({
     try {
       // Assuming GetComment accepts page parameter
       const res = await GetComment(postId, page);
-      
+
       const newComments = res?.data?.data?.rows || [];
       const totalCount = res?.data?.data?.count || 0;
 
       if (loadMore) {
         // Append new comments when loading more
-        setComments(prev => [...prev, ...newComments]);
+        setComments((prev) => [...prev, ...newComments]);
       } else {
         // Replace comments when loading initial page
         setComments(newComments);
       }
 
       // Check if there are more comments to load
-      const currentTotal = loadMore ? comments.length + newComments.length : newComments.length;
+      const currentTotal = loadMore
+        ? comments.length + newComments.length
+        : newComments.length;
       setHasMore(currentTotal < totalCount);
 
       // Update current page
@@ -418,7 +420,7 @@ const CommentBox = ({
           },
           ...prev,
         ]);
-        
+
         setUserPosts((prevPosts: any) =>
           prevPosts.map((post: any) =>
             post.id === postId
@@ -1250,7 +1252,7 @@ const CommentBox = ({
                             <>
                               <div key={reply.id} className="flex gap-3 pt-2">
                                 <img
-                                  src={reply.profile.profile_picture}
+                                  src={reply.profile.profile_picture || "/public.png"}
                                   alt={`${reply.profile.first_name} ${reply.profile.last_name}`}
                                   className="w-[27px] h-[27px] rounded-full object-cover shrink-0"
                                   onError={(e) => {
