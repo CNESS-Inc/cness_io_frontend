@@ -23,13 +23,14 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useSearchParams } from "react-router-dom";
 import CreatableSelect from "react-select/creatable";
+import Modal from "../../ui/Modal";
 
 const tabNames = [
   "Basic Information",
   "Contact Information",
   "Social Links",
   "Education",
-  "Work Experience",
+  "Work",
   "Public Profile Fields",
 ];
 
@@ -253,6 +254,28 @@ const countryCode = [
   "+998",
 ];
 
+interface SocialLink {
+  platform: string;
+  url: string;
+}
+
+const socialPlatforms = [
+  { value: "facebook", label: "Facebook" },
+  { value: "twitter", label: "Twitter" },
+  { value: "linkedin", label: "LinkedIn" },
+  { value: "instagram", label: "Instagram" },
+  { value: "youtube", label: "YouTube" },
+  { value: "tiktok", label: "TikTok" },
+  { value: "pinterest", label: "Pinterest" },
+  { value: "snapchat", label: "Snapchat" },
+  { value: "reddit", label: "Reddit" },
+  { value: "dribbble", label: "Dribbble" },
+  { value: "behance", label: "Behance" },
+  { value: "medium", label: "Medium" },
+  { value: "telegram", label: "Telegram" },
+  { value: "discord", label: "Discord" },
+];
+
 const countryCodeOptions = countryCode.map((code) => ({
   value: code,
   label: code,
@@ -295,6 +318,14 @@ const customSelectStyles = {
     ...base,
     color: "#111827",
     fontSize: "14px",
+  }),
+  menu: (provided: any) => ({
+    ...provided,
+    zIndex: 9999, // Ensure high z-index
+  }),
+  menuPortal: (provided: any) => ({
+    ...provided,
+    zIndex: 9999,
   }),
 };
 
@@ -377,6 +408,26 @@ const UserProfilePage = () => {
     type: "profile" | "banner" | null;
     message: string;
   }>({ type: null, message: "" });
+  const [showSocialModal, setShowSocialModal] = useState(false);
+  const [newSocialLink, setNewSocialLink] = useState<SocialLink>({
+    platform: "",
+    url: "",
+  });
+  const [socialLinks, setSocialLinks] = useState<Record<string, string>>(() => {
+    // Initialize with all social platforms as empty strings
+    const initialSocialLinks: Record<string, string> = {};
+    socialPlatforms.forEach((platform) => {
+      initialSocialLinks[platform.value] = "";
+    });
+    return initialSocialLinks;
+  });
+  console.log("🚀 ~ UserProfilePage ~ socialLinks:", socialLinks)
+  const getAvailablePlatforms = () => {
+    return socialPlatforms.filter(
+      (platform) =>
+        !socialLinks[platform.value] || socialLinks[platform.value] === ""
+    );
+  };
 
   // const [uploadIdentify, setUploadIdentify] = useState<any>({
   //   message: "Uploading",
@@ -390,6 +441,72 @@ const UserProfilePage = () => {
       setSelectedIndex(tabMap[tabParam as keyof typeof tabMap]);
     }
   }, [tabParam]);
+
+  const validateSocialUrl = (platform: string, url: string): boolean => {
+    const urlPatterns: { [key: string]: RegExp } = {
+      facebook: /^(https?:\/\/)?(www\.)?(facebook|fb)\.com\/.+/,
+      twitter: /^(https?:\/\/)?(www\.)?(twitter|x)\.com\/.+/,
+      linkedin: /^(https?:\/\/)?(www\.)?linkedin\.com\/.+/,
+      instagram: /^(https?:\/\/)?(www\.)?instagram\.com\/.+/,
+      youtube: /^(https?:\/\/)?(www\.)?(youtube)\.(com)\/.+/,
+      tiktok: /^(https?:\/\/)?(www\.)?tiktok\.com\/.+/,
+      pinterest: /^(https?:\/\/)?(in\.)?pinterest\.com\/.+/,
+      snapchat: /^(https?:\/\/)?(www\.)?snapchat\.com\/.+/,
+      reddit: /^(https?:\/\/)?(www\.)?reddit\.com\/.+/,
+      github: /^(https?:\/\/)?(www\.)?github\.com\/.+/,
+      dribbble: /^(https?:\/\/)?(www\.)?dribbble\.com\/.+/,
+      behance: /^(https?:\/\/)?(www\.)?behance\.net\/.+/,
+      medium: /^(https?:\/\/)?(www\.)?medium\.com\/.+/,
+      whatsapp: /^(https?:\/\/)?(wa\.me\/|api\.whatsapp\.com\/).+/,
+      telegram: /^(https?:\/\/)?(t\.me\/|telegram\.me\/).+/,
+      discord: /^(https?:\/\/)?(discord\.gg\/|discord\.com\/).+/,
+      slack: /^(https?:\/\/)?.+.slack\.com\/.+/,
+      skype: /^(skype:|https?:\/\/).+/,
+    };
+
+    const pattern = urlPatterns[platform];
+    if (!pattern) return true; // If no pattern defined, accept any valid URL
+
+    return pattern.test(url);
+  };
+  const handleAddSocialLink = (platform: string, url: string) => {
+    if (platform && url) {
+      const isValid = validateSocialUrl(platform, url);
+      if (!isValid) {
+        showToast({
+          message: `Please enter a valid ${
+            socialPlatforms.find((p) => p.value === platform)?.label
+          } URL`,
+          type: "error",
+          duration: 5000,
+        });
+        return;
+      }
+
+      setSocialLinks((prev) => ({
+        ...prev,
+        [platform]: url,
+      }));
+
+      setNewSocialLink({ platform: "", url: "" });
+      setShowSocialModal(false);
+
+      showToast({
+        message: `${
+          socialPlatforms.find((p) => p.value === platform)?.label
+        } link added successfully`,
+        type: "success",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleRemoveSocialLink = (platform: string) => {
+    setSocialLinks((prev) => ({
+      ...prev,
+      [platform]: "",
+    }));
+  };
 
   // Separate form handlers for each tab
   const basicInfoForm = useForm({
@@ -513,45 +630,8 @@ const UserProfilePage = () => {
     ),
   });
   // Update the socialLinksForm initialization with validation
-  const socialLinksForm = useForm({
-    resolver: yupResolver(
-      yup.object().shape({
-        facebook: yup
-          .string()
-          .url("Must be a valid URL")
-          .test(
-            "is-facebook",
-            "Must be a valid Facebook URL",
-            (value) => !value || value.includes("facebook.com")
-          ),
-        twitter: yup
-          .string()
-          .url("Must be a valid URL")
-          .test(
-            "is-twitter",
-            "Must be a valid Twitter URL",
-            (value) =>
-              !value || value.includes("twitter.com") || value.includes("x.com")
-          ),
-        linkedin: yup
-          .string()
-          .url("Must be a valid URL")
-          .test(
-            "is-linkedin",
-            "Must be a valid LinkedIn URL",
-            (value) => !value || value.includes("linkedin.com")
-          ),
-        instagram: yup
-          .string()
-          .url("Must be a valid URL")
-          .test(
-            "is-instagram",
-            "Must be a valid Instagram URL",
-            (value) => !value || value.includes("instagram.com")
-          ),
-      })
-    ),
-  });
+const socialLinksForm = useForm();
+
   const educationForm = useForm({
     defaultValues: {
       educations: [
@@ -995,16 +1075,14 @@ const UserProfilePage = () => {
     }
   };
 
-  const handleSocialLinksSubmit = async (data: any) => {
+  const handleSocialLinksSubmit = async () => {
     setIsSubmitting((prev) => ({ ...prev, social: true }));
 
+    // Filter out empty social links
     const payload = {
-      social_links: {
-        facebook: data.facebook,
-        twitter: data.twitter,
-        linkedin: data.linkedin,
-        instagram: data.instagram,
-      },
+      social_links: Object.fromEntries(
+        Object.entries(socialLinks).filter(([_, url]) => url.trim() !== "")
+      ),
     };
 
     try {
@@ -1027,6 +1105,7 @@ const UserProfilePage = () => {
       setIsSubmitting((prev) => ({ ...prev, social: false }));
     }
   };
+
   const handleEducationSubmit = async (data: any) => {
     setIsSubmitting((prev) => ({ ...prev, education: true }));
 
@@ -1129,12 +1208,6 @@ const UserProfilePage = () => {
         type: "success",
         duration: 5000,
       });
-      // --- Last tab: do not auto-advance. If you want to auto-advance here in future,
-      // uncomment and adjust the logic below. Currently we intentionally leave the
-      // user on the last tab after submission.
-      // const lastIndex = tabNames.length - 1;
-      // setSelectedIndex(lastIndex);
-      // --- end last-tab note ---
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -1155,26 +1228,36 @@ const UserProfilePage = () => {
       if (response.data.data) {
         const professions = response.data.data?.professions || [];
         const interests = response.data.data?.interests || [];
-
-        // Map professions to handle both types (with profession_id and custom ones)
         const professionValues = professions.map((prof: any) => {
-          // If it has profession_id, use that (admin-approved profession)
           if (prof.profession_id) {
             return prof.profession_id;
           }
-          // Otherwise, it's a custom profession - use the title
           return prof.title;
         });
 
-        // Map interests to handle both types (with id and custom ones)
         const interestValues = interests.map((interest: any) => {
-          // If it has id, use that (admin-approved interest)
           if (interest.id) {
             return interest.id;
           }
-          // Otherwise, it's a custom interest - use the title
           return interest.title;
         });
+
+        const socialLinksData = response.data.data?.social_links || {};
+        const initializedSocialLinks: Record<string, string> = {};
+
+        if (Object.keys(socialLinksData).length === 0) {
+          ["facebook", "twitter", "linkedin", "instagram"].map((el) => {
+              initializedSocialLinks[el] =  " ";
+          });
+        } else {
+          socialPlatforms.forEach((platform) => {
+            initializedSocialLinks[platform.value] =
+              socialLinksData[platform.value] || "";
+          });
+        }
+
+        console.log(initializedSocialLinks, 'initializedSocialLinks---initializedSocialLinks')
+        setSocialLinks(initializedSocialLinks);
 
         basicInfoForm.reset({
           firstName: response.data.data?.first_name || "",
@@ -2203,8 +2286,7 @@ const UserProfilePage = () => {
                       {/* Professional Bio */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Professional Bio{" "}
-                          {/* <span className="text-red-500">*</span> */}
+                          Bio {/* <span className="text-red-500">*</span> */}
                         </label>
                         <input
                           type="text"
@@ -2587,118 +2669,190 @@ const UserProfilePage = () => {
                     )}
                   >
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative">
-                      {/* Facebook */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Facebook
-                        </label>
-                        <input
-                          type="url"
-                          {...socialLinksForm.register("facebook")}
-                          placeholder="https://facebook.com/yourprofile"
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                            socialLinksForm.formState.errors.facebook
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            socialLinksForm.formState.errors.facebook
-                              ? "focus:ring-red-500"
-                              : "focus:ring-purple-500"
-                          }`}
-                        />
-                        {socialLinksForm.formState.errors.facebook && (
-                          <p className="text-sm text-red-500 mt-1">
-                            {socialLinksForm.formState.errors.facebook.message}
-                          </p>
-                        )}
-                      </div>
+                      {/* Render social links that have values OR custom social links */}
+                      {socialPlatforms
+                        .filter((platform) => socialLinks[platform.value])
+                        .map((platform) => {
+                          // Count how many social links have values
+                          const activeSocialLinksCount = Object.values(
+                            socialLinks
+                          ).filter((url) => url).length;
 
-                      {/* Twitter */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Twitter
-                        </label>
-                        <input
-                          type="url"
-                          {...socialLinksForm.register("twitter")}
-                          placeholder="https://twitter.com/yourprofile"
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                            socialLinksForm.formState.errors.twitter
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            socialLinksForm.formState.errors.twitter
-                              ? "focus:ring-red-500"
-                              : "focus:ring-purple-500"
-                          }`}
-                        />
-                        {socialLinksForm.formState.errors.twitter && (
-                          <p className="text-sm text-red-500 mt-1">
-                            {socialLinksForm.formState.errors.twitter.message}
-                          </p>
-                        )}
-                      </div>
+                          // Only show delete button if there's more than 1 active social link
+                          const showDeleteButton = activeSocialLinksCount > 1;
 
-                      {/* LinkedIn */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
-                          LinkedIn
-                        </label>
-                        <input
-                          type="url"
-                          {...socialLinksForm.register("linkedin")}
-                          placeholder="https://linkedin.com/in/yourprofile"
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                            socialLinksForm.formState.errors.linkedin
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            socialLinksForm.formState.errors.linkedin
-                              ? "focus:ring-red-500"
-                              : "focus:ring-purple-500"
-                          }`}
-                        />
-                        {socialLinksForm.formState.errors.linkedin && (
-                          <p className="text-sm text-red-500 mt-1">
-                            {socialLinksForm.formState.errors.linkedin.message}
-                          </p>
-                        )}
-                      </div>
+                          return (
+                            <div key={platform.value} className="relative">
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                {platform.label}
+                              </label>
+                              <div className="flex gap-2">
+                                <input
+                                  type="url"
+                                  value={socialLinks[platform.value] || ""}
+                                  onChange={(e) =>
+                                    setSocialLinks((prev) => ({
+                                      ...prev,
+                                      [platform.value]: e.target.value,
+                                    }))
+                                  }
+                                  placeholder={`https://${platform.value}.com/`}
+                                  className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                                {/* Show delete button only if there are more than 1 active social links */}
+                                {showDeleteButton && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleRemoveSocialLink(platform.value)
+                                    }
+                                    className="px-3 text-red-500 hover:text-red-700 transition-colors"
+                                    title={`Remove ${platform.label} link`}
+                                  >
+                                    <TrashIcon className="w-5 h-5" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
 
-                      {/* Instagram */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Instagram
-                        </label>
-                        <input
-                          type="url"
-                          {...socialLinksForm.register("instagram")}
-                          placeholder="https://instagram.com/yourprofile"
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                            socialLinksForm.formState.errors.instagram
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            socialLinksForm.formState.errors.instagram
-                              ? "focus:ring-red-500"
-                              : "focus:ring-purple-500"
-                          }`}
-                        />
-                        {socialLinksForm.formState.errors.instagram && (
-                          <p className="text-sm text-red-500 mt-1">
-                            {socialLinksForm.formState.errors.instagram.message}
-                          </p>
-                        )}
-                      </div>
+                      {/* Add More Social Links Button - Show only if there are available platforms */}
+                      {getAvailablePlatforms().length > 0 && (
+                        <div className="md:col-span-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowSocialModal(true)}
+                            className="flex items-center gap-2 text-purple-600 hover:text-purple-800 font-medium transition-colors"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            Add More Social Links
+                          </button>
+                        </div>
+                      )}
                     </div>
+
+                    <Modal
+                      isOpen={showSocialModal}
+                      onClose={() => {
+                        setShowSocialModal(false);
+                        setNewSocialLink({ platform: "", url: "" });
+                      }}
+                    >
+                      <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                          Add Social Link
+                        </h3>
+
+                        <div className="space-y-4">
+                          {/* Platform Select */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Platform <span className="text-red-500">*</span>
+                            </label>
+                            <Select
+                              options={getAvailablePlatforms()}
+                              value={socialPlatforms.find(
+                                (p) => p.value === newSocialLink.platform
+                              )}
+                              onChange={(selectedOption) =>
+                                setNewSocialLink((prev) => ({
+                                  ...prev,
+                                  platform: selectedOption?.value || "",
+                                }))
+                              }
+                              styles={customSelectStyles}
+                              placeholder="Select platform"
+                              isSearchable
+                              menuPortalTarget={document.body}
+                              menuPosition="fixed"
+                            />
+                          </div>
+
+                          {/* URL Input */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              URL <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="url"
+                              value={newSocialLink.url}
+                              onChange={(e) =>
+                                setNewSocialLink((prev) => ({
+                                  ...prev,
+                                  url: e.target.value,
+                                }))
+                              }
+                              placeholder={`Enter ${
+                                socialPlatforms.find(
+                                  (p) => p.value === newSocialLink.platform
+                                )?.label || "social media"
+                              } URL`}
+                              className="w-full px-4 py-2 h-[41px] border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-6">
+                          <Button
+                            onClick={() => {
+                              setShowSocialModal(false);
+                              setNewSocialLink({ platform: "", url: "" });
+                            }}
+                            variant="white-outline"
+                            className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
+            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+                            type="button"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="gradient-primary"
+                            onClick={() =>
+                              handleAddSocialLink(
+                                newSocialLink.platform,
+                                newSocialLink.url
+                              )
+                            }
+                            disabled={
+                              !newSocialLink.platform || !newSocialLink.url
+                            }
+                            className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-500 ease-in-out"
+                          >
+                            Add Link
+                          </Button>
+                        </div>
+                      </div>
+                    </Modal>
+
                     <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-                            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-                            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
-                        onClick={() => socialLinksForm.reset()}
+                        onClick={() => {
+                          // Reset all social links to empty
+                          const resetSocialLinks: Record<string, string> = {};
+                          socialPlatforms.forEach((platform) => {
+                            resetSocialLinks[platform.value] = "";
+                          });
+                          setSocialLinks(resetSocialLinks);
+                        }}
                       >
                         Reset
                       </Button>

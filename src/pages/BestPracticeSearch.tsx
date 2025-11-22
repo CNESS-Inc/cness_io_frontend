@@ -34,6 +34,7 @@ const truncateText = (text: string, maxLength: number): string => {
 };
 
 type Company = {
+  user_id: any;
   interest: ReactNode;
   file: any;
   title: string;
@@ -75,7 +76,7 @@ export default function BestPracticeSearch() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { showToast } = useToast();
-
+  const id = localStorage.getItem("Id");
   // Initialize state from query params
   const [searchText, setSearchText] = useState(
     searchParams.get("search") || ""
@@ -389,6 +390,7 @@ export default function BestPracticeSearch() {
             isLiked: practice.is_liked || false,
             commentsCount: practice.total_comment_count || 0,
             is_bp_following: practice.is_bp_following || false,
+            user_id: practice.user_id || "",
           })
         );
         setBestPractices(transformedCompanies);
@@ -780,6 +782,11 @@ export default function BestPracticeSearch() {
     fetchBestPractices(1, id, type, searchText);
   };
 
+  // const isOwnProfile =
+  //   (id && String(id) === String(loggedInUserID)) ||
+  //   (userDetails?.user_id &&
+  //     String(userDetails.user_id) === String(loggedInUserID));
+
   return (
     <>
       <div className="px-2 sm:px-2 lg:px-1">
@@ -1147,29 +1154,33 @@ export default function BestPracticeSearch() {
                           <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
                             {company.title}
                           </h3>
-                          <div>
-                            {!company.is_bp_following ? (
-                              <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleFollow(company.id);
-                                }}
-                              >
-                                + Follow
-                              </button>
-                            ) : (
-                              <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleFollow(company.id);
-                                }}
-                              >
-                                Following
-                              </button>
-                            )}
-                          </div>
+                          {company.user_id !== id ? (
+                            <div>
+                              {!company.is_bp_following ? (
+                                <button
+                                  className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleFollow(company.id);
+                                  }}
+                                >
+                                  + Follow
+                                </button>
+                              ) : (
+                                <button
+                                  className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleFollow(company.id);
+                                  }}
+                                >
+                                  Following
+                                </button>
+                              )}
+                            </div>
+                          ) : (
+                            ""
+                          )}
                         </div>
                         <p className="text-sm font-semibold text-gray-900">
                           Overview
