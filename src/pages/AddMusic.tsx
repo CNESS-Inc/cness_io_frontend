@@ -89,12 +89,10 @@ const AddMusicForm: React.FC = () => {
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [newHighlight, setNewHighlight] = useState("");
   const [showAIModal, setShowAIModal] = useState(false);
-const [sampleFiles, setSampleFiles] = useState<any[]>([]);
 
 const [storyMedia, setStoryMedia] = useState<{
   type: "audio" | "video" | null;
   url: string;
-  public_id?: string;
   thumbnail?: string;
 }>({
   type: null,
@@ -805,28 +803,43 @@ const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
   if (!file) return;
 
+  const isAudio = file.type.startsWith("audio/");
+  const isVideo = file.type.startsWith("video/");
+
+  if (!isAudio && !isVideo) {
+    showToast({
+      message: "Please upload audio or video file only.",
+      type: "error",
+      duration: 3000,
+    });
+    return;
+  }
+
   const formData = new FormData();
-  formData.append("storytelling_video", file);   // SAME FOR ARTS & MUSIC
+  formData.append(isAudio ? "story_audio" : "story_video", file);
 
   try {
-    const response = await UploadStoryTellingVideo(formData); 
-const data = response?.data?.data;
+    const response = await UploadProductDocument(
+      isAudio ? "story-audio" : "story-video",
+      formData
+    );
 
-setStoryMedia({
-  type: "video",
-  url: data.storytelling_video_url,
-  public_id: data.public_id,
-  thumbnail: data.thumbnail || ""
-});
+    const data = response?.data?.data;
+
+    setStoryMedia({
+      type: isAudio ? "audio" : "video",
+      url: isAudio ? data.audio_url : data.video_url,
+      thumbnail: data.thumbnail || "",
+    });
 
     showToast({
-      message: "Storytelling video uploaded successfully",
+      message: `Story ${isAudio ? "audio" : "video"} uploaded successfully`,
       type: "success",
       duration: 3000,
     });
   } catch (err) {
     showToast({
-      message: "Failed to upload storytelling video",
+      message: "Failed to upload storytelling media",
       type: "error",
       duration: 3000,
     });
@@ -1249,18 +1262,18 @@ const MultiSelect = ({
     {/* MEDIA UPLOAD CARD */}
     <div>
       <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-        Upload Video (Optional)
+        Upload Audio / Video (Optional)
       </label>
 
       <label
         className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition-colors"
       >
-       <input
-  type="file"
-  accept="video/*"
-  className="hidden"
-  onChange={handleStoryUpload}
-/>
+        <input
+          type="file"
+          accept="audio/*, video/*"
+          className="hidden"
+          onChange={handleStoryUpload}
+        />
 
         <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
           <rect
@@ -1285,7 +1298,7 @@ const MultiSelect = ({
             <p className="text-sm font-[poppins] text-[#242E3A]">
               Drag & drop or click to upload
             </p>
-            <p className="text-xs text-[#665B5B]">Supports video</p>
+            <p className="text-xs text-[#665B5B]">Supports audio & video</p>
           </div>
         ) : (
           <div className="relative w-full">
@@ -1317,7 +1330,7 @@ const MultiSelect = ({
     {/* TEXT DESCRIPTION */}
     <div>
       <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-        Summary of the Storytelling 
+        Summary of the Storytelling <span className="text-red-500">*</span>
       </label>
 
       <textarea
@@ -1340,9 +1353,8 @@ const MultiSelect = ({
     <div key={i} className="mb-6">
       <SampleTrackUpload
         productType="music"
-onUploadSuccess={(publicId, sampleUrl, title) =>
-  handleSampleTrackUpload(sampleUrl, publicId, title)
-}       onRemove={() => removeSample(i)}
+onUploadSuccess={(sampleUrl) => handleSampleTrackUpload(sampleUrl)}
+        onRemove={() => removeSample(i)}
       />
     </div>
   ))}

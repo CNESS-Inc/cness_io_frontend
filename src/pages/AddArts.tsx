@@ -98,11 +98,10 @@ const AddArtsForm: React.FC = () => {
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
 //const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
-const [sampleList, setSampleList] = useState<string[]>([]);
+const [sampleList, setSampleList] = useState<string[]>([""]);
 const [storyMedia, setStoryMedia] = useState<{
   type: "audio" | "video" | null;
   url: string;
-  public_id?: string;
   thumbnail?: string;
 }>({
   type: null,
@@ -695,6 +694,12 @@ sample_files: sampleList
     order_number: index,
   })),
 
+  arts_details: {
+    theme: formData.theme,
+    mediums: formData.mediums,
+    modern_trends: formData.modern_trends,
+    sample_image_url: sampleList   ,  
+  },
 
   chapters: chapters.map((chapter) => ({
     title: chapter.title,
@@ -813,27 +818,41 @@ const extractPublicId = (url: string): string => {
   };
 
 
-const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
   if (!file) return;
 
+  const isAudio = file.type.startsWith("audio/");
+  const isVideo = file.type.startsWith("video/");
+
+  if (!isAudio && !isVideo) {
+    showToast({
+      message: "Please upload audio or video only",
+      type: "error",
+      duration: 3000,
+    });
+    return;
+  }
+
   const formData = new FormData();
-  formData.append("storytelling_video", file);  // ✅ EXACT MATCH
+  formData.append(isAudio ? "story_audio" : "story_video", file);
 
   try {
-    const response = await UploadStoryTellingVideo(formData);
+    const response = await UploadProductDocument(
+      isAudio ? "story-audio" : "story-video",
+      formData
+    );
+
     const data = response?.data?.data;
 
-  setStoryMedia({
-  type: "video",
-  url: data.storytelling_video_url,   // cloudinary full URL
-  public_id: data.public_id,          // add this
-  thumbnail: data.thumbnail || ""     // optional
-});
-
+    setStoryMedia({
+      type: isAudio ? "audio" : "video",
+      url: data.video_url || data.audio_url,
+      thumbnail: data.thumbnail || "",
+    });
 
     showToast({
-      message: "Video uploaded successfully",
+      message: `${isAudio ? "Audio" : "Video"} uploaded successfully`,
       type: "success",
       duration: 3000,
     });
@@ -845,7 +864,6 @@ const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     });
   }
 };
-
 {/*mood multi select*/}
 const MultiSelect = ({
   label,
@@ -1276,14 +1294,14 @@ const MultiSelect = ({
 
 <FormSection
   title="Storytelling"
-  description="Add a video message that explains the story or inspiration behind your artwork."
+  description="Add an audio or video message that explains the story or inspiration behind your artwork."
 >
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
     {/* MEDIA UPLOAD */}
     <div>
       <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-        Upload Video (Optional)
+        Upload Audio / Video (Optional)
       </label>
 
       <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition">
@@ -1317,7 +1335,7 @@ const MultiSelect = ({
             <p className="text-sm font-[poppins] text-[#242E3A]">
               Drag & drop or click to upload
             </p>
-            <p className="text-xs text-[#665B5B]">Supports video</p>
+            <p className="text-xs text-[#665B5B]">Supports audio & video</p>
           </div>
         ) : (
           <div className="relative w-full">
