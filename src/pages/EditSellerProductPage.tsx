@@ -343,8 +343,6 @@ interface SampleFile {
   public_id: string;
   title: string;
   file_type: string;
-  duration?: number;
-  file_size?: number;
   order_number?: number;
   is_ariome?: boolean;
 }
@@ -388,6 +386,7 @@ const [deleteSampleFiles, setDeleteSampleFiles] = useState<string[]>([]);
   const [shortVideoPreview, setShortVideoPreview] = useState("");
   const [isMainVideoUploading, setIsMainVideoUploading] = useState(false);
   const [isShortVideoUploading, setIsShortVideoUploading] = useState(false);
+const [lastUploadedIndex, setLastUploadedIndex] = useState<number | null>(null);
 
 const sampleUploadRef = useRef<any>(null);
 
@@ -1672,6 +1671,7 @@ basePayload.sample_files = sampleFiles.map(s => ({
   duration: s.duration,
   file_size: s.file_size,
   order_number: s.order_number,
+is_ariome: s.is_ariome ?? false
 }));
 
 basePayload.delete_sample_files = deleteSampleFiles;
@@ -2757,24 +2757,38 @@ const MultiSelect = ({
             title="Sample Track (Optional)"
             description="Upload a preview sample so buyers can experience your content before purchasing."
           >
-       <SampleTrackUpload
-       ref={sampleUploadRef}
+      <SampleTrackUpload
+  ref={sampleUploadRef}
   productType={category as "music" | "video" | "course" | "podcast" | "ebook" | "art"}
-  onUploadSuccess={(sampleId, sampleUrl, fileType) => {
-    const newSample: SampleFile = {
-      id: sampleId,
+  
+  onUploadSuccess={(publicId, sampleUrl) => {
+    const newSample = {
       file_url: sampleUrl,
-      public_id: sampleId,
+      public_id: publicId,
       title: "Sample " + (sampleFiles.length + 1),
-      file_type: fileType || (category === "art" ? "image" : "audio"),
-      duration: 0,
-      file_size: 0,
+      file_type: category === "art" ? "image" : "audio",
+      duration: null,
+      file_size: null,
       order_number: sampleFiles.length,
-      
-    };
+   is_ariome: false
+  };
 
     handleAddSample(newSample);
+
+    // ⭐ Save the index of THIS uploaded sample
+    setLastUploadedIndex(sampleFiles.length);
   }}
+
+  onDonationChange={(value) => {
+    setSampleFiles(prev => 
+      prev.map((sample, i) =>
+        i === lastUploadedIndex   // ⭐ apply donation to correct sample
+          ? { ...sample, is_ariome: value }
+          : sample
+      )
+    );
+  }}
+
   onRemove={() => {}}
 />
 

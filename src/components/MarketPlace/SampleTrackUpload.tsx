@@ -9,12 +9,14 @@ interface SampleTrackUploadProps {
     productType: "video" | "music" | "course" | "podcast" | "ebook" | "art";
     onUploadSuccess: (sampleId: string, sampleUrl: string, sampleThumbnail?: string) => void;
     onRemove: () => void;
+    onDonationChange?:(value:boolean)=> void;
     defaultValue?: string;
     error?: string;
+  
 }
 
 const SampleTrackUpload = forwardRef<unknown, SampleTrackUploadProps>((
-    { productType, onUploadSuccess, onRemove, defaultValue, error },
+    { productType, onUploadSuccess, onRemove,onDonationChange, defaultValue, error },
     ref
 ) => {
     const { showToast } = useToast();
@@ -139,14 +141,13 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (fileRef.current) fileRef.current.value = "";
     }
 };
-    const handleRemove = () => {
-        setUploadedFile(null);
-        setIsDonated(false);
-        onRemove();
-        if (fileRef.current) {
-            fileRef.current.value = "";
-        }
-    };
+  const handleRemove = () => {
+  setUploadedFile(null);
+  setIsDonated(false);
+  onDonationChange?.(false);  // ⭐ send reset to parent
+  onRemove();
+  if (fileRef.current) fileRef.current.value = "";
+};
 
     const handleDonate = () => {
         if (!uploadedFile) {
@@ -160,16 +161,17 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setShowDonateModal(true);
     };
 
-    const confirmDonation = () => {
-        setIsDonated(true);
-        setShowDonateModal(false);
-        showToast({
-            message: "Thank you for your generous contribution! 💙",
-            type: "success",
-            duration: 4000,
-        });
-    };
+  const confirmDonation = () => {
+  setIsDonated(true);
+  onDonationChange?.(true);  
+  setShowDonateModal(false);
 
+  showToast({
+    message: "Thank you for your generous contribution! 💙",
+    type: "success",
+    duration: 4000,
+  });
+};
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -433,6 +435,6 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
             )}
         </div>
     );
-});
+});;
 
 export default SampleTrackUpload;
