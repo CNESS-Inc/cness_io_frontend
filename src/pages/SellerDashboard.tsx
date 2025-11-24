@@ -484,10 +484,12 @@ export default function SellerDashboard() {
     }
   };
 
-  const userName =
+  const Name =
     localStorage.getItem("name") +
       " " +
-      localStorage.getItem("margaret_name") || "User";
+      localStorage.getItem("margaret_name") || "";
+  const userName =
+    localStorage.getItem("username") || ""
 
   return (
     <div className="px-5 2xl:px-5 pt-1 md:pt-1">
@@ -601,7 +603,7 @@ export default function SellerDashboard() {
               userDetails?.profile_banner || "https://cdn.cness.io/banner.webp"
             }
             avatar={userDetails?.profile_picture}
-            name={userName}
+            name={Name}
             handle={userName}
             resonating={resonating || 0}
             resonators={reasonators || 0}
