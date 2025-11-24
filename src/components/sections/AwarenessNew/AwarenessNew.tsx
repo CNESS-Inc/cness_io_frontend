@@ -8,10 +8,10 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "./AwarenessSection.css";
-import creation1 from "../../../assets/creation1.jpg"
-import creation2 from "../../../assets/creation2.jpg"
-import creation3 from "../../../assets/creation3.jpg"
-import creation4 from "../../../assets/creation4.png"
+import creation1 from "../../../assets/creation1.jpg";
+import creation2 from "../../../assets/creation2.jpg";
+import creation3 from "../../../assets/creation3.jpg";
+import creation4 from "../../../assets/creation4.png";
 
 export default function AwarenessSection() {
   const cards = [
@@ -19,7 +19,7 @@ export default function AwarenessSection() {
       title: "E-books",
       description:
         "Discover our 21-day guided journaling ebook designed to help you reset your mindset and embrace a positive outlook.",
-      image:creation3,
+      image: creation3,
       altText: "Individual joining certification program",
       bg_image:
         "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
@@ -28,15 +28,16 @@ export default function AwarenessSection() {
       title: "Musics",
       description:
         "Perfect for slow evenings, mindful moments, or letting your space fill with timeless groove.",
-      image:creation1,
+      image: creation1,
       altText: "Organization certification process",
       bg_image:
         "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911482/product-bg-2_pyjtzl.png')",
     },
     {
       title: "Podcasts",
-      description: "From mindful talks to inspiring stories, each episode brings knowledge, clarity, and depth to your everyday listening.",
-      image:creation4,
+      description:
+        "From mindful talks to inspiring stories, each episode brings knowledge, clarity, and depth to your everyday listening.",
+      image: creation4,
       altText:
         "Check out our 21-day guided journaling ebook, crafted to help you shift your mindset and cultivate a more positive perspective.",
       bg_image:
@@ -46,7 +47,7 @@ export default function AwarenessSection() {
       title: "Our specially curated audio tapes.",
       description:
         "Listen to our 21-day guided journaling audio series, designed to help you transform your mindset and foster a more positive outlook.",
-      image:creation2,
+      image: creation2,
       altText: "Mentorship and partnership opportunities",
       bg_image:
         "url('https://res.cloudinary.com/diudvzdkb/image/upload/w_311,h_348,c_fill,q_auto,f_auto/v1759911622/product-bg-1_y5vjzb.png')",
@@ -87,7 +88,7 @@ export default function AwarenessSection() {
       {/* --- Second (Main) Section --- */}
       <motion.div
         key="second-load"
-  className="second-load flex flex-col items-center gap-10 lg:gap-16 px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 bg-[#F7F7F7]"
+        className="second-load flex flex-col items-center gap-10 lg:gap-16 px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 bg-[#F7F7F7]"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 40 }}
@@ -103,12 +104,12 @@ export default function AwarenessSection() {
                 <span className="font-medium text-[#000000] bg-clip-text">
                   Where Conscious Creations{" "}
                 </span>
-                <span className="font-medium bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
+                <span className="font-medium bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
                   Find Their People
                 </span>
               </h1>
 
-              <p className="mx-auto mt-3 md:mt-3 font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424] w-full md:max-w-[707px]">
+              <p className="mx-auto mt-3 md:mt-3 font-['Open_Sans'] font-light text-[16px] leading-6 tracking-[0px] text-[#242424] w-full md:max-w-[707px]">
                 Explore a wide range of conscious products crafted by verified
                 creators who
                 <br />
@@ -145,10 +146,10 @@ export default function AwarenessSection() {
                       onTouchEnd={handleTouchEnd}
                       className="h-full w-full"
                     >
-<Card className="flex flex-col w-full rounded-[12px] overflow-hidden shadow-sm md:h-[408px] h-auto">
+                      <Card className="flex flex-col w-full rounded-xl overflow-hidden shadow-sm md:h-[360px] h-auto">
                         <div
-                          className="relative w-full rounded-t-[12px] overflow-hidden"
-style={{ height: "240px" }}
+                          className="relative w-full rounded-t-xl overflow-hidden"
+                          style={{ height: "240px" }}
                         >
                           <img
                             src={card.image}
@@ -156,20 +157,20 @@ style={{ height: "240px" }}
                             width={311}
                             height={348}
                             loading="lazy"
-                            className="w-full h-full object-cover rounded-t-[12px]"
+                            className="w-full h-full object-contain rounded-t-xl"
                           />
                         </div>
 
-                        <div className="relative flex-grow flex flex-col">
+                        <div className="relative grow flex flex-col">
                           <CardContent className="flex flex-col w-full p-0 h-full">
                             <div
-                              className="flex flex-col gap-2 px-5 py-4 w-full rounded-b-[12px] bg-cover bg-center h-full"
+                              className="px-5 py-4 w-full rounded-b-xl bg-cover bg-center h-full"
                               style={{
                                 backgroundImage: card.bg_image,
                                 marginTop: 0,
                               }}
                             >
-<h2 className="text-[13px] sm:text-[14px] font-semibold text-white leading-6 sm:leading-7">
+                              <h2 className="text-[13px] sm:text-[14px] font-semibold text-white leading-6 sm:leading-7">
                                 {card.title}
                               </h2>
                               <p className="font-['Open_Sans'] font-normal text-[12px] leading-[18px] text-[#ECEEF2]">
@@ -185,23 +186,19 @@ style={{ height: "240px" }}
               ))}
             </Swiper>
 
-<div className="flex flex-col md:flex-row items-center justify-between max-w-[700px] w-full mx-auto mt-10 gap-6 md:gap-4">
-              <p className="lg:w-8/12 md:w-5/12 w-full font-['Open_Sans'] font-light text-[16px] leading-[24px] tracking-[0px] text-[#242424]">
-                Showcase your products in our conscious
-            
-                Marketplace, connect with the right
-           
-                Audience, and grow your business in a
-         
+            <div className="flex flex-col md:flex-row items-center justify-between max-w-[700px] w-full mx-auto mt-10 gap-6 md:gap-4">
+              <p className="lg:w-8/12 md:w-5/12 w-full font-['Open_Sans'] font-light text-[16px] leading-6 tracking-[0px] text-[#242424]">
+                Showcase your products in our conscious Marketplace, connect
+                with the right Audience, and grow your business in a
                 Purpose-driven ecosystem.
               </p>
-<div className="flex justify-center md:justify-end w-full md:w-auto mt-4 md:mt-0">
+              <div className="flex justify-center md:justify-end w-full md:w-auto mt-4 md:mt-0">
                 <Button
                   variant="gradient-primary"
                   className="
                     inline-flex items-center justify-center
                     rounded-[100px]
-                    w-full md:w-[160px] h-[43px]
+                    w-full md:w-40 h-[43px]
                     px-0 gap-[12.19px]
                     font-['Open Sans'] font-medium 
                     text-[16px] leading-[100%] tracking-[0]
@@ -221,16 +218,17 @@ style={{ height: "240px" }}
       </motion.div>
 
       {/* --- Bottom Section --- */}
-<div className="community-bottom bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780353/community-bg_cqdnuq.png)] bg-cover bg-center w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 flex flex-col items-center text-center">
+      <div className="community-bottom bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780353/community-bg_cqdnuq.png)] bg-cover bg-center w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 flex flex-col items-center text-center">
         <h3
           style={{ fontFamily: "Poppins, sans-serif" }}
-          className="lg:text-[32px] md:text-[32px] text-[23px] font-medium bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
+          className="lg:text-[32px] md:text-[32px] text-[23px] font-medium bg-linear-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3 text-center community-heading"
         >
-          Connect with the trustworthy.<br />
-           Work with the Reliable. Grow with the Dependable.
+          Connect with the trustworthy.
+          <br />
+          Work with the Reliable. Grow with the Dependable.
         </h3>
-        <p className="font-['Open_Sans'] mt-2 lg:text-[16px] md:text-[16px] text-[16px] font-[300] text-[#494949] leading-[24px] text-center">
+        <p className="font-['Open_Sans'] mt-2 lg:text-[16px] md:text-[16px] text-[16px] font-light text-[#494949] leading-6 text-center">
           On CNESS, every profile, product, and organization is aligned with
           values you can count on.
         </p>

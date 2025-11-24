@@ -18,12 +18,12 @@ interface MarketplaceSectionProps {
 }
 
 const ProductCard = ({ data }: { data: Product }) => (
-  <div className="rounded-[12px] border border-[#E5E7EB] p-5  bg-gradient-to-b from-[rgba(112,119,254,0.05)] to-[#F07EFF0D] shadow-sm">
-    <div className="relative rounded-[8px] overflow-hidden mb-4">
+  <div className="rounded-xl border border-[#E5E7EB] p-5  bg-linear-to-b from-[rgba(112,119,254,0.05)] to-[#F07EFF0D] shadow-sm">
+    <div className="relative rounded-lg overflow-hidden mb-4">
       <img
         src={data.image}
         alt={data.title}
-        className="w-full h-[180px] object-cover rounded-[8px]"
+        className="w-full h-[180px] object-cover rounded-lg"
       />
       <button
         className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-[#F04E23] hover:scale-110 transition-transform"
@@ -42,11 +42,11 @@ const ProductCard = ({ data }: { data: Product }) => (
           className="h-6 w-auto object-contain"
         />
       ) : (
-        <span className="text-sm px-4 py-[4px] rounded-full font-semibold bg-gray-200 text-gray-800">
+        <span className="text-sm px-4 py-1 rounded-full font-semibold bg-gray-200 text-gray-800">
           {data.badge}
         </span>
       )}
-      <div className="flex items-center gap-[2px] text-yellow-400">
+      <div className="flex items-center gap-0.5 text-yellow-400">
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
@@ -72,7 +72,7 @@ const ProductCard = ({ data }: { data: Product }) => (
     </div>
 
     <div className="flex justify-between gap-2 mt-4">
-      <button className="flex-1 bg-gradient-to-r from-[#7077FE] to-[#7077FE] text-white px-2 py-2 rounded-full text-sm font-semibold shadow-md hover:shadow-lg transition">
+      <button className="flex-1 bg-linear-to-r from-[#7077FE] to-[#7077FE] text-white px-2 py-2 rounded-full text-sm font-semibold shadow-md hover:shadow-lg transition">
         Add to Cart
       </button>
       <button className="flex-1 bg-white border border-gray-200 px-2 py-2 rounded-full text-sm font-semibold text-gray-800 shadow-sm hover:shadow-md transition">
