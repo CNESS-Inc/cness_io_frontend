@@ -14,6 +14,8 @@ import { IoMdShareAlt } from 'react-icons/io';
 import ReviewModal from '../components/MarketPlace/ReviewModal';
 import DOMPurify from "dompurify";
 import { useCartWishlist } from '../components/MarketPlace/context/CartWishlistContext';
+import SharePopup from '../components/Social/SharePopup';
+import { buildProductShareUrl } from '../lib/utils';
 
 
 interface SampleFile {
@@ -56,6 +58,9 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [hasPurchased, setHasPurchased] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [userReview, setUserReview] = useState<any>(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const handleShareToggle = () => setIsShareOpen((prev) => !prev);
+  const handleShareClose = () => setIsShareOpen(false);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -524,21 +529,43 @@ console.log("FULL PRODUCT → ", productData);
                  <span className="whitespace-nowrap">Buy Now</span>
                 </button>
 
-                <button
+              <button
                   onClick={handleAddToCart}
                   disabled={isAddingToCart}
-                  className={`flex items-center w-[150px] space-x-2 border border-blue-500 text-blue-500 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                >
-                  <img src="https://static.codia.ai/image/2025-10-16/VUQR3XLDmc.png" alt="Cart" className="w-6 h-6" />
+                  className={`flex items-center w-[150px] space-x-2 border border-blue-500 text-blue-500 px-3 py-3
+                  rounded-lg font-medium hover:bg-blue-50
+                  ${isCarted && !isAddingToCart ? 'px-3 py-3' : 'px-6'}
+                  ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                  <img
+                  src="https://static.codia.ai/image/2025-10-16/VUQR3XLDmc.png"
+                  alt="Cart"
+                  className="w-6 h-6"
+                  />
                   <span className="whitespace-nowrap">
-                  {isAddingToCart ? 'Adding...' : isCarted ? 'Added to cart' : 'Add to cart'}
-                </span>
-                </button>
+                  {isAddingToCart
+                  ? 'Adding...'
+                  : isCarted
+                  ? 'Added to cart'
+                  : 'Add to cart'}
+                  </span>
+                  </button>
 
-                <button className="p-3 border border-blue-500 rounded-lg hover:bg-blue-50">
-                  <IoMdShareAlt className='text-[#7077FE]' size={24} />
-                </button>
+                <div className="relative">
+                  <button 
+                    onClick={handleShareToggle}
+                    className="p-3 border border-blue-500 rounded-lg hover:bg-blue-50">
+                    <IoMdShareAlt className='text-[#7077FE]' size={24} />
+                  </button>
+                  {isShareOpen && (
+                    <SharePopup
+                      isOpen={true}
+                      onClose={handleShareClose}
+                      url={buildProductShareUrl(product?.id)}
+                      position="left"
+                    />
+                  )}
+                </div>
               </div>
 
               <div className="text-sm text-blue-500">*Lifetime access</div>
