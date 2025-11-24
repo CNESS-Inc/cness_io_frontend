@@ -20,7 +20,7 @@ export default function EcoHero() {
           "linear-gradient(129.63deg, #FFFFFF 27.35%, #FEDEDE 91.53%, #EE9CE5 99.09%)",
       }}
     >
-      <div className="invisible lg:visible hidden lg:flex absolute top-0 left-0 w-full 2xl:h-[47rem]">
+      <div className="invisible lg:visible hidden lg:flex absolute top-0 left-0 w-full 2xl:h-188">
         <img
           src={ellipse}
           alt=""
@@ -38,7 +38,7 @@ export default function EcoHero() {
       <div className="flex flex-col items-center text-center z-10 pt-20 pb-16 px-4">
         <h1
           style={{ fontFamily: "Poppins, sans-serif" }}
-          className="font-medium text-[clamp(28px,5vw,42px)] leading-[125%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
+          className="font-medium text-[clamp(28px,5vw,42px)] leading-[125%] tracking-[-0.02em] bg-linear-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out"
         >
           Everything You Need to Grow,
           <br></br>All in One Place.
@@ -73,26 +73,27 @@ export default function EcoHero() {
 
         <div className="invisible lg:visible hidden lg:flex absolute -top-62 -right-38 xl:-right-46 w-[235px] h-[300px] pointer-events-none select-none opacity-100 rounded-3xl">
           <div className="relative">
-            <div className="relative w-full h-full rounded-3xl">
+            <div className="relative w-[235px] h-[235px] rounded-t-3xl overflow-hidden">
               <img
                 src={EcoHero1}
                 alt=""
-                className="w-[235px] h-[235px] object-cover rounded-3xl"
+                className="w-full h-full object-cover"
                 aria-hidden="true"
               />
-              {/* Gradient Overlay */}
+
+              {/* Bottom white fade shadow */}
               <div
-                className="absolute inset-0 rounded-3xl"
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.5) 100%)",
-                }}
-              >
-                {/* Text Content at Bottom */}
-              </div>
+                className="absolute bottom-[-5%] inset-x-0 h-1/2
+                bg-linear-to-t 
+                from-white/95 via-white/60 to-white/0
+                pointer-events-none"
+              />
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 p-4 text-center bg-white rounded-b-3xl">
+          <div
+            className="absolute bottom-0 left-0 right-0 p-4 text-center bg-linear-to-t 
+                from-white/95 via-white/60 to-white/0 rounded-b-3xl"
+          >
             <h3 className="text-[15px] font-bold text-gray-800 uppercase">
               building conscious workplaces.
             </h3>
@@ -102,7 +103,7 @@ export default function EcoHero() {
           </div>
         </div>
 
-        <div className="invisible lg:visible hidden lg:flex absolute -top-10 xl:top-14 -left-[23rem] xl:-left-[30.5rem] w-full h-[280px] xl:h-[334px] pointer-events-none select-none">
+        <div className="invisible lg:visible hidden lg:flex absolute -top-10 xl:top-14 -left-92 xl:-left-122 w-full h-[280px] xl:h-[334px] pointer-events-none select-none">
           <div className="relative w-full h-full">
             <div className="absolute left-75 h-[195px] w-[199px]">
               <img
