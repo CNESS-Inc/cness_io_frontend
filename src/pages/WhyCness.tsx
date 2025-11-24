@@ -64,14 +64,14 @@ export default function WhyCness() {
     "https://cdn.cness.io/WhatsApp%20Video%202025-11-11%20at%204.48.38%20PM.mp4";
   const videoRef = useRef(null);
 
-  const scrollToGetInTouch = () => {
-    const el = document.getElementById("getintouch");
-    if (!el) return;
-    const header = document.querySelector("header"); // if you use a sticky <Header />
-    const offset = header ? (header as HTMLElement).offsetHeight : 0;
-    const y = el.getBoundingClientRect().top + window.pageYOffset - offset - 8; // tiny extra gap
-    window.scrollTo({ top: y, behavior: "smooth" });
-  };
+  //const scrollToGetInTouch = () => {
+    //const el = document.getElementById("getintouch");
+   // if (!el) return;
+   // const header = document.querySelector("header"); // if you use a sticky <Header />
+   // const offset = header ? (header as HTMLElement).offsetHeight : 0;
+   // const y = el.getBoundingClientRect().top + window.pageYOffset - offset - 8; // tiny extra gap
+   // window.scrollTo({ top: y, behavior: "smooth" });
+  //};
 
   useEffect(() => {
     if (!isVideoOpen) return;
