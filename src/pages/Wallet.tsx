@@ -140,8 +140,8 @@ const CreditsWallet: React.FC = () => {
               </div>
 
               {/* Right Section */}
-              <div className="flex flex-col items-start">
-                <p className="font-[Open_Sans] font-semibold text-[16px] leading-5 mb-3">
+              <div className="flex flex-col items-center">
+                <p className="font-[Open_Sans] font-semibold text-[16px] leading-5 mb-3 text-[#616161]">
                   Member Status
                 </p>
                 <span className="bg-[#FDC800] text-black font-poppins font-semibold text-[18px] h-[45px] px-[55px] flex items-center justify-center rounded-[50px] shadow-md">
