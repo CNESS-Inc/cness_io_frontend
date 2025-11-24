@@ -380,11 +380,11 @@ console.log("FULL PRODUCT → ", productData);
     ];
 
  const details = [
-  {
-    icon: "https://static.codia.ai/image/2025-10-16/wo8469r2jf.png",
-    label: "Duration",
-    value: product?.product_details?.duration || "Not available",
-  },
+ // {
+   // icon: "https://static.codia.ai/image/2025-10-16/wo8469r2jf.png",
+    //label: "Duration",
+   // value: product?.product_details?.duration || "Not available",
+  //},
   {
     icon: "https://static.codia.ai/image/2025-10-16/dCQ1oOqZNv.png",
     label: "Language",
@@ -418,6 +418,16 @@ console.log("FULL PRODUCT → ", productData);
       </div>
     );
   }
+
+  const handleAudioPlay = (index: number) => {
+  const allAudios = document.querySelectorAll("audio");
+
+  allAudios.forEach((audio, i) => {
+    if (i !== index) {
+      (audio as HTMLAudioElement).pause();
+    }
+  });
+};
 
   return (
     <main className=" min-h-screen bg-white">
@@ -811,9 +821,13 @@ console.log("FULL PRODUCT → ", productData);
 {(product?.category?.slug === "music" || product?.category?.slug === "podcast") &&
   product?.sample_files?.length > 0 && (() => {
 
-    const audioSamples = product.sample_files.filter(
-      (f: SampleFile) => f.file_type === "audio"
-    );
+ const audioSamples = product.sample_files.filter(
+  (f: SampleFile) =>
+    f.file_type === "audio" ||
+    f.file_type?.includes("mp3") ||
+    f.file_url?.endsWith(".mp3") ||
+    f.file_url?.includes(".mp3")
+);
 
     if (audioSamples.length === 0) return null;
 
@@ -840,7 +854,7 @@ console.log("FULL PRODUCT → ", productData);
                   </h3>
                 </div>
 
-                <audio controls className="h-10" preload="metadata">
+                <audio controls className="h-10" preload="metadata" onPlay={() => handleAudioPlay(index)} >
                   <source src={sample.file_url} type="audio/mpeg" />
                   Your browser does not support the audio element.
                 </audio>

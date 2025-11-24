@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef,forwardRef, useImperativeHandle } from "react";
 import { X, HelpCircle } from "lucide-react";
 import uploadimg from "../../assets/upload1.svg";
 import { useToast } from "../ui/Toast/ToastProvider";
@@ -13,13 +13,10 @@ interface SampleTrackUploadProps {
     error?: string;
 }
 
-const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
-    productType,
-    onUploadSuccess,
-    onRemove,
-    defaultValue,
-    error,
-}) => {
+const SampleTrackUpload = forwardRef<unknown, SampleTrackUploadProps>((
+    { productType, onUploadSuccess, onRemove, defaultValue, error },
+    ref
+) => {
     const { showToast } = useToast();
     const [uploadedFile, setUploadedFile] = useState<string | null>(defaultValue || null);
     const [isUploading, setIsUploading] = useState(false);
@@ -27,7 +24,11 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
     const [showAriomeModal, setShowAriomeModal] = useState(false);
     const [isDonated, setIsDonated] = useState(false);
     const fileRef = useRef<HTMLInputElement | null>(null);
-
+   useImperativeHandle(ref, () => ({
+        openPicker: () => {
+            fileRef.current?.click();
+        }
+    }));
   const getAcceptTypes = () => {
     switch (productType) {
         case "course":
@@ -432,6 +433,6 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
             )}
         </div>
     );
-};
+});
 
 export default SampleTrackUpload;
