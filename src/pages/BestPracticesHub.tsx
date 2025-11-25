@@ -841,12 +841,15 @@ export default function BestPracticesHub() {
           />
 
           {/* Foreground Content */}
-          <div className="relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto h-full px-4 text-center mt-20">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 sm:mb-10 mt-0 sm:-mt-35">
-              Find Your Conscious Best Practices here.
-            </h1>
+          <div className="relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto h-full px-4 text-center -mt-5">
+   <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-2 sm:mb-3">
+    Best Practices Hub.
+  </h1>
 
-            <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+  <p className="text-base sm:text-base text-[#242424] font-openSans -mt-1">
+Empowering greater solution for life and profession.
+  </p>
+            <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-5">
               {/* Searchable Profession Selector */}
               <div className="relative rounded-full" ref={dropdownRef}>
                 <span

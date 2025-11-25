@@ -14,6 +14,7 @@ const Footer = () => {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [content, setContent] = useState("");
   const [privacyContent, privacySetContent] = useState("");
+const userId = localStorage.getItem("Id");
 
   
   useEffect(() => {
@@ -58,8 +59,8 @@ const Footer = () => {
               />
             </Link>
             <p className="text-[16px] font-normal font-openSans leading-[160%] text-[#1E1E1E] hidden md:block">
-Your global conscious hub where social connection,<br/> meaningful commerce, and community growth come together.
-
+CNESS life conscious social media super app.<br></br>
+Your global hub where social connection, meaningful commerce, <br></br>and community growth come together.
             </p>
           </div>
 
@@ -70,11 +71,11 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
             </h4>
             <ul className="space-y-2">
               {[
-                { to: "/ecosystem", label: "Ecosystem" },
-                { to: "/social", label: "Social" },
-                { to: "/certifications", label: "Certification" },
-                { to: "/premium", label: "Premium" },
-                { to: "/whycness", label: "Why CNESS" },
+                { to: `/dashboard/userprofile/${userId}`, label: "Profile"  },
+                { to: "/dashboard/assesmentcertification", label: "Certification" },
+                { to: "/dashboard/DashboardDirectory", label: "Directory" },
+                { to: "/dashboard/bestpractices", label: "Best Practices" },
+                { to: "/dashboard/feed", label: "Social" },
               ].map((item) => (
                 <li key={item.to}>
                   <Link
