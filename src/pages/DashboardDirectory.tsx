@@ -413,10 +413,14 @@ export default function DashboardDirectory() {
             className="absolute bottom-0 left-0 w-full object-cover z-0 pointer-events-none"
           />
 
-          <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto mt-20">
-            <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-linear-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
-              Conscious Search Stops here.
-            </h1>
+          <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto mt-15">
+          <h1 className="text-center font-poppins font-semibold mb-6 
+               text-[32px] leading-[1.3] tracking-[0px]
+               bg-linear-to-b from-[#4E4E4E] to-[#232323] 
+               bg-clip-text text-transparent">
+  Connect with professionals and<br />
+  like-minded individuals.
+</h1>
 
             {/* Updated responsive container */}
             <div className="w-full mx-auto flex flex-col md:flex-row items-stretch md:items-center gap-2 h-[34px]">

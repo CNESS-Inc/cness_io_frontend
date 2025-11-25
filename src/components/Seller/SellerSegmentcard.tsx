@@ -2523,7 +2523,7 @@ export function CertificationCard({
             style={{ borderColor: "var(--Stroke, rgba(236, 238, 242, 1))" }}
           >
             <h6 className="font-['Poppins',Helvetica] font-medium text-[22px] sm:text-[28px] text-[#222224]">
-              Certification is your Official stamp of credibility
+              Consciousness is your Official stamp of credibility
             </h6>
             <h5 className="font-['Open_Sans',Helvetica] font-normal text-base sm:text-lg text-[#999999] leading-8">
               Get your conscious identity verified and unlock everything CNESS

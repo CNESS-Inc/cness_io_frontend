@@ -1497,7 +1497,7 @@ export default function SocialTopBar() {
                         />
                         <input
                           type="text"
-                          placeholder="Create a Conscious Act"
+                          placeholder="Create a Post"
                           className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-[#CBD5E1] text-[16px] md:text-[16px] focus:outline-none bg-[#FAFAFA] placeholder:text-black h-[52px] open-sans"
                           onClick={() => openPostPopup()}
                           readOnly
@@ -2395,8 +2395,8 @@ export default function SocialTopBar() {
             {userSelectedTopics?.length > 0 && (
               <div className="w-full h-fit bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm lg:mx-0">
                 <div className="flex items-center justify-between mb-3 md:mb-4 px-4">
-                  <h3 className="text-gray-700 font-semibold text-base md:text-lg">
-                    My Picks
+              <h3 className="text-[#081021] font-semibold text-base md:text-[14px]">
+                    My interests
                   </h3>
                   <button
                     onClick={() => {
