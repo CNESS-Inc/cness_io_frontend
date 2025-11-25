@@ -102,6 +102,7 @@ const [storyMedia, setStoryMedia] = useState<{
   type: "audio" | "video" | null;
   url: string;
   thumbnail?: string;
+  public_id?: string; 
 }>({
   type: null,
   url: ""
@@ -829,20 +830,23 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
   }
 
   const formData = new FormData();
-  formData.append(isAudio ? "story_audio" : "story_video", file);
+  formData.append("storytelling_video", file); // ✔ correct field
 
   try {
-    const response = await UploadProductDocument(
-      isAudio ? "story-audio" : "story-video",
-      formData
-    );
-
+    const response = await UploadStoryTellingVideo(formData);
     const data = response?.data?.data;
+
+    console.log("STORY RESPONSE:", data);
 
     setStoryMedia({
       type: isAudio ? "audio" : "video",
-      url: data.video_url || data.audio_url,
-      thumbnail: data.thumbnail || "",
+      url:
+        data?.secure_url ||
+        data?.url ||
+        data?.storytelling_video_url ||
+        "",
+      thumbnail: data?.thumbnail || "",
+      public_id: data?.public_id || "",
     });
 
     showToast({
@@ -1288,14 +1292,14 @@ const MultiSelect = ({
 
 <FormSection
   title="Storytelling"
-  description="Add an audio or video message that explains the story or inspiration behind your artwork."
+  description="Add an video ot text description that explains the story or inspiration behind your artwork."
 >
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
     {/* MEDIA UPLOAD */}
     <div>
       <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-        Upload Audio / Video (Optional)
+        Upload Video (Optional)
       </label>
 
       <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition">
@@ -1329,7 +1333,7 @@ const MultiSelect = ({
             <p className="text-sm font-[poppins] text-[#242E3A]">
               Drag & drop or click to upload
             </p>
-            <p className="text-xs text-[#665B5B]">Supports audio & video</p>
+            <p className="text-xs text-[#665B5B]">Supports video</p>
           </div>
         ) : (
           <div className="relative w-full">
@@ -1489,7 +1493,7 @@ const MultiSelect = ({
                         Drag & drop or click to upload
                       </p>
                       <p className="text-xs text-[#665B5B]">
-                        JPG, PNG, SVG, WEBP, PDF, ZIP (max 100 MB)
+                        JPG, PNG, PDF (max 100 MB)
                       </p>
                     </div>
                   </label>
