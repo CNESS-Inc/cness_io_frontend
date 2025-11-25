@@ -108,7 +108,7 @@ const DashboardLayout = () => {
 
           {/* Desktop Headers */}
           <div
-            className={`hidden md:block transition-all duration-300 ${isMobileNavOpen ? "md:ml-60" : "md:ml-0"
+            className={`md:block transition-all duration-300 ${isMobileNavOpen ? "md:ml-60" : "md:ml-0"
               }`}
           >
             {isMarketplacePage ? (
