@@ -145,69 +145,65 @@ const Wishlist: React.FC = () => {
         My Wishlist
       </h2>
 
-      {/* 🔍 Search + Sort Section */}
-      <div className="w-full max-w-[2000px] mx-auto flex items-start justify-between px-5 mt-8 gap-6">
-        <div className="flex flex-col flex-1">
-          <div className="flex items-center gap-4 max-w-[1200px]">
-            {/* Search Bar */}
-            <div className="flex items-center bg-white border border-gray-300 rounded-full px-6 py-3 shadow-sm flex-[0.8]">
-              {searchQuery && (
-                <div className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm text-[#9747FF] mr-2">
-                  {searchQuery}
-                  <button
-                    onClick={clearSelection}
-                    className="ml-2 text-[#9747FF] hover:text-[#9747FF]"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-              <input
-                type="text"
-                placeholder="Search by name..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="flex-1 bg-transparent outline-none text-[#9747FF] text-sm placeholder-[#9747FF]"
-              />
-              <Search className="w-5 h-5 text-[#9747FF] ml-3" />
-            </div>
-
-            {/* Sort Dropdown */}
-            <div className="relative flex-shrink-0">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center justify-between gap-2 px-4 py-3 bg-white border border-[#7077FE] rounded-full shadow-sm text-[#7077FE] font-medium text-sm md:text-base hover:shadow-md transition-all min-w-[140px] md:min-w-[180px]"
-              >
-                <div className="flex items-center gap-2">
-                  <img src={filter} alt="filter" className="w-5 h-5" />
-                  <span className="truncate">{getSelectedLabel()}</span>
-                </div>
-                <ChevronDown
-                  className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
-                    }`}
-                />
-              </button>
-
-              {isOpen && (
-                <div className="absolute top-full mt-2 w-60 bg-white border border-[#7077FE] rounded-2xl shadow-lg z-50 p-4 space-y-3">
-                  {options.map((option, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSelect(option.value)}
-                      className={`block w-full text-left font-poppins font-normal text-[16px] leading-[100%] px-2 py-1 rounded-lg transition-colors ${filters.sort_by === option.value
-                          ? "text-[#7077FE] font-semibold"
-                          : "text-gray-700 hover:text-[#7077FE]"
-                        }`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+     <div className="w-full flex flex-col sm:flex-row items-center sm:items-start justify-between px-5 mt-8 gap-4 sm:gap-6">
+      {/* Search Bar */}
+      <div className="flex items-center bg-white border border-gray-300 rounded-full px-4 py-3 shadow-sm min-w-[200px] flex-1">
+        {searchQuery && (
+          <div className="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm text-[#9747FF] mr-2">
+            {searchQuery}
+            <button
+              onClick={clearSelection}
+              className="ml-2 text-[#9747FF] hover:text-[#9747FF]"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
-        </div>
+        )}
+        <input
+          type="text"
+          placeholder="Search by name..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="flex-1 bg-transparent outline-none text-[#9747FF] text-sm placeholder-[#9747FF]"
+        />
+        <Search className="w-5 h-5 text-[#9747FF] ml-3" />
       </div>
+
+  {/* Filter Dropdown */}
+  <div className="relative flex-1 min-w-[140px] sm:min-w-[180px] mt-4 sm:mt-0">
+    <button
+      onClick={() => setIsOpen(!isOpen)}
+      className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-white border border-[#7077FE] rounded-full shadow-sm text-[#7077FE] font-medium text-sm md:text-base hover:shadow-md transition-all sm:w-auto w-full"
+    >
+      <div className="flex items-center gap-2">
+        <img src={filter} alt="filter" className="w-5 h-5" />
+        <span className="truncate">{getSelectedLabel()}</span>
+      </div>
+      <ChevronDown
+        className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+      />
+    </button>
+    {isOpen && (
+      <div className="absolute top-full mt-2 w-60 bg-white border border-[#7077FE] rounded-2xl shadow-lg z-50 p-4 space-y-3">
+        {options.map((option, idx) => (
+          <button
+            key={idx}
+            onClick={() => handleSelect(option.value)}
+            className={`block w-full text-left font-poppins font-normal text-[16px] leading-[100%] px-2 py-1 rounded-lg transition-colors ${
+              filters.sort_by === option.value
+                ? "text-[#7077FE] font-semibold"
+                : "text-gray-700 hover:text-[#7077FE]"
+            }`}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+
+
 
       <div className="flex w-full mx-auto px-5 py-10 gap-8">
         <div className="flex-1">
@@ -225,7 +221,7 @@ const Wishlist: React.FC = () => {
               <LoadingSpinner />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+            <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(250px,1fr))]">
               {products?.length > 0 ? (
                 products?.map((product) => {
                   return (
