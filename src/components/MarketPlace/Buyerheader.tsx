@@ -9,12 +9,10 @@ import { GetSellerShop } from "../../Common/ServerAPI";
 import { IoCloseOutline } from "react-icons/io5";
 import Button from "../ui/Button";
 import { useCartWishlist } from "./context/CartWishlistContext";
-
 interface MarketHeaderProps {
   toggleMobileNav?: () => void;
   isMobileNavOpen?: boolean;
 }
-
 const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   //const [isEligible, setIsEligible] = useState(false);
@@ -24,7 +22,6 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
   //const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-
   const navLinks = [
     { name: "Home", path: "/dashboard/market-place", icon: Mhome },
     { name: "Categories", path: "/dashboard/categories" },
@@ -34,13 +31,10 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
     { name: "Order History", path: "/dashboard/order-history" },
     { name: "FAQs", path: "/dashboard/faqs" },
   ];
-
  // useEffect(() => {
    // //fetchRatingDetails();
     //loadShopData();
 //  }, [])
-
-
   const isActive = (path: string) => {
     // Treat Library, Continue Watching, and My Library as part of Library
     if (path === "/dashboard/library") {
@@ -52,7 +46,6 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
     }
     return location.pathname === path;
   };
-
  // const fetchRatingDetails = async () => {
     //try {
     //  const res = await GetUserScoreResult();
@@ -70,17 +63,14 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
      // });
    // }
   //};
-
   useEffect(() => {
   loadShopData();
 }, []);
-
   const loadShopData = async () => {
     try {
       const response = await GetSellerShop();
       if (response?.data?.data) {
         const data = response.data.data;
-
         if (data.verification_status === "approved") {
           setIsApproved(true);
         }
@@ -96,19 +86,17 @@ const handleBecomeSeller = () => {
     navigate(`/dashboard/createshop`);
   }
 };
-
   useEffect(() => {
     document.body.style.overflow = eligibilityCard ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [eligibilityCard]);
-
   return (
     <>
       <header className={`bg-white border-b border-gray-200 z-40 relative w-full ${eligibilityCard ? "blur-md" : ""}`}>
-        <div className="flex items-center justify-between w-full px-4 md:px-8 py-4">
+        <div className="flex items-center md:justify-between sm:justify-end w-full px-4 py-2">
           {/* LEFT: Navigation */}
           <nav
-            className="hidden md:flex items-center text-[#665B5B] font-[400] space-x-6 md:space-x-8 relative"
+            className="hidden md:flex sm:hidden xs:hidden items-center text-[#665B5B] font-[400] space-x-6 md:space-x-8 relative"
             style={{
               fontFamily: "Poppins",
               fontSize: "14px",
@@ -120,13 +108,13 @@ const handleBecomeSeller = () => {
               <Link
                 key={link.name}
                 to={link.path}
-                className={`relative flex items-center gap-1 pb-[4px] transition-all duration-200 
+                className={`relative flex items-center gap-1 pb-[4px] transition-all duration-200
                 ${isActive(link.path)
                     ? "text-[#9747FF]"
                     : "text-[#665B5B] hover:text-[#9747FF]"
                   }`}
               >
-                {/* ✅ Only show icon for Home */}
+                {/* :white_check_mark: Only show icon for Home */}
                 {link.name === "Home" ? (
                   <img
                     src={isActive(link.path) ? Mhome1 : Mhome}
@@ -136,7 +124,6 @@ const handleBecomeSeller = () => {
                 ) : (
                   link.name
                 )}
-
                 {/* Purple underline perfectly on border */}
                 {isActive(link.path) && (
                   <span className="absolute bottom-[-13px] left-0 w-full h-[4px] bg-[#9747FF] rounded-full transition-all duration-300 ease-in-out"></span>
@@ -144,13 +131,24 @@ const handleBecomeSeller = () => {
               </Link>
             ))}
           </nav>
-
           {/* RIGHT: Heart & Cart */}
           <div className="flex items-center space-x-4 md:space-x-5">
+              {/* Mobile Menu Toggle - Hamburger Icon (Already present) */}
+            <button
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Menu"
+            >
+              {isMenuOpen ? (
+                <X className="w-6 h-6 text-[#665B5B]" />
+              ) : (
+                <Menu className="w-6 h-6 text-[#665B5B]" />
+              )}
+            </button>
             <button
               // onClick={() => navigate(`/dashboard/createshop`)}
               onClick={handleBecomeSeller}
-              className="flex items-center gap-2 px-4 py-2 text-[#9747FF] font-[Poppins] text-[14px] font-normal leading-[150%] tracking-[-0.019em] bg-white rounded-md hover:opacity-80 transition"
+              className="flex items-center gap-2 md:px-4 sm:px-2 py-2 text-[#9747FF] font-[Poppins] text-[14px] font-normal leading-[150%] tracking-[-0.019em] bg-white rounded-md hover:opacity-80 transition"
             >
               <img src={sellbag} alt="Sell" className="w-5 h-5" />
               <span>{isApproved ? 'Vendor Dashboard' : 'Become a Seller'}</span>
@@ -167,7 +165,6 @@ const handleBecomeSeller = () => {
                 </span>
               )}
             </button>
-
             <button
               onClick={() => navigate(`/dashboard/cart`)}
               className="relative p-2 rounded-lg hover:bg-gray-100 transition shadow-sm"
@@ -180,61 +177,46 @@ const handleBecomeSeller = () => {
                 </span>
               )}
             </button>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Menu"
-            >
-              {isMenuOpen ? (
-                <X className="w-6 h-6 text-[#665B5B]" />
-              ) : (
-                <Menu className="w-6 h-6 text-[#665B5B]" />
-              )}
-            </button>
           </div>
         </div>
-
-        {/* MOBILE MENU */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 w-full">
-            <nav
-              className="flex flex-col px-6 py-4 space-y-4 text-[#665B5B]"
-              style={{
-                fontFamily: "Poppins",
-                fontSize: "14px",
-                letterSpacing: "-0.019em",
-                lineHeight: "150%",
-              }}
-            >
+        {/* MOBILE MENU - Only on mobile screens, opens vertical menu when hamburger icon is clicked */}
+          {isMenuOpen && (
+            <nav className="md:hidden fixed top-20 left-0 w-full h-full overflow-y-auto bg-white z-50 flex flex-col px-8 py-10 space-y-8 text-[#665B5B]">
+              {/* Close Icon (top right corner) */}
+              <button
+                className="absolute top-4 right-6 p-2"
+                onClick={() => setIsMenuOpen(false)}
+                aria-label="Close"
+              >
+                <X className="w-8 h-8 text-[#665B5B]" />
+              </button>
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   to={link.path}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`relative flex items-center gap-2 transition-colors duration-200 ${isActive(link.path)
-                    ? "text-[#9747FF] font-medium"
-                    : "hover:text-[#9747FF]"
-                    }`}
+                  className={`relative flex items-center gap-3 text-lg font-medium transition-colors duration-200 ${
+                    isActive(link.path)
+                      ? "text-[#9747FF]"
+                      : "hover:text-[#9747FF]"
+                  }`}
                 >
-                  {/* Icon only for Home in mobile menu too */}
+                  {/* Only show icon for Home */}
                   {link.name === "Home" && (
                     <img
                       src={isActive(link.path) ? Mhome1 : Mhome}
                       alt="Home"
-                      className="w-[20px] h-[20px]"
+                      className="w-[24px] h-[24px]"
                     />
                   )}
                   {link.name !== "Home" && link.name}
                   {isActive(link.path) && (
-                    <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#9747FF]"></span>
+                    <span className="absolute bottom-0 top-10 left-0 w-full h-[2px] bg-[#9747FF]"></span>
                   )}
                 </Link>
               ))}
             </nav>
-          </div>
-        )}
+          )}
       </header>
       {eligibilityCard && (
         <div
@@ -294,5 +276,4 @@ const handleBecomeSeller = () => {
     </>
   );
 };
-
 export default MarketHeader;

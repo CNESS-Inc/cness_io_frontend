@@ -1747,7 +1747,7 @@ export default function SocialTopBar() {
                                   : !post.if_friend &&
                                     post.friend_request_status === "PENDING"
                                   ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
-                                  : "bg-white text-black shadow-md border border-gray-200"
+                                  : "bg-white text-black border border-gray-200"
                               }`}
                             >
                               <span className="flex items-center gap-1">
