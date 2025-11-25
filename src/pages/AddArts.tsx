@@ -10,8 +10,7 @@ import {
   GetMarketPlaceCategories,
   GetMarketPlaceMoods,
   UploadProductDocument,
-  UploadProductThumbnail,
-  UploadStoryTellingVideo
+  UploadProductThumbnail
 } from "../Common/ServerAPI";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
@@ -105,7 +104,7 @@ const [storyMedia, setStoryMedia] = useState<{
   thumbnail?: string;
 }>({
   type: null,
-  url: "",
+  url: ""
 });
 
 const [storySummary, setStorySummary] = useState("");
@@ -688,9 +687,7 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
   order_number: index,
   is_ariome: s.is_ariome ?? false,
 })),
-      
- 
-
+     
   arts_details: {
     theme: formData.theme,
     mediums: formData.mediums,
