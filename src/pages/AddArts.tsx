@@ -10,7 +10,8 @@ import {
   GetMarketPlaceCategories,
   GetMarketPlaceMoods,
   UploadProductDocument,
-  UploadProductThumbnail
+  UploadProductThumbnail,
+  UploadStoryTellingVideo
 } from "../Common/ServerAPI";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
