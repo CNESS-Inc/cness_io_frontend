@@ -272,7 +272,7 @@ const MyConnection = () => {
           ) : (
             <div className="col-span-full flex justify-center items-center py-10">
               <p className="text-gray-500 text-sm">
-                No {activeTab.toLowerCase()} found.
+  No {activeTab.replace(/^All\s+/i, "").toLowerCase()} found.
               </p>
             </div>
           )}

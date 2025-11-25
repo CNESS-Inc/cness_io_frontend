@@ -91,9 +91,9 @@ const profiles = [
     followers: "",
     tabs: [
       { label: "Posts", icon: <Copy size={16} /> },
-      { label: "Reels", icon: <PlayCircle size={16} /> },
+      { label: "Videos", icon: <PlayCircle size={16} /> },
       { label: "Connections", icon: <Users size={16} /> },
-      { label: "Collections", icon: <Copy size={16} /> },
+      { label: "Favourites", icon: <Copy size={16} /> },
       // { label: "About", icon: <AtSign size={16} /> },
     ],
   },
