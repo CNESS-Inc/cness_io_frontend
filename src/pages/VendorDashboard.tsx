@@ -488,7 +488,7 @@ const VendorDashboard: React.FC = () => {
           <p className="text-gray-500 text-sm mb-6 font-['Open_Sans']">
             Will update every week’s data
           </p>
-          <div className="relative h-[350px] px-3 pb-6 flex items-end gap-1 overflow-hidden">
+          <div className="relative h-[350px] px-3 pb-6 flex items-end gap-1 overflow-visible">
             {chartData.map((bar: any, i: number) => {
               const CIRCLE_OFFSET = 15;
               const CHART_MAX_HEIGHT = 330;
@@ -497,9 +497,9 @@ const VendorDashboard: React.FC = () => {
               return (
                 <div
                   key={i}
-                  className="relative flex-1 min-w-[60px] flex flex-col items-center justify-end group"
+                  className="relative flex-1 min-w-[60px] overflow-visible flex flex-col items-center justify-end group"
                 >
-                  <div className="absolute -top-[90px] left-1/2 -translate-x-1/2 z-20 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+                  <div className="absolute -top-[90px] overflow-visible z-[9999] left-1/3 -translate-x-1/2 overflow-auto opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
                     <div className="bg-white border border-[#B197FC] rounded-xl shadow-lg px-3 py-2 text-center min-w-[140px]">
                       <div className="text-gray-500 text-[12px]">{bar.date}</div>
                       <div className="text-gray-900 font-semibold text-[16px] mt-[2px]">
