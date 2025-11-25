@@ -306,7 +306,7 @@ const AssessmentCertification = () => {
             {/* Conditionally render button or message */}
             {renderCertificationStatus(
               "aspiring",
-              "Get Aspiring Badge",
+              "Start Your Journey",
               "/dashboard/aspiring-assessment"
             )}
 

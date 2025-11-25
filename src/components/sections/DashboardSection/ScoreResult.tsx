@@ -1138,8 +1138,7 @@ const ScoreResult = () => {
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-600">
-                  Please complete and submit your assessment to view your scores
-                  and results.
+                 Please complete your assessment to view your results.
                 </p>
               </div>
             )}

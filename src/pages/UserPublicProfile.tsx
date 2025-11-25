@@ -1145,7 +1145,7 @@ export default function UserProfileView() {
                 ) && (
                   <div className="border-b border-[#E5E5E5] pt-10 pb-10">
                     <h3 className="font-['Poppins'] font-semibold text-[16px] leading-[150%] text-[#000000] mb-3">
-                      On The Web
+                      Social media
                     </h3>
 
                     <div className="space-y-3">
@@ -1855,7 +1855,7 @@ export default function UserProfileView() {
                       <>
                         <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                           <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                            Best Practices I am following
+                            Best Practices
                           </h3>
 
                           {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
