@@ -31,6 +31,18 @@ const AspiringAssessment = () => {
     );
   };
 
+  // Select All functionality
+  const handleSelectAll = () => {
+    const allOptionIds = options.map((opt: any) => opt.id);
+    if (selected.length === allOptionIds.length) {
+      // If all are already selected, deselect all
+      setSelected([]);
+    } else {
+      // Otherwise select all
+      setSelected(allOptionIds);
+    }
+  };
+
   const fetchAllDataDetails = async () => {
     try {
       const response = await GetAspiringQuestionDetails();
@@ -61,6 +73,9 @@ const AspiringAssessment = () => {
   const currentQuestion = readlineQuestion?.[0];
   const questionText = currentQuestion?.question || "Loading question...";
   const options = currentQuestion?.options || [];
+
+  // Check if all options are selected (for Select All checkbox state)
+  const allSelected = selected.length === options.length && options.length > 0;
 
   const handleSubmit = async () => {
     // ✅ Condition 1: No option selected
@@ -246,6 +261,47 @@ const AspiringAssessment = () => {
 
         <hr className="border-gray-200 mb-8" />
 
+        {/* Select All Checkbox */}
+        <div className="pb-4">
+          <div className="relative flex items-start gap-3 sm:gap-4 pl-1">
+            <div className="relative flex-shrink-0">
+              <input
+                type="checkbox"
+                id="select-all"
+                disabled={isAnswered}
+                checked={allSelected}
+                onChange={handleSelectAll}
+                className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer appearance-none border border-gray-400 rounded-sm checked:bg-[#22C55E] relative"
+              />
+              {allSelected && (
+                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white"
+                    fill="none"
+                    viewBox="0 0 25 25"
+                    stroke="white"
+                    strokeWidth="3"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </span>
+              )}
+            </div>
+
+            <label
+              htmlFor="select-all"
+              className="font-['Open_Sans'] text-[14px] sm:text-[16px] leading-[160%] text-[#1E1E1E] cursor-pointer font-semibold"
+            >
+              Select All Options
+            </label>
+          </div>
+        </div>
+
         {/* Checkboxes */}
         <ul className="space-y-4 sm:space-y-4">
           {options.map((opt: any, index: number) => (
@@ -319,15 +375,6 @@ const AspiringAssessment = () => {
         >
           {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
-        {/* <Button
-          onClick={handleSubmit}
-          variant="gradient-primary"
-          className="font-openSans text-[14px] sm:text-[15px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
-          type="button"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </Button> */}
       </div>
 
       <Modal isOpen={activeModal === "price"} onClose={closeModal}>
