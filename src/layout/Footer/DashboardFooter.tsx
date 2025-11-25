@@ -14,7 +14,7 @@ const Footer = () => {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [content, setContent] = useState("");
   const [privacyContent, privacySetContent] = useState("");
-const userId = localStorage.getItem("user_id");
+const userId = localStorage.getItem("Id");
 
   
   useEffect(() => {
