@@ -1435,7 +1435,7 @@ const CreateShopForm: React.FC = () => {
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Shop Approved for Review!
+            Shop Submitted for Review!
           </h2>
           <p className="text-gray-600 mb-6">
             Your shop has been successfully submitted for approval. Our team
