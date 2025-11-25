@@ -155,7 +155,7 @@ const getAcceptedFileTypes = (category: string) => {
 const getFileTypeDescription = (category: string) => {
   switch (category) {
     case "music":
-      return "MP3, WAV, FLAC (max 50 MB)";
+      return "MP3, WAV (max 50 MB)";
     case "podcast":
       return "MP3, WAV, AAC (max 50 MB)";
     case "ebook":
@@ -163,7 +163,7 @@ const getFileTypeDescription = (category: string) => {
     case "course":
       return "Videos, audios, PDFs, images (max 100 MB)";
     case "art":
-      return "JPG, PNG, SVG, WEBP, PDF, ZIP (max 100 MB)";
+      return "JPG, PNG, PDF  (max 100 MB)";
     default:
       return "Supported files (max 100 MB)";
   }
@@ -2529,9 +2529,9 @@ const MultiSelect = ({
                     <option value="">Select Format</option>
                     <option value="MP3">MP3</option>
                     <option value="WAV">WAV</option>
-                    <option value="AAC">AAC</option>
+                    {/*<option value="AAC">AAC</option>
                     <option value="FLAC">FLAC</option>
-                    <option value="OGG">OGG</option>
+                    <option value="OGG">OGG</option>*/}
                   </select>
                 </div>
               )}
