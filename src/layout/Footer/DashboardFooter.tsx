@@ -59,8 +59,7 @@ const userId = localStorage.getItem("Id");
               />
             </Link>
             <p className="text-[16px] font-normal font-openSans leading-[160%] text-[#1E1E1E] hidden md:block">
-CNESS life conscious social media super app.<br></br>
-Your global hub where social connection, meaningful commerce, <br></br>and community growth come together.
+CNESS LIFE Conscious Social Media Super App.<br></br>
             </p>
           </div>
 
