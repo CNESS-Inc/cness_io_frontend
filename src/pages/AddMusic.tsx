@@ -94,6 +94,8 @@ const [storyMedia, setStoryMedia] = useState<{
   type: "audio" | "video" | null;
   url: string;
   thumbnail?: string;
+    public_id?: string;
+
 }>({
   type: null,
   url: "",
@@ -129,7 +131,14 @@ const [storySummary, setStorySummary] = useState("");
   });
 
 const [sampleList, setSampleList] = useState([0]); 
-
+const [sampleFiles, setSampleFiles] = useState<{
+  file_url: string;
+  public_id: string;
+  title: string;
+  file_type: string;
+  order_number: number;
+  is_ariome: boolean;
+}[]>([]);
 const addSample = () => setSampleList(prev => [...prev, prev.length]);
 const removeSample = (index: number) =>
   setSampleList(prev => prev.filter((_, i) => i !== index));
@@ -170,18 +179,21 @@ const removeSample = (index: number) =>
 
     fetchCategories();
   }, []);
-
-const handleSampleTrackUpload = (sampleUrl: string, publicId?: string, title?: string) => {
-  setSampleFiles(prev => [
+const handleSampleTrackUpload = (
+  sampleUrl: string,
+  publicId?: string,
+  title?: string
+) => {
+  setSampleFiles((prev) => [
     ...prev,
     {
       file_url: sampleUrl,
       public_id: publicId || "",
       title: title || "",
       file_type: "audio",
-order_number: prev.length + 1,
-is_ariome: false
-    }
+      order_number: prev.length,
+      is_ariome: false,
+    },
   ]);
 };
 
@@ -817,28 +829,32 @@ const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   }
 
   const formData = new FormData();
-  formData.append(isAudio ? "story_audio" : "story_video", file);
+  formData.append("storytelling_video", file); // ✔ Correct field name
 
   try {
-    const response = await UploadProductDocument(
-      isAudio ? "story-audio" : "story-video",
-      formData
-    );
-
+    const response = await UploadStoryTellingVideo(formData);
     const data = response?.data?.data;
 
-    setStoryMedia({
-      type: isAudio ? "audio" : "video",
-      url: isAudio ? data.audio_url : data.video_url,
-      thumbnail: data.thumbnail || "",
-    });
+   setStoryMedia({
+  type: isAudio ? "audio" : "video",
+  url:
+    data?.url ||
+    data?.secure_url ||
+    data?.storytelling_video_url ||
+    data?.video_url ||
+    data?.file_url ||
+    data?.path ||
+    "",
+  thumbnail: data?.thumbnail,
+  public_id: data?.public_id,
+});
 
     showToast({
-      message: `Story ${isAudio ? "audio" : "video"} uploaded successfully`,
+      message: `Storytelling ${isAudio ? "audio" : "video"} uploaded successfully`,
       type: "success",
       duration: 3000,
     });
-  } catch (err) {
+  } catch {
     showToast({
       message: "Failed to upload storytelling media",
       type: "error",
@@ -846,7 +862,6 @@ const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     });
   }
 };
-
 
 {/*mood multi select*/}
 const MultiSelect = ({
@@ -1228,9 +1243,9 @@ const MultiSelect = ({
                 <option value="">Select Format</option>
                 <option value="MP3">MP3</option>
                 <option value="WAV">WAV</option>
-                <option value="AAC">AAC</option>
+               {/* <option value="AAC">AAC</option>
                 <option value="FLAC">FLAC</option>
-                <option value="OGG">OGG</option>
+                <option value="OGG">OGG</option>*/}
               </select>
             </div>
 
@@ -1256,14 +1271,14 @@ const MultiSelect = ({
 
 <FormSection
   title="Storytelling"
-  description="Add an audio, video, or text description that explains your music content."
+  description="Add an video or text description that explains your music content."
 >
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
     {/* MEDIA UPLOAD CARD */}
     <div>
       <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-        Upload Audio / Video (Optional)
+        Upload Video (Optional)
       </label>
 
       <label
@@ -1299,7 +1314,7 @@ const MultiSelect = ({
             <p className="text-sm font-[poppins] text-[#242E3A]">
               Drag & drop or click to upload
             </p>
-            <p className="text-xs text-[#665B5B]">Supports audio & video</p>
+            <p className="text-xs text-[#665B5B]">Supports video</p>
           </div>
         ) : (
           <div className="relative w-full">
@@ -1331,7 +1346,7 @@ const MultiSelect = ({
     {/* TEXT DESCRIPTION */}
     <div>
       <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-        Summary of the Storytelling <span className="text-red-500">*</span>
+        Summary of the Storytelling
       </label>
 
       <textarea
@@ -1454,7 +1469,7 @@ const MultiSelect = ({
                         Drag & drop or click to upload
                       </p>
                       <p className="text-xs text-[#665B5B]">
-                        MP3, WAV, FLAC (max 50 MB)
+                        MP3, WAV (max 50 MB)
                       </p>
                     </div>
                   </label>
