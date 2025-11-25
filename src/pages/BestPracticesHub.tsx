@@ -847,7 +847,7 @@ export default function BestPracticesHub() {
   </h1>
 
   <p className="text-base sm:text-base text-[#242424] font-openSans -mt-1">
-    Empowering better solutions for life and profession.
+Empowering greater solution for life and profession.
   </p>
             <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-5">
               {/* Searchable Profession Selector */}
