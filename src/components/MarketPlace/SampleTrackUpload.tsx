@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef,forwardRef, useImperativeHandle } from "react";
 import { X, HelpCircle } from "lucide-react";
 import uploadimg from "../../assets/upload1.svg";
 import { useToast } from "../ui/Toast/ToastProvider";
@@ -9,17 +9,16 @@ interface SampleTrackUploadProps {
     productType: "video" | "music" | "course" | "podcast" | "ebook" | "art";
     onUploadSuccess: (sampleId: string, sampleUrl: string, sampleThumbnail?: string) => void;
     onRemove: () => void;
+    onDonationChange?:(value:boolean)=> void;
     defaultValue?: string;
     error?: string;
+  
 }
 
-const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
-    productType,
-    onUploadSuccess,
-    onRemove,
-    defaultValue,
-    error,
-}) => {
+const SampleTrackUpload = forwardRef<unknown, SampleTrackUploadProps>((
+    { productType, onUploadSuccess, onRemove,onDonationChange, defaultValue, error },
+    ref
+) => {
     const { showToast } = useToast();
     const [uploadedFile, setUploadedFile] = useState<string | null>(defaultValue || null);
     const [isUploading, setIsUploading] = useState(false);
@@ -27,7 +26,11 @@ const SampleTrackUpload: React.FC<SampleTrackUploadProps> = ({
     const [showAriomeModal, setShowAriomeModal] = useState(false);
     const [isDonated, setIsDonated] = useState(false);
     const fileRef = useRef<HTMLInputElement | null>(null);
-
+   useImperativeHandle(ref, () => ({
+        openPicker: () => {
+            fileRef.current?.click();
+        }
+    }));
   const getAcceptTypes = () => {
     switch (productType) {
         case "course":
@@ -138,14 +141,13 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (fileRef.current) fileRef.current.value = "";
     }
 };
-    const handleRemove = () => {
-        setUploadedFile(null);
-        setIsDonated(false);
-        onRemove();
-        if (fileRef.current) {
-            fileRef.current.value = "";
-        }
-    };
+  const handleRemove = () => {
+  setUploadedFile(null);
+  setIsDonated(false);
+  onDonationChange?.(false);  // ⭐ send reset to parent
+  onRemove();
+  if (fileRef.current) fileRef.current.value = "";
+};
 
     const handleDonate = () => {
         if (!uploadedFile) {
@@ -159,16 +161,17 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setShowDonateModal(true);
     };
 
-    const confirmDonation = () => {
-        setIsDonated(true);
-        setShowDonateModal(false);
-        showToast({
-            message: "Thank you for your generous contribution! 💙",
-            type: "success",
-            duration: 4000,
-        });
-    };
+  const confirmDonation = () => {
+  setIsDonated(true);
+  onDonationChange?.(true);  
+  setShowDonateModal(false);
 
+  showToast({
+    message: "Thank you for your generous contribution! 💙",
+    type: "success",
+    duration: 4000,
+  });
+};
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -432,6 +435,6 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
             )}
         </div>
     );
-};
+});;
 
 export default SampleTrackUpload;

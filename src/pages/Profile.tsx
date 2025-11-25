@@ -828,7 +828,7 @@ export default function Profile() {
               connections={followingUsers.map((f) => ({
                 id: f.id,
                 name: `${f.first_name} ${f.last_name}`.trim(),
-                username: `${f.first_name} ${f.last_name}`.trim(),
+                username: f.username,
                 profileImage:
                   !f.profile_picture ||
                   f.profile_picture === "null" ||
@@ -858,7 +858,7 @@ export default function Profile() {
         friends={followingUsers.map((user) => ({
           id: user.id,
           name: `${user.first_name} ${user.last_name}`.trim(),
-          handle: `${user.first_name} ${user.last_name}`.trim(),
+          handle: user.username,
           avatar:
             !user.profile_picture ||
             user.profile_picture === "null" ||

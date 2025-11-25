@@ -64,14 +64,14 @@ export default function WhyCness() {
     "https://cdn.cness.io/WhatsApp%20Video%202025-11-11%20at%204.48.38%20PM.mp4";
   const videoRef = useRef(null);
 
-  const scrollToGetInTouch = () => {
-    const el = document.getElementById("getintouch");
-    if (!el) return;
-    const header = document.querySelector("header"); // if you use a sticky <Header />
-    const offset = header ? (header as HTMLElement).offsetHeight : 0;
-    const y = el.getBoundingClientRect().top + window.pageYOffset - offset - 8; // tiny extra gap
-    window.scrollTo({ top: y, behavior: "smooth" });
-  };
+  //const scrollToGetInTouch = () => {
+    //const el = document.getElementById("getintouch");
+   // if (!el) return;
+   // const header = document.querySelector("header"); // if you use a sticky <Header />
+   // const offset = header ? (header as HTMLElement).offsetHeight : 0;
+   // const y = el.getBoundingClientRect().top + window.pageYOffset - offset - 8; // tiny extra gap
+   // window.scrollTo({ top: y, behavior: "smooth" });
+  //};
 
   useEffect(() => {
     if (!isVideoOpen) return;
@@ -294,118 +294,139 @@ export default function WhyCness() {
         </section>
       </LazySection>*/}
 
-{/*new hersection*/}
-<LazySection effect="fade-up" delay={0.2}>
-      <section className="w-full bg-hero-gradient"
-        style={{
-        background:
-          "linear-gradient(129.63deg, #FFFFFF 27.35%, #FEDEDE 91.53%, #EE9CE5 99.09%)",
-      }}>
-        
-<div className="flex items-center justify-center 
+      {/*new hersection*/}
+      <LazySection effect="fade-up" delay={0.2}>
+        <section
+          className="w-full bg-hero-gradient"
+          style={{
+            background:
+              "linear-gradient(129.63deg, #FFFFFF 27.35%, #FEDEDE 91.53%, #EE9CE5 99.09%)",
+          }}
+        >
+          <div
+            className="flex items-center justify-center 
   px-6 sm:px-10 lg:px-20 
   py-10 sm:py-16 lg:py-20 
-  min-h-[auto] lg:min-h-[722px]">
-<div className="flex flex-col-reverse lg:flex-row items-center gap-10 lg:gap-0 max-w-screen-xl w-full">
-<div className="flex-1 max-w-[729px] text-center lg:text-left">
-            <div className="space-y-5">
-              <div className="space-y-2">
-<h1
-              style={{ fontFamily: "Poppins, sans-serif" }}
-              className="font-medium 
+  min-h-auto lg:min-h-[722px]"
+          >
+            <div className="flex flex-col-reverse lg:flex-row items-center gap-10 lg:gap-0 max-w-7xl w-full">
+              <div className="flex-1 max-w-[729px] text-center lg:text-left">
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <h1
+                      style={{ fontFamily: "Poppins, sans-serif" }}
+                      className="font-medium 
 text-[26px] sm:text-[32px] md:text-[38px] lg:text-[42px]
 leading-[120%] tracking-[-0.02em]
-bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text"
-            >                  Empowering Growth. Connecting People. Creating Impact.
-                </h1>
-                <p className="font-['Open_Sans'] 
+bg-linear-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text"
+                    >
+                      {" "}
+                      Empowering Growth. Connecting People. Creating Impact.
+                    </h1>
+                    <p
+                      className="font-['Open_Sans'] 
 text-[14px] sm:text-[15px] md:text-[16px] font-light
-leading-[24px] text-[#242424]
-mt-4 sm:mt-6 max-w-[620px] mx-auto lg:mx-0">
-                  We're building more than a platform—we're shaping an ecosystem. From certifications and learning tools for professionals, to communities, marketplaces, and entertainment for individuals, our super app is designed to help you grow, connect, and thrive with purpose.
-                </p>              
-            <Button
-              variant="gradient-primary"
-              size="md"
-              onClick={scrollToGetInTouch}
-              className="mt-5 sm:mt-6 
+leading-6 text-[#242424]
+mt-4 sm:mt-6 max-w-[620px] mx-auto lg:mx-0"
+                    >
+                      We're building more than a platform—we're shaping an
+                      ecosystem. From certifications and learning tools for
+                      professionals, to communities, marketplaces, and
+                      entertainment for individuals, our super app is designed
+                      to help you grow, connect, and thrive with purpose.
+                    </p>
+                    <Button
+                      variant="gradient-primary"
+                      size="md"
+                  onClick={() => setOpenSignup(true)}
+                      className="mt-5 sm:mt-6 
 px-5 sm:px-6 
 py-3 sm:py-4 
 text-[14px] sm:text-[16px] font-['Plus Jakarta Sans'] font-medium text-[16px] leading-[100%] tracking-[0px] text-center"
-            >
-              Contact Us
-            </Button>                
+                    >
+                      Join the Movement
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="shrink-0 flex justify-center lg:justify-end w-full lg:w-auto">
+                <img
+                  src="https://cdn.cness.io/whycnesshero.svg"
+                  alt="Hero Illustration"
+                  className="w-[260px] sm:w-[340px] md:w-[420px] lg:w-[509px] 
+               h-auto object-contain"
+                />
               </div>
             </div>
           </div>
-          
-          <div className="flex-shrink-0 flex justify-center lg:justify-end w-full lg:w-auto">
-            <img 
-              src="https://cdn.cness.io/whycnesshero.svg" 
-              alt="Hero Illustration" 
-              className="w-[260px] sm:w-[340px] md:w-[420px] lg:w-[509px] 
-               h-auto object-contain"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-</LazySection>
+        </section>
+      </LazySection>
 
       <LazySection effect="fade-up" delay={0.2}>
-
- <section className="w-full bg-gradient-to-r from-[#FAFAFA] to-[#F6F5FA]">
-<div className="px-6 sm:px-10 lg:px-20 py-10 sm:py-16 lg:py-[86px] max-w-screen-xl mx-auto">
-        <div className="space-y-8">
-<div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-[54px]">
-            <div className="flex-shrink-0">
-              <img 
-                src="https://cdn.cness.io/nandhiji.svg" 
-                alt="Our Story" 
-              className="w-[90%] sm:w-[450px] md:w-[550px] lg:w-[628px] 
+        <section className="w-full bg-linear-to-r from-[#FAFAFA] to-[#F6F5FA]">
+          <div className="px-6 sm:px-10 lg:px-20 py-10 sm:py-16 lg:py-[86px] max-w-7xl mx-auto">
+            <div className="space-y-8">
+              <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-[54px]">
+                <div className="shrink-0">
+                  <img
+                    src="https://cdn.cness.io/nandhiji.svg"
+                    alt="Our Story"
+                    className="w-[90%] sm:w-[450px] md:w-[550px] lg:w-[628px] 
            h-auto object-cover mx-auto"
-              />
-            </div>
-            
-            <div className="flex-1 max-w-[596px] space-y-[22px]">
-              <div className="text-center lg:text-left">
-                <p className="text-[32px] md:text-[38px] lg:text-[42px] font-semibold bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
-                  Our Story
-                </p>
-<h3 className="mt-2 font-['Poppins'] font-medium
+                  />
+                </div>
+
+                <div className="flex-1 max-w-[596px] space-y-[22px]">
+                  <div className="text-center lg:text-left">
+                    <p className="text-[32px] md:text-[38px] lg:text-[42px] font-semibold bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                      Our Story
+                    </p>
+                    <h3
+                      className="mt-2 font-['Poppins'] font-medium
     text-[24px] sm:text-[30px] md:text-[36px] lg:text-[42px]
     leading-[1.3] tracking-[-0.02em] text-[#1F2937]
     text-center lg:text-left
-    whitespace-normal lg:whitespace-nowrap">
-                  Begins With a Simple Belief
-                </h3>
-              </div>
-              
-                <p className="max-w-[620px] text-[14px] sm:text-[15px] md:text-[16px]
+    whitespace-normal lg:whitespace-nowrap"
+                    >
+                      Begins With a Simple Belief
+                    </h3>
+                  </div>
+
+                  <p
+                    className="max-w-[620px] text-[14px] sm:text-[15px] md:text-[16px]
   leading-[24.4px] text-[#242424] capitalize font-['Open_Sans'] font-light
-  text-center lg:text-left mx-auto lg:mx-0">
-                CNESS was born from the vision of our founder, Nandiji, whose life and teachings embody conscious living. He believed that true growth goes beyond fleeting online inspiration — it's about nurturing the soul and connecting with others on a deeper level. Guided by this belief, he envisioned a space where people could be authentic, nourish their spirits, and support one another on a shared journey toward mindful, meaningful living. That space became CNESS.
-              </p>
-              
-<div className="flex flex-wrap justify-center lg:justify-start items-center gap-4 mt-5">
-                  <button className="bg-button-gradient rounded-[81.26px] px-5 py-[13px] hover:opacity-90 transition-opacity">
-                    <a
-                    onClick={() => setOpenSignup(true)}
-                    className="inline-flex items-center justify-center rounded-full
+  text-center lg:text-left mx-auto lg:mx-0"
+                  >
+                    CNESS was born from the vision of our founder, Nandiji,
+                    whose life and teachings embody conscious living. He
+                    believed that true growth goes beyond fleeting online
+                    inspiration — it's about nurturing the soul and connecting
+                    with others on a deeper level. Guided by this belief, he
+                    envisioned a space where people could be authentic, nourish
+                    their spirits, and support one another on a shared journey
+                    toward mindful, meaningful living. That space became CNESS.
+                  </p>
+
+                  <div className="flex flex-wrap justify-center lg:justify-start items-center gap-4 mt-5">
+                    <button className="bg-button-gradient rounded-[81.26px] px-5 py-[13px] hover:opacity-90 transition-opacity">
+                      <a
+                        onClick={() => setOpenSignup(true)}
+                        className="inline-flex items-center justify-center rounded-full
 px-6 sm:px-8 py-3 sm:py-4
 font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0px]
   text-center text-white shadow-md hover:shadow-lg
-  bg-gradient-to-r from-[#7077FE] to-[#F07EFF] transition-all duration-300"
-                  >
-                    Join the Journey
-                  </a>              
+  bg-linear-to-r from-[#7077FE] to-[#F07EFF] transition-all duration-300"
+                      >
+                        Join the Journey
+                      </a>
                     </button>
 
-                <Button
-  variant="white-outline"
-  size="md"
-  onClick={() => setIsVideoOpen(true)}
-  className="
+                    <Button
+                      variant="white-outline"
+                      size="md"
+                      onClick={() => setIsVideoOpen(true)}
+                      className="
   inline-flex items-center justify-center
 px-6 sm:px-8 py-3 sm:py-4
 rounded-full border border-gray-300
@@ -413,110 +434,115 @@ font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%]
 shadow-[0_1px_2px_rgba(0,0,0,0.1)]
 gap-2
   "
->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="currentColor"
-    viewBox="0 0 20 20"
-    className="w-4 h-4 sm:w-5 sm:h-5"
-  >
-    <path d="M6.5 5.5v9l7-4.5-7-4.5z" />
-  </svg>
-  Play Video
-</Button>
-
- {isVideoOpen && (
-                    <div
-                      className="fixed inset-0 z-50 flex items-center justify-center  p-4"
-                      onClick={() => setIsVideoOpen(false)}
                     >
-                      <div
-                        className={`relative w-full ${
-                          isPortrait
-                            ? "max-w-[900px] aspect-video"
-                            : "max-w-[900px] aspect-video"
-                        } rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)] bg-black`}
-                        onClick={(e) => e.stopPropagation()}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                        className="w-4 h-4 sm:w-5 sm:h-5"
                       >
-                      
-                        <button
-                          onClick={() => setIsVideoOpen(false)}
-                          className="absolute top-3 right-3 z-10 text-white/80 hover:text-white bg-black/40 hover:bg-black/60
-                   w-8 h-8 flex items-center justify-center rounded-full backdrop-blur-sm transition-all duration-200"
-                        >
-                          ×
-                        </button>
+                        <path d="M6.5 5.5v9l7-4.5-7-4.5z" />
+                      </svg>
+                      Play Video
+                    </Button>
 
-                
-                        {isPortrait && (
-                          <video
-                            className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40"
-                            src={videoUrl}
-                            muted
-                            loop
-                            autoPlay
-                          />
-                        )}
-
-                        <video
-                          ref={videoRef}
-                          className={`relative z-10 rounded-3xl ${
+                    {isVideoOpen && (
+                      <div
+                        className="fixed inset-0 z-50 flex items-center justify-center  p-4"
+                        onClick={() => setIsVideoOpen(false)}
+                      >
+                        <div
+                          className={`relative w-full ${
                             isPortrait
-                              ? "w-auto h-full mx-auto object-contain" // Portrait → center with height fit
-                              : "w-full h-full object-cover" // Landscape → fill the container
-                          }`}
-                          src={videoUrl}
-                          controls
-                          autoPlay
-                          onLoadedMetadata={(e) => {
-                            const video = e.target as HTMLVideoElement;
-                            setIsPortrait(video.videoHeight > video.videoWidth);
-                          }}
-                        />
+                              ? "max-w-[900px] aspect-video"
+                              : "max-w-[900px] aspect-video"
+                          } rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.3)] bg-black`}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            onClick={() => setIsVideoOpen(false)}
+                            className="absolute top-3 right-3 z-10 text-white/80 hover:text-white bg-black/40 hover:bg-black/60
+                   w-8 h-8 flex items-center justify-center rounded-full backdrop-blur-sm transition-all duration-200"
+                          >
+                            ×
+                          </button>
+
+                          {isPortrait && (
+                            <video
+                              className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40"
+                              src={videoUrl}
+                              muted
+                              loop
+                              autoPlay
+                            />
+                          )}
+
+                          <video
+                            ref={videoRef}
+                            className={`relative z-10 rounded-3xl ${
+                              isPortrait
+                                ? "w-auto h-full mx-auto object-contain" // Portrait → center with height fit
+                                : "w-full h-full object-cover" // Landscape → fill the container
+                            }`}
+                            src={videoUrl}
+                            controls
+                            autoPlay
+                            onLoadedMetadata={(e) => {
+                              const video = e.target as HTMLVideoElement;
+                              setIsPortrait(
+                                video.videoHeight > video.videoWidth
+                              );
+                            }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                </div>
+              </div>
 
+              <div className="flex flex-col lg:flex-row gap-6 lg:gap-[30px] mt-10">
+                <div className="flex-1 bg-white rounded-4xl p-6 sm:p-[30px]">
+                  <div className="space-y-[13px]">
+                    <h3 className="font-poppins font-medium text-2xl tracking-tight-vision text-black">
+                      Mission
+                    </h3>
+                    <p
+                      className=" font-['Open_Sans'] font-light 
+  text-[16px] leading-[24.4px] 
+  capitalize text-[#242424]"
+                    >
+                      We built our super app to unite learning, certifications,
+                      communities, and marketplaces in one ecosystem—helping
+                      people and businesses grow, connect, and thrive with
+                      purpose.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex-1 bg-white rounded-4xl p-6 sm:p-[30px]">
+                  <div className="space-y-[13px]">
+                    <h3 className="font-poppins font-medium text-2xl tracking-tight-vision text-black">
+                      Vision
+                    </h3>
+                    <p
+                      className="font-['Open_Sans'] font-light 
+  text-[16px] leading-[24.4px] 
+  capitalize text-[#242424]"
+                    >
+                      To be the world's most trusted ecosystem, where learning,
+                      business, and community come together seamlessly. Creating
+                      a future where opportunities are accessible to everyone.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          
-<div className="flex flex-col lg:flex-row gap-6 lg:gap-[30px] mt-10">
-            <div className="flex-1 bg-white rounded-[32px] p-6 sm:p-[30px]">
-              <div className="space-y-[13px]">
-                <h3 className="font-poppins font-medium text-2xl tracking-tight-vision text-black">
-                  Mission
-                </h3>
-                <p className=" font-['Open_Sans'] font-light 
-  text-[16px] leading-[24.4px] 
-  capitalize text-[#242424]">
-                  We built our super app to unite learning, certifications, communities, and marketplaces in one ecosystem—helping people and businesses grow, connect, and thrive with purpose.
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex-1 bg-white rounded-[32px] p-6 sm:p-[30px]">
-              <div className="space-y-[13px]">
-                <h3 className="font-poppins font-medium text-2xl tracking-tight-vision text-black">
-                  Vision
-                </h3>
-                <p className="font-['Open_Sans'] font-light 
-  text-[16px] leading-[24.4px] 
-  capitalize text-[#242424]">
-                  To be the world's most trusted ecosystem, where learning, business, and community come together seamlessly. Creating a future where opportunities are accessible to everyone.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-     
-   <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
 
-    </section>
-
-</LazySection>
-
+          <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
+        </section>
+      </LazySection>
 
       <LazySection effect="fade-up" delay={0.2}>
         <section className="w-full bg-white py-10 sm:py-14 md:py-20 px-4 sm:px-8 md:px-[60px]">

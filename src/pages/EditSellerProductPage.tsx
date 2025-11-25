@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { RiArrowRightSLine } from "react-icons/ri";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -34,6 +34,7 @@ import {
   UpdateVideoProduct,
   UploadProductDocument,
   UploadProductThumbnail,
+  UploadStoryTellingVideo 
 } from "../Common/ServerAPI";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 import AIModal from "../components/MarketPlace/AIModal";
@@ -336,6 +337,17 @@ interface Collection {
   order_number: number;
 }
 
+interface SampleFile {
+  id?: string;
+  file_url: string;
+  public_id: string;
+  title: string;
+  file_type: string;
+  order_number?: number;
+  is_ariome?: boolean;
+}
+
+
 // Main Component
 const EditSellerProductPage: React.FC = () => {
   const navigate = useNavigate();
@@ -357,6 +369,8 @@ const EditSellerProductPage: React.FC = () => {
 
   const [showAIModal, setShowAIModal] = useState(false);
   const [sampleTrackUrl, setSampleTrackUrl] = useState("");
+const [sampleFiles, setSampleFiles] = useState<any[]>([]);
+const [deleteSampleFiles, setDeleteSampleFiles] = useState<string[]>([]);
 
   // Thumbnail States (for non-video categories)
   const [thumbnailData, setThumbnailData] = useState<{
@@ -372,6 +386,9 @@ const EditSellerProductPage: React.FC = () => {
   const [shortVideoPreview, setShortVideoPreview] = useState("");
   const [isMainVideoUploading, setIsMainVideoUploading] = useState(false);
   const [isShortVideoUploading, setIsShortVideoUploading] = useState(false);
+const [lastUploadedIndex, setLastUploadedIndex] = useState<number | null>(null);
+
+const sampleUploadRef = useRef<any>(null);
 
   // Content Items States
   const [contentItems, setContentItems] = useState<
@@ -402,6 +419,9 @@ type FormDataType = {
   requirements: string;
   mediums: string;
   modern_trends: string;
+  storytelling_video_url?: string;
+  storytelling_description?: string;
+
 };
 
   // Form Data State (dynamic based on category)
@@ -432,7 +452,16 @@ const [formData, setFormData] = useState<FormDataType>({
     // Art specific
     mediums: "",
     modern_trends: "",
+    
   });
+
+    const [storyVideoUrl, setStoryVideoUrl] = useState<string>(
+    formData.storytelling_video_url || ""
+  );
+
+  const [storyDescription, setStoryDescription] = useState<string>(
+    formData.storytelling_description || ""
+  );
 
   // Fetch Product Data on Mount
   useEffect(() => {
@@ -673,6 +702,9 @@ const [formData, setFormData] = useState<FormDataType>({
           setSampleTrackUrl(commonData?.sample_track_url || "");
           setFormData(commonData);
         }
+        if (productData.sample_files) {
+  setSampleFiles(productData.sample_files);
+}
       } catch (error: any) {
         showToast({
           message:
@@ -725,14 +757,14 @@ const [formData, setFormData] = useState<FormDataType>({
     }
   };
 
-  const handleSampleTrackUpload = (sampleUrl: string) => {
-    setSampleTrackUrl(sampleUrl);
-  };
+ // const handleSampleTrackUpload = (sampleUrl: string) => {
+    //setSampleTrackUrl(sampleUrl);
+ // };
 
-  const handleRemoveSampleTrack = () => {
-    console.log("Removing sample track");
-    setSampleTrackUrl("");
-  };
+ // const handleRemoveSampleTrack = () => {
+ //   console.log("Removing sample track");
+  //  setSampleTrackUrl("");
+ // };
 
   // Thumbnail Upload Handler (for non-video categories) - UPLOADS ON CHANGE
   const handleThumbnailUpload = async (
@@ -1497,6 +1529,21 @@ const [formData, setFormData] = useState<FormDataType>({
     }));
   };
 
+  // ✅ ADD SAMPLE FUNCTIONS HERE
+
+const handleAddSample = (fileData: SampleFile) => {
+  setSampleFiles(prev => [...prev, fileData]);
+};
+
+const handleDeleteSample = (sample: SampleFile) => {
+  const id = sample.id;
+
+  if (id) {
+    setDeleteSampleFiles(prev => [...prev, id]);
+  }
+
+  setSampleFiles(prev => prev.filter(s => s !== sample));
+};
   // Form validation
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -1610,7 +1657,27 @@ const [formData, setFormData] = useState<FormDataType>({
       overview: formData.overview,
       highlights: formData.highlights,
       language: formData.language,
+      
     };
+
+
+    // Add sample file updates
+basePayload.sample_files = sampleFiles.map(s => ({
+  ...(s.id ? { id: s.id } : {}),     // ← FIXED
+  file_url: s.file_url,
+  public_id: s.public_id,
+  title: s.title,
+  file_type: s.file_type,
+  duration: s.duration,
+  file_size: s.file_size,
+  order_number: s.order_number,
+is_ariome: s.is_ariome ?? false
+}));
+
+basePayload.delete_sample_files = deleteSampleFiles;
+basePayload.storytelling_video_url = storyVideoUrl || "";
+basePayload.storytelling_description = storyDescription || "";
+
     console.log("sampleTrackUrl", sampleTrackUrl);
     basePayload.sample_track_url = sampleTrackUrl;
     // if (sampleTrackUrl) {
@@ -1758,6 +1825,8 @@ const [formData, setFormData] = useState<FormDataType>({
         chapters,
       };
     }
+
+
 
     return basePayload;
   };
@@ -1981,6 +2050,8 @@ const MultiSelect = ({
     
   );
 };
+
+
 
 
 
@@ -2600,17 +2671,160 @@ const MultiSelect = ({
             </div>
           </FormSection>
 
+
+<FormSection
+  title="Storytelling (Optional)"
+  description="Add or update your storytelling video and summary."
+>
+  {/* Upload Storytelling Video */}
+  <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition-colors">
+
+    <input
+      type="file"
+      accept="video/*"
+      className="hidden"
+      onChange={async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const fd = new FormData();
+        fd.append("storytelling_video", file);
+
+        try {
+          const res = await UploadStoryTellingVideo(fd);
+          const data = res?.data?.data;
+
+          setStoryVideoUrl(data.storytelling_video_url);
+          //setStoryVideoPublicId(data.public_id);
+
+          showToast({
+            message: "Storytelling video uploaded successfully",
+            type: "success"
+          });
+        } catch (err) {
+          showToast({
+            message: "Failed to upload storytelling video",
+            type: "error"
+          });
+        }
+      }}
+    />
+
+    {!storyVideoUrl ? (
+      <div className="text-center space-y-2">
+        <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
+          <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+        </div>
+        <p className="text-sm font-[poppins] text-[#242E3A]">
+          Drag & drop or click to upload
+        </p>
+        <p className="text-xs text-[#665B5B]">Supports video</p>
+      </div>
+    ) : (
+      <div className="relative w-full">
+        <video
+          src={storyVideoUrl}
+          controls
+          className="w-full h-32 object-cover rounded-lg"
+        />
+
+        {/* Remove storytelling video */}
+        <button
+          type="button"
+          onClick={() => {
+            setStoryVideoUrl("");
+          }}
+          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    )}
+  </label>
+
+  {/* Storytelling Description */}
+  <textarea
+    value={storyDescription}
+    onChange={(e) => setStoryDescription(e.target.value)}
+    placeholder="Write or update the story behind your content..."
+    className="w-full border border-gray-300 rounded-lg p-3 mt-4"
+    rows={4}
+  />
+</FormSection>
+
+
           <FormSection
             title="Sample Track (Optional)"
             description="Upload a preview sample so buyers can experience your content before purchasing."
           >
-            <SampleTrackUpload
-              productType="music"
-              onUploadSuccess={handleSampleTrackUpload}
-              onRemove={handleRemoveSampleTrack}
-              defaultValue={sampleTrackUrl}
-            />
-          </FormSection>
+      <SampleTrackUpload
+  ref={sampleUploadRef}
+  productType={category as "music" | "video" | "course" | "podcast" | "ebook" | "art"}
+  
+  onUploadSuccess={(publicId, sampleUrl) => {
+    const newSample = {
+      file_url: sampleUrl,
+      public_id: publicId,
+      title: "Sample " + (sampleFiles.length + 1),
+      file_type: category === "art" ? "image" : "audio",
+      duration: null,
+      file_size: null,
+      order_number: sampleFiles.length,
+   is_ariome: false
+  };
+
+    handleAddSample(newSample);
+
+    // ⭐ Save the index of THIS uploaded sample
+    setLastUploadedIndex(sampleFiles.length);
+  }}
+
+  onDonationChange={(value) => {
+    setSampleFiles(prev => 
+      prev.map((sample, i) =>
+        i === lastUploadedIndex   // ⭐ apply donation to correct sample
+          ? { ...sample, is_ariome: value }
+          : sample
+      )
+    );
+  }}
+
+  onRemove={() => {}}
+/>
+
+{sampleFiles.length > 0 && (
+  <div className="mt-4 space-y-3">
+    {sampleFiles.map((sample, index) => (
+      <div
+        key={index}
+        className="flex justify-between items-center bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm"
+      >
+        <div>
+          <p className="font-[Poppins] font-medium text-[#242E3A]">
+            {sample.title}
+          </p>
+          <p className="text-sm text-gray-500">{sample.file_type}</p>
+        </div>
+
+        <button
+          onClick={() => handleDeleteSample(sample)}
+          className="text-red-500 hover:text-red-600 p-2"
+        >
+          <Trash2 size={20} />
+        </button>
+      </div>
+    ))}
+  </div>
+)}
+
+<button
+  onClick={() => sampleUploadRef.current?.openPicker()}
+  className="mt-4 flex items-center gap-2 text-[#7077FE] border border-[#7077FE] px-4 py-2 rounded-lg hover:bg-[#EEF2FF]"
+>
+  <span className="text-xl font-bold">+</span>
+  Add Another Sample
+</button>
+    </FormSection>
 
           {/* Video-specific Storytelling Section */}
           {category === "video" && (

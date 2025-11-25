@@ -606,7 +606,7 @@ const ScoreResult = () => {
               ) : (
                 <div className="flex gap-2 items-center">
                   <div className="relative">
-                    <button
+                    {/* <button
                       className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
                       onClick={toggleMenu}
                       style={{ cursor: "pointer" }}
@@ -615,7 +615,7 @@ const ScoreResult = () => {
                     </button>
                     {showMenu && (
                       <div
-                        className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                        className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-50"
                         ref={menuRef}
                       >
                         <ul className="flex items-center gap-4">
@@ -629,9 +629,6 @@ const ScoreResult = () => {
                               <FaLinkedin size={32} color="#0077B5" />
                             </LinkedinShareButton>
                           </li>
-                          {/* <li>
-                            <FaInstagram size={32} color="#C13584" />
-                          </li> */}
                           <TwitterShareButton url={urldata} title={tweetText}>
                             <FaTwitter size={32} color="#1DA1F2" />
                           </TwitterShareButton>
@@ -663,7 +660,7 @@ const ScoreResult = () => {
                           </li>
                         </ul>
                       </div>
-                    )}
+                    )} */}
                   </div>
                   {/* <button
                     className="bg-[#FF6B81] text-white cursor-not-allowed text-sm font-medium px-5 py-2 rounded-full shadow-md flex items-center justify-center gap-2"
