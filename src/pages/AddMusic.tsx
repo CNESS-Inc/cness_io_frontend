@@ -180,7 +180,8 @@ const handleSampleTrackUpload = (sampleUrl: string, publicId?: string, title?: s
       public_id: publicId || "",
       title: title || "",
       file_type: "audio",
-      order_number: prev.length + 1
+order_number: prev.length + 1,
+is_ariome: false
     }
   ]);
 };
@@ -1352,11 +1353,25 @@ const MultiSelect = ({
 >
   {sampleList.map((_, i) => (
     <div key={i} className="mb-6">
-      <SampleTrackUpload
-        productType="music"
-onUploadSuccess={(sampleUrl) => handleSampleTrackUpload(sampleUrl)}
-        onRemove={() => removeSample(i)}
-      />
+    <SampleTrackUpload
+  productType="music"
+  onUploadSuccess={(publicId, sampleUrl, title) =>
+    handleSampleTrackUpload(sampleUrl, publicId, title)
+  }
+
+  onDonationChange={(value) => {
+    setSampleFiles(prev =>
+      prev.map((sample, i) =>
+        i === prev.length - 1
+          ? { ...sample, is_ariome: value }
+          : sample
+      )
+    );
+  }}
+
+  onRemove={() => removeSample(i)}
+/>
+    
     </div>
   ))}
 

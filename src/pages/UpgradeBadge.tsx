@@ -465,7 +465,7 @@ const UpgradeBadge = () => {
               </div>
             ) : (
               <div className="flex gap-2 items-center">
-                <div className="relative">
+                {/* <div className="relative">
                   <button
                     className="bg-white border cursor-not-allowed border-gray-200 text-[#64748B] text-sm font-medium px-5 py-2 rounded-full shadow-md"
                     disabled
@@ -492,7 +492,7 @@ const UpgradeBadge = () => {
                     />
                   </svg>
                   Report
-                </button>
+                </button> */}
               </div>
             )}
           </div>

@@ -374,23 +374,27 @@ const ReviewsTab: React.FC<ReviewsTabProps> = ({ productId,show_public_review=tr
                 </div>
 
                 {/* Submit Button */}
-                <button
-                    onClick={submitReview}
-                    disabled={isSubmitting || rating === 0 || !reviewTitle.trim() || !reviewText.trim()}
-                    className={`w-full px-4 py-3 rounded-lg font-[Plus_Jakarta_Sans] font-medium text-sm text-white transition ${isSubmitting || rating === 0 || !reviewTitle.trim() || !reviewText.trim()
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-[#7077FE] hover:bg-[#5E65F6]"
-                        }`}
-                >
-                    {isSubmitting ? (
+                <div className="flex justify-center">
+                    <button
+                        onClick={submitReview}
+                        disabled={isSubmitting || rating === 0 || !reviewTitle.trim() || !reviewText.trim()}
+                        className={`px-4 py-3 rounded-lg font-[Plus_Jakarta_Sans] font-medium text-sm text-white transition
+                        ${isSubmitting || rating === 0 || !reviewTitle.trim() || !reviewText.trim()
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-[#7077FE] hover:bg-[#5E65F6]"}
+                        `}
+                    >
+                        {isSubmitting ? (
                         <span className="flex items-center justify-center gap-2">
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                             {hasReviewed ? "Updating..." : "Submitting..."}
                         </span>
-                    ) : (
+                        ) : (
                         hasReviewed ? "Update Review" : "Submit Review"
-                    )}
-                </button>
+                        )}
+                    </button>
+                    </div>
+
 
                 {/* Review List */}
                 {show_public_review &&(

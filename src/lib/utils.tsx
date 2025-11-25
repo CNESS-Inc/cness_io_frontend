@@ -15,10 +15,30 @@ export const buildShareUrl = (postId?: string) => {
   return `${window.location.origin}/directory/user-profile/${localStorage.getItem("Id")}`;
 };
 
+export const buildProductShareUrl = (productId?: string) => {
+  if (productId) {
+    return `${window.location.origin}/dashboard/product-detail/${productId}`;
+  }
+  return `${window.location.origin}/dashboard/product-detail/${localStorage.getItem("Id")}`;
+};
+
 export const copyPostLink = async (url: string, onSuccess: (msg: string) => void, onError: (msg: string) => void) => {
   try {
     await navigator.clipboard.writeText(url);
     onSuccess("Post link copied to clipboard!");
+  } catch {
+    onError("Failed to copy link");
+  }
+};
+
+export const copyProductLink = async (
+  url: string,
+  onSuccess: (msg: string) => void,
+  onError: (msg: string) => void
+) => {
+  try {
+    await navigator.clipboard.writeText(url);
+    onSuccess("Product link copied to clipboard!");
   } catch {
     onError("Failed to copy link");
   }

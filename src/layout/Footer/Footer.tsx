@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Image from "../../components/ui/Image";
-import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
+import { FaEnvelope, FaFacebookF, FaInstagram, FaMapMarkerAlt, FaPhoneAlt, FaYoutube } from "react-icons/fa";
 import BackToTopButton from "./BackToTop";
 import vector from "../../assets/Vector.svg";
 import ContentModal from "../../components/ui/ContentModal";
@@ -28,9 +28,9 @@ const Footer = () => {
     <>
       <BackToTopButton />
       <footer className="bg-[#F7F7F7] text-black py-8 md:py-12 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto lg:flex md:grid flex justify-between lg:grid-cols-2 grid-cols-2 md:grid-cols-5 lg:gap-6 md:gap-8 gap-2">
+        <div className="grid grid-cols-12 gap-4">
           {/* Main description - full width on mobile, then 2/5 on md+ */}
-          <div className="lg:col-span-2 lg:w-[40%] md:col-span-2  space-y-4">
+          <div className="col-span-4 space-y-4">
             <Link to="/" className="flex items-center" aria-label="Home">
               <Image
                 src="https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd"
@@ -46,25 +46,15 @@ const Footer = () => {
               />
             </Link>
             <p className="text-[16px] font-normal font-openSans leading-[160%] text-[#1E1E1E] lg:block md:block hidden">
-Your global conscious hub where social connection,<br/> meaningful commerce, and community growth come together.
+CNESS is a consciousness-based certification and <br/> growth platform designed to empower purpose-<br/>driven individuals and organizations.
             </p>
           </div>
-          <div className="col-span-2 lg:w-[25%] md:w-[50%] w-[75%]  sm:col-span-3 md:col-span-3 space-y-4">
-            <div className="flex justify-between gap-6 md:gap-8">
-              {/* About section 
-              <div className="w-fit space-y-3 md:space-y-4">
-                <h4 className="lg:text-base md:text-lg text-[14px] font-semibold text-[#6F74DD] poppins">Company</h4>
-                <ul className="space-y-1 md:space-y-2">
-                  <li><a href="/sign-up" className="text-[13px] md:text-base hover:underline openSans">Try CNESS</a></li>
-                  <li><Link to="/comingsoon" className="text-[13px] md:text-base hover:underline openSans">Marketplace</Link></li>
-                  <li><Link to="/comingsoon" className="text-[13px] md:text-base hover:underline openSans">Community</Link></li>
-                  <li><a href="/about" className="text-[13px] md:text-base hover:underline openSans">About</a></li>
-                </ul>
-              </div>*/}
+          <div className="col-span-8  sm:col-span-3 md:col-span-8 space-y-4">
+            <div className="grid grid-cols-3">
 
               {/* Quick Links section */}
               <div className="w-fit space-y-3 md:space-y-4 ">
-                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#373578] poppins">
+                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">
                   Quick Links
                 </h4>
                 <ul className="space-y-1 md:space-y-2">
@@ -139,7 +129,7 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
 
               {/* Social Links section - full width on small mobile, then normal */}
               <div className="w-fit sm:col-span-1 space-y-3 md:space-y-4">
-                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#373578] poppins">
+                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">
                   Follow Us
                 </h4>
                 <ul className="space-y-1 md:space-y-2">
@@ -196,6 +186,44 @@ Your global conscious hub where social connection,<br/> meaningful commerce, and
                     >
                       <FaYoutube className="me-2 md:me-3" />
                       YouTube
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Contact section  */}
+              <div className="w-fit space-y-3 md:space-y-4">
+                <h4 className="lg:text-base md:text-lg text-[14px] font-semibold text-[#6F74DD] poppins">Contact Us</h4>
+                 <ul className="space-y-1 md:space-y-2">
+                  <li>
+                    <a
+                      href="https://www.facebook.com/share/1A8V21L6Qj"
+                       target="_blank"
+                      className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
+                    >
+                      <FaMapMarkerAlt className="me-2 md:me-3" />
+                      825 Wilshire Blvd #333, 
+Santa Monica, CA 90401, USA. 
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://x.com/CnessInc"
+                       target="_blank"
+                      className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
+                    >
+                      <FaEnvelope className="me-2 md:me-3" />
+                      Support@cness.io
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.instagram.com/cness.inc"
+                       target="_blank"
+                      className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
+                    >
+                      <FaPhoneAlt className="me-2 md:me-3" />
+                      +1 456 334 445
                     </a>
                   </li>
                 </ul>

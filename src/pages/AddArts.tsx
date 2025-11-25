@@ -97,7 +97,7 @@ const AddArtsForm: React.FC = () => {
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
 //const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
-const [sampleList, setSampleList] = useState<string[]>([""]);
+const [sampleList, setSampleList] = useState<any[]>([]);
 const [storyMedia, setStoryMedia] = useState<{
   type: "audio" | "video" | null;
   url: string;
@@ -119,16 +119,12 @@ const removeSample = (index: number) => {
 };
 
 // UPDATE uploaded sample URL
-const handleSampleUpload = (index: number, url: string) => {
-  const updated = [...sampleList];
-  updated[index] = url;
-  setSampleList(updated);
-
-  // Save into formData
-  setFormData((prev) => ({
-    ...prev,
-    sample_track: updated.join(","), // OR ARRAY depending on backend
-  }));
+const handleSampleUpload = (index: number, newSampleObj: any) => {
+  setSampleList(prev => {
+    const updated = [...prev];
+    updated[index] = newSampleObj;
+    return updated;
+  });
 };
 
   const [chapters, setChapters] = useState<any[]>([
@@ -674,25 +670,24 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
     }
 
     setIsLoading(true);
-    try {
-     const payload = {
-  ...formData,
-  thumbnail_url: formData.thumbnail_url,
-  status: isDraft ? "draft" : "published",
+      try {
+      const payload = {
+    ...formData,
+    thumbnail_url: formData.thumbnail_url,
+    status: isDraft ? "draft" : "published",
 
-storytelling_video_url: storyMedia.url,
-// storytelling_video_public_id: storyMedia.public_id,
-storytelling_description: storySummary,
-sample_files: sampleList
-  .filter((url) => url && url.trim() !== "") // remove empty slots
-  .map((url, index) => ({
-    file_url: url,
-    public_id: extractPublicId(url),
-    title: `Sample ${index + 1}`,
-    file_type: "image",
-    order_number: index,
-  })),
-
+  storytelling_video_url: storyMedia.url,
+  storytelling_video_public_id: storyMedia.public_id,
+  storytelling_description: storySummary,
+ sample_files: sampleList.map((s, index) => ({
+  file_url: s.file_url,
+  public_id: s.public_id,
+  title: s.title,
+  file_type: s.file_type,
+  order_number: index,
+  is_ariome: s.is_ariome ?? false,
+})),
+     
   arts_details: {
     theme: formData.theme,
     mediums: formData.mediums,
@@ -744,15 +739,15 @@ sample_files: sampleList
     }
   };
 
-const extractPublicId = (url: string): string => {
-  try {
-    const parts = url.split("/");
-    const filename = parts.pop() || ""; // last part
-    return filename.split(".")[0]; // remove file extension
-  } catch {
-    return "";
-  }
-};
+//const extractPublicId = (url: string): string => {
+  //try {
+   // const parts = url.split("/");
+   // const filename = parts.pop() || ""; // last part
+   // return filename.split(".")[0]; // remove file extension
+ // } catch {
+ //   return "";
+ // }
+//};
 
   const handleAddHighlight = () => {
     if (newHighlight.trim()) {
@@ -1364,7 +1359,7 @@ const MultiSelect = ({
     {/* TEXT SUMMARY */}
     <div>
       <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-        Summary of the artwork <span className="text-red-500">*</span>
+        Summary of the artwork 
       </label>
 
       <textarea
@@ -1388,12 +1383,28 @@ const MultiSelect = ({
         >
          {sampleList.map((sample, index) => (
   <div key={index} className="mb-6">
-    <SampleTrackUpload
-      productType="art"
-      defaultValue={sample}
-      onUploadSuccess={(url) => handleSampleUpload(index, url)}
-      onRemove={() => removeSample(index)}
-    />
+   <SampleTrackUpload
+  productType="art"
+  defaultValue={sample.file_url}
+  onUploadSuccess={(id, url) =>
+    handleSampleUpload(index, {
+      file_url: url,
+      public_id: id,
+      title: `Sample ${index + 1}`,
+      file_type: "image",
+      order_number: index,
+      is_ariome: false,
+    })
+  }
+  onDonationChange={(value) => {
+    setSampleList(prev =>
+      prev.map((s, i) =>
+        i === index ? { ...s, is_ariome: value } : s
+      )
+    );
+  }}
+  onRemove={() => removeSample(index)}
+/>
   </div>
 ))}
 

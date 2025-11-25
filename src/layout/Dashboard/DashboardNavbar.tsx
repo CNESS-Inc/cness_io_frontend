@@ -27,8 +27,8 @@ const DashboardNavbar = ({
   const loggedInUserID = localStorage.getItem("Id");
 
   // Automatically detect environment based on domain (no .env needed)
-  const hostname = window.location.hostname.toLowerCase();
-  const showMarketplaceNew = hostname.includes("localhost") || hostname.includes("dev");
+ // const hostname = window.location.hostname.toLowerCase();
+  //const showMarketplaceNew = hostname.includes("localhost") || hostname.includes("dev");
 
   // Auto-open dropdowns based on current route
   useEffect(() => {
@@ -147,19 +147,19 @@ const DashboardNavbar = ({
         { label: "Connections", path: "/dashboard/MyConnection" },
       ],
     },
-    {
-      id: "marketplace",
-      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Marketplace (Beta)",
-      active: true,
-      path: "/dashboard/marketplace",
-    },
-    ...(showMarketplaceNew 
-      ? [
+    //{
+     // id: "marketplace",
+     // icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
+     // label: "Marketplace (Beta)",
+    //  active: true,
+    //  path: "/dashboard/marketplace",
+  //  },
+ 
+    
         {
           id: "market-place",
           icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-          label: "MarketplaceNew",
+          label: "Marketplace",
           active: false,
           path: "/dashboard/market-place",
           isMarketplaceDropdown: true,
@@ -172,8 +172,8 @@ const DashboardNavbar = ({
             { label: "Seller Dashboard", path: "/dashboard/seller-dashboard" }
           ]
         },
-      ]
-      : []),
+      
+  
     {
       id: "MentorPartnerHub",
       icon: <Zap className="w-5 h-5 text-gray-500" />,

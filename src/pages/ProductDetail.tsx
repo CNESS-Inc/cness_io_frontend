@@ -14,6 +14,8 @@ import { IoMdShareAlt } from 'react-icons/io';
 import ReviewModal from '../components/MarketPlace/ReviewModal';
 import DOMPurify from "dompurify";
 import { useCartWishlist } from '../components/MarketPlace/context/CartWishlistContext';
+import SharePopup from '../components/Social/SharePopup';
+import { buildProductShareUrl } from '../lib/utils';
 
 
 interface SampleFile {
@@ -56,6 +58,9 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [hasPurchased, setHasPurchased] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [userReview, setUserReview] = useState<any>(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const handleShareToggle = () => setIsShareOpen((prev) => !prev);
+  const handleShareClose = () => setIsShareOpen(false);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -380,11 +385,11 @@ console.log("FULL PRODUCT → ", productData);
     ];
 
  const details = [
-  {
-    icon: "https://static.codia.ai/image/2025-10-16/wo8469r2jf.png",
-    label: "Duration",
-    value: product?.product_details?.duration || "Not available",
-  },
+ // {
+   // icon: "https://static.codia.ai/image/2025-10-16/wo8469r2jf.png",
+    //label: "Duration",
+   // value: product?.product_details?.duration || "Not available",
+  //},
   {
     icon: "https://static.codia.ai/image/2025-10-16/dCQ1oOqZNv.png",
     label: "Language",
@@ -418,6 +423,16 @@ console.log("FULL PRODUCT → ", productData);
       </div>
     );
   }
+
+  const handleAudioPlay = (index: number) => {
+  const allAudios = document.querySelectorAll("audio");
+
+  allAudios.forEach((audio, i) => {
+    if (i !== index) {
+      (audio as HTMLAudioElement).pause();
+    }
+  });
+};
 
   return (
     <main className=" min-h-screen bg-white">
@@ -459,36 +474,42 @@ console.log("FULL PRODUCT → ", productData);
   </div>
 )}
               {/* Author and Stats */}
-              <div className="flex items-center space-x-4 text-sm ">
-                <div className="flex items-center space-x-2">
-                  <img
-                    src={product?.seller?.shop_logo || 'https://static.codia.ai/image/2025-10-16/1Uq1yJR1AG.png'}
-                    alt={product?.seller?.shop_name}
-                    className="w-6 h-6 rounded-full"
-                  />
-                  <span className="font-medium text-gray-900">
-                    {product?.seller?.shop_name}
-                  </span>
-                  <img src="https://static.codia.ai/image/2025-10-16/4CY6MqmRhj.png" alt="Verified" className="w-4 h-4" />
-                </div>
+              <div className="flex flex-row items-center flex-nowrap space-x-1 text-sm">
+              {/* Seller + Verified */}
+              <div className="flex flex-row items-center space-x-2 flex-nowrap">
+                <img
+                  src={product?.seller?.shop_logo || 'https://static.codia.ai/image/2025-10-16/1Uq1yJR1AG.png'}
+                  alt={product?.seller?.shop_name}
+                  className="w-6 h-6 rounded-full self-center"
+                />
+                <span className="font-medium text-gray-900 whitespace-nowrap truncate max-w-[110px] px-1">
+                  {product?.seller?.shop_name}
+                </span>
+                <img src="https://static.codia.ai/image/2025-10-16/4CY6MqmRhj.png" alt="Verified" className="w-4 h-4 self-center" />
+              </div>
 
-                <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                {/* Divider */}
+                <div className="w-1 h-1 bg-gray-300 rounded-full self-center"></div>
 
-                <div className="flex items-center space-x-1">
-                  <img src="https://static.codia.ai/image/2025-10-16/yNGhX01DCH.png" alt="Star" className="w-5 h-5" />
-                  <span className="text-gray-900">
+                {/* Rating */}
+                <div className="flex flex-row items-center space-x-1 flex-nowrap">
+                  <img src="https://static.codia.ai/image/2025-10-16/yNGhX01DCH.png" alt="Star" className="w-5 h-5 self-center" />
+                  <span className="text-gray-900 whitespace-nowrap">
                     {product?.rating?.average} ({product?.rating?.total_reviews})
                   </span>
                 </div>
 
-                <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-
-                <div className="flex items-center space-x-1">
-                  <img src="https://static.codia.ai/image/2025-10-16/92zn9LKBU3.png" alt="Downloads" className="w-5 h-5" />
-                  <span className="text-gray-900">{product?.purchase_count} purchases</span>
+                {/* Divider */}
+                <div className="w-1 h-1 bg-gray-300 rounded-full self-center"></div>
+                
+                {/* Purchases */}
+                <div className="flex flex-row items-center space-x-1 flex-nowrap">
+                  <img src="https://static.codia.ai/image/2025-10-16/92zn9LKBU3.png" alt="Downloads" className="w-5 h-5 self-center" />
+                  <span className="text-gray-900 whitespace-nowrap">
+                    {product?.purchase_count} purchases
+                  </span>
                 </div>
               </div>
-
               {/* Price */}
               <div className="flex gap-2.5 items-center">
                 {parseFloat(product.discount_percentage) > 0 && (
@@ -509,29 +530,52 @@ console.log("FULL PRODUCT → ", productData);
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-row items-center justify-start space-x-2">
                 <button
                   onClick={handleBuyNow}
-                  className="flex items-center space-x-2 bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600">
-                  <img src="https://static.codia.ai/image/2025-10-16/LUafay60N9.png" alt="Buy" className="w-6 h-6" />
-                  <span>Buy Now</span>
+                  className="flex flex-nowrap items-center space-x-2 bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600 select-none"
+                >
+                  <img src="https://static.codia.ai/image/2025-10-16/LUafay60N9.png" alt="Buy" className="w-6 h-6 flex-shrink-0" />
+                 <span className="whitespace-nowrap">Buy Now</span>
                 </button>
 
-                <button
+              <button
                   onClick={handleAddToCart}
                   disabled={isAddingToCart}
-                  className={`flex items-center space-x-2 border border-blue-500 text-blue-500 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                >
-                  <img src="https://static.codia.ai/image/2025-10-16/VUQR3XLDmc.png" alt="Cart" className="w-6 h-6" />
-                  <span>
-                    {isAddingToCart ? 'Adding...' : isCarted ? 'Added to cart' : 'Add to cart'}
+                  className={`flex items-center w-[150px] space-x-2 border border-blue-500 text-blue-500 px-3 py-3
+                  rounded-lg font-medium hover:bg-blue-50
+                  ${isCarted && !isAddingToCart ? 'px-3 py-3' : 'px-6'}
+                  ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                  <img
+                  src="https://static.codia.ai/image/2025-10-16/VUQR3XLDmc.png"
+                  alt="Cart"
+                  className="w-6 h-6"
+                  />
+                  <span className="whitespace-nowrap">
+                  {isAddingToCart
+                  ? 'Adding...'
+                  : isCarted
+                  ? 'Added to cart'
+                  : 'Add to cart'}
                   </span>
-                </button>
+                  </button>
 
-                <button className="p-3 border border-blue-500 rounded-lg hover:bg-blue-50">
-                  <IoMdShareAlt className='text-[#7077FE]' size={24} />
-                </button>
+                <div className="relative">
+                  <button 
+                    onClick={handleShareToggle}
+                    className="p-3 border border-blue-500 rounded-lg hover:bg-blue-50">
+                    <IoMdShareAlt className='text-[#7077FE]' size={24} />
+                  </button>
+                  {isShareOpen && (
+                    <SharePopup
+                      isOpen={true}
+                      onClose={handleShareClose}
+                      url={buildProductShareUrl(product?.id)}
+                      position="left"
+                    />
+                  )}
+                </div>
               </div>
 
               <div className="text-sm text-blue-500">*Lifetime access</div>
@@ -804,9 +848,13 @@ console.log("FULL PRODUCT → ", productData);
 {(product?.category?.slug === "music" || product?.category?.slug === "podcast") &&
   product?.sample_files?.length > 0 && (() => {
 
-    const audioSamples = product.sample_files.filter(
-      (f: SampleFile) => f.file_type === "audio"
-    );
+ const audioSamples = product.sample_files.filter(
+  (f: SampleFile) =>
+    f.file_type === "audio" ||
+    f.file_type?.includes("mp3") ||
+    f.file_url?.endsWith(".mp3") ||
+    f.file_url?.includes(".mp3")
+);
 
     if (audioSamples.length === 0) return null;
 
@@ -833,7 +881,7 @@ console.log("FULL PRODUCT → ", productData);
                   </h3>
                 </div>
 
-                <audio controls className="h-10" preload="metadata">
+                <audio controls className="h-10" preload="metadata" onPlay={() => handleAudioPlay(index)} >
                   <source src={sample.file_url} type="audio/mpeg" />
                   Your browser does not support the audio element.
                 </audio>
