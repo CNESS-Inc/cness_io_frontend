@@ -261,6 +261,7 @@ export default function DashboardTechnology() {
     // Fetch data with cleared filters
     fetchUsersearchProfileDetails(1);
   };
+  
 
   return (
     <>
