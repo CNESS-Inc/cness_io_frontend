@@ -1908,6 +1908,13 @@ export const UploadProductDocument = (fileType: string, formData: any): ApiRespo
     `${EndPoint.upload_product_document}/${fileType}`
   );
 };
+export const UploadVideoProductDocument = (fileType: string, formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    `${EndPoint.upload_product_document}/main-${fileType}`
+  );
+};
 
 export const UploadStoryTellingVideo = (formData: FormData): ApiResponse => {
   return executeAPI(
