@@ -113,8 +113,6 @@ export default function DashboardTechnology() {
         selectedCert,
         sort
       );
-      console.log("🚀 ~ fetchUsersearchProfileDetails ~ res:", res);
-
       if (res?.data) {
         setTotalCount(res.data.data.count);
 
@@ -141,6 +139,7 @@ export default function DashboardTechnology() {
             if (sort === "za") return b.name.localeCompare(a.name);
             return 0;
           });
+        console.log("🚀 ~ fetchUsersearchProfileDetails ~ transformedCompanies:", transformedCompanies)
         setCompanies(transformedCompanies);
       }
     } catch (err: any) {
@@ -509,8 +508,8 @@ export default function DashboardTechnology() {
                   id={company.id}
                   name={company.name}
                   domain={company.domain}
-                  logoUrl={company.logo}
-                  bannerUrl={company.banner}
+                  logoUrl={company.logoUrl}
+                  bannerUrl={company.bannerUrl}
                   location={company.location}
                   description={company.description}
                   tags={company.tags}
