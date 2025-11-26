@@ -30,6 +30,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onOpenFollowing,
   activeTab,
 }) => {
+  console.log("🚀 ~ ProfileCard ~ followers:", followers)
+  console.log("🚀 ~ ProfileCard ~ following:", following)
   //const [activeTab, setActiveTab] = useState(tabs[0]?.label || "");
 
   const navigate = useNavigate();
