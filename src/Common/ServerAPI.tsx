@@ -1455,10 +1455,16 @@ export const GetFollowingFollowerUsers = () => {
     EndPoint.following_followers
   );
 };
-export const GetConnectionUser = (search?: string) => {
+export const GetConnectionUser = (
+  search?: string,
+  page?: number,
+  limit?: number
+) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
+  if (page) params["page"] = page;
+  if (limit) params["limit"] = limit;
 
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection, params);
 };
@@ -1476,16 +1482,28 @@ export const UnFriend = (formattedData: any) => {
     EndPoint.delete_friend
   );
 };
-export const GetFriendRequest = (search?: string) => {
+export const GetFriendRequest = (
+  search?: string,
+  page?: number,
+  limit?: number
+) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
+  if (page) params["page"] = page;
+  if (limit) params["limit"] = limit;
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request, params);
 };
-export const GetSuggestedFriend = (search?: string) => {
+export const GetSuggestedFriend = (
+  search?: string,
+  page?: number,
+  limit?: number
+) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
+  if (page) params["page"] = page;
+  if (limit) params["limit"] = limit;
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.suggested_connection, params);
 };
 export const GetFriendSuggestions = () => {
