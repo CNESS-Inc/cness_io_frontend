@@ -373,10 +373,6 @@ export default function SocialFeed() {
             }));
           }
         } else {
-          // No friend record found, set to connect
-          console.log(
-            "🚀 ~ checkFriendStatus ~ No friend record found, set to connect"
-          );
           setFriendRequests((prev) => ({
             ...prev,
             [userId]: "connect",

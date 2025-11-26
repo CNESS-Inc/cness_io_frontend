@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
@@ -40,6 +40,7 @@ import {
   getUserSelectedTopic,
   updateUserSelectedTopic,
   FeedPostsDetails,
+  TrackPostView,
 } from "../Common/ServerAPI";
 
 // images
@@ -598,6 +599,10 @@ export default function SocialTopBar() {
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const shareMenuRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const postViewRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const postViewObserverRef = useRef<IntersectionObserver | null>(null);
+  const postViewTimeoutsRef = useRef<Record<string, number>>({});
+  const viewedPostsRef = useRef<Set<string>>(new Set());
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
   const toggleExpand = (postId: string) => {
@@ -1465,6 +1470,69 @@ export default function SocialTopBar() {
     return hasFileExtension || hasValidMediaPattern;
   };
 
+  const postIdsSignature = useMemo(
+    () => userPosts.map((post) => post.id).join(","),
+    [userPosts]
+  );
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+
+    postViewObserverRef.current?.disconnect();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const target = entry.target as HTMLElement;
+          const postId = target.dataset.postId;
+          if (!postId) return;
+
+          const hasTracked = viewedPostsRef.current.has(postId);
+
+          if (entry.isIntersecting && !hasTracked) {
+            if (postViewTimeoutsRef.current[postId]) return;
+
+            postViewTimeoutsRef.current[postId] = window.setTimeout(
+              async () => {
+                try {
+                  await TrackPostView(postId);
+                  viewedPostsRef.current.add(postId);
+                  observer.unobserve(target);
+                } catch (error) {
+                  console.error("Failed to track post view", error);
+                } finally {
+                  delete postViewTimeoutsRef.current[postId];
+                }
+              },
+              3000
+            );
+          } else if (
+            !entry.isIntersecting &&
+            postViewTimeoutsRef.current[postId]
+          ) {
+            clearTimeout(postViewTimeoutsRef.current[postId]);
+            delete postViewTimeoutsRef.current[postId];
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    postViewObserverRef.current = observer;
+
+    Object.entries(postViewRefs.current).forEach(([postId, element]) => {
+      if (element && !viewedPostsRef.current.has(postId)) {
+        observer.observe(element);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+      Object.values(postViewTimeoutsRef.current).forEach(clearTimeout);
+      postViewTimeoutsRef.current = {};
+    };
+  }, [postIdsSignature]);
+
   return (
     <>
       {isAdult ? (
@@ -1643,7 +1711,15 @@ export default function SocialTopBar() {
                   {userPosts.map((post) => (
                     <div
                       key={post.id}
-                      className="bg-white rounded-xl shadow-md p-4 md:p-6 w-full mx-auto mt-4 md:mt-5"
+                      ref={(el) => {
+                        if (el) {
+                          postViewRefs.current[post.id] = el;
+                        } else {
+                          delete postViewRefs.current[post.id];
+                        }
+                      }}
+                      data-post-id={post.id}
+                      className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-5"
                     >
                       {/* Header */}
                       <div className="flex items-center justify-between gap-2">
