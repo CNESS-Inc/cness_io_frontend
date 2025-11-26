@@ -161,6 +161,7 @@ export const EndPoint = {
   postCommentLike: "/user/post/comments/like",
   postchildCommentLike: "/user/post/comments/reply/like",
   like: "/user/posts/like",
+  post_view: "/user/posts/view",
   Post_AllComments: "/user/post/comments",
   single_post: "/user/posts/get",
   user_post: "/user/posts",
@@ -1325,6 +1326,14 @@ export const PostChildCommentLike = (formattedData: any) => {
 
 export const PostsLike = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.like);
+};
+
+export const TrackPostView = (postId: string) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    { post_id: postId },
+    EndPoint.post_view
+  );
 };
 
 export const GetComment = (id: any,page:any) => {
