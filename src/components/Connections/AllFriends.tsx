@@ -63,7 +63,7 @@ const AllFriends = ({ searchTerm, onSelect, onChat }: Props) => {
 
       setFollowStatus((prev) => {
         const updated = append ? { ...prev } : {};
-        formatted.forEach((conn) => {
+        formatted.forEach((conn:any) => {
           updated[conn.id] = conn.isFollowing || false;
         });
         return updated;
