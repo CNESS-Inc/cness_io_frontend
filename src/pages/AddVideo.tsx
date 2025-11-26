@@ -9,8 +9,8 @@ import {
   CreateVideoProduct,
   GetMarketPlaceCategories,
   GetMarketPlaceMoods,
-  UploadProductDocument,
   UploadProductThumbnail,
+  UploadVideoProductDocument,
 } from "../Common/ServerAPI";
 import { Plus, SquarePen, X } from "lucide-react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
@@ -159,7 +159,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         formData.append("short_video", file);
       }
 
-      const response = await UploadProductDocument(fileType, formData);
+      const response = await UploadVideoProductDocument(fileType, formData);
       const videoData = response?.data?.data;
 
       setThumbnail(videoData.thumbnail);
@@ -206,8 +206,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
       fileRef.current.value = "";
     }
   };
-
-  
 
   return (
     <div>
@@ -258,6 +256,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
               src={thumbnail}
               alt="Video Thumbnail"
               className="w-full max-h-64 rounded-lg object-cover"
+              onError={(e) => {
+                // Handle broken images
+                const target = e.target as HTMLImageElement;
+                target.style.display = "none";
+                // You could show a fallback here
+              }}
             />
             {/* Edit/Replace Button */}
             <button
@@ -342,28 +346,26 @@ const AddVideoForm: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [newHighlight, setNewHighlight] = useState("");
   const [showAIModal, setShowAIModal] = useState(false);
-const [sampleList, setSampleList] = useState<string[]>([""]);
+  const [sampleList, setSampleList] = useState<string[]>([""]);
 
+  const addSample = () => {
+    setSampleList([...sampleList, ""]);
+  };
 
-const addSample = () => {
-  setSampleList([...sampleList, ""]);
-};
-
-const removeSample = (index: number) => {
-  setSampleList(sampleList.filter((_, i) => i !== index));
-};
+  const removeSample = (index: number) => {
+    setSampleList(sampleList.filter((_, i) => i !== index));
+  };
   const [thumbnailData, setThumbnailData] = useState<{
     thumbnail_url: string;
     public_id: string;
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
 
-const [mainVideos, setMainVideos] = useState<
-  { video_id: string; thumbnail: string; video_url: string }[]
->([]);
-
-
-
+  const [mainVideo, setMainVideo] = useState<{
+    video_id: string;
+    thumbnail: string;
+    video_url: string;
+  } | null>(null);
 
   const [shortVideoData, setShortVideoData] = useState<{
     video_id: string;
@@ -371,21 +373,21 @@ const [mainVideos, setMainVideos] = useState<
     video_url: string;
   } | null>(null);
 
-const handleSelectCategory = (categoryName: string) => {
-  setShowModal(false);
+  const handleSelectCategory = (categoryName: string) => {
+    setShowModal(false);
 
-  const routes: Record<string, string> = {
-    Video: "/dashboard/products/add-video",
-    Music: "/dashboard/products/add-music",
-    Course: "/dashboard/products/add-course",
-    Podcasts: "/dashboard/products/add-podcast",
-    Ebook: "/dashboard/products/add-ebook",
-    Art: "/dashboard/products/add-arts",
+    const routes: Record<string, string> = {
+      Video: "/dashboard/products/add-video",
+      Music: "/dashboard/products/add-music",
+      Course: "/dashboard/products/add-course",
+      Podcasts: "/dashboard/products/add-podcast",
+      Ebook: "/dashboard/products/add-ebook",
+      Art: "/dashboard/products/add-arts",
+    };
+
+    const path = routes[categoryName];
+    if (path) navigate(path);
   };
-
-  const path = routes[categoryName];
-  if (path) navigate(path);
-};
 
   useEffect(() => {
     const fetchMoods = async () => {
@@ -429,7 +431,7 @@ const handleSelectCategory = (categoryName: string) => {
     product_title: "",
     price: 0,
     discount_percentage: 0,
-     mood_ids: [] as string[],
+    mood_ids: [] as string[],
     video_url: "", // video_id
     overview: "",
     highlights: [] as string[],
@@ -516,19 +518,19 @@ const handleSelectCategory = (categoryName: string) => {
     }));
   };
 
-const handleSampleTrackUpload = (sampleId: string, index: number) => {
-  setSampleList((prev) => {
-    const updated = [...prev];
-    updated[index] = sampleId;
-    return updated;
-  });
-};
+  const handleSampleTrackUpload = (sampleId: string, index: number) => {
+    setSampleList((prev) => {
+      const updated = [...prev];
+      updated[index] = sampleId;
+      return updated;
+    });
+  };
   //const handleRemoveSampleTrack = () => {
-    //setFormData((prev) => ({
-    //  ...prev,
-    ///  sample_track: "",
-   // }));
- // };
+  //setFormData((prev) => ({
+  //  ...prev,
+  ///  sample_track: "",
+  // }));
+  // };
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -547,16 +549,15 @@ const handleSampleTrackUpload = (sampleId: string, index: number) => {
       newErrors.discount_percentage =
         "Discount percentage must be between 0 and 100.";
     }
-if (!formData.mood_ids || formData.mood_ids.length === 0) {
-  newErrors.mood_ids = "Mood selection is required.";
-}
-
+    if (!formData.mood_ids || formData.mood_ids.length === 0) {
+      newErrors.mood_ids = "Mood selection is required.";
+    }
 
     if (!formData.thumbnail_url.trim())
       newErrors.thumbnail_url = "Thumbnail is required.";
-if (mainVideos.length === 0) {
-  newErrors.video_url = "Please upload at least one main video.";
-}
+    if (!mainVideo) {
+      newErrors.video_url = "Please upload a main video.";
+    }
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
     if (formData.highlights.length === 0) {
@@ -684,19 +685,19 @@ if (mainVideos.length === 0) {
       });
       return;
     }
-if (mainVideos.length === 0) {
-  showToast({
-    message: "Please upload at least one main video",
-    type: "error",
-    duration: 3000,
-  });
-  return;
-}
+    if (!mainVideo) {
+      showToast({
+        message: "Please upload a main video",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
     setIsLoading(true);
     try {
       const payload = {
         ...formData,
-video_url: mainVideos.map((v) => v.video_id), 
+        video_url: mainVideo.video_id,
         short_video_url: shortVideoData?.video_id || "",
         status: isDraft ? "draft" : "published",
       };
@@ -787,7 +788,6 @@ video_url: mainVideos.map((v) => v.video_id),
     navigate("/dashboard/products");
   };
 
-
   const handleShortVideoUpload = (
     videoId: string,
     thumbnailUrl: string,
@@ -806,8 +806,6 @@ video_url: mainVideos.map((v) => v.video_id),
     }));
   };
 
-
-
   const handleRemoveShortVideo = () => {
     setShortVideoData(null);
     setFormData((prev) => ({
@@ -821,20 +819,18 @@ video_url: mainVideos.map((v) => v.video_id),
   }
 
   const handleMultipleMainVideos = async (
-  e: React.ChangeEvent<HTMLInputElement>
-) => {
-  const files = Array.from(e.target.files || []);
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  if (files.length === 0) return;
-
-  for (const file of files) {
     if (!file.type.startsWith("video/")) {
       showToast({
         message: "Only video files allowed",
         type: "error",
         duration: 3000,
       });
-      continue;
+      return;
     }
 
     if (file.size > 100 * 1024 * 1024) {
@@ -843,141 +839,173 @@ video_url: mainVideos.map((v) => v.video_id),
         type: "error",
         duration: 3000,
       });
-      continue;
+      return;
     }
 
     const formData = new FormData();
     formData.append("video", file);
 
     try {
-      const response = await UploadProductDocument("video", formData);
+      const response = await UploadVideoProductDocument("video", formData);
+      const res = await fetch(response?.data?.data.thumbnail, {
+        redirect: "follow",
+      });
+      const finalUrl = res.url;
+
       const data = response?.data?.data;
 
-      setMainVideos((prev) => [
-        ...prev,
-        {
-          video_id: data.video_id,
-          thumbnail: data.thumbnail,
-          video_url: data.video_url,
-        },
-      ]);
+      setLoadedThumbnail(data?.thumbnail);
+
+      // Set single video instead of adding to array
+      setMainVideo({
+        video_id: data.video_id,
+        thumbnail: `${finalUrl}&timecode=1`,
+        video_url: data.video_url,
+      });
+
+      showToast({
+        message: "Main video uploaded successfully",
+        type: "success",
+        duration: 3000,
+      });
     } catch (err) {
       showToast({
-        message: "Failed to upload one of the videos",
+        message: "Failed to upload video",
         type: "error",
         duration: 3000,
       });
     }
-  }
 
-  e.target.value = "";
-};
+    e.target.value = "";
+  };
+  const [loadedThumbnail, setLoadedThumbnail] = useState();
 
+  const retryLoading = async (finalUrl: any) => {
+    const url = finalUrl;
+    let attempts = 0;
+    const maxAttempts = 10;
+    const delay = 100; // 1.5 seconds
+    console.log("🚀 ~ retryLoading ~ res:");
 
-const removeMainVideo = (index: number) => {
-  setMainVideos((prev) => prev.filter((_, i) => i !== index));
-};
+    while (attempts < maxAttempts) {
+      try {
+        const res = await fetch(url, { method: "HEAD" });
+        console.log("🚀 ~ retryLoading ~ res:", res);
 
+        if (res.ok) {
+          setLoadedThumbnail(url); // thumbnail is now ready 🎉
+          return;
+        }
+      } catch (e) {
+        // ignore errors
+      }
 
-
-{/*mood multi select*/}
-const MultiSelect = ({
-  label,
-  options,
-  selectedValues,
-  onChange,
-  required = false,
-}: any) => {
-  const [open, setOpen] = useState(false);
-
-  const toggleOption = (value: string) => {
-    if (selectedValues.includes(value)) {
-      onChange(selectedValues.filter((v: string) => v !== value));
-    } else {
-      onChange([...selectedValues, value]);
+      attempts++;
+      await new Promise((res) => setTimeout(res, delay));
     }
   };
 
-  return (
-    <div className="relative">
-      <label className="block font-['Open_Sans'] font-semibold text-[16px] mb-2 text-[#242E3A]">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+  const removeMainVideo = () => {
+    setMainVideo(null);
+    setLoadedThumbnail(undefined);
+  };
 
-      {/* Input Box */}
-      <div
-        className="border border-gray-300 rounded-md px-3 py-2 bg-white cursor-pointer flex flex-wrap gap-2 min-h-[42px]"
-        onClick={() => setOpen(!open)}
-      >
-        {selectedValues.length === 0 ? (
-          <span className="text-gray-400">Select Mood</span>
-        ) : (
-          selectedValues.map((val: string) => {
-            const item = options.find((o: any) => o.id === val);
-            return (
-              <span
-                key={val}
-                className="bg-[#7077FE] text-white px-2 py-1 rounded-md text-sm flex items-center gap-1"
-              >
-                {item?.name}
-                <X
-                  size={14}
-                  className="cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleOption(val);
-                  }}
-                />
-              </span>
-            );
+  {
+    /*mood multi select*/
+  }
+  const MultiSelect = ({
+    label,
+    options,
+    selectedValues,
+    onChange,
+    required = false,
+  }: any) => {
+    const [open, setOpen] = useState(false);
 
-            
-          })
-          
-        )}
-        <svg
-  className="w-4 h-4 absolute right-3 text-gray-500 pointer-events-none"
-  fill="none"
-  stroke="currentColor"
-  strokeWidth="2"
-  viewBox="0 0 24 24"
->
-  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-</svg>
-      </div>
+    const toggleOption = (value: string) => {
+      if (selectedValues.includes(value)) {
+        onChange(selectedValues.filter((v: string) => v !== value));
+      } else {
+        onChange([...selectedValues, value]);
+      }
+    };
 
-      {/* Dropdown List */}
-      {open && (
-        <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-md z-20">
-          {options.map((opt: any) => (
-            <div
-              key={opt.id}
-              onClick={() => toggleOption(opt.id)}
-              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-                selectedValues.includes(opt.id)
-                  ? "bg-[#EEF3FF] text-[#7077FE]"
-                  : "text-gray-700"
-              }`}
-            >
-              {opt.name}
-            </div>
-          ))}
+    return (
+      <div className="relative">
+        <label className="block font-['Open_Sans'] font-semibold text-[16px] mb-2 text-[#242E3A]">
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+
+        {/* Input Box */}
+        <div
+          className="border border-gray-300 rounded-md px-3 py-2 bg-white cursor-pointer flex flex-wrap gap-2 min-h-[42px]"
+          onClick={() => setOpen(!open)}
+        >
+          {selectedValues.length === 0 ? (
+            <span className="text-gray-400">Select Mood</span>
+          ) : (
+            selectedValues.map((val: string) => {
+              const item = options.find((o: any) => o.id === val);
+              return (
+                <span
+                  key={val}
+                  className="bg-[#7077FE] text-white px-2 py-1 rounded-md text-sm flex items-center gap-1"
+                >
+                  {item?.name}
+                  <X
+                    size={14}
+                    className="cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleOption(val);
+                    }}
+                  />
+                </span>
+              );
+            })
+          )}
+          <svg
+            className="w-4 h-4 absolute right-3 text-gray-500 pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
         </div>
-      )}
-      
-    </div>
-    
-  );
-};
 
-
-
+        {/* Dropdown List */}
+        {open && (
+          <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-md z-20">
+            {options.map((opt: any) => (
+              <div
+                key={opt.id}
+                onClick={() => toggleOption(opt.id)}
+                className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                  selectedValues.includes(opt.id)
+                    ? "bg-[#EEF3FF] text-[#7077FE]"
+                    : "text-gray-700"
+                }`}
+              >
+                {opt.name}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <>
       <Breadcrumb
         onAddProductClick={() => setShowModal(true)}
-  onSelectCategory={handleSelectCategory}
+        onSelectCategory={handleSelectCategory}
       />
 
       <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
@@ -1019,26 +1047,26 @@ const MultiSelect = ({
             />
             <div>
               <MultiSelect
-  label="Mood"
-  required
-  options={moods}
-  selectedValues={formData.mood_ids}
-  onChange={(values: string[]) => {
-    setFormData((prev) => ({
-      ...prev,
-      mood_ids: values,
-    }));
+                label="Mood"
+                required
+                options={moods}
+                selectedValues={formData.mood_ids}
+                onChange={(values: string[]) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    mood_ids: values,
+                  }));
 
-    setErrors((prev) => ({
-      ...prev,
-      mood_ids: "",
-    }));
-  }}
-/>
+                  setErrors((prev) => ({
+                    ...prev,
+                    mood_ids: "",
+                  }));
+                }}
+              />
 
-{errors.mood_ids && (
-  <span className="text-red-500 text-sm">{errors.mood_ids}</span>
-)}
+              {errors.mood_ids && (
+                <span className="text-red-500 text-sm">{errors.mood_ids}</span>
+              )}
             </div>
           </div>
           <div>
@@ -1138,66 +1166,65 @@ const MultiSelect = ({
           </div>
 
           <div className="mt-8">
-          <div>
-  <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-    Upload Videos <span className="text-red-500">*</span>
-  </label>
+            <div>
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Upload Videos <span className="text-red-500">*</span>
+              </label>
 
-  <label className="relative block w-full h-40 bg-[#F9FAFB] hover:bg-[#EEF3FF] rounded-lg border-2 border-dashed border-gray-300 cursor-pointer p-4 text-center transition">
-    <input
-      type="file"
-      accept="video/*"
-      multiple
-      className="hidden"
-      onChange={handleMultipleMainVideos}
-    />
+              <label className="relative block w-full h-40 bg-[#F9FAFB] hover:bg-[#EEF3FF] rounded-lg border-2 border-dashed border-gray-300 cursor-pointer p-4 text-center transition">
+                <input
+                  type="file"
+                  accept="video/*"
+                  className="hidden"
+                  onChange={handleMultipleMainVideos}
+                />
 
-    <img src={uploadimg} className="w-10 mx-auto mt-6" />
-    <p className="mt-2 text-sm text-gray-600">Click to upload videos</p>
-  </label>
+                <img src={uploadimg} className="w-10 mx-auto mt-6" />
+                <p className="mt-2 text-sm text-gray-600">
+                  Click to upload main video
+                </p>
+              </label>
 
-  {mainVideos.length === 0 && errors.video_url && (
-    <p className="text-red-500 text-sm mt-1">{errors.video_url}</p>
-  )}
+              {!mainVideo && errors.video_url && (
+                <p className="text-red-500 text-sm mt-1">{errors.video_url}</p>
+              )}
 
-  {/* List of uploaded videos */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-    {mainVideos.map((vid, index) => (
-      <div
-        key={index}
-        className="relative rounded-lg border border-gray-200 overflow-hidden"
-      >
-        <img
-          src={vid.thumbnail}
-          className="w-full h-40 object-cover"
-          alt="Thumbnail"
-        />
+              {/* Show single uploaded video */}
+              {mainVideo && (
+                <div className="mt-4">
+                  <div className="relative rounded-lg border border-gray-200 overflow-hidden max-w-md">
+                    <img
+                      src={loadedThumbnail}
+                      className="w-full h-40 object-cover"
+                      alt="Thumbnail"
+                      onError={() => retryLoading(mainVideo.thumbnail)}
+                    />
 
-        {/* Play Icon */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="bg-black bg-opacity-40 rounded-full p-3">
-            <svg
-              className="w-10 h-10 text-white"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        </div>
+                    {/* Play Icon */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="bg-black bg-opacity-40 rounded-full p-3">
+                        <svg
+                          className="w-10 h-10 text-white"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                    </div>
 
-        {/* Remove Button */}
-        <button
-          type="button"
-          onClick={() => removeMainVideo(index)}
-          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      </div>
-    ))}
-  </div>
-</div>
+                    {/* Remove Button */}
+                    <button
+                      type="button"
+                      onClick={removeMainVideo}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </FormSection>
 
@@ -1388,23 +1415,25 @@ const MultiSelect = ({
           description="Upload a preview sample so buyers can experience your content before purchasing."
         >
           {sampleList.map((item, index) => (
-  <div key={index} className="mb-6">
-    <SampleTrackUpload
-      productType="video"
-      defaultValue={item}
-      onUploadSuccess={(sampleId) => handleSampleTrackUpload(sampleId, index)}
-      onRemove={() => removeSample(index)}
-    />
-  </div>
-))}
+            <div key={index} className="mb-6">
+              <SampleTrackUpload
+                productType="video"
+                defaultValue={item}
+                onUploadSuccess={(sampleId) =>
+                  handleSampleTrackUpload(sampleId, index)
+                }
+                onRemove={() => removeSample(index)}
+              />
+            </div>
+          ))}
 
-<button
-  type="button"
-  onClick={addSample}
-  className="px-4 py-2 mt-4 bg-[#7077FE] text-white rounded-md"
->
-  + Add Another Sample
-</button>
+          <button
+            type="button"
+            onClick={addSample}
+            className="px-4 py-2 mt-4 bg-[#7077FE] text-white rounded-md"
+          >
+            + Add Another Sample
+          </button>
         </FormSection>
 
         {/* Buttons */}
