@@ -24,6 +24,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useSearchParams } from "react-router-dom";
 import CreatableSelect from "react-select/creatable";
 import Modal from "../../ui/Modal";
+import Cropper from "../../ui/Cropper";
 
 const tabNames = [
   "Basic Information",
@@ -400,6 +401,17 @@ const UserProfilePage = () => {
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [services, setServices] = useState<any[]>([]);
   const [serviceInput, setServiceInput] = useState("");
+
+  const [cropModal, setCropModal] = useState<{
+  open: boolean;
+  src: string;
+  type: "profile" | "banner" | null;
+  setter?: React.Dispatch<React.SetStateAction<string | null>>;
+}>({
+  open: false,
+  src: "",
+  type: null,
+});
   // const public_organization = localStorage.getItem("person_organization");
   // const is_disqualify = localStorage.getItem("is_disqualify");
   const [searchParams] = useSearchParams();
@@ -741,100 +753,87 @@ const socialLinksForm = useForm();
   );
   const publicProfileForm = useForm();
 
-  const handleImageChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setter: React.Dispatch<React.SetStateAction<string | null>>,
-    formKey: "profile" | "banner"
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+const handleImageChange = async (
+  e: React.ChangeEvent<HTMLInputElement>,
+  setter: React.Dispatch<React.SetStateAction<string | null>>,
+  formKey: "profile" | "banner"
+) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    setUploadProgress({
-      type: formKey,
-      message: "Uploading. Please wait...",
+  const previewUrl = URL.createObjectURL(file);
+
+  // Open cropping modal — DO NOT upload yet
+  setCropModal({
+    open: true,
+    src: previewUrl,
+    type: formKey,
+    setter: setter,
+  });
+};
+
+
+
+const handleCropSave = async (blob: Blob, previewUrl: string) => {
+  if (!cropModal.setter) return;
+
+  // Update the preview immediately
+  cropModal.setter(previewUrl);
+
+  // Convert blob -> file for backend
+  const croppedFile = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+
+  setUploadProgress({
+    type: cropModal.type,
+    message: "Uploading cropped image...",
+  });
+
+  try {
+    const formData = new FormData();
+
+    if (cropModal.type === "profile") {
+      formData.append("profile", croppedFile);
+    } else {
+      formData.append("banner", croppedFile);
+    }
+
+    const res = await SubmitProfileDetails(formData);
+
+    showToast({
+      message: res?.success?.message,
+      type: "success",
+      duration: 5000,
     });
 
-    // Create temporary preview immediately
-    const objectUrl = URL.createObjectURL(file);
-    setter(objectUrl);
+    // Fetch updated user profile
+    const response = await MeDetails();
+    const userData = response?.data?.data?.user;
 
-    let timeoutId = setTimeout(() => {
-      setUploadProgress({ type: null, message: "" });
-      showToast({
-        message:
-          "Upload is taking longer than expected. Please try again with a smaller image.",
-        type: "error",
-        duration: 5000,
-      });
-      URL.revokeObjectURL(objectUrl);
-      setter(null);
-    }, 8000);
-
-    try {
-      // Prepare form data
-      const formData = new FormData();
-
-      // Use the correct field name based on image type
-      if (formKey === "profile") {
-        formData.append("profile", file);
-      } else {
-        formData.append("banner", file);
-      }
-      const res = await SubmitProfileDetails(formData);
-      clearTimeout(timeoutId);
-
-      showToast({
-        message: res?.success?.message,
-        type: "success",
-        duration: 5000,
-      });
-
-      // Get updated profile data
-      const response = await MeDetails();
-      const userData = response?.data?.data?.user;
-
-      // Update preview with actual server URL
-      if (formKey === "profile") {
-        const profilePictureUrl = userData?.profile_picture;
-        if (profilePictureUrl) {
-          setter(profilePictureUrl);
-          localStorage.setItem("profile_picture", profilePictureUrl);
-        }
-      } else {
-        const bannerUrl = userData?.profile_banner;
-        if (bannerUrl) {
-          setter(bannerUrl);
-          // Clean up temporary URL
-          URL.revokeObjectURL(objectUrl);
-        }
-      }
-
-      // Update other user data in localStorage
-      localStorage.setItem("name", userData?.name);
-      localStorage.setItem("main_name", userData?.main_name);
-      localStorage.setItem("margaret_name", userData?.margaret_name);
-      localStorage.setItem("margaret_name", userData?.margaret_name);
-    } catch (error: any) {
-      clearTimeout(timeoutId);
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-      // Clean up on error and reset to previous state
-      URL.revokeObjectURL(objectUrl);
-      // Reset to previous banner or default
-      const response = await MeDetails();
-      const userData = response?.data?.data?.user;
-      if (formKey === "banner") {
-        setter(userData?.profile_banner || null);
-      }
-    } finally {
-      clearTimeout(timeoutId);
-      setUploadProgress({ type: null, message: "" });
+    if (cropModal.type === "profile" && userData.profile_picture) {
+      cropModal.setter(userData.profile_picture);
+      localStorage.setItem("profile_picture", userData.profile_picture);
     }
-  };
 
+    if (cropModal.type === "banner" && userData.profile_banner) {
+      cropModal.setter(userData.profile_banner);
+    }
+  } catch (err: any) {
+    showToast({
+      message: err?.response?.data?.error?.message || "Image upload failed",
+      type: "error",
+      duration: 5000,
+    });
+  }
+
+ setCropModal({
+  open: false,
+  src: "",
+  type: null,
+  setter: undefined,
+});
+
+  setUploadProgress({ type: null, message: "" });
+};
   // Add these functions inside your UserProfilePage component
 
   const handleRemoveProfileImage = async () => {
@@ -1535,6 +1534,8 @@ const socialLinksForm = useForm();
     }
   };*/
 
+
+
   return (
     <>
       <section className="w-full px-1 sm:px-2 lg:px-1 pt-2 pb-10">
@@ -1625,6 +1626,7 @@ const socialLinksForm = useForm();
                     type="file"
                     accept="image/*"
                     className="hidden"
+                     onClick={(e) => (e.currentTarget.value = "")}  
                     onChange={(e) => handleImageChange(e, setBanner, "banner")}
                   />
                   <PhotoIcon className="w-4 sm:w-5 h-4 sm:h-5 text-gray-600" />
@@ -3978,6 +3980,17 @@ const socialLinksForm = useForm();
         //     </div>
         //   </div>
         // )} */}
+
+    {cropModal.open && cropModal.type && (
+  <Cropper
+    imageSrc={cropModal.src}
+    type={cropModal.type}
+    onClose={() =>
+      setCropModal({ open: false, src: "", type: null, setter: undefined })
+    }
+    onSave={handleCropSave}
+  />
+)}
       </section>
     </>
   );
