@@ -2506,8 +2506,14 @@ export default function SocialTopBar() {
 
           {/* Popup Modals (unchanged) */}
           {showPopup && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative">
+            <div
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+              onClick={() => setShowPopup(false)}
+            >
+              <div
+                className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
                   <div className="w-fit h-fit">
                     {/*<Image
