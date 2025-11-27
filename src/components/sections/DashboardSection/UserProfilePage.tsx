@@ -1285,8 +1285,16 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
             response.data.data?.address ||
             response.data.data?.location?.address ||
             "",
-          country: response.data.data?.country_id || "",
-          state: response.data.data?.state_id || "",
+          country:
+            response.data.data?.country_id !== undefined &&
+            response.data.data?.country_id !== null
+              ? String(response.data.data?.country_id)
+              : "",
+          state:
+            response.data.data?.state_id !== undefined &&
+            response.data.data?.state_id !== null
+              ? String(response.data.data?.state_id)
+              : "",
           city: response.data.data?.location?.city || "",
           postalCode: response.data.data?.location?.postal_code || "",
           communication: {
@@ -1473,14 +1481,23 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
     }
   }, []);
 
+  const selectedCountry = contactInfoForm.watch("country");
+  const selectedState = contactInfoForm.watch("state");
+
   useEffect(() => {
-    const countryId = contactInfoForm.watch("country");
-    if (countryId) {
-      GetState(countryId);
+    if (selectedCountry) {
+      GetState(selectedCountry).then(() => {
+        // ensure the selected state value is preserved after states load
+        if (selectedState) {
+          contactInfoForm.setValue("state", selectedState);
+        }
+      });
     } else {
       setStates([]);
+      contactInfoForm.setValue("state", "");
     }
-  }, [contactInfoForm.watch("country")]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCountry]);
 
   useEffect(() => {
     const workExperiences = workExperienceForm.watch("workExperiences");
@@ -1493,7 +1510,8 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
         }
       });
     }
-  }, [workExperienceForm.watch("workExperiences")]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(workExperienceForm.watch("workExperiences"))]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   /*const fetchVerifyOrganizationNumber = async (file: File) => {
@@ -2480,7 +2498,7 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                           options={
                             Country
                               ? Country.map((country: any) => ({
-                                  value: country.id,
+                                  value: String(country.id),
                                   label: country.name,
                                 }))
                               : []
@@ -2489,14 +2507,15 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                             Country
                               ? Country.find(
                                   (c: any) =>
-                                    c.id === contactInfoForm.watch("country")
+                                    String(c.id) ===
+                                    contactInfoForm.watch("country")
                                 )
                                 ? {
                                     value: contactInfoForm.watch("country"),
                                     label:
                                       Country.find(
                                         (c: any) =>
-                                          c.id ===
+                                          String(c.id) ===
                                           contactInfoForm.watch("country")
                                       )?.name || "Select your country",
                                   }
@@ -2506,7 +2525,9 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                           onChange={(selectedOption) => {
                             contactInfoForm.setValue(
                               "country",
-                              selectedOption?.value || ""
+                              selectedOption?.value
+                                ? String(selectedOption.value)
+                                : ""
                             );
                           }}
                           onBlur={() => contactInfoForm.trigger("country")}
@@ -2531,10 +2552,11 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                           State
                         </label>
                         <Select
+                          isDisabled={!contactInfoForm.watch("country")}
                           options={
                             states
                               ? states.map((state: any) => ({
-                                  value: state.id,
+                                  value: String(state.id),
                                   label: state.name,
                                 }))
                               : []
@@ -2543,14 +2565,15 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                             states
                               ? states.find(
                                   (s: any) =>
-                                    s.id === contactInfoForm.watch("state")
+                                    String(s.id) ===
+                                    contactInfoForm.watch("state")
                                 )
                                 ? {
                                     value: contactInfoForm.watch("state"),
                                     label:
                                       states.find(
                                         (s: any) =>
-                                          s.id ===
+                                          String(s.id) ===
                                           contactInfoForm.watch("state")
                                       )?.name || "Select your state",
                                   }
@@ -2560,7 +2583,9 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                           onChange={(selectedOption) => {
                             contactInfoForm.setValue(
                               "state",
-                              selectedOption?.value || ""
+                              selectedOption?.value
+                                ? String(selectedOption.value)
+                                : ""
                             );
                           }}
                           styles={customSelectStyles}
