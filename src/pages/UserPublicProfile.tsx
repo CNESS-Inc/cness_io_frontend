@@ -35,6 +35,7 @@ import {
   UpdateBestPractice,
   GetBestpracticesByUserProfile,
   DeleteBestPractices,
+  GetPublicBestpracticesByUserProfile,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -149,7 +150,10 @@ export default function UserProfileView() {
   const filteredMineBestPractices = mineBestPractices.filter(
     (practice) => practice.status === 1
   );
-  console.log("🚀 ~ UserProfileView ~ filteredMineBestPractices:", filteredMineBestPractices)
+  console.log(
+    "🚀 ~ UserProfileView ~ filteredMineBestPractices:",
+    filteredMineBestPractices
+  );
 
   const isOwnProfile =
     (id && String(id) === String(loggedInUserID)) ||
@@ -182,7 +186,7 @@ export default function UserProfileView() {
         res = await GetBestpracticesByUserProfile(id);
       } else {
         // Call function for unauthenticated users
-        res = await GetBestpracticesByUserProfile(id); // Replace with your actual unauthenticated API call if different
+        res = await GetPublicBestpracticesByUserProfile(id);
       }
 
       if (res?.data?.data) {
@@ -209,7 +213,10 @@ export default function UserProfileView() {
             is_bp_following: practice.is_bp_following,
           })
         );
-        console.log("🚀 ~ fetchMineBestPractices ~ transformedCompanies:", transformedCompanies)
+        console.log(
+          "🚀 ~ fetchMineBestPractices ~ transformedCompanies:",
+          transformedCompanies
+        );
         setmineBestPractices(transformedCompanies);
       }
     } catch (error: any) {
@@ -1652,22 +1659,26 @@ export default function UserProfileView() {
                                 {/* Card content */}
                                 <div
                                   onClick={(e) => {
-                                    if (
-                                      !(e.target as HTMLElement).closest(
-                                        ".follow"
-                                      )
-                                    ) {
-                                      navigate(
-                                        `/dashboard/bestpractices/${
-                                          company.id
-                                        }/${slugify(company.title)}`,
-                                        {
-                                          state: {
-                                            likesCount: company.likesCount,
-                                            isLiked: company.isLiked,
-                                          },
-                                        }
-                                      );
+                                    if (token) {
+                                      if (
+                                        !(e.target as HTMLElement).closest(
+                                          ".follow"
+                                        )
+                                      ) {
+                                        navigate(
+                                          `/dashboard/bestpractices/${
+                                            company.id
+                                          }/${slugify(company.title)}`,
+                                          {
+                                            state: {
+                                              likesCount: company.likesCount,
+                                              isLiked: company.isLiked,
+                                            },
+                                          }
+                                        );
+                                      }
+                                    } else {
+                                      setOpenSignup(true);
                                     }
                                   }}
                                 >
