@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
@@ -40,6 +40,7 @@ import {
   getUserSelectedTopic,
   updateUserSelectedTopic,
   FeedPostsDetails,
+  TrackPostView,
 } from "../Common/ServerAPI";
 
 // images
@@ -50,8 +51,8 @@ import Collection from "../assets/collectionicon.svg";
 import people from "../assets/peopleicon.svg";
 import Trending from "../assets/trending.svg";
 import createstory from "../assets/createstory.jpg";
-// import like from "../assets/like.png";
-import like from "../assets/sociallike.svg";
+//import like from "../assets/like.png";
+// import like from "../assets/sociallike.svg";
 // import comment from "../assets/comment.png";
 // import comment1 from "../assets/comment1.png";
 import Image from "../components/ui/Image";
@@ -598,6 +599,10 @@ export default function SocialTopBar() {
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const shareMenuRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const postViewRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const postViewObserverRef = useRef<IntersectionObserver | null>(null);
+  const postViewTimeoutsRef = useRef<Record<string, number>>({});
+  const viewedPostsRef = useRef<Set<string>>(new Set());
   const loggedInUserID = localStorage.getItem("Id");
   const CONTENT_LIMIT = 150;
   const toggleExpand = (postId: string) => {
@@ -1465,10 +1470,73 @@ export default function SocialTopBar() {
     return hasFileExtension || hasValidMediaPattern;
   };
 
+  const postIdsSignature = useMemo(
+    () => userPosts.map((post) => post.id).join(","),
+    [userPosts]
+  );
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+
+    postViewObserverRef.current?.disconnect();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const target = entry.target as HTMLElement;
+          const postId = target.dataset.postId;
+          if (!postId) return;
+
+          const hasTracked = viewedPostsRef.current.has(postId);
+
+          if (entry.isIntersecting && !hasTracked) {
+            if (postViewTimeoutsRef.current[postId]) return;
+
+            postViewTimeoutsRef.current[postId] = window.setTimeout(
+              async () => {
+                try {
+                  await TrackPostView(postId);
+                  viewedPostsRef.current.add(postId);
+                  observer.unobserve(target);
+                } catch (error) {
+                  console.error("Failed to track post view", error);
+                } finally {
+                  delete postViewTimeoutsRef.current[postId];
+                }
+              },
+              3000
+            );
+          } else if (
+            !entry.isIntersecting &&
+            postViewTimeoutsRef.current[postId]
+          ) {
+            clearTimeout(postViewTimeoutsRef.current[postId]);
+            delete postViewTimeoutsRef.current[postId];
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    postViewObserverRef.current = observer;
+
+    Object.entries(postViewRefs.current).forEach(([postId, element]) => {
+      if (element && !viewedPostsRef.current.has(postId)) {
+        observer.observe(element);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+      Object.values(postViewTimeoutsRef.current).forEach(clearTimeout);
+      postViewTimeoutsRef.current = {};
+    };
+  }, [postIdsSignature]);
+
   return (
     <>
       {isAdult ? (
-        <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-1 w-full pt-2">
+        <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-4 px-2 md:px-4 lg:px-2 w-full pt-2">
           {/* Left Side: Post & Stories - Full width on mobile */}
           <div className="w-full lg:max-w-[75%]" ref={containerRef}>
             {activeView === "posts" ? (
@@ -1532,50 +1600,7 @@ export default function SocialTopBar() {
                           </button>
                         </div>
                       </div>
-                      <div className="flex justify-between md:justify-center md:gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
-                        <button
-                          className="flex items-center gap-1 md:gap-2"
-                          onClick={() => openPostPopup()}
-                        >
-                          <Image
-                            src="/youtube.png"
-                            alt="youtube"
-                            width={20}
-                            height={14}
-                            className="object-contain rounded-0 w-5 md:w-6"
-                          />
-                          <span className="text-black text-xs md:text-sm">
-                            Video
-                          </span>
-                        </button>
-                        <button
-                          className="flex items-center gap-1 md:gap-2"
-                          onClick={() => openPostPopup()}
-                        >
-                          <Image
-                            src="/picture.png"
-                            alt="picture"
-                            width={20}
-                            height={16}
-                            className="object-contain rounded-0 w-5 md:w-6"
-                          />
-                          <span className="text-black text-xs md:text-sm">
-                            Photo
-                          </span>
-                        </button>
-                        {/* <button className="hidden md:flex items-center gap-1 md:gap-2">
-                          <Image
-                            src="/list.png"
-                            alt="list"
-                            width={20}
-                            height={16}
-                            className="object-contain rounded-0 w-5 md:w-6"
-                          />
-                          <span className="text-black text-xs md:text-sm">
-                            List
-                          </span>
-                        </button> */}
-                      </div>
+                      
                     </div>
                   </div>
 
@@ -1686,6 +1711,14 @@ export default function SocialTopBar() {
                   {userPosts.map((post) => (
                     <div
                       key={post.id}
+                      ref={(el) => {
+                        if (el) {
+                          postViewRefs.current[post.id] = el;
+                        } else {
+                          delete postViewRefs.current[post.id];
+                        }
+                      }}
+                      data-post-id={post.id}
                       className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-5"
                     >
                       {/* Header */}
@@ -2060,16 +2093,8 @@ export default function SocialTopBar() {
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1 md:gap-2">
                             <div className="flex items-center -space-x-2 md:-space-x-3">
-                              <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                                <img
-                                  src={like}
-                                  alt="Like"
-                                  className="w-6 h-6 md:w-8 md:h-8"
-                                />
-                              </div>
-                              <span className="text-xs md:text-sm text-gray-500 pl-3 md:pl-5">
-                                {post.likes_count}
-                              </span>
+                            
+                              
                             </div>
                           </div>
                           {/* <div className="flex items-center gap-2">
@@ -2092,7 +2117,7 @@ export default function SocialTopBar() {
                         )}
                       </div>
 
-                      <div className="border-t border-[#ECEEF2] pt-4 grid grid-cols-3  gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
+                      <div className="border-t border-[#ECEEF2] grid grid-cols-3  gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
                         <button
                           onClick={(e) => handleLike(post.id, e)}
                           disabled={isLoading}
@@ -2100,11 +2125,16 @@ export default function SocialTopBar() {
                             isLoading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                         >
+                          <span className="hidden sm:flex text-lg text-black">
+                                {post.likes_count}
+                              </span>
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6 shrink-0"
                             fill={post.is_liked ? "#7077FE" : "none"}
                             stroke={post.is_liked ? "#7077FE" : "#000"}
                           />
+
+                          
                           <span
                             className={`hidden sm:flex ${
                               post.is_liked ? "text-[#7077FE]" : "text-black"

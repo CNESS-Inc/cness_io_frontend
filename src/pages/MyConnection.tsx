@@ -1,44 +1,30 @@
-import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // Import useLocation
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import ConnectionsCard from "../components/Profile/Tabs";
-import FriendCard from "../components/Profile/Friendcard";
 import FriendProfileModal from "../components/Profile/FriendProfilepopup";
-import {
-  GetConnectionUser,
-  GetFriendRequest,
-  AcceptFriendRequest,
-  RejectFriendRequest,
-  GetUserPost,
-  GetSuggestedFriend,
-} from "../Common/ServerAPI";
-import { useToast } from "../components/ui/Toast/ToastProvider";
+import { GetUserPost } from "../Common/ServerAPI";
+import AllFriends from "../components/Connections/AllFriends";
+import FriendRequests from "../components/Connections/FriendRequests";
+import Suggestions from "../components/Connections/Suggestions";
+
+interface Connection {
+  id: number;
+  name: string;
+  username: string;
+  image: string;
+  profileImage: string;
+  conversationId?: string | number;
+  isFollowing?: boolean;
+}
 
 const MyConnection = () => {
   const [searchValue, setSearchValue] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All Friends");
   const [selectedFriend, setSelectedFriend] = useState<Connection | null>(null);
-  const [allConnections, setAllConnections] = useState<Connection[]>([]);
-  const [friendRequests, setFriendRequests] = useState<Connection[]>([]);
-  const [suggestedFriend, setSuggestedFriend] = useState<Connection[]>([]);
-  const [followStatus, setFollowStatus] = useState<{ [key: number]: boolean }>(
-    {}
-  );
-  const { showToast } = useToast();
 
-  // Get navigation state
   const location = useLocation();
 
-  interface Connection {
-    id: number;
-    name: string;
-    username: string;
-    image: string;
-    profileImage: string;
-    conversationId?: string | number;
-    isFollowing?: boolean;
-  }
-
-  // Check navigation state on component mount and when location changes
   useEffect(() => {
     if (location.state?.to === "request") {
       setActiveTab("Friend Requests");
@@ -48,106 +34,50 @@ const MyConnection = () => {
     }
   }, [location.state]);
 
+  // keep search in sync with ?s= query param
   useEffect(() => {
-    if (activeTab === "Friend Requests") {
-      fetchFriendRequests();
+    const params = new URLSearchParams(location.search);
+    const urlSearch = params.get("s") || "";
+    if (urlSearch !== searchTerm) {
+      setSearchValue(urlSearch);
+      setSearchTerm(urlSearch);
     }
-    if (activeTab === "All Friends") {
-      fetchAllConnections();
+  }, [location.search, searchTerm]);
+
+  // Support query param ?t=friendrequest / ?t=suggestion to set the tab
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get("t")?.toLowerCase();
+
+    if (tabParam === "friendrequest" || tabParam === "friendrequests") {
+      setActiveTab("Friend Requests");
+      return;
     }
-    if (activeTab === "Suggestions") {
-      fetchSuggestedFriend();
+    if (tabParam === "suggestion" || tabParam === "suggestions") {
+      setActiveTab("Suggestions");
+      return;
     }
-  }, [activeTab]);
 
-  const fetchAllConnections = async (search: string = "") => {
-    try {
-      const response = await GetConnectionUser(search);
-      const formattedRequests = response.data.data.rows.map((item: any) => ({
-        id: item.friend_user.id,
-        name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
-        username: item?.friend_user?.username,
-        image: item.friend_user.profile.profile_picture,
-        profileImage: item.friend_user.profile.profile_picture,
-        conversationId: item?.conversation?.id || null,
-        isFollowing: item.isFollowing || false,
-      }));
-      setAllConnections(formattedRequests);
-
-      // Update follow status state
-      const statusMap: { [key: number]: boolean } = {};
-      formattedRequests.forEach((conn: any) => {
-        statusMap[conn.id] = conn.isFollowing;
-      });
-      setFollowStatus(statusMap);
-    } catch (error) {
-      console.error("Error fetching friend requests:", error);
+    // Any other value falls back to All Friends
+    if (tabParam) {
+      setActiveTab("All Friends");
     }
-  };
+  }, [location.search]);
 
-  const fetchFriendRequests = async (search: string = "") => {
-    try {
-      const response = await GetFriendRequest(search);
-      const formattedRequests = response.data.data.rows.map((item: any) => ({
-        id: item.friend_user.id,
-        name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
-        username: item?.friend_user?.username,
-        image: item.friend_user.profile.profile_picture,
-        profileImage: item.friend_user.profile.profile_picture,
-      }));
-      setFriendRequests(formattedRequests);
-    } catch (error) {
-      console.error("Error fetching friend requests:", error);
+  const updateUrlForTab = (tab: string) => {
+    const params = new URLSearchParams(location.search);
+    if (tab === "Friend Requests") {
+      params.set("t", "friendrequest");
+    } else if (tab === "Suggestions") {
+      params.set("t", "suggestion");
+    } else {
+      params.delete("t");
     }
-  };
-
-  const fetchSuggestedFriend = async (search: string = "") => {
-    try {
-      const response = await GetSuggestedFriend(search);
-      const formattedRequests = response.data.data.rows.map((item: any) => ({
-        id: item.id,
-        name: `${item.profile.first_name} ${item.profile.last_name}`,
-        username: item?.username,
-        image: item.profile.profile_picture,
-        profileImage: item.profile.profile_picture,
-      }));
-      setSuggestedFriend(formattedRequests);
-    } catch (error) {
-      console.error("Error fetching friend requests:", error);
-    }
-  };
-
-  const handleAcceptRequest = async (friendId: number) => {
-    try {
-      const formattedData = { friend_id: friendId };
-      await AcceptFriendRequest(formattedData);
-
-      // Remove the accepted request from the list
-      setFriendRequests((prev) =>
-        prev.filter((request) => request.id !== friendId)
-      );
-      showToast({
-        message: "You've got a new friend!",
-        type: "success",
-        duration: 3000,
-      });
-    } catch (error) {
-      console.error("Error accepting friend request:", error);
-    }
-  };
-
-  const handleRejectRequest = async (friendId: number) => {
-    try {
-      const formattedData = { friend_id: friendId };
-      await RejectFriendRequest(formattedData);
-
-      // Remove the rejected request from the list
-      setFriendRequests((prev) =>
-        prev.filter((request) => request.id !== friendId)
-      );
-    } catch (error) {
-      console.error("Error rejecting friend request:", error);
-    }
+    const newSearch = params.toString();
+    const newUrl = `${location.pathname}${newSearch ? `?${newSearch}` : ""}${
+      location.hash || ""
+    }`;
+    window.history.pushState(null, "", newUrl);
   };
 
   const handleChatClick = (connection: Connection) => {
@@ -158,41 +88,40 @@ const MyConnection = () => {
     );
   };
 
-  let activeConnections: Connection[] = [];
-  if (activeTab === "All Friends") activeConnections = allConnections;
-  if (activeTab === "Friend Requests") activeConnections = friendRequests;
-  if (activeTab === "Suggestions") activeConnections = suggestedFriend;
-
   const handleSearch = () => {
-    if (activeTab === "Friend Requests") {
-      fetchFriendRequests(searchValue);
+    setSearchTerm(searchValue);
+    const params = new URLSearchParams(location.search);
+    if (searchValue) {
+      params.set("s", searchValue);
+    } else {
+      params.delete("s");
     }
-    if (activeTab === "All Friends") {
-      fetchAllConnections(searchValue);
-    }
-    if (activeTab === "Suggestions") {
-      fetchSuggestedFriend(searchValue);
-    }
+    const newSearch = params.toString();
+    const newUrl = `${location.pathname}${newSearch ? `?${newSearch}` : ""}${
+      location.hash || ""
+    }`;
+    window.history.pushState(null, "", newUrl);
   };
 
   return (
     <div className="flex flex-col gap-4 mt-2 px-1">
-      {/* Top Tabs + Search */}
       <ConnectionsCard
         title="My Connections"
         subtitle="Explore the trending posts and discussions among your connections at this moment."
         tabs={["All Friends", "Friend Requests", "Suggestions"]}
         onSearch={setSearchValue}
-        onTabChange={setActiveTab}
+        onTabChange={(tab) => {
+          setActiveTab(tab);
+          updateUrlForTab(tab);
+        }}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         getUserPosts={GetUserPost}
         selectedTopic={undefined}
       />
-      
+
       <div className="rounded-[12px] border border-gray-200 bg-white flex flex-col gap-4 sm:p-6 w-full">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          {/* Left Title */}
           <h2
             className="text-[14px] font-medium capitalize leading-[100%]"
             style={{
@@ -206,8 +135,7 @@ const MyConnection = () => {
               ? "Friend Requests"
               : "Suggestions"}
           </h2>
-          
-          {/* Search & Button */}
+
           <div className="flex w-full sm:w-auto items-center gap-2">
             <div className="relative flex-1 sm:w-64">
               <input
@@ -241,45 +169,24 @@ const MyConnection = () => {
           </div>
         </div>
 
-        <div className="sm:grid gap-4 md:gap-5 lg:gap-6 justify-items-center grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-4 3xl:grid-cols-6">
-          {activeConnections.length > 0 ? (
-            activeConnections.map((conn) => (
-              <FriendCard
-                key={conn.id}
-                name={conn.name}
-                username={conn.username}
-                image={conn.image}
-                connection={conn}
-                actions={
-                  activeTab === "All Friends"
-                    ? ["chat"]
-                    : activeTab === "Friend Requests"
-                    ? ["accept", "reject"]
-                    : []
-                }
-                onChat={() => handleChatClick(conn)}
-                onAccept={() => handleAcceptRequest(conn.id)}
-                onReject={() => handleRejectRequest(conn.id)}
-                onMaximize={() =>
-                  setSelectedFriend({
-                    ...conn,
-                    id: conn.id,
-                    isFollowing: followStatus[conn.id] || false,
-                  })
-                }
-              />
-            ))
-          ) : (
-            <div className="col-span-full flex justify-center items-center py-10">
-              <p className="text-gray-500 text-sm">
-  No {activeTab.replace(/^All\s+/i, "").toLowerCase()} found.
-              </p>
-            </div>
-          )}
-        </div>
+        {activeTab === "All Friends" && (
+          <AllFriends
+            searchTerm={searchTerm}
+            onChat={handleChatClick}
+            onSelect={(conn) => setSelectedFriend(conn)}
+          />
+        )}
+        {activeTab === "Friend Requests" && (
+          <FriendRequests searchTerm={searchTerm} />
+        )}
+        {activeTab === "Suggestions" && (
+          <Suggestions
+            searchTerm={searchTerm}
+            onSelect={(conn) => setSelectedFriend(conn)}
+          />
+        )}
       </div>
-      
-      {/* Modal */}
+
       {selectedFriend && (
         <FriendProfileModal
           friend={selectedFriend}
