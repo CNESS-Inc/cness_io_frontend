@@ -404,7 +404,7 @@ export default function PostCard({
           )}
         </div>
 
-        <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3 mt-4">
+        <p className="text-gray-800 font-[poppins] text-sm md:text-base mb-2 md:mb-3 mt-4">
           {expandedPosts[id] || content?.length <= CONTENT_LIMIT
             ? content
             : `${content?.substring(0, CONTENT_LIMIT)}...`}
