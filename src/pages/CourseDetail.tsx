@@ -147,12 +147,48 @@ export default function CourseDetail() {
     try {
       const response = await GetLibraryrDetailsById(id);
       const data = response?.data?.data?.product;
+      console.log("📦 Product Data:", data);
+      console.log("📂 Contents:", data?.contents);
+      console.log("🎬 Category:", data?.category?.slug);
+      console.log("🎥 Available fields:", {
+        hasContent: !!data?.content,
+        content: data?.content,
+        hasFileUrl: !!data?.file_url,
+        file_url: data?.file_url,
+        hasVideoUrl: !!data?.video_url,
+        video_url: data?.video_url,
+        id: data?.id,
+        title: data?.title
+      });
       setProductData(data);
 
       // Auto-select first file from first content
       if (data?.contents?.[0]?.files?.[0]) {
+        console.log("✅ Setting activeFile and activeContent from contents");
         setActiveFile(data.contents[0].files[0]);
         setActiveContent(data.contents[0]);
+      } else if (data?.category?.slug === "video") {
+        // Video products don't have contents/files structure - create mock objects
+        console.log("✅ Creating mock file/content for video product");
+        const videoUrl = data?.content || data?.file_url || data?.video_url || "";
+        const mockFile = {
+          file_id: data?.id || `video-${Date.now()}`,
+          title: data?.title || "Video",
+          file_url: videoUrl,
+          file_type: "video",
+          duration: data?.duration
+        };
+        const mockContent = {
+          content_id: `${data?.id}-content` || `content-${Date.now()}`,
+          title: data?.title || "Video Content",
+          content_type: "video"
+        };
+        console.log("📝 Created mock file:", mockFile);
+        console.log("📝 Created mock content:", mockContent);
+        setActiveFile(mockFile);
+        setActiveContent(mockContent);
+      } else {
+        console.warn("⚠️ No contents/files found in product data");
       }
     } catch (error: any) {
       showToast({
@@ -313,7 +349,7 @@ export default function CourseDetail() {
 
             {productData?.category?.slug === "video" && (
               <VideoDisplay
-              thumbnail={productData?.thumbnail_url}
+                thumbnail={productData?.thumbnail_url}
                 title={productData?.title}
                 seller={productData?.seller}
                 reviews={productData?.total_reviews}
@@ -322,7 +358,13 @@ export default function CourseDetail() {
                 duration={productData?.duration}
                 mood={productData?.mood}
                 category={productData?.category}
-                content={productData?.content}
+                content={productData?.contents}
+                currentFile={activeFile}
+                currentContent={activeContent}
+                productId={id!}
+                productProgress={productProgress}
+                onVideoEnd={handleTrackEnd}
+                onProgressUpdate={fetchProductProgress}
                 onSaveToCollection={() => setShowModal(true)}
               />
             )}

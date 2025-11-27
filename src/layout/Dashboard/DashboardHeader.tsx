@@ -375,6 +375,14 @@ const supportDropdownRef = useRef<HTMLDivElement>(null);
         "margaret_name",
         res?.data?.data?.user.margaret_name
       );
+      localStorage.setItem(
+        "is_seller",
+        res?.data?.data?.user?.is_seller || "false"
+      );
+      localStorage.setItem(
+        "is_library",
+        res?.data?.data?.user?.is_library || "false"
+      );
     } catch (error) {}
   };
 

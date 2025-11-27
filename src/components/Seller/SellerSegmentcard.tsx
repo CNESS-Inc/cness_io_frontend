@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type ReactNode  } from "react";
+import React, { useEffect, useState, type ReactNode } from "react";
 import {
   //ChevronRight,
 
@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import profileicon from "../../assets/profileicon.svg";
 import aspired from "../../assets/asplocked1.svg";
-
 let cachedNotifications: any[] | null = null;
 let notificationsPromise: Promise<any[] | null> | null = null;
 import inspired from "../../assets/insplocked1.svg";
@@ -31,10 +30,7 @@ import marketplaceicon from "../../assets/marketplace-icon.svg";
 import socialicon from "../../assets/socialprofileicon.svg";
 // import postinsight from "../../assets/post-insights-badge.svg";
 import learninglabicon from "../../assets/learninglabicon.svg";
-import lock from "../../assets/lock.svg";
 import fire from "../../assets/fire.svg";
-import completed from "../../assets/completed.svg";
-import resume from "../../assets/resume.svg";
 import carticon from "../../assets/carticon.svg";
 import clock from "../../assets/clock.svg";
 import { useNavigate } from "react-router-dom";
@@ -45,6 +41,7 @@ import {
   AcceptFriendRequest,
   DashboardDetails,
   GetAllFormDetails,
+  GetLibraryrDetails,
   // GetAllPlanDetails,
   GetSubDomainDetails,
   GetUserNotification,
@@ -63,6 +60,7 @@ import Button from "../ui/Button";
 import { iconMap } from "../../assets/icons";
 import { HiOutlineLockClosed } from "react-icons/hi2";
 import DOMPurify from "dompurify";
+import { ProductCard } from "../../pages/Library";
 //import like from "../../assets/likes.svg";
 //import heart from "../../assets/heart.svg";
 
@@ -254,10 +252,10 @@ function HeaderDivider() {
 export function GreetingBar({
   name,
 }: // onCloseSuggestion,
-{
-  name: string;
-  onCloseSuggestion?: () => void;
-}) {
+  {
+    name: string;
+    onCloseSuggestion?: () => void;
+  }) {
   const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState<
     | "PricingModal"
@@ -312,16 +310,16 @@ export function GreetingBar({
 
   //greeting
 
-const [hasLoggedBefore, setHasLoggedBefore] = useState(false);
-useEffect(() => {
-const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
-  if (stored === true) {
-    setHasLoggedBefore(true);
-  } else {
-    setHasLoggedBefore(false);
-    localStorage.setItem("hasLoggedBefore", JSON.stringify(true));
-  }
-}, []);
+  const [hasLoggedBefore, setHasLoggedBefore] = useState(false);
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
+    if (stored === true) {
+      setHasLoggedBefore(true);
+    } else {
+      setHasLoggedBefore(false);
+      localStorage.setItem("hasLoggedBefore", JSON.stringify(true));
+    }
+  }, []);
 
   const handleOrganizationFormChange = async (
     e: React.ChangeEvent<
@@ -408,9 +406,9 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
         // Include custom_profession in the payload if "other" is selected
         professions: personForm.professions.includes("other")
           ? [
-              ...personForm.professions.filter((p) => p !== "other"),
-              personForm.custom_profession,
-            ]
+            ...personForm.professions.filter((p) => p !== "other"),
+            personForm.custom_profession,
+          ]
           : personForm.professions,
       };
 
@@ -514,15 +512,13 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
     }
 
     if (rules.minLength && value.length < rules.minLength) {
-      return `${name.replace("_", " ")} must be at least ${
-        rules.minLength
-      } characters`;
+      return `${name.replace("_", " ")} must be at least ${rules.minLength
+        } characters`;
     }
 
     if (rules.maxLength && value.length > rules.maxLength) {
-      return `${name.replace("_", " ")} must be less than ${
-        rules.maxLength
-      } characters`;
+      return `${name.replace("_", " ")} must be less than ${rules.maxLength
+        } characters`;
     }
 
     if (rules.pattern && !rules.pattern.test(value)) {
@@ -1016,22 +1012,22 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
     <>
       <div className="mb-5 grid grid-cols-12 gap-5">
         <div className="col-span-12 lg:col-span-8">
-         {!hasLoggedBefore ? (
-  <>
-    <h1 className="text-[26px] lg:text-[30px] font-semibold">
-      Hello, <span className="text-[#7077FE]">{name}</span>
-    </h1>
-    <p className="mt-1 text-xs md:text-sm text-[#242424]">
-      Welcome to your CNESS Dashboard
-    </p>
-  </>
-) : (
-  <>
-    <h1 className="text-[26px] lg:text-[30px] font-semibold">
-      Welcome Back, <span className="text-[#7077FE]">{name}</span>
-    </h1>
-  </>
-)}
+          {!hasLoggedBefore ? (
+            <>
+              <h1 className="text-[26px] lg:text-[30px] font-semibold">
+                Hello, <span className="text-[#7077FE]">{name}</span>
+              </h1>
+              <p className="mt-1 text-xs md:text-sm text-[#242424]">
+                Welcome to your CNESS Dashboard
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-[26px] lg:text-[30px] font-semibold">
+                Welcome Back, <span className="text-[#7077FE]">{name}</span>
+              </h1>
+            </>
+          )}
 
         </div>
 
@@ -1284,11 +1280,10 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
                         name="organization_name"
                         value={organizationForm.organization_name}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          organizationErrors.organization_name
+                        className={`w-full px-3 py-2 border ${organizationErrors.organization_name
                             ? "border-red-500"
                             : "border-gray-300"
-                        } rounded-md`}
+                          } rounded-md`}
                         placeholder="Enter organization name"
                       />
                       {organizationErrors.organization_name && (
@@ -1307,11 +1302,10 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
                         name="domain"
                         value={organizationForm.domain}
                         onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${
-                          organizationErrors.domain
+                        className={`w-full px-3 py-2 border ${organizationErrors.domain
                             ? "border-red-500"
                             : "border-gray-300"
-                        } rounded-md`}
+                          } rounded-md`}
                       >
                         <option value="">Select domain</option>
                         {domains?.map((domain: any) => (
@@ -1339,11 +1333,10 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
                           name="custom_domain"
                           value={organizationForm.custom_domain || ""}
                           onChange={handleOrganizationFormChange}
-                          className={`w-full px-3 py-2 border ${
-                            organizationErrors.custom_domain
+                          className={`w-full px-3 py-2 border ${organizationErrors.custom_domain
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-md`}
+                            } rounded-md`}
                           placeholder="Enter your domain name"
                         />
                         {organizationErrors.custom_domain && (
@@ -1482,11 +1475,10 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handleOrganizationFormChange}
-                                className={`w-full px-3 py-2 border ${
-                                  organizationErrors[`question_${question.id}`]
+                                className={`w-full px-3 py-2 border ${organizationErrors[`question_${question.id}`]
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-md`}
+                                  } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -1497,7 +1489,7 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
                                 <p className="mt-1 text-sm text-red-600">
                                   {
                                     organizationErrors[
-                                      `question_${question.id}`
+                                    `question_${question.id}`
                                     ]
                                   }
                                 </p>
@@ -1866,9 +1858,8 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
                         className={`w-[440px] h-[41px]
                 rounded-xl
                 border-[0.82px]
-                p-3 mt-2 ${
-                  personErrors.first_name ? "border-red-500" : "border-gray-300"
-                } rounded-md`}
+                p-3 mt-2 ${personErrors.first_name ? "border-red-500" : "border-gray-300"
+                          } rounded-md`}
                       />
                       {personErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -1890,9 +1881,8 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
                         className={`w-[440px] h-[41px]
                 rounded-xl
                 border-[0.82px]
-                p-3 mt-2 ${
-                  personErrors.last_name ? "border-red-500" : "border-gray-300"
-                } rounded-md`}
+                p-3 mt-2 ${personErrors.last_name ? "border-red-500" : "border-gray-300"
+                          } rounded-md`}
                         placeholder="Enter your last name"
                       />
                       {personErrors.last_name && (
@@ -2074,11 +2064,10 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handlePersonFormChange}
-                                className={`w-full px-3 py-2 border ${
-                                  personErrors[`question_${question.id}`]
+                                className={`w-full px-3 py-2 border ${personErrors[`question_${question.id}`]
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-md`}
+                                  } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -2326,22 +2315,22 @@ const stored = JSON.parse(localStorage.getItem("hasLoggedBefore") || "false");
    =========================================================== */
 export function TrueProfileCard({
 
-  
+
   //title = "True Profile Created",
   //description = "Your profile is now complete with all the essential details added. This allows us to customize your experience!",
- 
+
   completion = 100,
   avatar,
   onUpdateProfile,
 }: // onOpen,
-{
-  title?: string;
-  avatar?: string;
-  description?: string;
-  completion?: number;
-  onUpdateProfile?: () => void;
-  onOpen?: () => void;
-}) {
+  {
+    title?: string;
+    avatar?: string;
+    description?: string;
+    completion?: number;
+    onUpdateProfile?: () => void;
+    onOpen?: () => void;
+  }) {
   const id = localStorage.getItem("Id");
   const navigate = useNavigate();
 
@@ -2390,9 +2379,9 @@ export function TrueProfileCard({
               <img
                 src={
                   !avatar ||
-                  avatar === "null" ||
-                  avatar === "undefined" ||
-                  !avatar.startsWith("http")
+                    avatar === "null" ||
+                    avatar === "undefined" ||
+                    !avatar.startsWith("http")
                     ? "/profile.png"
                     : avatar
                 }
@@ -2411,11 +2400,11 @@ export function TrueProfileCard({
         {/* Texts + Button */}
         <div className="min-w-0 flex-1 text-center sm:text-left">
           <h3 className="font-opensans font-semibold text-[16px] sm:text-[18px] md:text-[20px] leading-6 sm:leading-7 md:leading-8 text-[#222224]">
-           {computedTitle}
+            {computedTitle}
           </h3>
 
           <p className="mt-2 font-opensans font-light text-[13px] sm:text-[14px] md:text-[16px] leading-[150%] text-[#242424]">
-             {computedDescription}
+            {computedDescription}
           </p>
 
           <button
@@ -2444,22 +2433,22 @@ export function CertificationCard({
   intervalMs = 6000,
   upgradeText = "To achieve the next level certification, you need to create a basic profile that includes selling your reactions, accessing the community, and utilizing the resources library.",
 }: // onUpgrade,
-{
-  progress?: number;
-  score?: number;
-  onContinue?: () => void;
-  underProgressDescription?: string;
-  completeProgressDescription?: string;
-  inspiredDescription?: string;
-  activeLevel?: string | null;
-  onOpen?: () => void;
-  auto?: boolean;
-  intervalMs?: number;
-  upgradeTitle?: string;
-  upgradeText?: string;
-  upgradeCtaLabel?: string;
-  onUpgrade?: () => void;
-}) {
+  {
+    progress?: number;
+    score?: number;
+    onContinue?: () => void;
+    underProgressDescription?: string;
+    completeProgressDescription?: string;
+    inspiredDescription?: string;
+    activeLevel?: string | null;
+    onOpen?: () => void;
+    auto?: boolean;
+    intervalMs?: number;
+    upgradeTitle?: string;
+    upgradeText?: string;
+    upgradeCtaLabel?: string;
+    onUpgrade?: () => void;
+  }) {
   const [slide, setSlide] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   const [showiInterestModal, setShowInterestModal] = useState(false);
@@ -2510,17 +2499,16 @@ export function CertificationCard({
   };
 
   const dotCls = (on: boolean) =>
-    `h-1.5 w-1.5 rounded-full ${
-      on ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+    `h-1.5 w-1.5 rounded-full ${on ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
     } transition-colors`;
 
 
-    
+
   return (
     <>
       <Card className="rounded-xl border border-[#E5E7EB] px-4 md:px-[18px] py-5 space-y-3">
         {activeLevel === null ||
-        (activeLevel === "Aspiring" && progress === 0) ? (
+          (activeLevel === "Aspiring" && progress === 0) ? (
           <div
             className="w-full relative rounded-xl bg-white flex flex-col gap-[18px]"
             style={{ borderColor: "var(--Stroke, rgba(236, 238, 242, 1))" }}
@@ -2711,11 +2699,10 @@ export function CertificationCard({
           >
             {/* Slide 1: Levels */}
             <div
-              className={`absolute inset-0 transition-opacity duration-500 ${
-                slide === 0
+              className={`absolute inset-0 transition-opacity duration-500 ${slide === 0
                   ? "opacity-100 pointer-events-auto"
                   : "opacity-0 pointer-events-none"
-              }`}
+                }`}
             >
               <div className="text-[16px] sm:text-[18px] font-['Open_Sans'] leading-[100%] text-[#222224] mt-1 sm:mt-2 mb-3 sm:mb-4 px-2 pt-2 sm:pt-5">
                 Certification Levels
@@ -2724,11 +2711,10 @@ export function CertificationCard({
               <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 px-1 sm:px-2">
                 {/* Aspiring */}
                 <div
-                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${
-                    activeLevel === "Aspiring" && progress === 0
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${activeLevel === "Aspiring" && progress === 0
                       ? "bg-linear-to-r from-[#7077FE] to-[#F07EFF]"
                       : "border border-[#E5E7EB] bg-white"
-                  }`}
+                    }`}
                   onClick={() => {
                     if (
                       activeLevel === "Aspiring" ||
@@ -2758,12 +2744,11 @@ export function CertificationCard({
 
                 {/* Inspired */}
                 <div
-                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${
-                    activeLevel === "Inspired" ||
-                    (activeLevel === "Aspiring" && progress > 0)
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${activeLevel === "Inspired" ||
+                      (activeLevel === "Aspiring" && progress > 0)
                       ? "bg-linear-to-r from-[#7077FE] to-[#F07EFF]"
                       : "border border-[#E5E7EB] bg-white"
-                  }`}
+                    }`}
                   onClick={() => {
                     if (
                       activeLevel === "Inspired" ||
@@ -2781,7 +2766,7 @@ export function CertificationCard({
                     <img
                       src={
                         activeLevel === null ||
-                        (activeLevel === "Aspiring" && progress === 0)
+                          (activeLevel === "Aspiring" && progress === 0)
                           ? inspired
                           : "https://cdn.cness.io/inspired1.svg"
                       }
@@ -2796,11 +2781,10 @@ export function CertificationCard({
 
                 {/* Leader */}
                 <div
-                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${
-                    activeLevel === "Leader"
+                  className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${activeLevel === "Leader"
                       ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-0.5 before:bg-linear-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
                       : "border border-[#E5E7EB] bg-white"
-                  }`}
+                    }`}
                   onClick={() => {
                     if (activeLevel === "Leader") {
                       navigate("/dashboard/assesmentcertification");
@@ -2825,11 +2809,10 @@ export function CertificationCard({
 
             {/* Slide 2: Upgrade callout */}
             <div
-              className={`absolute inset-0 transition-opacity duration-500 ${
-                slide === 1
+              className={`absolute inset-0 transition-opacity duration-500 ${slide === 1
                   ? "opacity-100 pointer-events-auto"
                   : "opacity-0 pointer-events-none"
-              }`}
+                }`}
             >
               <div className="h-full w-full flex items-start">
                 <div className="w-full grid grid-cols-[56px,1fr] sm:grid-cols-[64px,1fr] gap-4 sm:gap-6 p-4 sm:p-6">
@@ -2841,8 +2824,8 @@ export function CertificationCard({
                           activeLevel === "Aspiring"
                             ? "https://cdn.cness.io/inspired1.svg"
                             : activeLevel === "Inspired"
-                            ? "https://cdn.cness.io/leader.webp"
-                            : "https://cdn.cness.io/leader1.webp"
+                              ? "https://cdn.cness.io/leader.webp"
+                              : "https://cdn.cness.io/leader1.webp"
                         }
                         alt={`${getNextLevel()} badge`}
                         className="h-8 w-8 sm:h-9 sm:w-9"
@@ -3004,7 +2987,7 @@ export function BestPracticesSection({
   const [mobileIndex, setMobileIndex] = React.useState(0);
 
   // Track loading states for each best practice item
-  const [loadingStates, setLoadingStates] = React.useState<{[key: string]: boolean}>({});
+  const [loadingStates, setLoadingStates] = React.useState<{ [key: string]: boolean }>({});
 
   // Scroll one card at a time on mobile
   const CARD_W = 332; // keep your fixed card width
@@ -3132,10 +3115,10 @@ export function BestPracticesSection({
                 <img
                   src={
                     !bp.image ||
-                    bp.image === "null" ||
-                    bp.image === "undefined" ||
-                    !bp.image.startsWith("http") ||
-                    bp.image === "http://localhost:5026/file/"
+                      bp.image === "null" ||
+                      bp.image === "undefined" ||
+                      !bp.image.startsWith("http") ||
+                      bp.image === "http://localhost:5026/file/"
                       ? iconMap["companycard1"]
                       : bp.image
                   }
@@ -3238,10 +3221,10 @@ export function BestPracticesSection({
               <img
                 src={
                   !bp.image ||
-                  bp.image === "null" ||
-                  bp.image === "undefined" ||
-                  !bp.image.startsWith("http") ||
-                  bp.image === "http://localhost:5026/file/"
+                    bp.image === "null" ||
+                    bp.image === "undefined" ||
+                    !bp.image.startsWith("http") ||
+                    bp.image === "http://localhost:5026/file/"
                     ? iconMap["companycard1"]
                     : bp.image
                 }
@@ -3317,9 +3300,8 @@ export function BestPracticesSection({
         {items.map((_, i) => (
           <span
             key={i}
-            className={`h-1.5 w-1.5 rounded-full ${
-              i === mobileIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-            }`}
+            className={`h-1.5 w-1.5 rounded-full ${i === mobileIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+              }`}
           />
         ))}
       </div>
@@ -3328,9 +3310,8 @@ export function BestPracticesSection({
         {Array.from({ length: totalPages }).map((_, i) => (
           <span
             key={i}
-            className={`h-1.5 w-1.5 rounded-full ${
-              i === page ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-            }`}
+            className={`h-1.5 w-1.5 rounded-full ${i === page ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+              }`}
           />
         ))}
       </div>
@@ -3362,44 +3343,44 @@ export function SocialStackCard({
   fetchFriendRequests,
   fetchFriendSuggestions
 }: // onConnect,
-{
-  coverUrl: string;
-  avatar: string;
-  name: string;
-  handle: string;
-  resonating?: any;
-  resonators?: any;
-  onViewProfile?: () => void;
-  onSearch?: (q: string) => void;
-  onOpen?: () => void;
+  {
+    coverUrl: string;
+    avatar: string;
+    name: string;
+    handle: string;
+    resonating?: any;
+    resonators?: any;
+    onViewProfile?: () => void;
+    onSearch?: (q: string) => void;
+    onOpen?: () => void;
 
-  adventureTitle?: string;
-  adventureText?: string;
-  onStartPosting?: () => void;
-  onViewFeed?: () => void;
-  fetchFriendRequests?: any;
-  fetchFriendSuggestions?: any;
+    adventureTitle?: string;
+    adventureText?: string;
+    onStartPosting?: () => void;
+    onViewFeed?: () => void;
+    fetchFriendRequests?: any;
+    fetchFriendSuggestions?: any;
 
-  suggested: {
-    user_id(user_id: any): void;
-    id: string | number;
-    name: string;
-    handle: string;
-    avatar: string;
-  }[];
-  requested: {
-    id: string | number;
-    name: string;
-    handle: string;
-    avatar: string;
-  }[];
-  onConnect?: (f: {
-    id: string | number;
-    name: string;
-    handle: string;
-    avatar: string;
-  }) => void;
-}) {
+    suggested: {
+      user_id(user_id: any): void;
+      id: string | number;
+      name: string;
+      handle: string;
+      avatar: string;
+    }[];
+    requested: {
+      id: string | number;
+      name: string;
+      handle: string;
+      avatar: string;
+    }[];
+    onConnect?: (f: {
+      id: string | number;
+      name: string;
+      handle: string;
+      avatar: string;
+    }) => void;
+  }) {
   const [tab, setTab] = React.useState<"Suggested" | "Requested">("Suggested");
   const list = tab === "Suggested" ? suggested : requested;
   const navigate = useNavigate();
@@ -3427,9 +3408,8 @@ export function SocialStackCard({
 
     const Rail = (
       <div
-        className={`flex flex-col gap-[3px] ${
-          reverse ? "marquee-ping-reverse" : "marquee-ping"
-        }`}
+        className={`flex flex-col gap-[3px] ${reverse ? "marquee-ping-reverse" : "marquee-ping"
+          }`}
       >
         {list.map((src, i) => (
           <div
@@ -3669,74 +3649,74 @@ export function SocialStackCard({
     const NotificationsCard = ({ notifications }: { notifications: any[] }) => {
       //const userProfile = localStorage.getItem("profile_picture");
       return (
-<div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px]">
-    <div className="flex flex-col h-[350px]">
+        <div className="row-start-1 relative z-10 place-self-center w-full max-w-[620px]">
+          <div className="flex flex-col h-[350px]">
 
-          {/* header */}
-          <div className="flex items-center gap-3 mt-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F7E9FF]">
-              <Bell className="h-4 w-4 text-[#B255FF]" />
+            {/* header */}
+            <div className="flex items-center gap-3 mt-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F7E9FF]">
+                <Bell className="h-4 w-4 text-[#B255FF]" />
+              </div>
+              <h3 className="font-poppins font-semibold text-[20px] leading-8 tracking-[0.15px] text-center text-[#0F1728]">
+                Notification
+              </h3>
             </div>
-            <h3 className="font-poppins font-semibold text-[20px] leading-8 tracking-[0.15px] text-center text-[#0F1728]">
-              Notification
-            </h3>
-          </div>
 
-          {/* rows */}
-    <div className="flex-1 overflow-y-auto space-y-3 pr-2 mt-3">
+            {/* rows */}
+            <div className="flex-1 overflow-y-auto space-y-3 pr-2 mt-3">
 
-            {notificationsLoading && (
-              <div className="text-sm text-[#667085]">Loading notifications...</div>
-            )}
+              {notificationsLoading && (
+                <div className="text-sm text-[#667085]">Loading notifications...</div>
+              )}
 
-            {notifications.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between rounded-2xl border border-[#EEF0F5] bg-white p-3 shadow-sm"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                 <img
-                src={
-                  item?.sender_profile?.profile_picture
-                    ? item.sender_profile.profile_picture
-                    : alterProfile // 👈 Default fallback if null or undefined
-                }
-                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                  const target = e.currentTarget;
-                  target.onerror = null; // Prevent infinite loop
-                  target.src = alterProfile as string; // 👈 Fallback if image fails to load
-                }}
-                className="h-11 w-11 rounded-full object-cover"
-                alt={`${item?.sender_profile?.first_name || "User"}'s profile`}
-              />
-                  <div className="min-w-0">
-                    <div className="truncate text-[14px] font-semibold text-[#0F1728]">
-                      {item?.sender_profile?.first_name}{" "}
-                      {item?.sender_profile?.last_name}
-                    </div>
-                    <div className="truncate text-[14px] text-[#98A2B3]">
-                      {item.description}
+              {notifications.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between rounded-2xl border border-[#EEF0F5] bg-white p-3 shadow-sm"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <img
+                      src={
+                        item?.sender_profile?.profile_picture
+                          ? item.sender_profile.profile_picture
+                          : alterProfile // 👈 Default fallback if null or undefined
+                      }
+                      onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                        const target = e.currentTarget;
+                        target.onerror = null; // Prevent infinite loop
+                        target.src = alterProfile as string; // 👈 Fallback if image fails to load
+                      }}
+                      className="h-11 w-11 rounded-full object-cover"
+                      alt={`${item?.sender_profile?.first_name || "User"}'s profile`}
+                    />
+                    <div className="min-w-0">
+                      <div className="truncate text-[14px] font-semibold text-[#0F1728]">
+                        {item?.sender_profile?.first_name}{" "}
+                        {item?.sender_profile?.last_name}
+                      </div>
+                      <div className="truncate text-[14px] text-[#98A2B3]">
+                        {item.description}
+                      </div>
                     </div>
                   </div>
-                </div>
-                {/* <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EEF0F5] bg-white shadow-sm">
+                  {/* <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EEF0F5] bg-white shadow-sm">
                   <MoreHorizontal className="h-4 w-4 text-[#8F9AA6]" />
                 </div> */}
-              </div>
-            ))}
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            {/* your notification items here */}
+
+            <button
+              className="absolute bottom-3 left-1/2 -translate-x-1/2 inline-flex h-10 w-[90%] items-center justify-center rounded-full text-white text-[14px] font-semibold bg-[linear-gradient(90deg,#7077FE_0%,#9747FF_60%,#F07EFF_100%)] shadow"
+              onClick={() => navigate("/dashboard/notification")}
+            >
+              View all Notification
+            </button>
+
           </div>
-
-          {/* CTA */}
-  {/* your notification items here */}
-
-  <button
-    className="absolute bottom-3 left-1/2 -translate-x-1/2 inline-flex h-10 w-[90%] items-center justify-center rounded-full text-white text-[14px] font-semibold bg-[linear-gradient(90deg,#7077FE_0%,#9747FF_60%,#F07EFF_100%)] shadow"
-    onClick={() => navigate("/dashboard/notification")}
-  >
-    View all Notification
-  </button>
-
-        </div>
         </div>
       );
     };
@@ -3845,9 +3825,8 @@ export function SocialStackCard({
               key={i}
               onClick={() => setIdx(i)}
               aria-label={`Slide ${i + 1}`}
-              className={`h-1.5 w-1.5 rounded-full ${
-                i === idx ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-              }`}
+              className={`h-1.5 w-1.5 rounded-full ${i === idx ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+                }`}
             />
           ))}
         </div>
@@ -3998,7 +3977,7 @@ export function SocialStackCard({
 
   const handleTabChange = (newTab: "Suggested" | "Requested") => {
     setTab(newTab);
-    
+
     // Call the appropriate fetch function based on the selected tab
     if (newTab === "Suggested" && fetchFriendSuggestions) {
       fetchFriendSuggestions();
@@ -4070,9 +4049,9 @@ export function SocialStackCard({
           <img
             src={
               !avatar ||
-              avatar === "null" ||
-              avatar === "undefined" ||
-              !avatar.startsWith("http")
+                avatar === "null" ||
+                avatar === "undefined" ||
+                !avatar.startsWith("http")
                 ? "/profile.png"
                 : avatar
             }
@@ -4211,9 +4190,8 @@ export function SocialStackCard({
             role="tab"
             aria-selected={tab === "Suggested"}
             onClick={() => handleTabChange("Suggested")} // Use handleTabChange instead of setTab
-            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${
-              tab === "Suggested" ? "text-white" : "text-[#222224]"
-            }`}
+            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${tab === "Suggested" ? "text-white" : "text-[#222224]"
+              }`}
           >
             Suggested
           </button>
@@ -4222,9 +4200,8 @@ export function SocialStackCard({
             role="tab"
             aria-selected={tab === "Requested"}
             onClick={() => handleTabChange("Requested")} // Use handleTabChange instead of setTab
-            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${
-              tab === "Requested" ? "text-white" : "text-[#222224]"
-            }`}
+            className={`relative z-10 h-8 text-center text-sm font-semibold rounded-full transition-colors ${tab === "Requested" ? "text-white" : "text-[#222224]"
+              }`}
           >
             Requested
           </button>
@@ -4242,9 +4219,9 @@ export function SocialStackCard({
                   <img
                     src={
                       !f.avatar ||
-                      f.avatar === "null" ||
-                      f.avatar === "undefined" ||
-                      !f.avatar.startsWith("http")
+                        f.avatar === "null" ||
+                        f.avatar === "undefined" ||
+                        !f.avatar.startsWith("http")
                         ? "/profile.png"
                         : f.avatar
                     }
@@ -4271,13 +4248,12 @@ export function SocialStackCard({
                     onClick={() => handleConnect(f.id)}
                     disabled={connectingUsers[f.id] || false}
                     className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px]
-                    ${
-                      getFriendStatus(f.id) === "connected"
+                    ${getFriendStatus(f.id) === "connected"
                         ? "bg-gray-400 text-white cursor-not-allowed"
                         : getFriendStatus(f.id) === "requested"
-                        ? "bg-gray-400 text-white cursor-not-allowed"
-                        : "bg-white text-black shadow-md"
-                    }`}
+                          ? "bg-gray-400 text-white cursor-not-allowed"
+                          : "bg-white text-black shadow-md"
+                      }`}
                   >
                     <span className="flex items-center gap-2 text-[#0B3449]">
                       <img
@@ -4288,10 +4264,10 @@ export function SocialStackCard({
                       {connectingUsers[f.id]
                         ? "Loading..."
                         : getFriendStatus(f.id) === "connected"
-                        ? "Connected"
-                        : getFriendStatus(f.id) === "requested"
-                        ? "Requested"
-                        : "Connect"}
+                          ? "Connected"
+                          : getFriendStatus(f.id) === "requested"
+                            ? "Requested"
+                            : "Connect"}
                     </span>
                   </button>
                 ) : (
@@ -4322,22 +4298,22 @@ export function SocialStackCard({
           )}
         </div>
 
-<PrimaryButton
-  className="w-full rounded-3xl"
-  onClick={() => {
-    if (tab === "Requested") {
-      navigate("/dashboard/MyConnection", {
-            state: { to: "request" },
-          });
-    } else {
-      navigate("/dashboard/MyConnection", {
-            state: { to: "suggestion" },
-          });
-    }
-  }}
->
-  See More
-</PrimaryButton>
+        <PrimaryButton
+          className="w-full rounded-3xl"
+          onClick={() => {
+            if (tab === "Requested") {
+              navigate("/dashboard/MyConnection", {
+                state: { to: "request" },
+              });
+            } else {
+              navigate("/dashboard/MyConnection", {
+                state: { to: "suggestion" },
+              });
+            }
+          }}
+        >
+          See More
+        </PrimaryButton>
       </div>
     </Card>
   );
@@ -4651,31 +4627,28 @@ export function MarketplaceCard({
       >
         {/* Slide 1: Suggested Products */}
         <div
-          className={`absolute inset-0 transition-opacity duration-500 ${
-            slideIndex === 0
+          className={`absolute inset-0 transition-opacity duration-500 ${slideIndex === 0
               ? "opacity-100 pointer-events-auto"
               : "opacity-0 pointer-events-none"
-          }`}
+            }`}
         >
           {renderTopRatedProductSection(topRated, "Top Rated Products")}
         </div>
 
         <div
-          className={`absolute inset-0 transition-opacity duration-500 ${
-            slideIndex === 1
+          className={`absolute inset-0 transition-opacity duration-500 ${slideIndex === 1
               ? "opacity-100 pointer-events-auto"
               : "opacity-0 pointer-events-none"
-          }`}
+            }`}
         >
           {renderCartProductSection(carted, "Your Cart")}
         </div>
 
         <div
-          className={`absolute inset-0 transition-opacity duration-500 ${
-            slideIndex === 2
+          className={`absolute inset-0 transition-opacity duration-500 ${slideIndex === 2
               ? "opacity-100 pointer-events-auto"
               : "opacity-0 pointer-events-none"
-          }`}
+            }`}
         >
           {renderProductSection(suggested, "Featured Products")}
         </div>
@@ -4686,9 +4659,8 @@ export function MarketplaceCard({
             key={i}
             onClick={() => setSlideIndex(i)}
             aria-label={`Slide ${i + 1}`}
-            className={`h-1.5 w-1.5 rounded-full transition-colors ${
-              i === slideIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
-            }`}
+            className={`h-1.5 w-1.5 rounded-full transition-colors ${i === slideIndex ? "bg-[#7E5FFF]" : "bg-[#D8D6FF]"
+              }`}
           />
         ))}
       </div>
@@ -4760,10 +4732,10 @@ export function DirectorySection({
               <img
                 src={
                   !it.avatar ||
-                  it.avatar === "null" ||
-                  it.avatar === "undefined" ||
-                  !it.avatar.startsWith("http") ||
-                  it.avatar === "http://localhost:5026/file/"
+                    it.avatar === "null" ||
+                    it.avatar === "undefined" ||
+                    !it.avatar.startsWith("http") ||
+                    it.avatar === "http://localhost:5026/file/"
                     ? "https://images.unsplash.com/photo-1557800636-894a64c1696f?q=80&w=1200&auto=format&fit=crop"
                     : it.avatar
                 }
@@ -4795,72 +4767,69 @@ export function DirectorySection({
   );
 }
 
-type LearningLabItem = {
-  name: string | undefined;
-  id: string | number;
-  image: string;
-  title: string;
-  progress: number;
-  status: "completed" | "resume" | "locked";
-  gradient?: string;
+type LibraryProduct = {
+  product_id: string;
+  product_title: string;
+  thumbnail_url: string;
+  price: string;
+  final_price: string;
+  overview: string;
+  category: {
+    name: string;
+    slug: string;
+  };
+  moods: {
+    id: string;
+    name: string;
+    icon: string;
+    slug: string;
+  }[];
+  rating: {
+    average: any;
+    total_reviews: any;
+  };
+  seller: {
+    shop_name: string;
+  };
+  duration: string
+  purchased_at: string;
+  continue_watching: any;
 };
+export function LearningLabSection() {
+  const { showToast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [libraryProducts, setLibraryProducts] = useState<LibraryProduct[]>([]);
+  const fetchLibrary = async () => {
+    setIsLoading(true);
+    try {
+      const params: any = {
+        page: 1,
+        limit: 3,
+      };
 
-export function LearningLabSection({
-  items,
-  title = "Learning Lab",
-}: {
-  items: LearningLabItem[];
-  title?: string;
-  onView?: (item: LearningLabItem) => void;
-}) {
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "completed":
-        return (
-          <div className="absolute top-2 right-1 flex items-center gap-2 px-2 py-1 rounded-full bg-[#B4B7FF] backdrop-blur-sm">
-            <img
-              src={completed}
-              alt={completed}
-              className="h-3 w-3"
-            />
-            <span className="text-xs font-medium text-white">Completed</span>
-          </div>
-        );
-      case "resume":
-        return (
-          <div className="absolute top-2 right-1 flex items-center gap-2 px-2 py-1 rounded-full bg-[#F3CCF3] backdrop-blur-sm">
-            <img src={resume} alt={resume} className="h-3 w-3" />
-            <span className="text-xs font-medium text-white">In progress</span>
-          </div>
-        );
-      case "locked":
-        return null;
-      default:
-        return null;
+      const response = await GetLibraryrDetails(params);
+
+      const data = response?.data?.data;
+      console.log('data', data)
+      let products = data?.library || [];
+      console.log('products', products)
+
+
+      setLibraryProducts(products);
+    } catch (error: any) {
+      console.error("Failed to load library:", error);
+      showToast({
+        message: "Failed to load library",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const getActionButton = (item: LearningLabItem) => {
-    if (item.status === "resume") {
-      return (
-        <button className="w-full sm:w-auto px-6 py-2 rounded-full bg-[#897AFF] text-white font-normal font-opensans text-[14px] cursor-not-allowed flex items-center justify-center">
-          Resume
-        </button>
-      );
-    }
-
-    if (item.status === "locked") {
-      return (
-        <button className="w-full sm:w-auto px-6 py-2 rounded-full bg-[#FF708A] text-white font-opensans text-[14px] cursor-not-allowed flex items-center justify-center gap-2">
-          <img src={lock} alt={lock} className="h-3 w-3" />
-          Locked
-        </button>
-      );
-    }
-
-    return null;
-  };
-
+  useEffect(() => {
+    fetchLibrary();
+  }, []);
   return (
     <Card className="flex flex-col p-4 md:p-5 h-full gap-6">
       {/* Header */}
@@ -4874,56 +4843,20 @@ export function LearningLabSection({
             />
           </span>
           <span className="text-base font-semibold text-[#0F1728]">
-            {title}
+            Learning Lab
           </span>
         </div>
         <HeaderDivider />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[11px]">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className={`flex flex-col px-3 pt-3 pb-6 rounded-2xl border border-[#ECEEF2] ${
-              item?.status === "locked" ? "bg-[#F7F7F7]" : "bg-white "
-            } overflow-hidden transition-all hover:shadow-md`}
-          >
-            {/* Image with status badge */}
-            <div className="relative h-40 overflow-hidden">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="h-full w-full object-cover rounded-lg"
-              />
-              {getStatusBadge(item.status)}
-            </div>
-
-            {/* Content */}
-            <div className="pt-3 flex flex-col gap-3 flex-1">
-              <div className="flex items-center space-x-1">
-                <Progress value={item.progress} gradient={item?.gradient} />
-                <div className="flex justify-end">
-                  <span
-                    className={`text-[12px] font-medium ${
-                      item.status === "completed"
-                        ? "text-[#F07EFF]"
-                        : "text-[#667085]"
-                    } `}
-                  >
-                    {item.progress}%
-                  </span>
-                </div>
-              </div>
-              <div className="flex justify-between items-center gap-2">
-                <div className="pt-2 font-poppins font-medium text-base leading-[120%] text-[#0F1728] mb-2">
-                  {item.name}
-                </div>
-                <div>{getActionButton(item)}</div>
-              </div>
-            </div>
-          </div>
+      {!isLoading ? (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[11px]">
+        {libraryProducts?.map((p: any) => (
+          <ProductCard key={p.product_id} p={p} />
         ))}
+      </div>) : (<div className="text-center text-sm text-[#667085] py-4">
+        No data available
       </div>
+      )}
     </Card>
   );
 }
