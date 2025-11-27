@@ -1285,8 +1285,16 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
             response.data.data?.address ||
             response.data.data?.location?.address ||
             "",
-          country: response.data.data?.country_id || "",
-          state: response.data.data?.state_id || "",
+          country:
+            response.data.data?.country_id !== undefined &&
+            response.data.data?.country_id !== null
+              ? String(response.data.data?.country_id)
+              : "",
+          state:
+            response.data.data?.state_id !== undefined &&
+            response.data.data?.state_id !== null
+              ? String(response.data.data?.state_id)
+              : "",
           city: response.data.data?.location?.city || "",
           postalCode: response.data.data?.location?.postal_code || "",
           communication: {
@@ -2506,7 +2514,9 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                           onChange={(selectedOption) => {
                             contactInfoForm.setValue(
                               "country",
-                              selectedOption?.value || ""
+                              selectedOption?.value
+                                ? String(selectedOption.value)
+                                : ""
                             );
                           }}
                           onBlur={() => contactInfoForm.trigger("country")}
@@ -2531,6 +2541,7 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                           State
                         </label>
                         <Select
+                          isDisabled={!contactInfoForm.watch("country")}
                           options={
                             states
                               ? states.map((state: any) => ({
@@ -2560,7 +2571,9 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                           onChange={(selectedOption) => {
                             contactInfoForm.setValue(
                               "state",
-                              selectedOption?.value || ""
+                              selectedOption?.value
+                                ? String(selectedOption.value)
+                                : ""
                             );
                           }}
                           styles={customSelectStyles}
