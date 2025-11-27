@@ -25,6 +25,7 @@ const DashboardNavbar = ({
   const location = useLocation();
   const [openDropdown, setOpenDropdown] = useState<{ [key: string]: boolean }>({});
   const loggedInUserID = localStorage.getItem("Id");
+  const isSeller = localStorage.getItem("is_seller") === "true";
 
   // Automatically detect environment based on domain (no .env needed)
  // const hostname = window.location.hostname.toLowerCase();
@@ -169,7 +170,7 @@ const DashboardNavbar = ({
             { label: "Sell your Products", path: "/dashboard/createshop" },
            // { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
           //  { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
-            { label: "Seller Dashboard", path: "/dashboard/seller-dashboard" }
+            ...(isSeller ? [{ label: "Seller Dashboard", path: "/dashboard/seller-dashboard" }] : [])
           ]
         },
       

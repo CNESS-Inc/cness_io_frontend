@@ -152,7 +152,7 @@ const CollectionThumb: React.FC<{ src: string; label?: string }> = ({
   )
 };
 
-const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
+export const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
   const navigate = useNavigate();
 
   const getCategoryIcon = (categoryName: string) => {
