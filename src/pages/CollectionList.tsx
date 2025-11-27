@@ -341,7 +341,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
   return (
     <div className="space-y-4">
       {collectionItems.map((item) => (
-        <div key={item.id} className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-5">
+        <div key={item.id} className="bg-white rounded-xl shadow-md p-3 md:p-6 w-full mx-auto mt-4 md:mt-5">
           {/* Header */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 md:gap-3">

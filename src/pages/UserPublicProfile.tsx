@@ -35,6 +35,7 @@ import {
   UpdateBestPractice,
   GetBestpracticesByUserProfile,
   DeleteBestPractices,
+  GetPublicBestpracticesByUserProfile,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -124,7 +125,6 @@ export default function UserProfileView() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mineBestPractices, setmineBestPractices] = useState<any[]>([]);
-
   const [expandedDescriptions] = useState<Record<string, boolean>>({});
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
@@ -149,6 +149,10 @@ export default function UserProfileView() {
   };
   const filteredMineBestPractices = mineBestPractices.filter(
     (practice) => practice.status === 1
+  );
+  console.log(
+    "🚀 ~ UserProfileView ~ filteredMineBestPractices:",
+    filteredMineBestPractices
   );
 
   const isOwnProfile =
@@ -175,7 +179,16 @@ export default function UserProfileView() {
   };
   const fetchMineBestPractices = async () => {
     try {
-      const res = await GetBestpracticesByUserProfile(id);
+      let res;
+
+      if (token) {
+        // Call function for authenticated users
+        res = await GetBestpracticesByUserProfile(id);
+      } else {
+        // Call function for unauthenticated users
+        res = await GetPublicBestpracticesByUserProfile(id);
+      }
+
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map(
           (practice: any) => ({
@@ -197,7 +210,12 @@ export default function UserProfileView() {
             commentsCount: practice.total_comment_count || 0,
             status: practice.status,
             if_following: practice.if_following,
+            is_bp_following: practice.is_bp_following,
           })
+        );
+        console.log(
+          "🚀 ~ fetchMineBestPractices ~ transformedCompanies:",
+          transformedCompanies
         );
         setmineBestPractices(transformedCompanies);
       }
@@ -237,10 +255,13 @@ export default function UserProfileView() {
     }
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    // if(!loggedInUserID){
+    fetchMineBestPractices();
+    // }
+  }, []);
   useEffect(() => {
     if (token) {
-      fetchMineBestPractices();
       fetchFollowBestPractices();
     }
   }, [activeTab === "best"]);
@@ -629,7 +650,14 @@ export default function UserProfileView() {
     }
   };
 
+  const [followLoadingStates, setFollowLoadingStates] = useState<
+    Record<string, boolean>
+  >({});
+
   const handleToggleFollow = async (bpId: any) => {
+    // Set loading state for this specific best practice
+    setFollowLoadingStates((prev) => ({ ...prev, [bpId]: true }));
+
     try {
       const res = await SendBpFollowRequest({ bp_id: bpId });
 
@@ -656,9 +684,11 @@ export default function UserProfileView() {
         type: "error",
         duration: 2000,
       });
+    } finally {
+      // Clear loading state for this specific best practice
+      setFollowLoadingStates((prev) => ({ ...prev, [bpId]: false }));
     }
   };
-  
 
   //bestpractices props
   {
@@ -1628,26 +1658,29 @@ export default function UserProfileView() {
                                 )}
                                 {/* Card content */}
                                 <div
-                                  onClick={(e) =>
-                                  {
-                                    if (
-                                      !(e.target as HTMLElement).closest(
-                                        ".follow"
-                                      )
-                                    ) {
-                                    navigate(
-                                      `/dashboard/bestpractices/${
-                                        company.id
-                                      }/${slugify(company.title)}`,
-                                      {
-                                        state: {
-                                          likesCount: company.likesCount,
-                                          isLiked: company.isLiked,
-                                        },
+                                  onClick={(e) => {
+                                    if (token) {
+                                      if (
+                                        !(e.target as HTMLElement).closest(
+                                          ".follow"
+                                        )
+                                      ) {
+                                        navigate(
+                                          `/dashboard/bestpractices/${
+                                            company.id
+                                          }/${slugify(company.title)}`,
+                                          {
+                                            state: {
+                                              likesCount: company.likesCount,
+                                              isLiked: company.isLiked,
+                                            },
+                                          }
+                                        );
                                       }
-                                    )}
-                                  }
-                                  }
+                                    } else {
+                                      setOpenSignup(true);
+                                    }
+                                  }}
                                 >
                                   <CardHeader className="px-4 pt-4 pb-0 relative z-0">
                                     <div className="flex items-start gap-1 pr-12">
@@ -1741,27 +1774,72 @@ export default function UserProfileView() {
                                         </span>
                                       )}
                                     </p>
-                                    {/* <div className="mb-2">
-                                      {company.if_following ? (
-                                      <button
-                                        className="w-full inline-block rounded-full bg-[#F396FF] px-4 py-2
-                font-opensans text-[14px] font-semibold text-white
-                shadow transition hover:bg-[#e885f5] follow"
-                                        onClick={()=>handleToggleFollow(company.id)}
-                                      >
-                                        Following
-                                      </button>
-                                    ) : (
-                                      <button
-                                        className="w-full rounded-full bg-[#7077FE] px-3 py-2
-                font-opensans text-[14px] font-semibold text-white
-                shadow hover:bg-[#5A61E8] transition follow"
-                                        onClick={()=>handleToggleFollow(company.id)}
-                                      >
-                                        Follow
-                                      </button>
+                                    {!isOwnProfile && (
+                                      <div className="mb-4 follow ">
+                                        {followLoadingStates[company.id] ? (
+                                          <button
+                                            disabled
+                                            className="w-full inline-flex items-center justify-center rounded-full bg-gray-300 px-4 py-2
+          font-opensans text-[14px] font-semibold text-gray-500
+          shadow transition cursor-not-allowed"
+                                          >
+                                            <svg
+                                              className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                            >
+                                              <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                              ></circle>
+                                              <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                              ></path>
+                                            </svg>
+                                            Loading...
+                                          </button>
+                                        ) : company.is_bp_following ? (
+                                          <button
+                                            className="w-full inline-block rounded-full bg-[#F396FF] px-4 py-2
+          font-opensans text-[14px] font-semibold text-white
+          shadow transition hover:bg-[#e885f5]"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              if (token) {
+                                                handleToggleFollow(company.id);
+                                              } else {
+                                                setOpenSignup(true);
+                                              }
+                                            }}
+                                          >
+                                            Following
+                                          </button>
+                                        ) : (
+                                          <button
+                                            className="w-full rounded-full bg-[#7077FE] px-3 py-2
+          font-opensans text-[14px] font-semibold text-white
+          shadow hover:bg-[#5A61E8] transition"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              if (token) {
+                                                handleToggleFollow(company.id);
+                                              } else {
+                                                setOpenSignup(true);
+                                              }
+                                            }}
+                                          >
+                                            Follow
+                                          </button>
+                                        )}
+                                      </div>
                                     )}
-                                    </div> */}
                                   </div>
                                 </div>
                               </div>

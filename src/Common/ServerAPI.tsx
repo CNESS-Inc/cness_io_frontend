@@ -161,6 +161,7 @@ export const EndPoint = {
   postCommentLike: "/user/post/comments/like",
   postchildCommentLike: "/user/post/comments/reply/like",
   like: "/user/posts/like",
+  post_view: "/user/posts/view",
   Post_AllComments: "/user/post/comments",
   single_post: "/user/posts/get",
   user_post: "/user/posts",
@@ -206,6 +207,7 @@ export const EndPoint = {
   save_bestpractices: "/best-practice/save",
   get_savebestpractices: "/best-practice/get/save/best-practice",
   get_bestpractice_by_user_profile: "/best-practice/get-by-user-profile",
+  get_publicbestpractice_by_user_profile: "/profile/public-best-practices",
   //get_followbestpractices:"/best-practice/folow"
   create_bestpracticescomment: "/best-practice/comment",
   delete_bestpracticescomment: "/best-practice/comment/delete",
@@ -967,6 +969,14 @@ export const GetBestpracticesByUserProfile = (id: any): ApiResponse => {
     `${EndPoint.get_bestpractice_by_user_profile}/${id}`
   );
 };
+export const GetPublicBestpracticesByUserProfile = (id: any): ApiResponse => {
+  const data = {};
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    `${EndPoint.get_publicbestpractice_by_user_profile}/${id}`
+  );
+};
 
 export const CreateBestpracticesComment = (formData: any): ApiResponse => {
   return executeAPI(
@@ -1327,6 +1337,14 @@ export const PostsLike = (formattedData: any) => {
   return executeAPI(ServerAPI.APIMethod.POST, formattedData, EndPoint.like);
 };
 
+export const TrackPostView = (postId: string) => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    { post_id: postId },
+    EndPoint.post_view
+  );
+};
+
 export const GetComment = (id: any,page:any) => {
   let data = {};
   let params: { [key: string]: any } = {};
@@ -1446,10 +1464,16 @@ export const GetFollowingFollowerUsers = () => {
     EndPoint.following_followers
   );
 };
-export const GetConnectionUser = (search?: string) => {
+export const GetConnectionUser = (
+  search?: string,
+  page?: number,
+  limit?: number
+) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
+  if (page) params["page"] = page;
+  if (limit) params["limit"] = limit;
 
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection, params);
 };
@@ -1467,16 +1491,28 @@ export const UnFriend = (formattedData: any) => {
     EndPoint.delete_friend
   );
 };
-export const GetFriendRequest = (search?: string) => {
+export const GetFriendRequest = (
+  search?: string,
+  page?: number,
+  limit?: number
+) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
+  if (page) params["page"] = page;
+  if (limit) params["limit"] = limit;
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request, params);
 };
-export const GetSuggestedFriend = (search?: string) => {
+export const GetSuggestedFriend = (
+  search?: string,
+  page?: number,
+  limit?: number
+) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
+  if (page) params["page"] = page;
+  if (limit) params["limit"] = limit;
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.suggested_connection, params);
 };
 export const GetFriendSuggestions = () => {
@@ -1879,6 +1915,13 @@ export const UploadProductDocument = (fileType: string, formData: any): ApiRespo
     ServerAPI.APIMethod.POST,
     formData,
     `${EndPoint.upload_product_document}/${fileType}`
+  );
+};
+export const UploadVideoProductDocument = (fileType: string, formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    `${EndPoint.upload_product_document}/main-${fileType}`
   );
 };
 
