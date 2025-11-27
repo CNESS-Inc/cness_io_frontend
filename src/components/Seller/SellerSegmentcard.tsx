@@ -4238,7 +4238,7 @@ export function SocialStackCard({
                 key={f.id}
                 className="flex items-center justify-between gap-3"
               >
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center min-w-0">
                   <img
                     src={
                       !f.avatar ||
@@ -4279,7 +4279,7 @@ export function SocialStackCard({
                         : "bg-white text-black shadow-md"
                     }`}
                   >
-                    <span className="flex items-center gap-1 text-[#0B3449]">
+                    <span className="flex items-center gap-2 text-[#0B3449]">
                       <img
                         src={iconMap["userplus"]}
                         alt="userplus"

@@ -1069,7 +1069,7 @@ const handleClickOutside = (event: MouseEvent) => {
                         >
                           {post.if_following ? (
                             <>
-                              <TrendingUp className="w-5 h-5" /> Resonating
+                              <TrendingUp className="w-60 h-60" /> Resonating
                             </>
                           ) : (
                             "+ Resonate"
