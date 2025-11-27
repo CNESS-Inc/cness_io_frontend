@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { BsBookmarkFill } from "react-icons/bs";
-import { LuGalleryVerticalEnd, LuImagePlus } from "react-icons/lu";
+import { LuGalleryVerticalEnd } from "react-icons/lu";
 import { FiCalendar } from "react-icons/fi";
 import {
     Play,
@@ -68,6 +68,7 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
     onProgressUpdate,
     onSaveToCollection,
 }) => {
+    console.log('duration', duration)
     const navigate = useNavigate();
     const { showToast } = useToast();
     const videoRef = useRef<HTMLVideoElement>(null);
