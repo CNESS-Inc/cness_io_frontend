@@ -5,7 +5,7 @@ import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
 import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail, UploadStoryTellingVideo } from "../Common/ServerAPI";
+import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
@@ -89,6 +89,7 @@ const AddMusicForm: React.FC = () => {
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [newHighlight, setNewHighlight] = useState("");
   const [showAIModal, setShowAIModal] = useState(false);
+  const [sampleFiles, setSampleFiles] = useState<any[]>([]);
 
 const [storyMedia, setStoryMedia] = useState<{
   type: "audio" | "video" | null;
@@ -707,7 +708,7 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
 sample_files: sampleFiles,
         status: isDraft ? 'draft' : 'published',
 storytelling_video_url: storyMedia.url,
-storytelling_video_public_id: storyMedia.public_id,
+// storytelling_video_public_id: storyMedia.public_id,
 storytelling_description: storySummary,
 
         tracks: tracksData,       
