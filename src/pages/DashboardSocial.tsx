@@ -52,7 +52,7 @@ import people from "../assets/peopleicon.svg";
 import Trending from "../assets/trending.svg";
 import createstory from "../assets/createstory.jpg";
 //import like from "../assets/like.png";
-import like from "../assets/sociallike.svg";
+// import like from "../assets/sociallike.svg";
 // import comment from "../assets/comment.png";
 // import comment1 from "../assets/comment1.png";
 import Image from "../components/ui/Image";
