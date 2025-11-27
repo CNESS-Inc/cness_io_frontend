@@ -18,6 +18,9 @@ import {
 } from "lucide-react";
 import profileicon from "../../assets/profileicon.svg";
 import aspired from "../../assets/asplocked1.svg";
+
+let cachedNotifications: any[] | null = null;
+let notificationsPromise: Promise<any[] | null> | null = null;
 import inspired from "../../assets/insplocked1.svg";
 import bpicon from "../../assets/bpicon.svg";
 import certicon from "../../assets/certificationicon.svg";
@@ -3487,6 +3490,7 @@ export function SocialStackCard({
     const [idx, setIdx] = React.useState(0);
     const [paused, setPaused] = React.useState(false);
     const [notifications, setNotifications] = useState<any[]>([]);
+    const [notificationsLoading, setNotificationsLoading] = useState(false);
 
     React.useEffect(() => {
       if (!auto || paused) return;
@@ -3513,22 +3517,45 @@ export function SocialStackCard({
         />
       ) : null;
 
-    const getNotification = async () => {
-      try {
-        const res = await GetUserNotification();
+    const loadNotifications = async (): Promise<any[] | null> => {
+      if (cachedNotifications) return cachedNotifications;
+      if (notificationsPromise) return notificationsPromise;
 
-        if (res?.data?.data) {
-          // Get first 10 notifications from the API response
-          const firstTenNotifications = res.data.data.slice(0, 3);
-          setNotifications(firstTenNotifications);
+      notificationsPromise = (async () => {
+        try {
+          const res = await GetUserNotification();
+          if (res?.data?.data) {
+            const firstTen = res.data.data.slice(0, 3);
+            cachedNotifications = firstTen;
+            return firstTen;
+          }
+        } catch (error) {
+          console.error("Error fetching notifications:", error);
         }
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      }
+        return null;
+      })();
+
+      const result = await notificationsPromise;
+      notificationsPromise = null;
+      return result;
     };
 
     useEffect(() => {
-      getNotification();
+      let mounted = true;
+      setNotificationsLoading(true);
+      loadNotifications()
+        .then((data) => {
+          if (!mounted) return;
+          if (data) {
+            setNotifications(data);
+          }
+        })
+        .finally(() => {
+          if (mounted) setNotificationsLoading(false);
+        });
+      return () => {
+        mounted = false;
+      };
     }, []);
 
     /* ---------- helpers ---------- */
@@ -3657,6 +3684,10 @@ export function SocialStackCard({
 
           {/* rows */}
     <div className="flex-1 overflow-y-auto space-y-3 pr-2 mt-3">
+
+            {notificationsLoading && (
+              <div className="text-sm text-[#667085]">Loading notifications...</div>
+            )}
 
             {notifications.map((item) => (
               <div
