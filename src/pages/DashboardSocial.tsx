@@ -1711,6 +1711,31 @@ export default function SocialTopBar() {
                           title={story.description || "Untitled Story"}
                           videoSrc={story?.thumbnail || ""}
                         />
+
+                  <div className="absolute bottom-2 left-2 z-30 flex items-center gap-2  px-2 py-1 rounded-full">
+  <img
+    src={
+      story.storyuser?.profile?.profile_picture
+        ? story.storyuser?.profile?.profile_picture
+        : "/profile.png"
+    }
+    alt="user"
+    className="w-6 h-6 rounded-full object-cover"
+  />
+
+<span className="
+  text-white 
+  text-[12px] 
+  font-normal 
+  leading-[100%] 
+  tracking-[0] 
+  font-['Open_Sans'] 
+  whitespace-nowrap 
+  drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]
+">    {story.storyuser?.profile?.first_name || ""}{" "}
+    {story.storyuser?.profile?.last_name || ""}
+  </span>
+</div>
                       </div>
                     ))}
 
