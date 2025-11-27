@@ -1,6 +1,9 @@
+import { useEffect, useState } from "react";
 import cloud from "../../../assets/cloud-add.svg";
 import Button from "../../ui/Button";
 import CustomRichTextEditor from "./CustomRichTextEditor";
+import { GetValidUserSelectedProfessionalDetails } from "../../../Common/ServerAPI";
+import { useToast } from "../../ui/Toast/ToastProvider";
 
 interface EditBestPracticeModalProps {
   open: boolean;
@@ -19,6 +22,10 @@ interface EditBestPracticeModalProps {
   isSubmitting: boolean;
 }
 
+type Profession = {
+  id: string;
+  title: string;
+};
 export default function EditBestPracticeModal({
   open,
   onClose,
@@ -35,12 +42,32 @@ export default function EditBestPracticeModal({
   handleSubmit,
   isSubmitting,
 }: EditBestPracticeModalProps) {
+  const { showToast } = useToast();
+  console.log('profession', profession)
 
+  const [Allprofession, setAllProfession] = useState<Profession[]>([]);
+
+  const fetchProfession = async () => {
+    try {
+      const res = await GetValidUserSelectedProfessionalDetails();
+      setAllProfession(res?.data?.data);
+    } catch (error: any) {
+      console.error("Error fetching professions:", error);
+      showToast({
+        message: error?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+  useEffect(() => {
+    fetchProfession();
+  }, []);
   // Create object URL for image preview
-  const imagePreviewUrl = currentPractice?.file 
-    ? (typeof currentPractice.file === 'string' 
-        ? currentPractice.file 
-        : URL.createObjectURL(currentPractice.file))
+  const imagePreviewUrl = currentPractice?.file
+    ? (typeof currentPractice.file === 'string'
+      ? currentPractice.file
+      : URL.createObjectURL(currentPractice.file))
     : null;
 
   const handleRemoveImage = () => {
@@ -49,13 +76,13 @@ export default function EditBestPracticeModal({
     if (fileInput) {
       fileInput.value = '';
     }
-    
+
     // Remove file from current practice
     setCurrentPractice({
       ...currentPractice,
       file: null,
     });
-    
+
     // Clean up object URL if it was created from a new file
     if (currentPractice?.file && typeof currentPractice.file !== 'string') {
       URL.revokeObjectURL(imagePreviewUrl!);
@@ -65,25 +92,25 @@ export default function EditBestPracticeModal({
   // Get the current profession value - handle both possible data structures
   const getCurrentProfessionValue = () => {
     if (!currentPractice) return "";
-    
+
     // If profession_data exists, use its id
     if (currentPractice.profession_data?.id) {
       return currentPractice.profession_data.id;
     }
-    
+
     // If profession exists as a string/id, use it directly
     if (currentPractice.profession) {
       return currentPractice.profession;
     }
-    
+
     return "";
   };
 
   // Handle profession change
   const handleProfessionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedProfessionId = e.target.value;
-    const selectedProfession = profession.find(prof => prof.id === selectedProfessionId);
-    
+    const selectedProfession = Allprofession.find(prof => prof.id === selectedProfessionId);
+
     setCurrentPractice({
       ...currentPractice,
       profession: selectedProfessionId,
@@ -95,7 +122,7 @@ export default function EditBestPracticeModal({
   const handleInterestChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedInterestId = e.target.value;
     const selectedInterest = interest.find(int => int.id === selectedInterestId);
-    
+
     setCurrentPractice({
       ...currentPractice,
       interest: selectedInterestId,
@@ -106,15 +133,15 @@ export default function EditBestPracticeModal({
   // Get current interest value
   const getCurrentInterestValue = () => {
     if (!currentPractice) return "";
-    
+
     if (currentPractice.interest_data?.id) {
       return currentPractice.interest_data.id;
     }
-    
+
     if (currentPractice.interest) {
       return currentPractice.interest;
     }
-    
+
     return "";
   };
 
@@ -181,7 +208,7 @@ export default function EditBestPracticeModal({
                   alt="Preview"
                   className="w-full h-full object-cover"
                 />
-                
+
                 {/* Cross button to remove image */}
                 <button
                   type="button"
@@ -199,7 +226,7 @@ export default function EditBestPracticeModal({
                   accept="image/*"
                   onChange={handleFileChange}
                 />
-                
+
                 {/* Double click instruction (optional) */}
                 <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-200">
                   Double click to change image
@@ -211,7 +238,7 @@ export default function EditBestPracticeModal({
 
         {/* Form */}
         <form onSubmit={handleSubmit}
-        onKeyDown={(e) => {
+          onKeyDown={(e) => {
             // Allow Enter key inside rich text editor only
             const target = e.target as HTMLElement;
             if (target.closest(".custom-rich-text-editor") && e.key === "Enter") {
@@ -223,7 +250,7 @@ export default function EditBestPracticeModal({
               e.preventDefault();
             }
           }}
-        className="space-y-4">
+          className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
             {/* Title */}
             <div className="flex flex-col gap-[5px]">
@@ -295,7 +322,7 @@ export default function EditBestPracticeModal({
          ${getCurrentProfessionValue() ? "text-black" : "text-[#6E7179]"}`}
                 >
                   <option value="">Select your Profession</option>
-                  {profession.map((prof) => (
+                  {Allprofession.map((prof) => (
                     <option key={prof.id} value={prof.id}>
                       {prof.title}
                     </option>

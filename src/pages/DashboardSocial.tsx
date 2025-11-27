@@ -2,13 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import StoryCard from "../components/Social/StoryCard";
+import { IoTrendingUpSharp } from "react-icons/io5";
 import {
   ChevronLeft,
   ChevronRight,
   Share2,
   ThumbsUp,
   MessageSquare,
-  TrendingUp,
   Bookmark,
   Flag,
   Link as LinkIcon,
@@ -208,6 +208,7 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
     });
   }, [current, mediaItems]);
 
+  
   const handlePrev = () => {
     setCurrent((prev) => (prev === 0 ? mediaItems.length - 1 : prev - 1));
   };
@@ -296,6 +297,7 @@ export default function SocialTopBar() {
   // const [isExpanded, setIsExpanded] = useState(false);
   // const toggleExpand = () => setIsExpanded(!isExpanded);
   const location = useLocation();
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [showStoryPopup, setShowStoryPopup] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
@@ -383,6 +385,18 @@ export default function SocialTopBar() {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, navigate]);
+
+  useEffect(() => {
+  if (showPopup) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "auto";
+  }
+
+  return () => {
+    document.body.style.overflow = "auto";
+  };
+}, [showPopup]);
 
   const maxChars = 2000;
 
@@ -1668,6 +1682,31 @@ export default function SocialTopBar() {
                           title={story.description || "Untitled Story"}
                           videoSrc={story?.thumbnail || ""}
                         />
+
+                  <div className="absolute bottom-2 left-2 z-30 flex items-center gap-2  px-2 py-1 rounded-full">
+  <img
+    src={
+      story.storyuser?.profile?.profile_picture
+        ? story.storyuser?.profile?.profile_picture
+        : "/profile.png"
+    }
+    alt="user"
+    className="w-6 h-6 rounded-full object-cover"
+  />
+
+<span className="
+  text-white 
+  text-[12px] 
+  font-normal 
+  leading-[100%] 
+  tracking-[0] 
+  font-['Open_Sans'] 
+  whitespace-nowrap 
+  drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]
+">    {story.storyuser?.profile?.first_name || ""}{" "}
+    {story.storyuser?.profile?.last_name || ""}
+  </span>
+</div>
                       </div>
                     ))}
 
@@ -1795,18 +1834,17 @@ export default function SocialTopBar() {
                               </span>
                             </button>
                             {/* Follow Button */}
-                            <button
+                             <button
                               onClick={() => handleFollow(post.user_id)}
-                              className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${
-                                  post.if_following
-                                    ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
-                                    : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
+                              className={`flex justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors h-[35px]
+                                ${post.if_following
+                                  ? "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                  : "bg-[#7077FE] text-white hover:bg-indigo-600"
                                 }`}
                             >
                               {post.if_following ? (
                                 <>
-                                  <TrendingUp className="w-5 h-5 text-[#7077FE]" />{" "}
+                                  <IoTrendingUpSharp w-100 />
                                   Resonating
                                 </>
                               ) : (
@@ -1988,7 +2026,7 @@ export default function SocialTopBar() {
 
                       {/* Post Content */}
                       <div className="mt-3 md:mt-4">
-                        <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
+                        <p className="text-gray-800 font-[poppins] text-sm md:text-base mb-2 md:mb-3">
                           {expandedPosts[post.id] ||
                           post?.content?.length <= CONTENT_LIMIT
                             ? post.content
@@ -2506,13 +2544,11 @@ export default function SocialTopBar() {
 
           {/* Popup Modals (unchanged) */}
           {showPopup && (
-            <div
-              className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-              onClick={() => setShowPopup(false)}
-            >
-              <div
-                className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative"
-                onClick={(e) => e.stopPropagation()}
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            onClick={() => setShowPopup(false)}
+           >
+              <div className=" bg-white rounded-[18px] w-full overflow-y-auto max-w-md mx-4 p-4 shadow-lg relative"
+              onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
                   <div className="w-fit h-fit">
@@ -2528,7 +2564,7 @@ export default function SocialTopBar() {
                     Create Post
                   </h2>
                   <button
-                    onClick={() => setShowPopup(false)}
+                    onClick={() => setShowCloseConfirm(true)}
                     className="text-[#E1056D] text-[26px] hover:text-black cursor-pointer"
                   >
                     ×
@@ -2821,9 +2857,57 @@ export default function SocialTopBar() {
             </div>
           )}
 
+          {showCloseConfirm && (
+  <div
+    className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
+    onClick={() => setShowCloseConfirm(false)}
+  >
+    <div
+      className="bg-white rounded-xl w-full max-w-sm p-6 shadow-lg"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        Do you want to save this as a draft?
+      </h3>
+
+      <div className="flex justify-center items-center flex-col gap-3">
+        <button
+          className="w-[50%] flex justify-center items-center py-2 bg-[#7077FE] text-white rounded-lg text-sm"
+          onClick={() => {
+            // TODO: handle save draft
+            console.log("Draft saved");
+            setShowCloseConfirm(false);
+            setShowPopup(false);
+          }}
+        >
+          Save Draft
+        </button>
+
+        <button
+          className="w-[50%] flex justify-center items-center py-2 bg-red-500 text-white rounded-lg text-sm"
+          onClick={() => {
+            setShowCloseConfirm(false);
+            setShowPopup(false); // close main popup
+          }}
+        >
+          Discard
+        </button>
+
+        <button
+          className="w-[50%] flex justify-center items-center py-2 bg-gray-200 text-black rounded-lg text-sm"
+          onClick={() => setShowCloseConfirm(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
           {showStoryPopup && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-[18px] w-full max-w-md mx-4 shadow-lg relative">
+              <div className=" bg-white rounded-[18px] w-full overflow-y-auto max-w-md mx-4 p-4 shadow-lg relative">
                 <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
                   <div className="w-fit h-fit">
                     <Image
@@ -2932,6 +3016,54 @@ export default function SocialTopBar() {
               </div>
             </div>
           )}
+
+          {showCloseConfirm && (
+  <div
+    className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
+    onClick={() => setShowCloseConfirm(false)}
+  >
+    <div
+      className="bg-white rounded-xl w-full max-w-sm p-6 shadow-lg"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        Do you want to save this as a draft?
+      </h3>
+
+      <div className="flex flex-col gap-3">
+        <button
+          className="w-full py-2 bg-[#7077FE] text-white rounded-lg text-sm"
+          onClick={() => {
+            // TODO: handle save draft
+            console.log("Draft saved");
+            setShowCloseConfirm(false);
+            setShowPopup(false);
+          }}
+        >
+          Save Draft
+        </button>
+
+        <button
+          className="w-full py-2 bg-red-500 text-white rounded-lg text-sm"
+          onClick={() => {
+            setShowCloseConfirm(false);
+            setShowPopup(false); // close main popup
+          }}
+        >
+          Discard
+        </button>
+
+        <button
+          className="w-full py-2 bg-gray-200 text-black rounded-lg text-sm"
+          onClick={() => setShowCloseConfirm(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
           {showCommentBox && selectedPostId && (
             <CommentBox

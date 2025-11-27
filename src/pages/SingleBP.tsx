@@ -1248,7 +1248,7 @@ const SingleBP = () => {
 
                   {/* Article Body */}
                   <div
-                    className="rich-text-content text-gray-800 leading-relaxed text-sm sm:text-base
+                    className="font-open-sans rich-text-content text-gray-800 leading-relaxed text-sm sm:text-base
                                [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
                                [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
                                [&_li]:my-1 [&_li]:pl-1

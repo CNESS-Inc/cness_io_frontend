@@ -572,7 +572,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
 
           {/* Post Content */}
           <div className="mt-3 md:mt-4">
-            <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
+            <p className="text-gray-800 font-[poppins] text-sm md:text-base mb-2 md:mb-3">
               {expandedPosts[item.id] || !item.originalData.content || item.originalData.content.length <= CONTENT_LIMIT
                 ? item.originalData.content
                 : `${item.originalData.content.substring(0, CONTENT_LIMIT)}...`}

@@ -97,23 +97,25 @@ const AddArtsForm: React.FC = () => {
   } | null>(null);
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
-  //const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
-  const [sampleList, setSampleList] = useState<any[]>([]);
-  const [storyMedia, setStoryMedia] = useState<{
-    type: "audio" | "video" | null;
-    url: string;
-    thumbnail?: string;
-    public_id?: string;
-  }>({
-    type: null,
-    url: "",
-  });
+//const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
+const [sampleList, setSampleList] = useState<any[]>([]);
+const [storyMedia, setStoryMedia] = useState<{
+  type: "audio" | "video" | null;
+  url: string;
+  thumbnail?: string;
+  public_id?: string; 
+}>({
+  type: null,
+  url: ""
+});
 
-  const [storySummary, setStorySummary] = useState("");
+const [storySummary, setStorySummary] = useState("");
 
-  const addSample = () => {
-    setSampleList([...sampleList, ""]);
-  };
+const addSample = () => {
+  setSampleList([...sampleList, ""]);
+};
+
+
 
   // REMOVE a sample box
   const removeSample = (index: number) => {
@@ -674,41 +676,41 @@ const AddArtsForm: React.FC = () => {
     setIsLoading(true);
     try {
       const payload = {
-        ...formData,
-        thumbnail_url: formData.thumbnail_url,
-        status: isDraft ? "draft" : "published",
+    ...formData,
+    thumbnail_url: formData.thumbnail_url,
+    status: isDraft ? "draft" : "published",
 
-        storytelling_video_url: storyMedia.url,
-        storytelling_video_public_id: storyMedia.public_id,
-        storytelling_description: storySummary,
-        sample_files: sampleList.map((s, index) => ({
-          file_url: s.file_url,
-          public_id: s.public_id,
-          title: s.title,
-          file_type: s.file_type,
-          order_number: index,
-          is_ariome: s.is_ariome ?? false,
-        })),
+  storytelling_video_url: storyMedia.url,
+  storytelling_video_public_id: storyMedia.public_id,
+  storytelling_description: storySummary,
+ sample_files: sampleList.map((s, index) => ({
+  file_url: s.file_url,
+  public_id: s.public_id,
+  title: s.title,
+  file_type: s.file_type,
+  order_number: index,
+  is_ariome: s.is_ariome ?? false,
+})),
+     
+  arts_details: {
+    theme: formData.theme,
+    mediums: formData.mediums,
+    modern_trends: formData.modern_trends,
+    sample_image_url: sampleList   ,  
+  },
 
-        arts_details: {
-          theme: formData.theme,
-          mediums: formData.mediums,
-          modern_trends: formData.modern_trends,
-          sample_image_url: sampleList,
-        },
-
-        chapters: chapters.map((chapter) => ({
-          title: chapter.title,
-          chapter_files: chapter.chapter_files.map((file: any) => ({
-            url: file.url,
-            title: file.title,
-            order_number: file.order_number,
-          })),
-          description: chapter.description || "",
-          order_number: chapter.order_number,
-          is_free: chapter.is_free,
-        })),
-      };
+  chapters: chapters.map((chapter) => ({
+    title: chapter.title,
+    chapter_files: chapter.chapter_files.map((file: any) => ({
+      url: file.url,
+      title: file.title,
+      order_number: file.order_number,
+    })),
+    description: chapter.description || "",
+    order_number: chapter.order_number,
+    is_free: chapter.is_free,
+  })),
+};
       const response = await CreateArtProduct(payload);
       const productId = response?.data?.data?.product_id;
 
