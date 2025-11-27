@@ -115,11 +115,7 @@ const addSample = () => {
   setSampleList([...sampleList, ""]);
 };
 
-  const [storySummary, setStorySummary] = useState("");
 
-  const addSample = () => {
-    setSampleList([...sampleList, ""]);
-  };
 
   // REMOVE a sample box
   const removeSample = (index: number) => {
