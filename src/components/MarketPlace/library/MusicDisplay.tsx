@@ -112,6 +112,13 @@ console.log('productProgress', productProgress)
     useEffect(() => {
         if (currentFile?.file_url) {
             console.log("Loading new track:", currentFile.title);
+
+            // Save progress of previous track before switching
+            if (currentTime > 0 && duration > 0) {
+                console.log("Saving progress before switching tracks");
+                trackProgress();
+            }
+
             setIsPlaying(false);
             setDuration(0);
             setAudioUrl("");
@@ -189,6 +196,27 @@ console.log('productProgress', productProgress)
         }
     }, [currentTime, isPlaying, lastProgressUpdate]);
 
+    // Save progress when user closes/refreshes the page
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            if (currentTime > 0 && duration > 0) {
+                console.log("Saving progress before page unload");
+                // Use synchronous approach for beforeunload
+                trackProgress();
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            // Also save progress when component unmounts
+            if (currentTime > 0 && duration > 0) {
+                trackProgress();
+            }
+        };
+    }, [currentTime, duration]);
+
     const fetchSignedUrl = async () => {
         setIsLoading(true);
         try {
@@ -220,21 +248,21 @@ console.log('productProgress', productProgress)
         }
     };
 
-    const trackProgress = async () => {
+    const trackProgress = async (forceComplete = false) => {
         if (!currentFile?.file_id || duration === 0) {
             console.log("Cannot track progress: missing file_id or duration");
             return;
         }
 
         try {
-            const progressPercentage = (currentTime / duration) * 100;
-            const shouldComplete = progressPercentage >= 95;
+            const progressPercentage = forceComplete ? 100 : (currentTime / duration) * 100;
+            const shouldComplete = forceComplete || progressPercentage >= 95;
 
             const payload = {
                 product_id: productId,
                 content_id: currentContent?.content_id || null,
                 file_id: currentFile.file_id,
-                current_position: Math.floor(currentTime),
+                current_position: forceComplete ? Math.floor(duration) : Math.floor(currentTime),
                 total_duration: Math.floor(duration),
                 progress_percentage: Math.floor(progressPercentage),
                 is_completed: shouldComplete,
@@ -251,7 +279,7 @@ console.log('productProgress', productProgress)
 
             // Mark as complete if threshold reached
             if (shouldComplete && !isCompleted) {
-                console.log("Track reached 95%, marking as complete");
+                console.log("Track reached completion threshold, marking as complete");
                 await markAsComplete();
             }
 
@@ -259,14 +287,22 @@ console.log('productProgress', productProgress)
             if (onProgressUpdate) {
                 onProgressUpdate();
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to track progress:", error);
+
+            showToast({
+                message: error?.response?.data?.error?.message || "Failed to save progress",
+                type: "error",
+                duration: 3000,
+            });
         }
     };
 
     const handleTrackComplete = async () => {
-        console.log("Handling track completion");
-        await trackProgress();
+        console.log("Handling track completion - forcing 100% progress");
+
+        // Force 100% progress and completion when track naturally ends
+        await trackProgress(true);
 
         // Move to next track after a short delay
         setTimeout(() => {
@@ -286,22 +322,60 @@ console.log('productProgress', productProgress)
 
             console.log("Marking as complete:", payload);
 
-            await MarkAsComplete(payload);
+            const response = await MarkAsComplete(payload);
 
-            setIsCompleted(true);
+            // Verify completion was successful
+            if (response?.success || response?.data?.success) {
+                setIsCompleted(true);
+
+                showToast({
+                    message: "Track completed! ✨",
+                    type: "success",
+                    duration: 2000,
+                });
+
+                // Refresh progress
+                if (onProgressUpdate) {
+                    onProgressUpdate();
+                }
+            } else {
+                throw new Error("Completion response invalid");
+            }
+        } catch (error: any) {
+            console.error("Failed to mark as complete:", error);
 
             showToast({
-                message: "Track completed! ✨",
-                type: "success",
-                duration: 2000,
+                message: error?.response?.data?.error?.message || "Failed to mark track as complete",
+                type: "error",
+                duration: 3000,
             });
 
-            // Refresh progress
-            if (onProgressUpdate) {
-                onProgressUpdate();
-            }
-        } catch (error) {
-            console.error("Failed to mark as complete:", error);
+            // Retry once after 2 seconds
+            setTimeout(async () => {
+                console.log("Retrying mark as complete...");
+                try {
+                    const payload = {
+                        product_id: productId,
+                        content_id: currentContent?.content_id || null,
+                        file_id: currentFile?.file_id || null,
+                    };
+                    const retryResponse = await MarkAsComplete(payload);
+
+                    if (retryResponse?.success || retryResponse?.data?.success) {
+                        setIsCompleted(true);
+                        if (onProgressUpdate) {
+                            onProgressUpdate();
+                        }
+                        showToast({
+                            message: "Track completed! ✨",
+                            type: "success",
+                            duration: 2000,
+                        });
+                    }
+                } catch (retryError) {
+                    console.error("Retry failed:", retryError);
+                }
+            }, 2000);
         }
     };
 
