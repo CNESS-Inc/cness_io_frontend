@@ -24,8 +24,10 @@ interface MusicDisplayProps {
         shop_name: string;
         shop_logo: string;
     };
-    rating: string;
-    reviews: number;
+    rating: {
+        average: string;
+        total_reviews: number;
+    };
     purchase: string;
     duration?: string;
     moods: {
@@ -51,7 +53,6 @@ const MusicDisplay: React.FC<MusicDisplayProps> = ({
     thumbnail,
     title,
     seller,
-    reviews,
     rating,
     purchase,
     moods,
@@ -475,7 +476,7 @@ console.log('productProgress', productProgress)
                                 </p>
                                 <div className="flex items-center gap-2 text-[12px] text-slate-600">
                                     <img
-                                        src={seller?.shop_logo || "https://via.placeholder.com/300"}
+                                        src={seller?.shop_logo || "https://cdn.cness.io/default-avatar.svg"}
                                         alt={seller?.shop_name}
                                         className="w-5 h-5 rounded-full object-cover"
                                     />
@@ -515,7 +516,7 @@ console.log('productProgress', productProgress)
                                 <svg className="w-4 h-4 text-[#7077fe] mr-1" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10 15l-5.878 3.09L5.8 12.02.924 7.91l6.068-.936L10 2l2.919 4.974 6.067.936-4.876 4.11 1.678 6.07z" />
                                 </svg>
-                                {rating} ({reviews} reviews)
+                                {rating?.average || '0.0'} ({rating?.total_reviews || 0} reviews)
                             </span>
                             <span className="text-slate-300">•</span>
                             <span className="flex items-center font-[Poppins]">

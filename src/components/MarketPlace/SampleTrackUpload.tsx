@@ -94,7 +94,7 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         // 🎥 VIDEO / COURSE SAMPLE
         if (productType === "video" || productType === "course") {
             fd.append("sample_video", file);
-            apiKey = "sample-video";
+            apiKey = "video-sample";
 
             const res = await UploadProductDocument(apiKey, fd);
             sampleUrl = res?.data?.data?.sample_video_url;
