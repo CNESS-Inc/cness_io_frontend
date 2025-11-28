@@ -1,5 +1,4 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import { Helmet } from "react-helmet-async";
 import Header from "../layout/Header/Header";
 import Footer from "../layout/Footer/Footer";
 import inspiredbadge from "../assets/Inspired _ Badge.png";
@@ -273,48 +272,8 @@ export default function UserProfileView() {
       .replace(/-+$/, "");
   };
 
-  // Generate dynamic page URL
-  const pageUrl = `${window.location.origin}/dashboard/userprofile/${id}`;
-
-  // Get user's profile picture or use default
-  const profileImage = userDetails?.profile_picture || "https://cdn.cness.io/default-avatar.svg";
-
-  // Generate user's full name
-  const userName = userDetails?.user_name || "CNESS User";
-
-  // Generate description from bio or use default
-  const userDescription = userDetails?.bio || `Check out ${userName}'s profile on CNESS`;
-
   return (
     <>
-      <Helmet>
-        {/* Primary Meta Tags */}
-        <title>{userName} - CNESS</title>
-        <meta name="title" content={`${userName} - CNESS`} />
-        <meta name="description" content={userDescription} />
-
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="profile" />
-        <meta property="og:url" content={pageUrl} />
-        <meta property="og:title" content={`${userName} - CNESS`} />
-        <meta property="og:description" content={userDescription} />
-        <meta property="og:image" content={profileImage} />
-        <meta property="og:image:secure_url" content={profileImage} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content={`${userName}'s profile picture`} />
-
-        {/* Twitter */}
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content={pageUrl} />
-        <meta property="twitter:title" content={`${userName} - CNESS`} />
-        <meta property="twitter:description" content={userDescription} />
-        <meta property="twitter:image" content={profileImage} />
-
-        {/* WhatsApp specific (uses Open Graph) */}
-        <meta property="og:site_name" content="CNESS" />
-      </Helmet>
-
       <Header />
 
       <div className="min-h-screen bg-[#ECEEF2]">
