@@ -119,7 +119,7 @@ export default function UserProfileView() {
   const [createTags, setCreateTags] = useState<string[]>([]); // Separate tags for create modal
   const [inputValue, setInputValue] = useState("");
   const [followerCount, setFollowerCount] = useState(0);
-const [followingCount, setFollowingCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
   const [newPractice, setNewPractice] = useState({
     title: "",
     description: "",
@@ -332,8 +332,7 @@ const [followingCount, setFollowingCount] = useState(0);
       // const res = await GetUserProfileDetails(id);
       const res = await GetPublicProfileDetailsById(id);
       setUserDetails(res?.data?.data);
-          console.log("USER DETAILS:", res?.data?.data); 
-
+      console.log("USER DETAILS:", res?.data?.data);
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -871,6 +870,18 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | number) => {
   }
 };
 
+      setFollowerCount(followers);
+      setFollowingCount(following);
+    } catch (error) {
+      console.error("Error fetching follower/following counts:", error);
+    }
+  };
+  useEffect(() => {
+    fetchUserDetails();
+    if (isOwnProfile && token) {
+      fetchFollowerFollowingCounts(); // ← Add this
+    }
+  }, []);
 
 
 
@@ -1021,24 +1032,24 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | number) => {
               )}
 
               <div className="mt-3 flex gap-6 text-center">
-  <span>
-    <span className="font-['Open_Sans'] font-bold text-sm text-[#64748B]">
-      {followerCount}
-    </span>
-    <span className="ml-1 font-['Open_Sans'] font-semibold text-sm text-[#64748B]">
-      Followers
-    </span>
-  </span>
+                <span>
+                  <span className="font-['Open_Sans'] font-bold text-sm text-[#64748B]">
+                    {followerCount}
+                  </span>
+                  <span className="ml-1 font-['Open_Sans'] font-semibold text-sm text-[#64748B]">
+                    Followers
+                  </span>
+                </span>
 
-  <span>
-    <span className="font-['Open_Sans'] font-bold text-sm text-[#64748B]">
-      {followingCount}
-    </span>
-    <span className="ml-1 font-['Open_Sans'] font-semibold text-sm text-[#64748B]">
-      Following
-    </span>
-  </span>
-</div>
+                <span>
+                  <span className="font-['Open_Sans'] font-bold text-sm text-[#64748B]">
+                    {followingCount}
+                  </span>
+                  <span className="ml-1 font-['Open_Sans'] font-semibold text-sm text-[#64748B]">
+                    Following
+                  </span>
+                </span>
+              </div>
 
               {/* Buttons */}
               <div className="pt-4 pb-10 space-y-2 border-b border-[#E5E5E5]">
@@ -2180,39 +2191,45 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | number) => {
           </div>
         </div>
       </div>
-      <AddBestPracticeModal
-        open={activeModal}
-        onClose={closeModal}
-        newPractice={newPractice}
-        profession={profession}
-        interest={interest}
-        tags={tags}
-        inputValue={inputValue}
-        setInputValue={setInputValue}
-        removeTag={removeTag}
-        handleTagKeyDown={handleTagAddKeyDown}
-        handleInputChange={handleInputChange}
-        handleFileChange={handleFileChange}
-        handleRemoveFile={handleRemoveFile}
-        handleSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-      />
-      <EditBestPracticeModal
-        open={BestPracticeModal === "bestpractices"}
-        onClose={closeModal}
-        currentPractice={currentPractice}
-        setCurrentPractice={setCurrentPractice}
-        profession={profession}
-        interest={interest}
-        tags={tags}
-        editInputValue={editInputValue}
-        setEditInputValue={setEditInputValue}
-        removeTag={removeTag}
-        handleTagKeyDown={(e) => handleTagKeyDown(e, false)}
-        handleFileChange={handleEditFileChange}
-        handleSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-      />
+      {!isOwnProfile && token ? (
+        <>
+          <AddBestPracticeModal
+            open={activeModal}
+            onClose={closeModal}
+            newPractice={newPractice}
+            profession={profession}
+            interest={interest}
+            tags={tags}
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+            removeTag={removeTag}
+            handleTagKeyDown={handleTagAddKeyDown}
+            handleInputChange={handleInputChange}
+            handleFileChange={handleFileChange}
+            handleRemoveFile={handleRemoveFile}
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
+          <EditBestPracticeModal
+            open={BestPracticeModal === "bestpractices"}
+            onClose={closeModal}
+            currentPractice={currentPractice}
+            setCurrentPractice={setCurrentPractice}
+            profession={profession}
+            interest={interest}
+            tags={tags}
+            editInputValue={editInputValue}
+            setEditInputValue={setEditInputValue}
+            removeTag={removeTag}
+            handleTagKeyDown={(e) => handleTagKeyDown(e, false)}
+            handleFileChange={handleEditFileChange}
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
+        </>
+      ) : (
+        ""
+      )}
       <Modal
         isOpen={deleteConfirmation.isOpen}
         onClose={() =>
