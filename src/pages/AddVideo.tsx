@@ -9,6 +9,7 @@ import {
   CreateVideoProduct,
   GetMarketPlaceCategories,
   GetMarketPlaceMoods,
+  UploadProductDocument,
   UploadProductThumbnail,
   UploadVideoProductDocument,
 } from "../Common/ServerAPI";
@@ -159,7 +160,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         formData.append("short_video", file);
       }
 
-      const response = await UploadVideoProductDocument(fileType, formData);
+      const response = await UploadProductDocument(fileType, formData);
       const videoData = response?.data?.data;
 
       setThumbnail(videoData.thumbnail);
@@ -437,8 +438,8 @@ const AddVideoForm: React.FC = () => {
     highlights: [] as string[],
     duration: "",
     language: "",
-    short_video_url: "", // short video_id
-    summary: "",
+    storytelling_video_url: "", // short video_id
+    storytelling_description: "",
     status: "",
     sample_track: "",
     thumbnail_url: "",
@@ -572,7 +573,7 @@ const AddVideoForm: React.FC = () => {
     }
     if (!formData.duration.trim()) newErrors.duration = "Duration is required.";
 
-    if (!formData.summary.trim()) newErrors.summary = "Summary is required.";
+    if (!formData.storytelling_description.trim()) newErrors.storytelling_description = "Summary is required.";
 
     setErrors(newErrors);
 
@@ -661,8 +662,8 @@ const AddVideoForm: React.FC = () => {
           message = "Invalid duration format. Use HH:MM:SS";
         break;
 
-      case "summary":
-        if (!valStr) message = "Summary is required";
+      case "storytelling_description":
+        if (!valStr) message = "Description is required";
         break;
 
       case "thumbnail_url": // Add this case
@@ -698,7 +699,7 @@ const AddVideoForm: React.FC = () => {
       const payload = {
         ...formData,
         video_url: mainVideo.video_id,
-        short_video_url: shortVideoData?.video_id || "",
+        storytelling_video_url: shortVideoData?.video_url || "",
         status: isDraft ? "draft" : "published",
       };
 
@@ -802,7 +803,7 @@ const AddVideoForm: React.FC = () => {
     // Update formData with short_video_id
     setFormData((prev) => ({
       ...prev,
-      short_video_url: videoId,
+      storytelling_video_url: videoId,
     }));
   };
 
@@ -810,7 +811,7 @@ const AddVideoForm: React.FC = () => {
     setShortVideoData(null);
     setFormData((prev) => ({
       ...prev,
-      short_video_url: "",
+      storytelling_video_url: "",
     }));
   };
 
@@ -1394,16 +1395,16 @@ const AddVideoForm: React.FC = () => {
                 Summary of the video <span className="text-red-500">*</span>
               </label>
               <textarea
-                name="summary"
-                value={formData.summary}
+                name="storytelling_description"
+                value={formData.storytelling_description}
                 onChange={handleChange}
                 placeholder="Write a brief description of your storytelling"
                 className="w-full h-38 px-3 py-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
                 required
               />
-              {errors.summary && (
+              {errors.storytelling_description && (
                 <span className="text-red-500 text-sm mt-1">
-                  {errors.summary}
+                  {errors.storytelling_description}
                 </span>
               )}
             </div>
