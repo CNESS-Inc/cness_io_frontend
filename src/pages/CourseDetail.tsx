@@ -147,12 +147,53 @@ export default function CourseDetail() {
     try {
       const response = await GetLibraryrDetailsById(id);
       const data = response?.data?.data?.product;
+      console.log("📦 Product Data:", data);
+      console.log("📂 Contents:", data?.contents);
+      console.log("🎬 Category:", data?.category?.slug);
+      console.log("🎥 Available fields:", {
+        hasContent: !!data?.content,
+        content: data?.content,
+        hasFileUrl: !!data?.file_url,
+        file_url: data?.file_url,
+        hasVideoUrl: !!data?.video_url,
+        video_url: data?.video_url,
+        id: data?.id,
+        title: data?.title
+      });
       setProductData(data);
 
       // Auto-select first file from first content
       if (data?.contents?.[0]?.files?.[0]) {
+        console.log("✅ Setting activeFile and activeContent from contents");
         setActiveFile(data.contents[0].files[0]);
         setActiveContent(data.contents[0]);
+      } else if (data?.category?.slug === "video") {
+        // Video products don't have contents/files structure - create mock objects
+        console.log("✅ Creating mock file/content for video product");
+        console.log("🔍 product_type_details:", data?.product_type_details);
+
+        // Use video_files from product_type_details for single video products
+        const videoUrl = data?.product_type_details?.video_files || data?.content || data?.file_url || data?.video_url || "";
+        console.log("🔍 videoUrl extracted:", videoUrl);
+
+        const mockFile = {
+          file_id: data?.id || `video-${Date.now()}`,
+          title: data?.title || "Video",
+          file_url: videoUrl,
+          file_type: "video",
+          duration: data?.duration
+        };
+        const mockContent = {
+          content_id: `${data?.id}-content` || `content-${Date.now()}`,
+          title: data?.title || "Video Content",
+          content_type: "video"
+        };
+        console.log("📝 Created mock file:", mockFile);
+        console.log("📝 Created mock content:", mockContent);
+        setActiveFile(mockFile);
+        setActiveContent(mockContent);
+      } else {
+        console.warn("⚠️ No contents/files found in product data");
       }
     } catch (error: any) {
       showToast({
@@ -202,7 +243,7 @@ export default function CourseDetail() {
       });
 
       setShowModal(false);
-      fetchCollections(); 
+      fetchCollections();
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message || "Failed to add to collection",
@@ -275,9 +316,9 @@ export default function CourseDetail() {
     <div className="w-full">
       <div className="mx-auto px-5">
         {/* Collections Modal */}
-        <SaveToCollectionsModal 
-          open={showModal} 
-          closeModal={() => setShowModal(false)} 
+        <SaveToCollectionsModal
+          open={showModal}
+          closeModal={() => setShowModal(false)}
           collections={collections}
           onAddToCollection={handleAddToCollection}
           onCreateCollection={handleCreateCollection}
@@ -291,38 +332,43 @@ export default function CourseDetail() {
           <div>
             {productData?.category?.slug === "music" && (
               <MusicDisplay
-              thumbnail={productData?.thumbnail_url}
-              title={productData?.title}
-              seller={productData?.seller}
-              reviews={productData?.total_reviews}
-              rating={productData?.rating}
-              purchase={productData?.purchase?.purchased_at}
-              duration={productData?.duration}
-              moods={productData?.moods}
-              category={productData?.category}
-              content={productData?.contents}
-              currentFile={activeFile}
-              currentContent={activeContent}
-              productId={id!}
-              productProgress={productProgress}
-              onTrackEnd={handleTrackEnd}
-              onProgressUpdate={fetchProductProgress}
-              onSaveToCollection={() => setShowModal(true)}
+                thumbnail={productData?.thumbnail_url}
+                title={productData?.title}
+                seller={productData?.seller}
+                rating={productData?.rating}
+                purchase={productData?.purchase?.purchased_at}
+                duration={productData?.duration}
+                moods={productData?.moods}
+                category={productData?.category}
+                content={productData?.contents}
+                currentFile={activeFile}
+                currentContent={activeContent}
+                productId={id!}
+                productProgress={productProgress}
+                onTrackEnd={handleTrackEnd}
+                onProgressUpdate={fetchProductProgress}
+                onSaveToCollection={() => setShowModal(true)}
               />
             )}
 
             {productData?.category?.slug === "video" && (
               <VideoDisplay
-              thumbnail={productData?.thumbnail_url}
+                thumbnail={productData?.thumbnail_url}
                 title={productData?.title}
                 seller={productData?.seller}
-                reviews={productData?.total_reviews}
                 rating={productData?.rating}
                 purchase={productData?.purchase?.purchased_at}
                 duration={productData?.duration}
                 mood={productData?.mood}
                 category={productData?.category}
-                content={productData?.content}
+                content={productData?.contents}
+                currentFile={activeFile}
+                product_type_details={productData?.product_type_details}
+                currentContent={activeContent}
+                productId={id!}
+                productProgress={productProgress}
+                onVideoEnd={handleTrackEnd}
+                onProgressUpdate={fetchProductProgress}
                 onSaveToCollection={() => setShowModal(true)}
               />
             )}
@@ -350,12 +396,13 @@ export default function CourseDetail() {
 
               {activeTab === 'storytelling' && (
                 <StoryTellingTab
-                  summary={productData?.summary}
+                  storytelling_video_url={productData?.storytelling_video_url}
+                  storytelling_description={productData?.storytelling_description}
                 />
               )}
 
               {activeTab === 'reviews' && (
-                <ReviewsTab productId={id!} show_overall_review={true} show_public_review={true}/>
+                <ReviewsTab productId={id!} show_overall_review={true} show_public_review={true} />
               )}
             </div>
           </div>

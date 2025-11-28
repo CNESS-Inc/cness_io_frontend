@@ -108,7 +108,7 @@ const AllFriends = ({ searchTerm, onSelect, onChat }: Props) => {
           ))
         ) : (
           <div className="col-span-full flex justify-center items-center py-10">
-            <p className="text-gray-500 text-sm">No friends found.</p>
+            <p className="text-gray-500 text-sm">No friends</p>
           </div>
         )}
       </div>

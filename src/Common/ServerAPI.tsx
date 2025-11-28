@@ -130,6 +130,7 @@ export const EndPoint = {
   badge_list: "/profile/person-badge-list",
   profession: "/profession",
   valid_profession: "/profession/get-valid-profession",
+  valid_user_selected_profession: "/profession/user-selected",
   country: "/country",
   service: "/service",
   state: "/state",
@@ -1133,6 +1134,10 @@ export const GetProfessionalDetails = (): ApiResponse => {
 export const GetValidProfessionalDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.valid_profession);
+};
+export const GetValidUserSelectedProfessionalDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.valid_user_selected_profession);
 };
 export const GetCountryDetails = (): ApiResponse => {
   const data = {};

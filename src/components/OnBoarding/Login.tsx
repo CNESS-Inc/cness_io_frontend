@@ -506,6 +506,14 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
           "margaret_name",
           res?.data?.data?.user.margaret_name
         );
+        localStorage.setItem(
+          "is_seller",
+          res?.data?.data?.user?.is_seller || "false"
+        );
+        localStorage.setItem(
+          "is_library",
+          res?.data?.data?.user?.is_library || "false"
+        );
 
         //   if (!is_disqualify) {
         //     if (completionStatus === 0 || completed_step === 0) {
@@ -1133,6 +1141,14 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
         localStorage.setItem(
           "margaret_name",
           response?.data?.data?.user.margaret_name
+        );
+        localStorage.setItem(
+          "is_seller",
+          response?.data?.data?.user?.is_seller || "false"
+        );
+        localStorage.setItem(
+          "is_library",
+          response?.data?.data?.user?.is_library || "false"
         );
         const completionStatus =
           response.data.data.user.person_organization_complete;
