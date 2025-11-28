@@ -282,7 +282,7 @@ export default function UserProfileView() {
   }, [id, token]);
 
   useEffect(() => {
-  if (id) {
+  if (id && token && isOwnProfile) {
     fetchFollowerFollowingCounts(id);
   }
 }, [id]);
@@ -872,7 +872,7 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
   useEffect(() => {
     fetchUserDetails();
     if (isOwnProfile && token) {
-      fetchFollowerFollowingCounts(id); // ← Add this
+      fetchFollowerFollowingCounts(id);
     }
   }, []);
 
