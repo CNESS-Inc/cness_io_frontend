@@ -1412,7 +1412,7 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | number) => {
                     : "font-normal text-[#64748B]"
                 }`}
               >
-                My Best Practices
+                Best Practices
                 {activeTab === "best" && (
                   <span className="absolute -bottom-px left-0 right-0 h-0.5 bg-linear-to-r from-[#7077FE] via-[#9747FF] to-[#F07EFF]" />
                 )}
@@ -1673,7 +1673,7 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | number) => {
                       <>
                         {isOwnProfile ? (
                           <>
-                            <h2>My Best Practices</h2>
+                            <h2>Best Practices</h2>
                           </>
                         ) : (
                           ""
