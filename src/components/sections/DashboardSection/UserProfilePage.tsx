@@ -1516,14 +1516,23 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
     }
   }, []);
 
+  const selectedCountry = contactInfoForm.watch("country");
+  const selectedState = contactInfoForm.watch("state");
+
   useEffect(() => {
-    const countryId = contactInfoForm.watch("country");
-    if (countryId) {
-      GetState(countryId);
+    if (selectedCountry) {
+      GetState(selectedCountry).then(() => {
+        // ensure the selected state value is preserved after states load
+        if (selectedState) {
+          contactInfoForm.setValue("state", selectedState);
+        }
+      });
     } else {
       setStates([]);
+      contactInfoForm.setValue("state", "");
     }
-  }, [contactInfoForm.watch("country")]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCountry]);
 
   useEffect(() => {
     const workExperiences = workExperienceForm.watch("workExperiences");
@@ -1536,7 +1545,8 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
         }
       });
     }
-  }, [workExperienceForm.watch("workExperiences")]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(workExperienceForm.watch("workExperiences"))]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   /*const fetchVerifyOrganizationNumber = async (file: File) => {
@@ -2562,7 +2572,7 @@ useEffect(() => {
                           options={
                             Country
                               ? Country.map((country: any) => ({
-                                  value: country.id,
+                                  value: String(country.id),
                                   label: country.name,
                                 }))
                               : []
@@ -2571,14 +2581,15 @@ useEffect(() => {
                             Country
                               ? Country.find(
                                   (c: any) =>
-                                    c.id === contactInfoForm.watch("country")
+                                    String(c.id) ===
+                                    contactInfoForm.watch("country")
                                 )
                                 ? {
                                     value: contactInfoForm.watch("country"),
                                     label:
                                       Country.find(
                                         (c: any) =>
-                                          c.id ===
+                                          String(c.id) ===
                                           contactInfoForm.watch("country")
                                       )?.name || "Select your country",
                                   }
@@ -2619,7 +2630,7 @@ useEffect(() => {
                           options={
                             states
                               ? states.map((state: any) => ({
-                                  value: state.id,
+                                  value: String(state.id),
                                   label: state.name,
                                 }))
                               : []
@@ -2628,14 +2639,15 @@ useEffect(() => {
                             states
                               ? states.find(
                                   (s: any) =>
-                                    s.id === contactInfoForm.watch("state")
+                                    String(s.id) ===
+                                    contactInfoForm.watch("state")
                                 )
                                 ? {
                                     value: contactInfoForm.watch("state"),
                                     label:
                                       states.find(
                                         (s: any) =>
-                                          s.id ===
+                                          String(s.id) ===
                                           contactInfoForm.watch("state")
                                       )?.name || "Select your state",
                                   }
