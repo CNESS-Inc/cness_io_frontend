@@ -1484,6 +1484,29 @@ export default function SocialTopBar() {
     return hasFileExtension || hasValidMediaPattern;
   };
 
+  const renderContentWithHashtags = (text: string) => {
+    if (!text) return null;
+    const parts = text.split(/(\#[\w]+)/g);
+    return parts.map((part, idx) => {
+      if (part.match(/^#[\w]+/)) {
+        const tag = part.slice(1);
+        return (
+          <button
+            key={`${part}-${idx}`}
+            onClick={() =>
+              navigate(`/dashboard/feed?tag=${encodeURIComponent(tag)}`)
+            }
+            className="text-[#7077FE] hover:underline"
+            type="button"
+          >
+            {part}
+          </button>
+        );
+      }
+      return <span key={idx}>{part}</span>;
+    });
+  };
+
   const postIdsSignature = useMemo(
     () => userPosts.map((post) => post.id).join(","),
     [userPosts]
@@ -2026,14 +2049,18 @@ export default function SocialTopBar() {
 
                       {/* Post Content */}
                       <div className="mt-3 md:mt-4">
-                        <p className="text-gray-800 font-[poppins] text-sm md:text-base mb-2 md:mb-3">
-                          {expandedPosts[post.id] ||
-                          post?.content?.length <= CONTENT_LIMIT
-                            ? post.content
-                            : `${post?.content?.substring(
-                                0,
-                                CONTENT_LIMIT
-                              )}...`}
+                        <p className="text-gray-800 font-[poppins] text-sm md:text-base mb-2 md:mb-3 space-y-1">
+                          <span>
+                            {expandedPosts[post.id] ||
+                            post?.content?.length <= CONTENT_LIMIT
+                              ? renderContentWithHashtags(post.content || "")
+                              : renderContentWithHashtags(
+                                  `${post?.content?.substring(
+                                    0,
+                                    CONTENT_LIMIT
+                                  )}...`
+                                )}
+                          </span>
                           {post?.content?.length > CONTENT_LIMIT && (
                             <button
                               onClick={() => toggleExpand(post.id)}

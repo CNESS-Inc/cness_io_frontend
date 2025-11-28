@@ -25,8 +25,10 @@ interface ProductHeaderProps {
         shop_name: string;
         shop_logo: string;
     };
-    rating: string;
-    reviews: number;
+    rating: {
+        average: string;
+        total_reviews: number;
+    };
     purchase: string;
     language?: string;
     duration?: string;
@@ -42,6 +44,7 @@ interface ProductHeaderProps {
     content: any;
     currentFile?: any;
     currentContent?: any;
+    product_type_details?: any;
     productId?: string;
     productProgress?: any;
     onVideoEnd?: () => void;
@@ -53,7 +56,6 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
     thumbnail,
     title,
     seller,
-    reviews,
     rating,
     purchase,
     duration,
@@ -64,11 +66,13 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
     currentContent,
     productId,
     productProgress,
+    product_type_details,
     onVideoEnd,
     onProgressUpdate,
     onSaveToCollection,
 }) => {
     console.log('duration', duration)
+
     const navigate = useNavigate();
     const { showToast } = useToast();
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -81,7 +85,6 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
     const [currentTime, setCurrentTime] = useState(0);
     const [videoDuration, setVideoDuration] = useState(0);
     const [videoUrl, setVideoUrl] = useState<string>("");
-    // const [videoUrl, setVideoUrl] = useState<string>("https://vod.api.video/vod/vi1KOG6ck354O39Xah7Nf8mk/mp4/source.mp4?r=us-east-1");
     const [isLoading, setIsLoading] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
     const [hasLoadedInitialPosition, setHasLoadedInitialPosition] = useState(false);
@@ -93,8 +96,9 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
     const [showSpeedMenu, setShowSpeedMenu] = useState(false);
 
     // Debug logging (only when data is missing)
-    if (!currentFile || !currentContent) {
-        console.warn('⚠️ VideoDisplay missing data:', {
+    const isSingleVideo = !currentFile && product_type_details?.video_files;
+    if (!isSingleVideo && (!currentFile || !currentContent)) {
+        console.warn('⚠️ VideoDisplay missing data for chapter-based video:', {
             hasProductId: !!productId,
             hasCurrentFile: !!currentFile,
             hasCurrentContent: !!currentContent,
@@ -106,6 +110,14 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
 
     // Get current file's progress data
     const getCurrentFileProgress = () => {
+        const isSingleVideo = !currentFile && product_type_details?.video_files;
+
+        // For single video products, return product-level progress
+        if (isSingleVideo && productProgress) {
+            return productProgress;
+        }
+
+        // For chapter-based videos, return file-level progress
         if (!currentFile?.file_id || !productProgress?.content_progress) {
             return null;
         }
@@ -130,13 +142,17 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
             }
         }
 
-        console.log("Current file progress:", fileProgress);
-    }, [currentFile, productProgress]);
+        console.log("Current progress:", fileProgress);
+    }, [currentFile, productProgress, product_type_details]);
 
     // Reset and load new video
     useEffect(() => {
-        if (currentFile?.file_url) {
-            console.log("Loading new video:", currentFile.title);
+        // Handle both chapter-based videos and single video products
+        const hasChapterVideo = currentFile?.file_url;
+        const hasSingleVideo = product_type_details?.video_files;
+
+        if (hasChapterVideo || hasSingleVideo) {
+            console.log("Loading video:", currentFile?.title || title);
 
             // Save progress of previous video before switching
             if (currentTime > 0 && videoDuration > 0) {
@@ -150,7 +166,7 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
             setHasLoadedInitialPosition(false);
             fetchSignedUrl();
         }
-    }, [currentFile?.file_id]);
+    }, [currentFile?.file_id, product_type_details?.video_files]);
 
     // Handle video events
     useEffect(() => {
@@ -323,16 +339,51 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
     const fetchSignedUrl = async () => {
         setIsLoading(true);
         try {
+            // Debug: Log what values we have
+            console.log("🔍 fetchSignedUrl - currentFile:", currentFile);
+            console.log("🔍 fetchSignedUrl - product_type_details:", product_type_details);
+            console.log("🔍 fetchSignedUrl - currentFile?.file_url:", currentFile?.file_url);
+            console.log("🔍 fetchSignedUrl - product_type_details?.video_files:", product_type_details?.video_files);
+
+            const videoFileId = currentFile?.file_url || product_type_details?.video_files;
+
+            if (!videoFileId) {
+                console.error("❌ No video file ID found");
+                showToast({
+                    message: "No video file found",
+                    type: "error",
+                    duration: 3000,
+                });
+                setIsLoading(false);
+                return;
+            }
+
+            console.log("✅ Fetching signed URL for video ID:", videoFileId);
+
             const response = await GenerateSignedUrl("video", {
                 product_id: productId,
-                public_id: currentFile.file_url,
+                public_id: videoFileId,
             });
 
-            const url = response?.data?.data?.authenticated_url;
+            // Extract URL from response - use MP4 for HTML5 video element compatibility
+            const urls = response?.data?.data?.urls;
+            const url = urls?.mp4; // Use MP4 as standard HTML5 video doesn't support HLS without hls.js
+
+            console.log("Signed URL response:", {
+                fullResponse: response?.data?.data,
+                urls: urls,
+                selectedUrl: url
+            });
+
             if (url) {
                 setVideoUrl(url);
-                console.log("Signed URL fetched successfully");
+                console.log("✅ Signed URL fetched successfully:", {
+                    format: 'MP4',
+                    videoId: response?.data?.data?.videoId,
+                    url: url
+                });
             } else {
+                console.error("❌ No video URL found in response:", response?.data?.data);
                 showToast({
                     message: "Failed to load video file",
                     type: "error",
@@ -353,8 +404,11 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
 
     const trackProgress = async (forceComplete = false) => {
         const startTime = Date.now();
+        const isSingleVideo = !currentFile && product_type_details?.video_files;
+
         console.log("📡 [TRACK API] Starting track progress call:", {
             timestamp: new Date().toISOString(),
+            isSingleVideo: isSingleVideo,
             hasFileId: !!currentFile?.file_id,
             fileId: currentFile?.file_id,
             hasDuration: videoDuration > 0,
@@ -365,11 +419,19 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
             forceComplete: forceComplete
         });
 
-        if (!currentFile?.file_id || videoDuration === 0 || !productId) {
+        // For single video products, we don't need file_id
+        if (videoDuration === 0 || !productId) {
             console.error("❌ [TRACK API] Cannot track progress - Missing required data:", {
-                currentFile_file_id: currentFile?.file_id || "MISSING",
                 videoDuration: videoDuration || "MISSING/ZERO",
                 productId: productId || "MISSING"
+            });
+            return;
+        }
+
+        // For chapter-based videos, we need file_id
+        if (!isSingleVideo && !currentFile?.file_id) {
+            console.error("❌ [TRACK API] Cannot track progress - Missing file_id for chapter-based video:", {
+                currentFile_file_id: currentFile?.file_id || "MISSING"
             });
             return;
         }
@@ -436,7 +498,11 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
     };
 
     const markAsComplete = async () => {
-        if (!productId || !currentFile?.file_id) return;
+        const isSingleVideo = !currentFile && product_type_details?.video_files;
+
+        // For single video products, we only need productId
+        // For chapter-based videos, we need both productId and file_id
+        if (!productId || (!isSingleVideo && !currentFile?.file_id)) return;
 
         try {
             const payload = {
@@ -629,7 +695,7 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
                         <h1 className="text-[20px] font-[Poppins] font-semibold text-slate-900">{title}</h1>
                         <div className="flex items-center gap-2 mt-1 text-[12px] text-slate-600">
                             <img
-                                src={seller?.shop_logo || "https://via.placeholder.com/300"}
+                                src={seller?.shop_logo || "https://cdn.cness.io/default-avatar.svg"}
                                 alt={title}
                                 className="w-5 h-5 rounded-full object-cover"
                             />
@@ -656,7 +722,7 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
                         <svg className="w-4 h-4 text-[#7077fe] mr-1" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 15l-5.878 3.09L5.8 12.02.924 7.91l6.068-.936L10 2l2.919 4.974 6.067.936-4.876 4.11 1.678 6.07z" />
                         </svg>
-                        {rating} ({reviews} reviews)
+                        {rating?.average || '0.0'} ({rating?.total_reviews || 0} reviews)
                         <span className="mx-2">•</span>
                     </span>
                     <span className="flex items-center font-[Poppins]">
