@@ -872,14 +872,70 @@ useEffect(() => {
 }, []);
 
 
+  // Update meta tags for WhatsApp/social sharing
+  useEffect(() => {
+    if (!userDetails) return;
+
+    const pageUrl = `${window.location.origin}/dashboard/userprofile/${id}`;
+    const profileImage = userDetails?.profile_picture || "https://cdn.cness.io/default-avatar.svg";
+    const userName = `${userDetails?.first_name} ${userDetails?.last_name}` || "CNESS User";
+    const userDescription = userDetails?.bio || `Check out ${userName}'s profile on CNESS`;
+
+    // Update document title
+    document.title = `${userName} - CNESS`;
+
+    // Helper function to update or create meta tags
+    const updateMetaTag = (property: string, content: string, isProperty = true) => {
+      const attribute = isProperty ? 'property' : 'name';
+      let element = document.querySelector(`meta[${attribute}="${property}"]`) as HTMLMetaElement;
+
+      if (!element) {
+        element = document.createElement('meta');
+        element.setAttribute(attribute, property);
+        document.head.appendChild(element);
+      }
+
+      element.setAttribute('content', content);
+    };
+
+    // Update primary meta tags
+    updateMetaTag('title', `${userName} - CNESS`, false);
+    updateMetaTag('description', userDescription, false);
+
+    // Update Open Graph tags (Facebook/WhatsApp)
+    updateMetaTag('og:type', 'profile');
+    updateMetaTag('og:url', pageUrl);
+    updateMetaTag('og:title', `${userName} - CNESS`);
+    updateMetaTag('og:description', userDescription);
+    updateMetaTag('og:image', profileImage);
+    updateMetaTag('og:image:secure_url', profileImage);
+    updateMetaTag('og:image:width', '1200');
+    updateMetaTag('og:image:height', '630');
+    updateMetaTag('og:image:alt', `${userName}'s profile picture`);
+    updateMetaTag('og:site_name', 'CNESS');
+
+    // Update Twitter tags
+    updateMetaTag('twitter:card', 'summary_large_image');
+    updateMetaTag('twitter:url', pageUrl);
+    updateMetaTag('twitter:title', `${userName} - CNESS`);
+    updateMetaTag('twitter:description', userDescription);
+    updateMetaTag('twitter:image', profileImage);
+
+    // Cleanup function (optional - restores default meta tags on unmount)
+    return () => {
+      document.title = 'CNESS';
+    };
+  }, [userDetails, id]);
+
   return (
-    <div className="relative w-full h-full mx-auto px-1 pt-2">
-      <button
-        onClick={() => window.history.back()}
-        className="absolute cursor-pointer top-4 left-4 bg-white rounded-full p-2 shadow-md"
-      >
-        <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
-      </button>
+    <>
+      <div className="relative w-full h-full mx-auto px-1 pt-2">
+        <button
+          onClick={() => window.history.back()}
+          className="absolute cursor-pointer top-4 left-4 bg-white rounded-full p-2 shadow-md"
+        >
+          <ArrowLeftIcon className="h-5 w-5 text-[#7077FE]" />
+        </button>
       {/* Banner */}
       <div className="w-full h-[180px] sm:h-[220px] md:h-[260px] lg:h-[300px] xl:h-80 rounded-lg">
         <img
@@ -2197,6 +2253,7 @@ useEffect(() => {
       </Modal>
 
       <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
-    </div>
+      </div>
+    </>
   );
 }
