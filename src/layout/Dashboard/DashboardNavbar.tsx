@@ -50,12 +50,33 @@ const DashboardNavbar = ({
       
       // Special handling for profile dropdown
       if (item.id === "TrueProfile" && (
-        location.pathname.startsWith("/dashboard/user-profile") ||
-        location.pathname.startsWith("/dashboard/company-profile") ||
-        location.pathname.includes("/dashboard/userprofile/")
+        location.pathname === `/dashboard/userprofile/${loggedInUserID}` || 
+    location.pathname.startsWith("/dashboard/user-profile") || // edit profile
+    location.pathname.startsWith("/dashboard/company-profile")
       )) {
         newOpenDropdown[item.id] = true;
       }
+
+       // Directory dropdown — for OTHER user profiles
+    //if (
+      //item.id === "directory" &&
+     // location.pathname.startsWith("/dashboard/userprofile") &&
+     // location.pathname !== `/dashboard/userprofile/${loggedInUserID}`
+   // ) {
+    //  newOpenDropdown[item.id] = true;
+   // }
+
+if (item.id === "directory") {
+  const loggedId = localStorage.getItem("Id");
+
+  // extract userprofile/<id>
+  const match = location.pathname.match(/^\/dashboard\/userprofile\/([^/]+)$/);
+  const profileId = match ? match[1] : null;
+
+  if (profileId && profileId !== loggedId) {
+    newOpenDropdown[item.id] = true;
+  }
+}
     });
     
     setOpenDropdown(newOpenDropdown);
@@ -111,7 +132,7 @@ const DashboardNavbar = ({
       label: "Directory",
       active: true,
       isDirectoryDropdown: true,
-      childPaths: ["/dashboard/search-listing", "/dashboard/DashboardDirectory", "/dashboard/editpubliclisting"],
+      childPaths: ["/dashboard/search-listing", "/dashboard/DashboardDirectory", "/dashboard/editpubliclisting" ],
       children: [
         { label: "Search Listing", path: "/dashboard/DashboardDirectory" },
         { label: "Edit Public Listing", path: "/dashboard/editpubliclisting" },
@@ -190,6 +211,14 @@ const DashboardNavbar = ({
     },
   ];
 
+
+  const isViewingOtherUserProfile = () => {
+  const loggedInUserID = localStorage.getItem("Id");
+  return (
+    location.pathname.startsWith("/dashboard/userprofile") &&
+    location.pathname !== `/dashboard/userprofile/${loggedInUserID}`
+  );
+};
   // NavItem component with proper active state management
   const NavItem = ({ item }: any) => {
     const isDropdownOpen = !!openDropdown[item.id];
@@ -274,10 +303,10 @@ const DashboardNavbar = ({
 
     // Special handling for profile dropdown
     if (item.isProfileDropdown) {
-      const isProfileActive = 
-        location.pathname.startsWith("/dashboard/user-profile") ||
-        location.pathname.startsWith("/dashboard/company-profile") ||
-        location.pathname.includes("/dashboard/userprofile/");
+ const isProfileActive =
+  location.pathname.startsWith("/dashboard/user-profile") ||
+  location.pathname.startsWith("/dashboard/company-profile") ||
+  location.pathname === `/dashboard/userprofile/${loggedInUserID}`;
       
       const isProfileOpen = !!openDropdown["TrueProfile"];
       
@@ -355,19 +384,21 @@ const DashboardNavbar = ({
             <div className="flex flex-col gap-1 mt-3 pl-8">
               {item.children.map((child: any, idx: number) =>
                 child.path ? (
-                  <NavLink
-                    key={idx}
-                    to={child.path}
-                    end
-                    className={({ isActive }) =>
-                      `px-4 py-3 w-full rounded-md transition whitespace-nowrap ${
-                        isActive ? activeSubClasses : inactiveSubClasses
-                      }`
-                    }
-                    // onClick={toggleMobileNav}
-                  >
-                    {child.label}
-                  </NavLink>
+                 <NavLink
+  key={idx}
+  to={child.path}
+  end
+  className={({ isActive }) => {
+    const forcedActive =
+      child.label === "Search Listing" && isViewingOtherUserProfile();
+
+    return `px-4 py-3 w-full rounded-md transition whitespace-nowrap ${
+      isActive || forcedActive ? activeSubClasses : inactiveSubClasses
+    }`;
+  }}
+>
+  {child.label}
+</NavLink>
                 ) : (
                   <button
                     key={idx}

@@ -662,7 +662,7 @@ const UpgradeBadge = () => {
             <h1 className="font-['Poppins',Helvetica] font-semibold text-2xl text-wrap bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
               Unlock Your Full Potential
             </h1>
-            <h5 className="font-['Open_Sans',Helvetica] text-sm font-light text-[#242424] w-[64%]">
+            <h5 className="font-['Open_Sans'] text-sm font-light text-[#242424] w-[64%]">
               Advance through our certification levels to access exclusive
               features, expand your network, and amplify your conscious impact.
             </h5>

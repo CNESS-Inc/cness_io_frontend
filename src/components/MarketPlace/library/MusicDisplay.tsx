@@ -111,8 +111,11 @@ console.log('productProgress', productProgress)
 
     // Reset and load new track
     useEffect(() => {
-        if (currentFile?.file_url) {
-            console.log("Loading new track:", currentFile.title);
+        const fileIdentifier = currentFile?.file_url || currentFile?.public_id;
+
+        if (fileIdentifier) {
+            console.log("🎵 Loading new track:", currentFile?.title);
+            console.log("🎵 File identifier:", fileIdentifier);
 
             // Save progress of previous track before switching
             if (currentTime > 0 && duration > 0) {
@@ -125,6 +128,8 @@ console.log('productProgress', productProgress)
             setAudioUrl("");
             setHasLoadedInitialPosition(false);
             fetchSignedUrl();
+        } else {
+            console.warn("⚠️ No file_url or public_id found for current file:", currentFile);
         }
     }, [currentFile?.file_id]);
 
@@ -221,16 +226,28 @@ console.log('productProgress', productProgress)
     const fetchSignedUrl = async () => {
         setIsLoading(true);
         try {
+            const fileIdentifier = currentFile?.file_url || currentFile?.public_id;
+            console.log("🎵 Fetching signed URL for audio:", fileIdentifier);
+            console.log("🎵 Current file:", currentFile);
+
             const response = await GenerateSignedUrl("audio", {
                 product_id: productId,
-                public_id: currentFile.file_url,
+                public_id: fileIdentifier,
             });
 
-            const url = response?.data?.data?.authenticated_url;
+            console.log("🎵 Signed URL response:", response?.data?.data);
+
+            // Extract URL from response - check for audio URLs
+            const urls = response?.data?.data?.urls;
+            const url = urls?.mp3 || urls?.mp4 || response?.data?.data?.authenticated_url;
+
+            console.log("🎵 Audio URL extracted:", url);
+
             if (url) {
                 setAudioUrl(url);
-                console.log("Signed URL fetched successfully");
+                console.log("✅ Audio signed URL fetched successfully");
             } else {
+                console.error("❌ No audio URL found in response");
                 showToast({
                     message: "Failed to load audio file",
                     type: "error",
@@ -238,7 +255,7 @@ console.log('productProgress', productProgress)
                 });
             }
         } catch (error: any) {
-            console.error("Failed to fetch signed URL:", error);
+            console.error("❌ Failed to fetch signed URL:", error);
             showToast({
                 message: "Failed to load audio file",
                 type: "error",

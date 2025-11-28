@@ -458,22 +458,12 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
         {/* Modal */}
         <div
-          className="bg-white rounded-[18px] flex flex-col shadow-lg overflow-hidden"
-          style={{
-            width: "1176px",
-            height: "725.25px",
-            gap: "10px",
-            padding: "12px",
-          }}
+          className="bg-white rounded-[18px] flex flex-col shadow-lg 
+    overflow-hidden w-[95%] max-w-[900px] h-[80vh] p-3"
         >
           <div
-            className="bg-white rounded-xl border border-gray-200 flex flex-col shadow-lg overflow-hidden"
-            style={{
-              width: "1152px",
-              height: "701.25px",
-              paddingBottom: "24px",
-              gap: "24px",
-            }}
+            className="bg-white rounded-xl border border-gray-200 flex flex-col 
+      shadow-lg overflow-hidden w-full h-full pb-3 gap-3"
           >
             {/* Header */}
             <div className="shrink-0">
@@ -492,7 +482,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
               </div>
 
               {/* Profile Info */}
-              <div className="flex items-center justify-between p-4 mt-4">
+              <div className="flex items-center justify-between p-2 mt-2">
                 {/* Left: Profile image + info */}
                 <div className="flex items-center gap-4 px-6">
                   <img
@@ -609,13 +599,13 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                     className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
                       ${
                         profileData?.if_following
-                          ? "bg-transparent text-[#7077FE] hover:text-[#7077FE]/80"
+                          ? "bg-[#7077FE] text-white hover:text-[#7077FE]/80"
                           : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
                       }`}
                   >
                     {profileData?.if_following ? (
                       <>
-                        <TrendingUp className="w-5 h-5 text-[#7077FE]" />
+                        <TrendingUp />
                         Resonating
                       </>
                     ) : (
@@ -648,11 +638,11 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                 </div>
               </div>
             </div>
-            <div className="border border-gray-100 mx-5 mt-3"></div>
+            <div className="border border-gray-100 mx-3 mt-1"></div>
 
             {/* Scrollable Posts */}
             <div className="flex-1 overflow-y-auto p-4">
-              <h3 className="mb-4 text-[14px] font-medium text-gray-800">
+              <h3 className="text-[14px] font-medium text-gray-800">
                 Posts
               </h3>
 
