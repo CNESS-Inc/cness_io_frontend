@@ -1,23 +1,26 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Suspense, useEffect, useState } from "react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import CookieConsent from "../components/ui/CookieConsent";
 
 const AppLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem("jwt");
       const completed_step = localStorage.getItem("completed_step");
-      if (!token || completed_step === "0") {
-        navigate("/");
+      if (token && completed_step !== "0" && location.pathname === "/") {
+        navigate("/dashboard", { replace: true });
+      } else if (!token || completed_step === "0") {
+        navigate("/", { replace: true });
       }
       setIsCheckingAuth(false);
     };
     checkAuth();
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   if (isCheckingAuth) {
     return (
