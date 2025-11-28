@@ -271,7 +271,8 @@ const AspiringAssessment = () => {
                 disabled={isAnswered}
                 checked={allSelected}
                 onChange={handleSelectAll}
-                className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer appearance-none border border-gray-400 rounded-sm checked:bg-[#22C55E] relative"
+                className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer appearance-none border border-gray-400 rounded-sm 
+                checked:bg-[length:100%_100%] relative custom-checkbox"
               />
               {allSelected && (
                 <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -316,7 +317,8 @@ const AspiringAssessment = () => {
                   disabled={isAnswered}
                   checked={selected.includes(opt.id)}
                   onChange={() => handleToggle(opt.id)}
-                  className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer appearance-none border border-gray-400 rounded-sm checked:bg-[#22C55E] relative"
+                  className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer appearance-none border border-gray-400 rounded-sm 
+                  checked:bg-[length:100%_100%] relative custom-checkbox"
                 />
                 {selected.includes(opt.id) && (
                   <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
