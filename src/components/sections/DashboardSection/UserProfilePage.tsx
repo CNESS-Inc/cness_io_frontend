@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Tab } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
   GetCountryDetails,
   GetInterestsDetails,
-  // GetOrganiZationNumberVerify,
   GetProfessionalDetails,
   GetProfileDetails,
   GetPublicProfileDetails,
@@ -25,7 +24,10 @@ import { useSearchParams } from "react-router-dom";
 import CreatableSelect from "react-select/creatable";
 import Modal from "../../ui/Modal";
 import Cropper from "../../ui/Cropper";
-import {parsePhoneNumberFromString,getExampleNumber} from "libphonenumber-js/min";
+import {
+  parsePhoneNumberFromString,
+  getExampleNumber,
+} from "libphonenumber-js/min";
 import examples from "libphonenumber-js/examples.mobile.json";
 import { getCountryCallingCode, getCountries } from "libphonenumber-js/min";
 
@@ -49,7 +51,7 @@ const genderOptions = [
   { value: "", label: "Select Your Gender" }, // Use empty string for default
   { value: "Male", label: "Male" },
   { value: "Female", label: "Female" },
-  { value: "Non-binary", label: "Non-binary" },
+  { value: "Prefer not to say", label: "Prefer not to say" },
 ];
 
 const countryCode = [
@@ -412,7 +414,7 @@ const tabMap = {
   social: 2,
   education: 3,
   work: 4,
-  publicProfile: 5,
+  public: 5,
 };
 
 const UserProfilePage = () => {
@@ -432,21 +434,19 @@ const UserProfilePage = () => {
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [services, setServices] = useState<any[]>([]);
   const [serviceInput, setServiceInput] = useState("");
-const [basicData, setBasicData] = useState<any>(null);
-const [_loading, setLoading] = useState(false);
-
-
+  const [basicData, setBasicData] = useState<any>(null);
+  const [_loading, setLoading] = useState(false);
 
   const [cropModal, setCropModal] = useState<{
-  open: boolean;
-  src: string;
-  type: "profile" | "banner" | null;
-  setter?: React.Dispatch<React.SetStateAction<string | null>>;
-}>({
-  open: false,
-  src: "",
-  type: null,
-});
+    open: boolean;
+    src: string;
+    type: "profile" | "banner" | null;
+    setter?: React.Dispatch<React.SetStateAction<string | null>>;
+  }>({
+    open: false,
+    src: "",
+    type: null,
+  });
   // const public_organization = localStorage.getItem("person_organization");
   // const is_disqualify = localStorage.getItem("is_disqualify");
   const [searchParams] = useSearchParams();
@@ -461,14 +461,13 @@ const [_loading, setLoading] = useState(false);
     url: "",
   });
   const [socialLinks, setSocialLinks] = useState<Record<string, string>>(() => {
-    // Initialize with all social platforms as empty strings
     const initialSocialLinks: Record<string, string> = {};
     socialPlatforms.forEach((platform) => {
       initialSocialLinks[platform.value] = "";
     });
     return initialSocialLinks;
   });
-  console.log("🚀 ~ UserProfilePage ~ socialLinks:", socialLinks)
+  console.log("🚀 ~ UserProfilePage ~ socialLinks:", socialLinks);
   const getAvailablePlatforms = () => {
     return socialPlatforms.filter(
       (platform) =>
@@ -516,6 +515,7 @@ const [_loading, setLoading] = useState(false);
 
     return pattern.test(url);
   };
+  // Update handleAddSocialLink to track changes
   const handleAddSocialLink = (platform: string, url: string) => {
     if (platform && url) {
       const isValid = validateSocialUrl(platform, url);
@@ -537,6 +537,7 @@ const [_loading, setLoading] = useState(false);
 
       setNewSocialLink({ platform: "", url: "" });
       setShowSocialModal(false);
+      handleFormChange("social"); // Track changes
 
       showToast({
         message: `${
@@ -548,11 +549,13 @@ const [_loading, setLoading] = useState(false);
     }
   };
 
+  // Update handleRemoveSocialLink to track changes
   const handleRemoveSocialLink = (platform: string) => {
     setSocialLinks((prev) => ({
       ...prev,
       [platform]: "",
     }));
+    handleFormChange("social"); // Track changes
   };
 
   // Separate form handlers for each tab
@@ -652,10 +655,8 @@ const [_loading, setLoading] = useState(false);
     resolver: yupResolver(
       yup.object().shape({
         // Keep validation only for these 3 fields
-        phone: yup
-          .string()
-          .required("Phone number is required"),
-         // .matches(/^[0-9]{8,13}$/, "Phone must be between 8-13 digits"),
+        phone: yup.string().required("Phone number is required"),
+        // .matches(/^[0-9]{8,13}$/, "Phone must be between 8-13 digits"),
         email: yup
           .string()
           .required("Email is required")
@@ -677,7 +678,7 @@ const [_loading, setLoading] = useState(false);
     ),
   });
   // Update the socialLinksForm initialization with validation
-const socialLinksForm = useForm();
+  const socialLinksForm = useForm();
 
   const educationForm = useForm({
     defaultValues: {
@@ -782,93 +783,87 @@ const socialLinksForm = useForm();
       })
     ) as any, // Use type assertion to bypass TypeScript error
   });
-  console.log(
-    "🚀 ~ UserProfilePage ~ workExperienceForm:",
-    workExperienceForm.formState.errors.workExperiences
-  );
   const publicProfileForm = useForm();
 
-const handleImageChange = async (
-  e: React.ChangeEvent<HTMLInputElement>,
-  setter: React.Dispatch<React.SetStateAction<string | null>>,
-  formKey: "profile" | "banner"
-) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string | null>>,
+    formKey: "profile" | "banner"
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const previewUrl = URL.createObjectURL(file);
+    const previewUrl = URL.createObjectURL(file);
 
-  // Open cropping modal — DO NOT upload yet
-  setCropModal({
-    open: true,
-    src: previewUrl,
-    type: formKey,
-    setter: setter,
-  });
-};
+    // Open cropping modal — DO NOT upload yet
+    setCropModal({
+      open: true,
+      src: previewUrl,
+      type: formKey,
+      setter: setter,
+    });
+  };
 
+  const handleCropSave = async (blob: Blob, previewUrl: string) => {
+    if (!cropModal.setter) return;
 
+    // Update the preview immediately
+    cropModal.setter(previewUrl);
 
-const handleCropSave = async (blob: Blob, previewUrl: string) => {
-  if (!cropModal.setter) return;
+    // Convert blob -> file for backend
+    const croppedFile = new File([blob], "cropped.jpg", { type: "image/jpeg" });
 
-  // Update the preview immediately
-  cropModal.setter(previewUrl);
-
-  // Convert blob -> file for backend
-  const croppedFile = new File([blob], "cropped.jpg", { type: "image/jpeg" });
-
-  setUploadProgress({
-    type: cropModal.type,
-    message: "Uploading cropped image...",
-  });
-
-  try {
-    const formData = new FormData();
-
-    if (cropModal.type === "profile") {
-      formData.append("profile", croppedFile);
-    } else {
-      formData.append("banner", croppedFile);
-    }
-
-    const res = await SubmitProfileDetails(formData);
-
-    showToast({
-      message: res?.success?.message,
-      type: "success",
-      duration: 5000,
+    setUploadProgress({
+      type: cropModal.type,
+      message: "Uploading cropped image...",
     });
 
-    // Fetch updated user profile
-    const response = await MeDetails();
-    const userData = response?.data?.data?.user;
+    try {
+      const formData = new FormData();
 
-    if (cropModal.type === "profile" && userData.profile_picture) {
-      cropModal.setter(userData.profile_picture);
-      localStorage.setItem("profile_picture", userData.profile_picture);
+      if (cropModal.type === "profile") {
+        formData.append("profile", croppedFile);
+      } else {
+        formData.append("banner", croppedFile);
+      }
+
+      const res = await SubmitProfileDetails(formData);
+
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+
+      // Fetch updated user profile
+      const response = await MeDetails();
+      const userData = response?.data?.data?.user;
+
+      if (cropModal.type === "profile" && userData.profile_picture) {
+        cropModal.setter(userData.profile_picture);
+        localStorage.setItem("profile_picture", userData.profile_picture);
+      }
+
+      if (cropModal.type === "banner" && userData.profile_banner) {
+        cropModal.setter(userData.profile_banner);
+      }
+    } catch (err: any) {
+      showToast({
+        message: err?.response?.data?.error?.message || "Image upload failed",
+        type: "error",
+        duration: 5000,
+      });
     }
 
-    if (cropModal.type === "banner" && userData.profile_banner) {
-      cropModal.setter(userData.profile_banner);
-    }
-  } catch (err: any) {
-    showToast({
-      message: err?.response?.data?.error?.message || "Image upload failed",
-      type: "error",
-      duration: 5000,
+    setCropModal({
+      open: false,
+      src: "",
+      type: null,
+      setter: undefined,
     });
-  }
 
- setCropModal({
-  open: false,
-  src: "",
-  type: null,
-  setter: undefined,
-});
-
-  setUploadProgress({ type: null, message: "" });
-};
+    setUploadProgress({ type: null, message: "" });
+  };
   // Add these functions inside your UserProfilePage component
 
   const handleRemoveProfileImage = async () => {
@@ -937,17 +932,6 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
     }
   };
 
-  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && inputValue.trim()) {
-      e.preventDefault();
-      const newTag = inputValue.trim();
-      if (!tags.includes(newTag)) {
-        setTags([...tags, newTag]);
-        setInputValue("");
-      }
-    }
-  };
-
   const removeTag = (index: number) => {
     const newTags = [...tags];
     newTags.splice(index, 1);
@@ -981,6 +965,81 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
   //   setTags([]);
   // };
 
+  const [unsavedChanges, setUnsavedChanges] = useState<Record<string, boolean>>(
+    {
+      basic: false,
+      contact: false,
+      social: false,
+      education: false,
+      work: false,
+      public: false,
+    }
+  );
+
+  // Track form changes
+  const handleFormChange = (formKey: keyof typeof unsavedChanges) => {
+    setUnsavedChanges((prev) => ({ ...prev, [formKey]: true }));
+  };
+
+  const handleTabChange = async (newIndex: number) => {
+    // If there are unsaved changes in the current tab, save them first
+    const currentTabKey = Object.keys(tabMap).find(
+      (key) => tabMap[key as keyof typeof tabMap] === selectedIndex
+    );
+
+    const saveCurrentTabChanges = async (tabKey: string) => {
+      try {
+        setIsSubmitting((prev) => ({ ...prev, [tabKey]: true }));
+
+        switch (tabKey) {
+          case "basic":
+            const basicData = basicInfoForm.getValues();
+            await handleBasicInfoSubmit(basicData);
+            break;
+
+          case "contact":
+            const contactData = contactInfoForm.getValues();
+            await handleContactInfoSubmit(contactData);
+            break;
+
+          case "social":
+            await handleSocialLinksSubmit();
+            break;
+
+          case "education":
+            const educationData = educationForm.getValues();
+            await handleEducationSubmit(educationData);
+            break;
+
+          case "work":
+            const workData = workExperienceForm.getValues();
+            await handleWorkExperienceSubmit(workData);
+            break;
+
+          case "public":
+            const publicData = publicProfileForm.getValues();
+            await handlePublicProfileSubmit(publicData);
+            break;
+        }
+
+        // Reset unsaved changes for this tab
+        setUnsavedChanges((prev) => ({ ...prev, [tabKey]: false }));
+      } catch (error) {
+        console.error(`Failed to save ${tabKey} changes:`, error);
+        // Optionally show error toast
+      } finally {
+        setIsSubmitting((prev) => ({ ...prev, [tabKey]: false }));
+      }
+    };
+
+    if (currentTabKey && unsavedChanges[currentTabKey]) {
+      await saveCurrentTabChanges(currentTabKey);
+    }
+
+    // Then change the tab
+    setSelectedIndex(newIndex);
+  };
+
   // Tab-specific submit handlers
   const handleBasicInfoSubmit = async (data: any) => {
     setIsSubmitting((prev) => ({ ...prev, basic: true }));
@@ -1009,10 +1068,6 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
       interests: normalizeToArray(data.interests),
     };
 
-    // Log to see what's being sent
-    console.log("Submitting professions:", payload.professions);
-    console.log("Submitting interests:", payload.interests);
-
     try {
       const res = await SubmitProfileDetails(payload);
       showToast({
@@ -1020,6 +1075,8 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
         type: "success",
         duration: 5000,
       });
+
+      setUnsavedChanges((prev) => ({ ...prev, basic: false }));
 
       const lastIndex = tabNames.length - 1;
       if (selectedIndex < lastIndex) setSelectedIndex((prev) => prev + 1);
@@ -1096,6 +1153,9 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
         duration: 5000,
       });
 
+      // Reset unsaved changes for this tab
+      setUnsavedChanges((prev) => ({ ...prev, contact: false }));
+
       const lastIndex = tabNames.length - 1;
       if (selectedIndex < lastIndex) setSelectedIndex((prev) => prev + 1);
     } catch (error: any) {
@@ -1126,6 +1186,9 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
         type: "success",
         duration: 5000,
       });
+
+      // Reset unsaved changes for this tab
+      setUnsavedChanges((prev) => ({ ...prev, social: false }));
 
       const lastIndex = tabNames.length - 1;
       if (selectedIndex < lastIndex) setSelectedIndex((prev) => prev + 1);
@@ -1163,6 +1226,9 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
         duration: 5000,
       });
 
+      // Reset unsaved changes for this tab
+      setUnsavedChanges((prev) => ({ ...prev, education: false }));
+
       const lastIndex = tabNames.length - 1;
       if (selectedIndex < lastIndex) setSelectedIndex((prev) => prev + 1);
     } catch (error: any) {
@@ -1198,6 +1264,9 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
         type: "success",
         duration: 5000,
       });
+
+      // Reset unsaved changes for this tab
+      setUnsavedChanges((prev) => ({ ...prev, work: false }));
 
       const lastIndex = tabNames.length - 1;
       if (selectedIndex < lastIndex) setSelectedIndex((prev) => prev + 1);
@@ -1242,6 +1311,9 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
         type: "success",
         duration: 5000,
       });
+
+      // Reset unsaved changes for this tab
+      setUnsavedChanges((prev) => ({ ...prev, public: false }));
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -1281,7 +1353,7 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
 
         if (Object.keys(socialLinksData).length === 0) {
           ["facebook", "twitter", "linkedin", "instagram"].map((el) => {
-              initializedSocialLinks[el] =  " ";
+            initializedSocialLinks[el] = " ";
           });
         } else {
           socialPlatforms.forEach((platform) => {
@@ -1290,7 +1362,10 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
           });
         }
 
-        console.log(initializedSocialLinks, 'initializedSocialLinks---initializedSocialLinks')
+        console.log(
+          initializedSocialLinks,
+          "initializedSocialLinks---initializedSocialLinks"
+        );
         setSocialLinks(initializedSocialLinks);
 
         basicInfoForm.reset({
@@ -1518,35 +1593,37 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
 
   const selectedCountry = contactInfoForm.watch("country");
   const selectedState = contactInfoForm.watch("state");
+  console.log("🚀 ~ UserProfilePage ~ selectedState:", selectedState);
 
   useEffect(() => {
     if (selectedCountry) {
       GetState(selectedCountry).then(() => {
         // ensure the selected state value is preserved after states load
         if (selectedState) {
+          console.log("🚀 ~ UserProfilePage ~ selectedState:", selectedState)
           contactInfoForm.setValue("state", selectedState);
         }
       });
     } else {
-      setStates([]);
       contactInfoForm.setValue("state", "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCountry]);
 
-  useEffect(() => {
+  const workCountries = useMemo(() => {
     const workExperiences = workExperienceForm.watch("workExperiences");
+    return (
+      workExperiences?.map((exp) => exp.work_country).filter(Boolean) || []
+    );
+  }, [workExperienceForm.watch("workExperiences")]); // This watches the entire object
 
-    if (workExperiences && workExperiences.length > 0) {
-      // Watch for country changes in any work experience entry
-      workExperiences.forEach((exp: any) => {
-        if (exp.work_country) {
-          GetState(exp.work_country);
-        }
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(workExperienceForm.watch("workExperiences"))]);
+  useEffect(() => {
+    workCountries.forEach((countryId) => {
+      if (countryId) {
+        GetState(countryId);
+      }
+    });
+  }, [workCountries]); // Now this only changes when countries actually change
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   /*const fetchVerifyOrganizationNumber = async (file: File) => {
@@ -1587,29 +1664,27 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
     }
   };*/
 
+  const MeDetail = async () => {
+    try {
+      setLoading(true);
+      const response = await MeDetails();
+      // response?.data?.data?.user should contain the user object
+      setBasicData(response?.data?.data?.user);
+    } catch (error) {
+      console.error("Error fetching me details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    MeDetail();
+  }, []);
 
-const MeDetail = async () => {
-  try {
-    setLoading(true);
-    const response = await MeDetails();
-    // response?.data?.data?.user should contain the user object
-    setBasicData(response?.data?.data?.user);
-  } catch (error) {
-    console.error("Error fetching me details:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-useEffect(() => {
-  MeDetail();
-}, []);
-
-
-useEffect(() => {
-  if (basicData?.email) {
-    contactInfoForm.setValue("email", basicData.email);
-  }
-}, [basicData, contactInfoForm]);
+  useEffect(() => {
+    if (basicData?.email) {
+      contactInfoForm.setValue("email", basicData.email);
+    }
+  }, [basicData, contactInfoForm]);
   return (
     <>
       <section className="w-full px-1 sm:px-2 lg:px-1 pt-2 pb-10">
@@ -1700,7 +1775,7 @@ useEffect(() => {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                     onClick={(e) => (e.currentTarget.value = "")}  
+                    onClick={(e) => (e.currentTarget.value = "")}
                     onChange={(e) => handleImageChange(e, setBanner, "banner")}
                   />
                   <PhotoIcon className="w-4 sm:w-5 h-4 sm:h-5 text-gray-600" />
@@ -1806,10 +1881,9 @@ useEffect(() => {
               <h2 className="text-[20px] sm:text-[24px] poppins font-bold text-[#9747FF] mb-4 sm:mb-6">
                 My Profile
               </h2>
-
               <Tab.Group
                 selectedIndex={selectedIndex}
-                onChange={setSelectedIndex}
+                onChange={handleTabChange}
               >
                 <div className="w-full overflow-x-auto no-scrollbar">
                   <div className="inline-block min-w-full">
@@ -1874,8 +1948,12 @@ useEffect(() => {
                         <input
                           type="text"
                           {...basicInfoForm.register("firstName")}
+                          onChange={(e) => {
+                            basicInfoForm.setValue("firstName", e.target.value);
+                            handleFormChange("basic");
+                          }}
                           placeholder="Enter your First Name"
-                          className={`w-full px-4 py-2 h-[41px]  border bg-white ${
+                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
                             basicInfoForm.formState.errors.firstName
                               ? "border-red-500"
                               : "border-gray-300"
@@ -1900,6 +1978,10 @@ useEffect(() => {
                         <input
                           type="text"
                           {...basicInfoForm.register("lastName")}
+                          onChange={(e) => {
+                            basicInfoForm.setValue("lastName", e.target.value);
+                            handleFormChange("basic");
+                          }}
                           placeholder="Enter your Last Name"
                           className={`w-full px-4 py-2 border h-[41px] bg-white ${
                             basicInfoForm.formState.errors.lastName
@@ -1931,28 +2013,23 @@ useEffect(() => {
                               label: interest.name,
                             })) || []
                           }
-                          // In your interests Select component, update the value mapping:
                           value={basicInfoForm
                             .watch("interests")
                             ?.map((interestValue: any) => {
-                              // Check if it's a custom interest (string without UUID format) or existing (ID)
                               if (
                                 typeof interestValue === "string" &&
                                 !interestValue.includes("-")
                               ) {
-                                // It's a custom interest - return as is
                                 return {
                                   value: interestValue,
                                   label: interestValue,
                                 };
                               }
 
-                              // It's an existing interest ID - find in interest data
                               const foundInterest = intereset?.find(
                                 (i: any) => i.id === interestValue
                               );
 
-                              // If not found in interest data, check if it's in the profile response
                               if (!foundInterest) {
                                 const profileInterest =
                                   _profileData?.interests?.find(
@@ -1976,15 +2053,14 @@ useEffect(() => {
                             })}
                           onChange={(selectedOptions) => {
                             const normalizedInterests = selectedOptions.map(
-                              (option: any) => {
-                                return option.value;
-                              }
+                              (option: any) => option.value
                             );
 
                             basicInfoForm.setValue(
                               "interests",
                               normalizedInterests
                             );
+                            handleFormChange("basic");
                           }}
                           styles={customStyles}
                           classNamePrefix="react-select"
@@ -2011,6 +2087,7 @@ useEffect(() => {
                           }
                         />
                       </div>
+
                       {/* Profession */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -2027,24 +2104,20 @@ useEffect(() => {
                           value={basicInfoForm
                             .watch("professions")
                             ?.map((profValue: any) => {
-                              // Check if it's a custom profession (string without UUID format) or existing (ID)
                               if (
                                 typeof profValue === "string" &&
                                 !profValue.includes("-")
                               ) {
-                                // It's a custom profession - return as is
                                 return {
                                   value: profValue,
                                   label: profValue,
                                 };
                               }
 
-                              // It's an existing profession ID - find in professional data
                               const foundProf = professional?.find(
                                 (p: any) => p.id === profValue
                               );
 
-                              // If not found in professional data, check if it's in the profile response
                               if (!foundProf) {
                                 const profileProf =
                                   _profileData?.professions?.find(
@@ -2065,15 +2138,14 @@ useEffect(() => {
                             })}
                           onChange={(selectedOptions) => {
                             const normalizedProfessions = selectedOptions.map(
-                              (option: any) => {
-                                return option.value;
-                              }
+                              (option: any) => option.value
                             );
 
                             basicInfoForm.setValue(
                               "professions",
                               normalizedProfessions
                             );
+                            handleFormChange("basic");
                           }}
                           styles={customStyles}
                           classNamePrefix="react-select"
@@ -2269,31 +2341,18 @@ useEffect(() => {
                       <div className="w-full">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Gender
-                          {/* <span className="text-red-500">*</span> */}
                         </label>
                         <Select
                           options={genderOptions}
                           styles={customSelectStyles}
-                          //placeholder="Select your gender"
-                          className={`w-full border bg-white ${
-                            basicInfoForm.formState.errors.gender
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.gender
-                              ? "focus:ring-red-500"
-                              : "focus:ring-purple-500"
-                          }`}
                           value={genderOptions.find(
                             (opt) => opt.value === basicInfoForm.watch("gender")
                           )}
-                          onChange={(selectedOption) =>
-                            basicInfoForm.setValue(
-                              "gender",
-                              selectedOption?.value || ""
-                            )
-                          }
-                          onBlur={() => basicInfoForm.trigger("gender")}
+                          onChange={(selectedOption) => {
+                            const value = selectedOption?.value || "";
+                            basicInfoForm.setValue("gender", value);
+                            handleFormChange("basic");
+                          }}
                           isSearchable={false}
                         />
                         {basicInfoForm.formState.errors.gender && (
@@ -2314,6 +2373,10 @@ useEffect(() => {
                           {...basicInfoForm.register("dob", {
                             required: true,
                           })}
+                          onChange={(e) => {
+                            basicInfoForm.setValue("dob", e.target.value);
+                            handleFormChange("basic");
+                          }}
                           onClick={(e: React.MouseEvent<HTMLInputElement>) =>
                             e.currentTarget.showPicker()
                           }
@@ -2342,6 +2405,10 @@ useEffect(() => {
                         <input
                           type="text"
                           {...basicInfoForm.register("quote")}
+                          onChange={(e) => {
+                            basicInfoForm.setValue("quote", e.target.value);
+                            handleFormChange("basic");
+                          }}
                           placeholder="Enter your quote"
                           className={`w-full px-4 py-2 h-[41px] border bg-white ${
                             basicInfoForm.formState.errors.quote
@@ -2362,11 +2429,15 @@ useEffect(() => {
                       {/* Professional Bio */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Describe Yourself {/* <span className="text-red-500">*</span> */}
+                          Describe Yourself
                         </label>
                         <textarea
                           rows={4}
                           {...basicInfoForm.register("bio")}
+                          onChange={(e) => {
+                            basicInfoForm.setValue("bio", e.target.value);
+                            handleFormChange("basic");
+                          }}
                           placeholder="Add a short professional bio"
                           className={`w-full px-4 py-2 border bg-white ${
                             basicInfoForm.formState.errors.bio
@@ -2386,32 +2457,34 @@ useEffect(() => {
                       </div>
                       {/* Vision Statement - Full Width */}
                       <div className="md:col-span-2">
-  <label className="block text-sm font-medium text-gray-800 mb-2">
-    Personal Vision Statement
-  </label>
-
-  <input
-    type="text"
-    {...basicInfoForm.register("vision")}
-    placeholder="What is your conscious vision?"
-    className={`w-full px-4 py-3 border bg-white ${
-      basicInfoForm.formState.errors.vision
-        ? "border-red-500"
-        : "border-gray-300"
-    } rounded-xl text-sm placeholder-gray-400 
-    focus:outline-none focus:ring-2 ${
-      basicInfoForm.formState.errors.vision
-        ? "focus:ring-red-500"
-        : "focus:ring-purple-500"
-    } transition-all`}
-  />
-
-  {basicInfoForm.formState.errors.vision && (
-    <p className="text-sm text-red-500 mt-1">
-      {basicInfoForm.formState.errors.vision.message}
-    </p>
-  )}
-</div>
+                        <label className="block text-sm font-medium text-gray-800 mb-2">
+                          Personal Vision Statement
+                        </label>
+                        <input
+                          type="text"
+                          {...basicInfoForm.register("vision")}
+                          onChange={(e) => {
+                            basicInfoForm.setValue("vision", e.target.value);
+                            handleFormChange("basic");
+                          }}
+                          placeholder="What is your conscious vision?"
+                          className={`w-full px-4 py-3 border bg-white ${
+                            basicInfoForm.formState.errors.vision
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-xl text-sm placeholder-gray-400 
+                            focus:outline-none focus:ring-2 ${
+                              basicInfoForm.formState.errors.vision
+                                ? "focus:ring-red-500"
+                                : "focus:ring-purple-500"
+                            } transition-all`}
+                        />
+                        {basicInfoForm.formState.errors.vision && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {basicInfoForm.formState.errors.vision.message}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                       <Button
@@ -2460,63 +2533,61 @@ useEffect(() => {
                                     contactInfoForm.watch("country_code")
                                 ) || countryCodeOptions[0]
                               }
-                              onChange={(selectedOption) =>
-                                contactInfoForm.setValue(
-                                  "country_code",
-                                  selectedOption?.value || countryCode[0]
-                                )
-                              }
+                              onChange={(selectedOption) => {
+                                const value =
+                                  selectedOption?.value || countryCode[0];
+                                contactInfoForm.setValue("country_code", value);
+                                handleFormChange("contact"); // Track changes
+                              }}
                               isSearchable={true}
                               placeholder="Code"
                             />
                           </div>
-                        <input
-  type="tel"
-  placeholder="Enter Your Phone Number"
-  // we intentionally DO NOT use {...contactInfoForm.register("phone")} here,
-  // because we update the field programmatically (setValue) to control formatting.
-  value={contactInfoForm.watch("phone") || ""}
-  onChange={(e) => {
-    // 1) get selected calling code from your form (e.g. "+91")
-    const selectedCallingCode = contactInfoForm.watch("country_code") || "+91";
-
-    // 2) convert calling code to ISO (e.g. "IN")
-    const isoCountry = callingCodeToISO[selectedCallingCode] || "IN";
-
-    // 3) keep digits only
-    let digits = e.target.value.replace(/\D/g, "");
-
-    // 4) enforce max digits automatically for that country
-    const maxDigits = getMaxDigits(isoCountry);
-    if (digits.length > maxDigits) digits = digits.slice(0, maxDigits);
-
-    // 5) format according to country rules
-    const formatted = formatPhoneForCountry(digits, isoCountry);
-
-    // 6) write back into React Hook Form
-    contactInfoForm.setValue("phone", formatted, { shouldValidate: true, shouldDirty: true });
-  }}
-  onKeyDown={(e) => {
-    // allow digits, Backspace, Delete, Arrow keys, Tab
-    if (
-      !/^\d$/.test(e.key) &&
-      e.key !== "Backspace" &&
-      e.key !== "Delete" &&
-      e.key !== "ArrowLeft" &&
-      e.key !== "ArrowRight" &&
-      e.key !== "Tab"
-    ) {
-      e.preventDefault();
-    }
-  }}
-  className={`w-full px-4 py-2 border bg-white ${
-    contactInfoForm.formState.errors.phone ? "border-red-500" : "border-gray-300"
-  } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
-    contactInfoForm.formState.errors.phone ? "focus:ring-red-500" : "focus:ring-purple-500"
-  }`}
-/>
-
-
+                          <input
+                            type="tel"
+                            placeholder="Enter Your Phone Number"
+                            value={contactInfoForm.watch("phone") || ""}
+                            onChange={(e) => {
+                              const selectedCallingCode =
+                                contactInfoForm.watch("country_code") || "+91";
+                              const isoCountry =
+                                callingCodeToISO[selectedCallingCode] || "IN";
+                              let digits = e.target.value.replace(/\D/g, "");
+                              const maxDigits = getMaxDigits(isoCountry);
+                              if (digits.length > maxDigits)
+                                digits = digits.slice(0, maxDigits);
+                              const formatted = formatPhoneForCountry(
+                                digits,
+                                isoCountry
+                              );
+                              contactInfoForm.setValue("phone", formatted, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                              });
+                              handleFormChange("contact"); // Track changes
+                            }}
+                            onKeyDown={(e) => {
+                              if (
+                                !/^\d$/.test(e.key) &&
+                                e.key !== "Backspace" &&
+                                e.key !== "Delete" &&
+                                e.key !== "ArrowLeft" &&
+                                e.key !== "ArrowRight" &&
+                                e.key !== "Tab"
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                            className={`w-full px-4 py-2 border bg-white ${
+                              contactInfoForm.formState.errors.phone
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
+                              contactInfoForm.formState.errors.phone
+                                ? "focus:ring-red-500"
+                                : "focus:ring-purple-500"
+                            }`}
+                          />
                         </div>
                         {contactInfoForm.formState.errors.phone && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2534,23 +2605,32 @@ useEffect(() => {
                           Email <span className="text-red-500">*</span>
                         </label>
                         <input
-  type="email"
-  placeholder="Enter Your Email"
-  {...contactInfoForm.register("email")}
-  readOnly
-  className={`w-full px-4 py-2 border bg-gray-100 text-gray-600 cursor-not-allowed ${
-    contactInfoForm.formState.errors.email ? "border-red-500" : "border-gray-300"
-  } rounded-xl h-[41px] focus:outline-none`}
-/>
+                          type="email"
+                          placeholder="Enter Your Email"
+                          {...contactInfoForm.register("email")}
+                          onChange={(e) => {
+                            contactInfoForm.setValue("email", e.target.value);
+                            handleFormChange("contact"); // Track changes
+                          }}
+                          readOnly
+                          className={`w-full px-4 py-2 border bg-gray-100 text-gray-600 cursor-not-allowed ${
+                            contactInfoForm.formState.errors.email
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-xl h-[41px] focus:outline-none`}
+                        />
 
-{contactInfoForm.formState.errors.email && (
-  <p className="text-sm text-red-500 mt-1">
-    {contactInfoForm.formState.errors.email.message as string}
-  </p>
-)}
+                        {contactInfoForm.formState.errors.email && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {
+                              contactInfoForm.formState.errors.email
+                                .message as string
+                            }
+                          </p>
+                        )}
                       </div>
 
-                      {/* Address - No validation */}
+                      {/* Address */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Address
@@ -2558,6 +2638,10 @@ useEffect(() => {
                         <input
                           type="text"
                           {...contactInfoForm.register("address")}
+                          onChange={(e) => {
+                            contactInfoForm.setValue("address", e.target.value);
+                            handleFormChange("contact"); // Track changes
+                          }}
                           placeholder="Enter your address"
                           className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
@@ -2597,12 +2681,11 @@ useEffect(() => {
                               : null
                           }
                           onChange={(selectedOption) => {
-                            contactInfoForm.setValue(
-                              "country",
-                              selectedOption?.value
-                                ? String(selectedOption.value)
-                                : ""
-                            );
+                            const value = selectedOption?.value
+                              ? String(selectedOption.value)
+                              : "";
+                            contactInfoForm.setValue("country", value);
+                            handleFormChange("contact"); // Track changes
                           }}
                           onBlur={() => contactInfoForm.trigger("country")}
                           styles={customSelectStyles}
@@ -2620,59 +2703,49 @@ useEffect(() => {
                         )}
                       </div>
 
-                      {/* State - No validation */}
-                      <div className="w-full relative">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          State
-                        </label>
-                        <Select
-                          isDisabled={!contactInfoForm.watch("country")}
-                          options={
-                            states
-                              ? states.map((state: any) => ({
-                                  value: String(state.id),
-                                  label: state.name,
-                                }))
-                              : []
-                          }
-                          value={
-                            states
-                              ? states.find(
-                                  (s: any) =>
-                                    String(s.id) ===
-                                    contactInfoForm.watch("state")
-                                )
-                                ? {
-                                    value: contactInfoForm.watch("state"),
-                                    label:
-                                      states.find(
-                                        (s: any) =>
-                                          String(s.id) ===
-                                          contactInfoForm.watch("state")
-                                      )?.name || "Select your state",
-                                  }
-                                : null
-                              : null
-                          }
-                          onChange={(selectedOption) => {
-                            contactInfoForm.setValue(
-                              "state",
-                              selectedOption?.value
-                                ? String(selectedOption.value)
-                                : ""
-                            );
-                          }}
-                          styles={customSelectStyles}
-                          placeholder="Select your state"
-                          isSearchable
-                          classNamePrefix="react-select"
-                          menuPortalTarget={document.body}
-                          menuPosition="fixed"
-                          maxMenuHeight={200}
-                        />
-                      </div>
+                      {/* State */}
+                      {/* State */}
+<div className="w-full relative">
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    State
+  </label>
+  <Select
+    isDisabled={!contactInfoForm.watch("country")}
+    options={
+      states.length > 0
+        ? states.map((state: any) => ({
+            value: String(state.id),
+            label: state.name,
+          }))
+        : []
+    }
+    value={
+      contactInfoForm.watch("state") && states.length > 0
+        ? states.find((s: any) => String(s.id) === String(contactInfoForm.watch("state")))
+          ? {
+              value: String(contactInfoForm.watch("state")),
+              label: states.find((s: any) => String(s.id) === String(contactInfoForm.watch("state")))?.name,
+            }
+          : null
+        : null
+    }
+    onChange={(selectedOption) => {
+      // FIX: Use the string value directly, not the object
+      const value = selectedOption?.value ? String(selectedOption.value) : "";
+      contactInfoForm.setValue("state", value);
+      handleFormChange("contact");
+    }}
+    styles={customSelectStyles}
+    placeholder="Select your state"
+    isSearchable
+    classNamePrefix="react-select"
+    menuPortalTarget={document.body}
+    menuPosition="fixed"
+    maxMenuHeight={200}
+  />
+</div>
 
-                      {/* City - No validation */}
+                      {/* City */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           City
@@ -2680,12 +2753,16 @@ useEffect(() => {
                         <input
                           type="text"
                           {...contactInfoForm.register("city")}
+                          onChange={(e) => {
+                            contactInfoForm.setValue("city", e.target.value);
+                            handleFormChange("contact"); // Track changes
+                          }}
                           placeholder="Enter city"
                           className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
 
-                      {/* Postal Code - No validation */}
+                      {/* Postal Code */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Postal Code
@@ -2693,6 +2770,13 @@ useEffect(() => {
                         <input
                           type="text"
                           {...contactInfoForm.register("postalCode")}
+                          onChange={(e) => {
+                            contactInfoForm.setValue(
+                              "postalCode",
+                              e.target.value
+                            );
+                            handleFormChange("contact"); // Track changes
+                          }}
                           placeholder="Enter postal code"
                           className="w-full px-4 py-2 border h-[41px] bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 uppercase"
                           style={{ textTransform: "uppercase" }}
@@ -2702,14 +2786,26 @@ useEffect(() => {
                       {/* Communication Preferences */}
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Preferred Method of Communication{" "}
-                          {/* <span className="text-red-500">*</span> */}
+                          Preferred Method of Communication
                         </label>
                         <div className="flex gap-6">
                           <label className="inline-flex items-center gap-2">
                             <input
                               type="checkbox"
                               {...contactInfoForm.register("communication.sms")}
+                              onChange={(e) => {
+                                const currentCommunication =
+                                  contactInfoForm.watch("communication");
+                                const updatedCommunication = {
+                                  ...currentCommunication,
+                                  sms: e.target.checked,
+                                };
+                                contactInfoForm.setValue(
+                                  "communication",
+                                  updatedCommunication
+                                );
+                                handleFormChange("contact"); // Track changes
+                              }}
                               className="accent-[#9747FF]"
                             />
                             <span className="text-sm text-gray-700">SMS</span>
@@ -2720,6 +2816,19 @@ useEffect(() => {
                               {...contactInfoForm.register(
                                 "communication.email"
                               )}
+                              onChange={(e) => {
+                                const currentCommunication =
+                                  contactInfoForm.watch("communication");
+                                const updatedCommunication = {
+                                  ...currentCommunication,
+                                  email: e.target.checked,
+                                };
+                                contactInfoForm.setValue(
+                                  "communication",
+                                  updatedCommunication
+                                );
+                                handleFormChange("contact"); // Track changes
+                              }}
                               className="accent-[#9747FF]"
                             />
                             <span className="text-sm text-gray-700">Email</span>
@@ -2730,6 +2839,19 @@ useEffect(() => {
                               {...contactInfoForm.register(
                                 "communication.whatsapp"
                               )}
+                              onChange={(e) => {
+                                const currentCommunication =
+                                  contactInfoForm.watch("communication");
+                                const updatedCommunication = {
+                                  ...currentCommunication,
+                                  whatsapp: e.target.checked,
+                                };
+                                contactInfoForm.setValue(
+                                  "communication",
+                                  updatedCommunication
+                                );
+                                handleFormChange("contact"); // Track changes
+                              }}
                               className="accent-[#9747FF]"
                             />
                             <span className="text-sm text-gray-700">
@@ -2743,8 +2865,8 @@ useEffect(() => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-                            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-                            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => contactInfoForm.reset()}
                       >
@@ -2791,12 +2913,13 @@ useEffect(() => {
                                 <input
                                   type="url"
                                   value={socialLinks[platform.value] || ""}
-                                  onChange={(e) =>
+                                  onChange={(e) => {
                                     setSocialLinks((prev) => ({
                                       ...prev,
                                       [platform.value]: e.target.value,
-                                    }))
-                                  }
+                                    }));
+                                    handleFormChange("social"); // Track changes
+                                  }}
                                   placeholder={`https://${platform.value}.com/`}
                                   className="w-full px-4 py-2 h-[41px] border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
@@ -2804,9 +2927,10 @@ useEffect(() => {
                                 {showDeleteButton && (
                                   <button
                                     type="button"
-                                    onClick={() =>
-                                      handleRemoveSocialLink(platform.value)
-                                    }
+                                    onClick={() => {
+                                      handleRemoveSocialLink(platform.value);
+                                      handleFormChange("social"); // Track changes
+                                    }}
                                     className="px-3 text-red-500 hover:text-red-700 transition-colors"
                                     title={`Remove ${platform.label} link`}
                                   >
@@ -2943,8 +3067,8 @@ useEffect(() => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+        hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+        shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => {
                           // Reset all social links to empty
@@ -2953,6 +3077,11 @@ useEffect(() => {
                             resetSocialLinks[platform.value] = "";
                           });
                           setSocialLinks(resetSocialLinks);
+                          // Clear unsaved changes
+                          setUnsavedChanges((prev) => ({
+                            ...prev,
+                            social: false,
+                          }));
                         }}
                       >
                         Reset
@@ -3005,6 +3134,7 @@ useEffect(() => {
                                       "educations",
                                       newEducations
                                     );
+                                    handleFormChange("education"); // Track changes
                                   }
                                 }}
                                 className="absolute top-2 right-2 text-red-500 hover:text-red-700"
@@ -3034,6 +3164,13 @@ useEffect(() => {
                                 {...educationForm.register(
                                   `educations.${index}.degree`
                                 )}
+                                onChange={(e) => {
+                                  educationForm.setValue(
+                                    `educations.${index}.degree`,
+                                    e.target.value
+                                  );
+                                  handleFormChange("education"); // Track changes
+                                }}
                                 placeholder="Enter your degree"
                                 className={`w-full px-4 py-2 border bg-white ${
                                   educationErrors?.degree
@@ -3062,6 +3199,13 @@ useEffect(() => {
                                 {...educationForm.register(
                                   `educations.${index}.institution`
                                 )}
+                                onChange={(e) => {
+                                  educationForm.setValue(
+                                    `educations.${index}.institution`,
+                                    e.target.value
+                                  );
+                                  handleFormChange("education"); // Track changes
+                                }}
                                 placeholder="Enter institution name"
                                 className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                   educationErrors?.institution
@@ -3080,75 +3224,108 @@ useEffect(() => {
                               )}
                             </div>
 
- {/* Start Date */}
-<div className="relative">
-  <label className="block text-sm font-medium text-gray-800 mb-2">
-    Start Date
-  </label>
+                            {/* Start Date */}
+                            <div className="relative">
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                Start Date
+                              </label>
 
-  {!educationForm.watch(`educations.${index}.start_date`) && (
-    <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
-      Please select month & year
-    </span>
-  )}
+                              {!educationForm.watch(
+                                `educations.${index}.start_date`
+                              ) && (
+                                <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
+                                  Please select month & year
+                                </span>
+                              )}
 
-  <input
-    type="month"
-    {...educationForm.register(`educations.${index}.start_date`)}
-    className={`w-full h-[41px] px-4 py-2 border bg-white ${
-      educationErrors?.start_date ? "border-red-500" : "border-gray-300"
-    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-      educationErrors?.start_date ? "focus:ring-red-500" : "focus:ring-purple-500"
-    }`}
-    style={{
-      color: educationForm.watch(`educations.${index}.start_date`)
-        ? "#000"
-        : "transparent"
-    }}
-  />
+                              <input
+                                type="month"
+                                {...educationForm.register(
+                                  `educations.${index}.start_date`
+                                )}
+                                onChange={(e) => {
+                                  educationForm.setValue(
+                                    `educations.${index}.start_date`,
+                                    e.target.value
+                                  );
+                                  handleFormChange("education"); // Track changes
+                                }}
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  educationErrors?.start_date
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                  educationErrors?.start_date
+                                    ? "focus:ring-red-500"
+                                    : "focus:ring-purple-500"
+                                }`}
+                                style={{
+                                  color: educationForm.watch(
+                                    `educations.${index}.start_date`
+                                  )
+                                    ? "#000"
+                                    : "transparent",
+                                }}
+                              />
 
-  {educationErrors?.start_date && (
-    <p className="text-sm text-red-500 mt-1">
-      {educationErrors.start_date.message}
-    </p>
-  )}
-</div>
+                              {educationErrors?.start_date && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {educationErrors.start_date.message}
+                                </p>
+                              )}
+                            </div>
 
+                            {/* End Date */}
+                            <div className="relative">
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                End Date
+                              </label>
 
- {/* End Date */}
-  <div className="relative">
-  <label className="block text-sm font-medium text-gray-800 mb-2">
-    End Date
-  </label>
+                              {/* Placeholder */}
+                              {!educationForm.watch(
+                                `educations.${index}.end_date`
+                              ) && (
+                                <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
+                                  Please select month & year
+                                </span>
+                              )}
 
-  {/* Placeholder */}
-  {!educationForm.watch(`educations.${index}.end_date`) && (
-    <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
-      Please select month & year
-    </span>
-  )}
+                              <input
+                                type="month"
+                                {...educationForm.register(
+                                  `educations.${index}.end_date`
+                                )}
+                                onChange={(e) => {
+                                  educationForm.setValue(
+                                    `educations.${index}.end_date`,
+                                    e.target.value
+                                  );
+                                  handleFormChange("education"); // Track changes
+                                }}
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  educationErrors?.end_date
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                                } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+                                  educationErrors?.end_date
+                                    ? "focus:ring-red-500"
+                                    : "focus:ring-purple-500"
+                                }`}
+                                style={{
+                                  color: educationForm.watch(
+                                    `educations.${index}.end_date`
+                                  )
+                                    ? "#000" // show text when selected
+                                    : "transparent", // hide default ----
+                                }}
+                              />
 
-  <input
-    type="month"
-    {...educationForm.register(`educations.${index}.end_date`)}
-    className={`w-full h-[41px] px-4 py-2 border bg-white ${
-      educationErrors?.end_date ? "border-red-500" : "border-gray-300"
-    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-      educationErrors?.end_date ? "focus:ring-red-500" : "focus:ring-purple-500"
-    }`}
-    style={{
-      color: educationForm.watch(`educations.${index}.end_date`)
-        ? "#000"        // show text when selected
-        : "transparent" // hide default ----
-    }}
-  />
-
-  {educationErrors?.end_date && (
-    <p className="text-sm text-red-500 mt-1">
-      {educationErrors.end_date.message}
-    </p>
-  )}
-</div>
+                              {educationErrors?.end_date && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {educationErrors.end_date.message}
+                                </p>
+                              )}
+                            </div>
 
                             {/* Individual education entry error */}
                             {hasEducationError && (
@@ -3191,6 +3368,7 @@ useEffect(() => {
                               end_date: "",
                             },
                           ]);
+                          handleFormChange("education"); // Track changes
                         }}
                         className="text-purple-600 hover:text-purple-800 font-medium flex items-center"
                       >
@@ -3214,10 +3392,17 @@ useEffect(() => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
-                        onClick={() => educationForm.reset()}
+                        onClick={() => {
+                          educationForm.reset();
+                          // Clear unsaved changes
+                          setUnsavedChanges((prev) => ({
+                            ...prev,
+                            education: false,
+                          }));
+                        }}
                       >
                         Reset
                       </Button>
@@ -3277,6 +3462,7 @@ useEffect(() => {
                                     "workExperiences",
                                     experiences
                                   );
+                                  handleFormChange("work"); // Track changes
                                 }}
                                 className="absolute top-2 right-2 text-red-500 hover:text-red-700"
                               >
@@ -3306,6 +3492,20 @@ useEffect(() => {
                                   `workExperiences.${index}.company`
                                 )}
                                 maxLength={40}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  workExperienceForm.setValue(
+                                    `workExperiences.${index}.company`,
+                                    value,
+                                    { shouldValidate: true }
+                                  );
+                                  handleFormChange("work");
+                                }}
+                                onBlur={() => {
+                                  workExperienceForm.trigger(
+                                    `workExperiences.${index}.company`
+                                  );
+                                }}
                                 placeholder="Enter Company Name"
                                 className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                   experienceErrors?.company
@@ -3335,6 +3535,13 @@ useEffect(() => {
                                   `workExperiences.${index}.position`
                                 )}
                                 maxLength={40}
+                                onChange={(e) => {
+                                  workExperienceForm.setValue(
+                                    `workExperiences.${index}.position`,
+                                    e.target.value
+                                  );
+                                  handleFormChange("work");
+                                }}
                                 placeholder="Enter your Designation"
                                 className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                   experienceErrors?.position
@@ -3363,6 +3570,13 @@ useEffect(() => {
                                   `workExperiences.${index}.roles_responsibilities`
                                 )}
                                 rows={5}
+                                onChange={(e) => {
+                                  workExperienceForm.setValue(
+                                    `workExperiences.${index}.roles_responsibilities`,
+                                    e.target.value
+                                  );
+                                  handleFormChange("work");
+                                }}
                                 placeholder="Describe your key roles and responsibilities"
                                 className={`w-full px-4 py-2 border bg-white ${
                                   experienceErrors?.roles_responsibilities
@@ -3384,111 +3598,6 @@ useEffect(() => {
                               )}
                             </div>
 
-                            {/* Country 
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Country
-                              </label>
-                              <Select
-                                options={
-                                  Country?.map((country: any) => ({
-                                    value: country.name,
-                                    label: country.name,
-                                  })) || []
-                                }
-                                value={
-                                  workExperienceForm.watch(
-                                    `workExperiences.${index}.work_country`
-                                  )
-                                    ? {
-                                        value: workExperienceForm.watch(
-                                          `workExperiences.${index}.work_country`
-                                        ),
-                                        label: workExperienceForm.watch(
-                                          `workExperiences.${index}.work_country`
-                                        ),
-                                      }
-                                    : null
-                                }
-                                onChange={(selectedOption) => {
-                                  const countryName =
-                                    selectedOption?.value || "";
-                                  workExperienceForm.setValue(
-                                    `workExperiences.${index}.work_country`,
-                                    countryName
-                                  );
-                                  const countryId = Country?.find(
-                                    (c: any) => c.name === countryName
-                                  )?.id;
-                                  if (countryId) {
-                                    GetState(countryId);
-                                  } else {
-                                    setStates([]);
-                                  }
-                                  workExperienceForm.setValue(
-                                    `workExperiences.${index}.work_state`,
-                                    ""
-                                  );
-                                }}
-                                styles={customSelectStyles}
-                                placeholder="Select your country"
-                                isSearchable
-                                classNamePrefix="react-select"
-                              />
-                              {experienceErrors?.work_country && (
-                                <p className="text-sm text-red-500 mt-1">
-                                  {experienceErrors.work_country.message}
-                                </p>
-                              )}
-                            </div>*/}
-
-                            {/* State 
-                            <div className="lg:w-[48%] md:w-[48%] w-full relative">
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
-                                State
-                              </label>
-                              <Select
-                                options={
-                                  states?.map((state: any) => ({
-                                    value: state.name,
-                                    label: state.name,
-                                  })) || []
-                                }
-                                value={
-                                  workExperienceForm.watch(
-                                    `workExperiences.${index}.work_state`
-                                  )
-                                    ? {
-                                        value: workExperienceForm.watch(
-                                          `workExperiences.${index}.work_state`
-                                        ),
-                                        label: workExperienceForm.watch(
-                                          `workExperiences.${index}.work_state`
-                                        ),
-                                      }
-                                    : null
-                                }
-                                onChange={(selectedOption) => {
-                                  workExperienceForm.setValue(
-                                    `workExperiences.${index}.work_state`,
-                                    selectedOption?.value || ""
-                                  );
-                                }}
-                                styles={customSelectStyles}
-                                placeholder="Select your state"
-                                isSearchable
-                                classNamePrefix="react-select"
-                                menuPortalTarget={document.body}
-                                menuPosition="fixed"
-                                maxMenuHeight={200}
-                              />
-                              {experienceErrors?.work_state && (
-                                <p className="text-sm text-red-500 mt-1">
-                                  {experienceErrors.work_state.message}
-                                </p>
-                              )}
-                            </div>*/}
-
                             {/* City */}
                             <div className="lg:w-[48%] md:w-[48%] w-full">
                               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -3499,6 +3608,13 @@ useEffect(() => {
                                 {...workExperienceForm.register(
                                   `workExperiences.${index}.work_city`
                                 )}
+                                onChange={(e) => {
+                                  workExperienceForm.setValue(
+                                    `workExperiences.${index}.work_city`,
+                                    e.target.value
+                                  );
+                                  handleFormChange("work");
+                                }}
                                 placeholder="Enter city"
                                 className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                   experienceErrors?.work_city
@@ -3517,8 +3633,6 @@ useEffect(() => {
                               )}
                             </div>
 
-                        
-
                             {/* Start Date */}
                             <div className="lg:w-[48%] md:w-[48%] w-full">
                               <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -3529,6 +3643,13 @@ useEffect(() => {
                                 {...workExperienceForm.register(
                                   `workExperiences.${index}.start_date`
                                 )}
+                                onChange={(e) => {
+                                  workExperienceForm.setValue(
+                                    `workExperiences.${index}.start_date`,
+                                    e.target.value
+                                  );
+                                  handleFormChange("work");
+                                }}
                                 className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                   experienceErrors?.start_date
                                     ? "border-red-500"
@@ -3580,6 +3701,13 @@ useEffect(() => {
                                   {...workExperienceForm.register(
                                     `workExperiences.${index}.end_date`
                                   )}
+                                  onChange={(e) => {
+                                    workExperienceForm.setValue(
+                                      `workExperiences.${index}.end_date`,
+                                      e.target.value
+                                    );
+                                    handleFormChange("work");
+                                  }}
                                   className={`w-full h-[41px] px-4 py-2 border bg-white ${
                                     experienceErrors?.end_date
                                       ? "border-red-500"
@@ -3598,8 +3726,7 @@ useEffect(() => {
                               </div>
                             )}
 
-
-    {/* Currently Working */}
+                            {/* Currently Working */}
                             <div className="w-full flex items-center gap-1">
                               <input
                                 type="checkbox"
@@ -3620,6 +3747,7 @@ useEffect(() => {
                                       `workExperiences.${index}.end_date`,
                                       ""
                                     );
+                                  handleFormChange("work");
                                 }}
                                 className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                                 id={`currently_working_${index}`}
@@ -3631,6 +3759,7 @@ useEffect(() => {
                                 Currently Working
                               </label>
                             </div>
+
                             {/* Individual work experience entry error */}
                             {hasExperienceError && (
                               <div className="md:col-span-2 w-full">
@@ -3671,6 +3800,7 @@ useEffect(() => {
                               end_date: "",
                             },
                           ]);
+                          handleFormChange("work");
                         }}
                         className="text-purple-600 hover:text-purple-800 font-medium flex items-center"
                       >
@@ -3697,7 +3827,13 @@ useEffect(() => {
          hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
          shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
-                        onClick={() => workExperienceForm.reset()}
+                        onClick={() => {
+                          workExperienceForm.reset();
+                          setUnsavedChanges((prev) => ({
+                            ...prev,
+                            work: false,
+                          }));
+                        }}
                       >
                         Reset
                       </Button>
@@ -3725,21 +3861,19 @@ useEffect(() => {
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Title
-                          {/* <span className="text-red-500">*</span> */}
                         </label>
                         <textarea
                           {...publicProfileForm.register("title", {
                             required: true,
                           })}
+                          onChange={(e) => {
+                            publicProfileForm.setValue("title", e.target.value);
+                            handleFormChange("public"); // Add this line
+                          }}
                           rows={3}
                           placeholder="Enter a brief title or role"
                           className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
-                        {publicProfileForm.formState.errors.title && (
-                          <p className="text-sm text-red-500 mt-1">
-                            Title is required
-                          </p>
-                        )}
                       </div>
 
                       <div className="md:col-span-2">
@@ -3761,6 +3895,13 @@ useEffect(() => {
                                 "Description should not exceed 1000 characters",
                             },
                           })}
+                          onChange={(e) => {
+                            publicProfileForm.setValue(
+                              "aboutUs",
+                              e.target.value
+                            );
+                            handleFormChange("public"); // Track changes
+                          }}
                           rows={5}
                           placeholder="Tell us about yourself, your services, and your approach..."
                           className="w-full px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -3788,6 +3929,13 @@ useEffect(() => {
                             type="file"
                             accept="image/*"
                             {...publicProfileForm.register("featuredImage")}
+                            onChange={(e) => {
+                              publicProfileForm.setValue(
+                                "featuredImage",
+                                e.target.files
+                              );
+                              handleFormChange("public");
+                            }}
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             style={{ cursor: "pointer" }}
                           />
@@ -3885,6 +4033,7 @@ useEffect(() => {
                                     newServices
                                   );
                                   setServiceInput("");
+                                  handleFormChange("public"); // Track changes
                                 }
                                 setShowCustomInput(false);
                               }
@@ -3922,6 +4071,7 @@ useEffect(() => {
                                     );
                                     setCustomServiceInput("");
                                     setShowCustomInput(false);
+                                    handleFormChange("public"); // Track changes
                                   }
                                 }}
                                 className="px-3 py-2 text-sm font-bold bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
@@ -3960,6 +4110,7 @@ useEffect(() => {
                                       setServices(
                                         services.filter((_, i) => i !== index)
                                       );
+                                      handleFormChange("public"); // Track changes
                                     }}
                                     className="ml-2 text-purple-600 hover:text-red-500 font-bold"
                                   >
@@ -3972,6 +4123,7 @@ useEffect(() => {
                         )}
                       </div>
 
+                      {/* Tags Field */}
                       {/* Tags Field */}
                       <div className="md:col-span-2 mt-2">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -3987,7 +4139,10 @@ useEffect(() => {
                               >
                                 {tag}
                                 <button
-                                  onClick={() => removeTag(idx)}
+                                  onClick={() => {
+                                    removeTag(idx);
+                                    handleFormChange("public"); // Track changes
+                                  }}
                                   className="ml-1 text-[#6269FF] hover:text-red-500 font-bold"
                                 >
                                   ×
@@ -4001,7 +4156,17 @@ useEffect(() => {
                             placeholder="Add tags (e.g. therapy, online, free-consult)"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
-                            onKeyDown={handleTagKeyDown}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && inputValue.trim()) {
+                                e.preventDefault();
+                                const newTag = inputValue.trim();
+                                if (!tags.includes(newTag)) {
+                                  setTags([...tags, newTag]);
+                                  setInputValue("");
+                                  handleFormChange("public"); // Track changes
+                                }
+                              }
+                            }}
                           />
                         </div>
                       </div>
@@ -4045,10 +4210,17 @@ useEffect(() => {
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-                            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-                            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+        hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+        shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
-                        onClick={() => publicProfileForm.reset()}
+                        onClick={() => {
+                          publicProfileForm.reset();
+                          // Clear unsaved changes
+                          setUnsavedChanges((prev) => ({
+                            ...prev,
+                            public: false,
+                          }));
+                        }}
                       >
                         Reset
                       </Button>
@@ -4098,16 +4270,21 @@ useEffect(() => {
         //   </div>
         // )} */}
 
-    {cropModal.open && cropModal.type && (
-  <Cropper
-    imageSrc={cropModal.src}
-    type={cropModal.type}
-    onClose={() =>
-      setCropModal({ open: false, src: "", type: null, setter: undefined })
-    }
-    onSave={handleCropSave}
-  />
-)}
+        {cropModal.open && cropModal.type && (
+          <Cropper
+            imageSrc={cropModal.src}
+            type={cropModal.type}
+            onClose={() =>
+              setCropModal({
+                open: false,
+                src: "",
+                type: null,
+                setter: undefined,
+              })
+            }
+            onSave={handleCropSave}
+          />
+        )}
       </section>
     </>
   );

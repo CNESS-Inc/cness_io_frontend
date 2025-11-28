@@ -156,6 +156,31 @@ export default function AddBestPracticeModal({
   handleSubmit,
   isSubmitting,
 }: AddBestPracticeModalProps) {
+  const handleTagKeyDownWrapper = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    const isTriggerKey =
+      e.key === "Enter" ||
+      e.key === "Tab" ||
+      e.key === " " ||
+      e.key === "Space" ||
+      e.key === "Spacebar" ||
+      e.code === "Space";
+
+    if (isTriggerKey) {
+      e.preventDefault();
+      const normalizedEvent = {
+        key: "Enter",
+        code: "Enter",
+        preventDefault: () => {},
+        stopPropagation: () => {},
+      } as React.KeyboardEvent<HTMLInputElement>;
+      handleTagKeyDown(normalizedEvent);
+      return;
+    }
+
+    handleTagKeyDown(e);
+  };
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
     {}
   );
@@ -674,7 +699,7 @@ export default function AddBestPracticeModal({
                   placeholder="Add tags (e.g. therapy, online, free-consult)"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={handleTagKeyDown}
+                  onKeyDown={handleTagKeyDownWrapper}
                   onBlur={() => setTouched((prev) => ({ ...prev, tags: true }))}
                 />
               </div>

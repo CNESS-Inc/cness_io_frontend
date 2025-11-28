@@ -383,6 +383,7 @@ const EditSellerProductPage: React.FC = () => {
   // const [shortVideoFile, setShortVideoFile] = useState<File | null>(null);
   const [mainVideoPreview, setMainVideoPreview] = useState("");
   const [shortVideoPreview, setShortVideoPreview] = useState("");
+  console.log("shortVideoPreview", shortVideoPreview);
   const [isMainVideoUploading, setIsMainVideoUploading] = useState(false);
   const [isShortVideoUploading, setIsShortVideoUploading] = useState(false);
   const [lastUploadedIndex, setLastUploadedIndex] = useState<number | null>(null);
@@ -454,11 +455,11 @@ const EditSellerProductPage: React.FC = () => {
 
   });
 
-  const [storyVideoUrl] = useState<string>(
+  const [storyVideoUrl, setStoryVideoUrl] = useState<string>(
     formData.storytelling_video_url || ""
   );
 
-  const [storyDescription] = useState<string>(
+  const [storyDescription, setStoryDescription] = useState<string>(
     formData.storytelling_description || ""
   );
 
@@ -471,7 +472,7 @@ const EditSellerProductPage: React.FC = () => {
       try {
         const response = await GetPreviewProduct(category, productId);
         const productData = response?.data?.data;
-        console.log("Fetched product data:", productData.video_details?.video_files);
+        console.log("Fetched product data:", productData);
 
         if (productData) {
           // Common fields
@@ -500,9 +501,13 @@ const EditSellerProductPage: React.FC = () => {
               productData.video_details?.thumbnail_url || "";
             commonData.duration = productData.video_details?.duration || "";
             commonData.short_video_url =
-              productData.video_details?.short_preview_video_url || "";
+              productData?.storytelling_video_url || "";
             commonData.summary =
-              productData.video_details?.summary_of_storytelling || "";
+              productData?.storytelling_description || "";
+
+              setStoryVideoUrl(productData?.storytelling_video_url || "")
+
+              setStoryDescription(productData.storytelling_description || "")
 
             setMainVideoPreview(
               productData.video_details?.main_video?.thumbnail || ""
@@ -963,7 +968,7 @@ const EditSellerProductPage: React.FC = () => {
 
       setFormData((prev: any) => ({
         ...prev,
-        short_video_url: videoData?.video_id,
+        short_video_url: videoData?.video_url,
       }));
 
       showToast({
@@ -1693,7 +1698,7 @@ const EditSellerProductPage: React.FC = () => {
         video_url: formData.video_url,
         thumbnail_url: formData.thumbnail_url,
         duration: formData.duration,
-        summary: formData.summary,
+        storytelling_description: formData.summary,
         short_video_url: formData.short_video_url || "",
       };
     } else if (category === "music") {

@@ -414,7 +414,7 @@ export default function DashboardDirectory() {
           />
 
           <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto mt-15">
-          <h1 className="text-center font-poppins font-semibold mb-6 
+          <h1 className="text-center font-[poppins] font-semibold mb-6 
                text-[32px] leading-[1.3] tracking-[0px]
                bg-linear-to-b from-[#4E4E4E] to-[#232323] 
                bg-clip-text text-transparent">
@@ -495,7 +495,7 @@ export default function DashboardDirectory() {
               </div>
             </div>
 
-            <p className="text-gray-700 text-xs md:text-sm mt-16 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
+            <p className="text-gray-700 text-xs font-['Open_Sans'] md:text-sm mt-16 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
               Connect with conscious audience
             </p>
           </div>
@@ -504,7 +504,7 @@ export default function DashboardDirectory() {
 
       <section className="py-6 px-1 bg-[#f9f9f9] border-t border-gray-100 ">
         <div className="w-full mx-auto flex items-center">
-          <h2 className="text-xl font-semibold">
+          <h2 className="font-['Poppins'] text-xl font-semibold">
             {selected === "popular"
               ? "Leader Board"
               : selected === "aspiring"
