@@ -34,7 +34,6 @@ import {
   UpdateVideoProduct,
   UploadProductDocument,
   UploadProductThumbnail,
-  UploadStoryTellingVideo
 } from "../Common/ServerAPI";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 import AIModal from "../components/MarketPlace/AIModal";
@@ -455,11 +454,11 @@ const EditSellerProductPage: React.FC = () => {
 
   });
 
-  const [storyVideoUrl, setStoryVideoUrl] = useState<string>(
+  const [storyVideoUrl] = useState<string>(
     formData.storytelling_video_url || ""
   );
 
-  const [storyDescription, setStoryDescription] = useState<string>(
+  const [storyDescription] = useState<string>(
     formData.storytelling_description || ""
   );
 
