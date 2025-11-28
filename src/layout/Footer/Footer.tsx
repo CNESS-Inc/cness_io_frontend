@@ -54,7 +54,7 @@ CNESS is a consciousness-based certification and <br/> growth platform designed 
 
               {/* Quick Links section */}
               <div className="w-fit space-y-3 md:space-y-4 ">
-                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">
+                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] font-[poppins]">
                   Quick Links
                 </h4>
                 <ul className="space-y-1 md:space-y-2">
@@ -129,7 +129,7 @@ CNESS is a consciousness-based certification and <br/> growth platform designed 
 
               {/* Social Links section - full width on small mobile, then normal */}
               <div className="w-fit sm:col-span-1 space-y-3 md:space-y-4">
-                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] poppins">
+                <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] font-[poppins]">
                   Follow Us
                 </h4>
                 <ul className="space-y-1 md:space-y-2">
@@ -193,7 +193,7 @@ CNESS is a consciousness-based certification and <br/> growth platform designed 
 
               {/* Contact section  */}
               <div className="w-fit space-y-3 md:space-y-4">
-                <h4 className="lg:text-base md:text-lg text-[14px] font-semibold text-[#6F74DD] poppins">Contact Us</h4>
+                <h4 className="lg:text-base md:text-lg text-[14px] font-semibold text-[#6F74DD] font-[poppins]">Contact Us</h4>
                  <ul className="space-y-1 md:space-y-2">
                   <li>
                     <a

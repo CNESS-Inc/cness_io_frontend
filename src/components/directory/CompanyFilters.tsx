@@ -59,7 +59,7 @@ export default function CompanyFilters({
       {/* Category Filter Dropdown */}
       <Menu as="div" className="relative inline-block text-left">
         <div>
-          <Menu.Button className="flex items-center gap-2 px-2 py-2 border border-gray-300 rounded-md bg-white text-sm text-gray-700 hover:bg-gray-50">
+          <Menu.Button className="flex font-['Open_Sans'] items-center gap-2 px-2 py-2 border border-gray-300 rounded-md bg-white text-sm text-gray-700 hover:bg-gray-50">
             <LiaCertificateSolid className="text-pink-700" size={20} />
             {activeLabel}
           </Menu.Button>
@@ -96,9 +96,9 @@ export default function CompanyFilters({
         onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
         className="flex items-center justify-between w-28 px-4 py-2 border border-gray-300 rounded-md bg-white text-sm text-gray-700 hover:bg-gray-50"
       >
-        <div className="flex items-center gap-2">
+        <div className="font-['Open_Sans'] flex items-center gap-2">
           <FaSortAlphaUp className="text-indigo-600" />
-          <span>A - Z</span>
+          <span className="font-['Open_Sans']">A - Z</span>
         </div>
         {order === "asc" ? (
           <FaAngleDown className="text-gray-500" />
