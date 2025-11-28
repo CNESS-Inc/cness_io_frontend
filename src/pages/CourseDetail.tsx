@@ -335,7 +335,6 @@ export default function CourseDetail() {
                 thumbnail={productData?.thumbnail_url}
                 title={productData?.title}
                 seller={productData?.seller}
-                reviews={productData?.total_reviews}
                 rating={productData?.rating}
                 purchase={productData?.purchase?.purchased_at}
                 duration={productData?.duration}

@@ -72,6 +72,7 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
     onSaveToCollection,
 }) => {
     console.log('duration', duration)
+
     const navigate = useNavigate();
     const { showToast } = useToast();
     const videoRef = useRef<HTMLVideoElement>(null);
