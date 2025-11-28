@@ -4,6 +4,8 @@ import Button from "../../ui/Button";
 // import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useState, useEffect } from "react";
 import CustomRichTextEditor from "./CustomRichTextEditor";
+import { GetValidUserSelectedProfessionalDetails } from "../../../Common/ServerAPI";
+import { useToast } from "../../ui/Toast/ToastProvider";
 
 // Base64 upload adapter
 // class Base64UploadAdapter {
@@ -133,7 +135,10 @@ interface ValidationErrors {
   interestOrProfession?: string;
   general?: string;
 }
-
+type Profession = {
+  id: string;
+  title: string;
+};
 export default function AddBestPracticeModal({
   open,
   onClose,
@@ -154,6 +159,10 @@ export default function AddBestPracticeModal({
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
     {}
   );
+  console.log('profession', profession)
+    const { showToast } = useToast();
+    const [Allprofession, setAllProfession] = useState<Profession[]>([]);
+  
   const [touched, setTouched] = useState({
     title: false,
     file: false,
@@ -162,8 +171,22 @@ export default function AddBestPracticeModal({
     tags: false,
   });
 
+  const fetchProfession = async () => {
+      try {
+        const res = await GetValidUserSelectedProfessionalDetails();
+        setAllProfession(res?.data?.data);
+      } catch (error: any) {
+        console.error("Error fetching professions:", error);
+        showToast({
+          message: error?.response?.data?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      }
+    };
   // Reset validation when modal opens/closes
   useEffect(() => {
+    fetchProfession();
     if (open) {
       setValidationErrors({});
       setTouched({
@@ -595,7 +618,7 @@ export default function AddBestPracticeModal({
                 data-error={!!validationErrors.interestOrProfession}
               >
                 <option value="">Select your Profession</option>
-                {profession?.map((prof) => (
+                {Allprofession?.map((prof) => (
                   <option key={prof.id} value={prof.id}>
                     {prof.title}
                   </option>

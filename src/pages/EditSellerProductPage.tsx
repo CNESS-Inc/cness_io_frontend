@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { RiArrowRightSLine } from "react-icons/ri";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -34,7 +34,6 @@ import {
   UpdateVideoProduct,
   UploadProductDocument,
   UploadProductThumbnail,
-  UploadStoryTellingVideo 
 } from "../Common/ServerAPI";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 import AIModal from "../components/MarketPlace/AIModal";
@@ -369,8 +368,8 @@ const EditSellerProductPage: React.FC = () => {
 
   const [showAIModal, setShowAIModal] = useState(false);
   const [sampleTrackUrl, setSampleTrackUrl] = useState("");
-const [sampleFiles, setSampleFiles] = useState<any[]>([]);
-const [deleteSampleFiles, setDeleteSampleFiles] = useState<string[]>([]);
+  const [sampleFiles, setSampleFiles] = useState<any[]>([]);
+  const [deleteSampleFiles, setDeleteSampleFiles] = useState<string[]>([]);
 
   // Thumbnail States (for non-video categories)
   const [thumbnailData, setThumbnailData] = useState<{
@@ -386,9 +385,9 @@ const [deleteSampleFiles, setDeleteSampleFiles] = useState<string[]>([]);
   const [shortVideoPreview, setShortVideoPreview] = useState("");
   const [isMainVideoUploading, setIsMainVideoUploading] = useState(false);
   const [isShortVideoUploading, setIsShortVideoUploading] = useState(false);
-const [lastUploadedIndex, setLastUploadedIndex] = useState<number | null>(null);
+  const [lastUploadedIndex, setLastUploadedIndex] = useState<number | null>(null);
 
-const sampleUploadRef = useRef<any>(null);
+  const sampleUploadRef = useRef<any>(null);
 
   // Content Items States
   const [contentItems, setContentItems] = useState<
@@ -397,41 +396,41 @@ const sampleUploadRef = useRef<any>(null);
   console.log("contentItems", contentItems);
   const [deletingItems, setDeletingItems] = useState<Set<string>>(new Set());
 
-type FormDataType = {
-  product_title: string;
-  price: number;
-  discount_percentage: number;
-  mood_ids: string[];
-  overview: string;
-  highlights: string[];
-  language: string;
-  thumbnail_url: string;
-  video_url: string;
-  duration: string;
-  short_video_url: string;
-  summary: string;
-  total_duration: string;
-  format: string;
-  theme: string;
-  author: string;
-  pages: number;
-  storytelling: string;
-  requirements: string;
-  mediums: string;
-  modern_trends: string;
-  storytelling_video_url?: string;
-  storytelling_description?: string;
+  type FormDataType = {
+    product_title: string;
+    price: number;
+    discount_percentage: number;
+    mood_ids: string[];
+    overview: string;
+    highlights: string[];
+    language: string;
+    thumbnail_url: string;
+    video_url: string;
+    duration: string;
+    short_video_url: string;
+    summary: string;
+    total_duration: string;
+    format: string;
+    theme: string;
+    author: string;
+    pages: number;
+    storytelling: string;
+    requirements: string;
+    mediums: string;
+    modern_trends: string;
+    storytelling_video_url?: string;
+    storytelling_description?: string;
 
-};
+  };
 
   // Form Data State (dynamic based on category)
-const [formData, setFormData] = useState<FormDataType>({
+  const [formData, setFormData] = useState<FormDataType>({
     product_title: "",
     price: 0,
     discount_percentage: 0,
-   mood_ids:  [],
+    mood_ids: [],
     overview: "",
-    highlights:  [],
+    highlights: [],
     language: "",
     thumbnail_url: "",
     // Video specific
@@ -452,14 +451,14 @@ const [formData, setFormData] = useState<FormDataType>({
     // Art specific
     mediums: "",
     modern_trends: "",
-    
+
   });
 
-    const [storyVideoUrl, setStoryVideoUrl] = useState<string>(
+  const [storyVideoUrl] = useState<string>(
     formData.storytelling_video_url || ""
   );
 
-  const [storyDescription, setStoryDescription] = useState<string>(
+  const [storyDescription] = useState<string>(
     formData.storytelling_description || ""
   );
 
@@ -472,6 +471,7 @@ const [formData, setFormData] = useState<FormDataType>({
       try {
         const response = await GetPreviewProduct(category, productId);
         const productData = response?.data?.data;
+        console.log("Fetched product data:", productData.video_details?.video_files);
 
         if (productData) {
           // Common fields
@@ -495,7 +495,7 @@ const [formData, setFormData] = useState<FormDataType>({
           // Category-specific fields
           if (category === "video") {
             commonData.video_url =
-              productData.video_details?.video_files?.[0] || "";
+              productData.video_details?.video_files || "";
             commonData.thumbnail_url =
               productData.video_details?.thumbnail_url || "";
             commonData.duration = productData.video_details?.duration || "";
@@ -703,8 +703,8 @@ const [formData, setFormData] = useState<FormDataType>({
           setFormData(commonData);
         }
         if (productData.sample_files) {
-  setSampleFiles(productData.sample_files);
-}
+          setSampleFiles(productData.sample_files);
+        }
       } catch (error: any) {
         showToast({
           message:
@@ -757,14 +757,14 @@ const [formData, setFormData] = useState<FormDataType>({
     }
   };
 
- // const handleSampleTrackUpload = (sampleUrl: string) => {
-    //setSampleTrackUrl(sampleUrl);
- // };
+  // const handleSampleTrackUpload = (sampleUrl: string) => {
+  //setSampleTrackUrl(sampleUrl);
+  // };
 
- // const handleRemoveSampleTrack = () => {
- //   console.log("Removing sample track");
+  // const handleRemoveSampleTrack = () => {
+  //   console.log("Removing sample track");
   //  setSampleTrackUrl("");
- // };
+  // };
 
   // Thumbnail Upload Handler (for non-video categories) - UPLOADS ON CHANGE
   const handleThumbnailUpload = async (
@@ -879,13 +879,15 @@ const [formData, setFormData] = useState<FormDataType>({
         "main-video",
         uploadFormData
       );
-      const videoData = response?.data?.data?.data;
+      const videoData = response?.data?.data;
+      console.log("videoData", videoData);
 
       setFormData((prev: any) => ({
         ...prev,
         video_url: videoData?.video_id,
         thumbnail_url: videoData?.thumbnail,
       }));
+      console.log("videoData", formData);
 
       showToast({
         message: "Main video uploaded successfully",
@@ -1144,11 +1146,11 @@ const [formData, setFormData] = useState<FormDataType>({
             const updatedFiles = fileArray.map((f: any) =>
               f.file === file
                 ? {
-                    ...f,
-                    url: uploadedUrl,
-                    order_number: fileArray.length - 1,
-                    isUploading: false,
-                  }
+                  ...f,
+                  url: uploadedUrl,
+                  order_number: fileArray.length - 1,
+                  isUploading: false,
+                }
                 : f
             );
 
@@ -1531,19 +1533,19 @@ const [formData, setFormData] = useState<FormDataType>({
 
   // ✅ ADD SAMPLE FUNCTIONS HERE
 
-const handleAddSample = (fileData: SampleFile) => {
-  setSampleFiles(prev => [...prev, fileData]);
-};
+  const handleAddSample = (fileData: SampleFile) => {
+    setSampleFiles(prev => [...prev, fileData]);
+  };
 
-const handleDeleteSample = (sample: SampleFile) => {
-  const id = sample.id;
+  const handleDeleteSample = (sample: SampleFile) => {
+    const id = sample.id;
 
-  if (id) {
-    setDeleteSampleFiles(prev => [...prev, id]);
-  }
+    if (id) {
+      setDeleteSampleFiles(prev => [...prev, id]);
+    }
 
-  setSampleFiles(prev => prev.filter(s => s !== sample));
-};
+    setSampleFiles(prev => prev.filter(s => s !== sample));
+  };
   // Form validation
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -1563,9 +1565,9 @@ const handleDeleteSample = (sample: SampleFile) => {
       newErrors.discount_percentage =
         "Discount percentage must be between 0 and 100.";
     }
-   if (!formData.mood_ids || formData.mood_ids.length === 0) {
-  newErrors.mood_ids = "Mood Selection is required.";
-}
+    if (!formData.mood_ids || formData.mood_ids.length === 0) {
+      newErrors.mood_ids = "Mood Selection is required.";
+    }
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
     if (formData.highlights.length === 0) {
@@ -1577,9 +1579,9 @@ const handleDeleteSample = (sample: SampleFile) => {
       if (!formData.video_url && !mainVideoPreview)
         newErrors.video_url = "Main video is required.";
       //if (formData.duration && !/^\d{2}:\d{2}:\d{2}$/.test(formData.duration)) {
-        //newErrors.duration =
-          //"Duration must be in HH:MM:SS format (e.g., 01:10:00)";
-     // }
+      //newErrors.duration =
+      //"Duration must be in HH:MM:SS format (e.g., 01:10:00)";
+      // }
       if (!formData.summary?.trim()) newErrors.summary = "Summary is required.";
     } else {
       // Non-video categories need thumbnail
@@ -1607,10 +1609,10 @@ const handleDeleteSample = (sample: SampleFile) => {
       //if (category === "music" || category === "podcast") {
       //  if (
       //    formData.total_duration &&
-         // !/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)
+      // !/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)
       //  ) {
-         // newErrors.total_duration =
-         //   "Total duration must be in HH:MM:SS format (e.g., 30:00:00)";
+      // newErrors.total_duration =
+      //   "Total duration must be in HH:MM:SS format (e.g., 30:00:00)";
       //  }
       //}
 
@@ -1657,26 +1659,26 @@ const handleDeleteSample = (sample: SampleFile) => {
       overview: formData.overview,
       highlights: formData.highlights,
       language: formData.language,
-      
+
     };
 
 
     // Add sample file updates
-basePayload.sample_files = sampleFiles.map(s => ({
-  ...(s.id ? { id: s.id } : {}),     // ← FIXED
-  file_url: s.file_url,
-  public_id: s.public_id,
-  title: s.title,
-  file_type: s.file_type,
-  duration: s.duration,
-  file_size: s.file_size,
-  order_number: s.order_number,
-is_ariome: s.is_ariome ?? false
-}));
+    basePayload.sample_files = sampleFiles.map(s => ({
+      ...(s.id ? { id: s.id } : {}),     // ← FIXED
+      file_url: s.file_url,
+      public_id: s.public_id,
+      title: s.title,
+      file_type: s.file_type,
+      duration: s.duration,
+      file_size: s.file_size,
+      order_number: s.order_number,
+      is_ariome: s.is_ariome ?? false
+    }));
 
-basePayload.delete_sample_files = deleteSampleFiles;
-basePayload.storytelling_video_url = storyVideoUrl || "";
-basePayload.storytelling_description = storyDescription || "";
+    basePayload.delete_sample_files = deleteSampleFiles;
+    basePayload.storytelling_video_url = storyVideoUrl || "";
+    basePayload.storytelling_description = storyDescription || "";
 
     console.log("sampleTrackUrl", sampleTrackUrl);
     basePayload.sample_track_url = sampleTrackUrl;
@@ -1961,95 +1963,94 @@ basePayload.storytelling_description = storyDescription || "";
   };
 
 
-{/*mood multi select*/}
-const MultiSelect = ({
-  label,
-  options,
-  selectedValues,
-  onChange,
-  required = false,
-}: any) => {
-  const [open, setOpen] = useState(false);
+  {/*mood multi select*/ }
+  const MultiSelect = ({
+    label,
+    options,
+    selectedValues,
+    onChange,
+    required = false,
+  }: any) => {
+    const [open, setOpen] = useState(false);
 
-  const toggleOption = (value: string) => {
-    if (selectedValues.includes(value)) {
-      onChange(selectedValues.filter((v: string) => v !== value));
-    } else {
-      onChange([...selectedValues, value]);
-    }
-  };
+    const toggleOption = (value: string) => {
+      if (selectedValues.includes(value)) {
+        onChange(selectedValues.filter((v: string) => v !== value));
+      } else {
+        onChange([...selectedValues, value]);
+      }
+    };
 
-  return (
-    <div className="relative">
-      <label className="block font-['Open_Sans'] font-semibold text-[16px] mb-2 text-[#242E3A]">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+    return (
+      <div className="relative">
+        <label className="block font-['Open_Sans'] font-semibold text-[16px] mb-2 text-[#242E3A]">
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
 
-      {/* Input Box */}
-      <div
-        className="border border-gray-300 rounded-md px-3 py-2 bg-white cursor-pointer flex flex-wrap gap-2 min-h-[42px]"
-        onClick={() => setOpen(!open)}
-      >
-        {selectedValues.length === 0 ? (
-          <span className="text-gray-400">Select Mood</span>
-        ) : (
-          selectedValues.map((val: string) => {
-            const item = options.find((o: any) => o.id === val);
-            return (
-              <span
-                key={val}
-                className="bg-[#7077FE] text-white px-2 py-1 rounded-md text-sm flex items-center gap-1"
+        {/* Input Box */}
+        <div
+          className="border border-gray-300 rounded-md px-3 py-2 bg-white cursor-pointer flex flex-wrap gap-2 min-h-[42px]"
+          onClick={() => setOpen(!open)}
+        >
+          {selectedValues.length === 0 ? (
+            <span className="text-gray-400">Select Mood</span>
+          ) : (
+            selectedValues.map((val: string) => {
+              const item = options.find((o: any) => o.id === val);
+              return (
+                <span
+                  key={val}
+                  className="bg-[#7077FE] text-white px-2 py-1 rounded-md text-sm flex items-center gap-1"
+                >
+                  {item?.name}
+                  <X
+                    size={14}
+                    className="cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleOption(val);
+                    }}
+                  />
+                </span>
+              );
+
+
+            })
+
+          )}
+          <svg
+            className="w-4 h-4 absolute right-3 text-gray-500 pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+
+        {/* Dropdown List */}
+        {open && (
+          <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-md z-20">
+            {options.map((opt: any) => (
+              <div
+                key={opt.id}
+                onClick={() => toggleOption(opt.id)}
+                className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${selectedValues.includes(opt.id)
+                    ? "bg-[#EEF3FF] text-[#7077FE]"
+                    : "text-gray-700"
+                  }`}
               >
-                {item?.name}
-                <X
-                  size={14}
-                  className="cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleOption(val);
-                  }}
-                />
-              </span>
-            );
-
-            
-          })
-          
+                {opt.name}
+              </div>
+            ))}
+          </div>
         )}
-        <svg
-  className="w-4 h-4 absolute right-3 text-gray-500 pointer-events-none"
-  fill="none"
-  stroke="currentColor"
-  strokeWidth="2"
-  viewBox="0 0 24 24"
->
-  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-</svg>
+
       </div>
 
-      {/* Dropdown List */}
-      {open && (
-        <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-md z-20">
-          {options.map((opt: any) => (
-            <div
-              key={opt.id}
-              onClick={() => toggleOption(opt.id)}
-              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-                selectedValues.includes(opt.id)
-                  ? "bg-[#EEF3FF] text-[#7077FE]"
-                  : "text-gray-700"
-              }`}
-            >
-              {opt.name}
-            </div>
-          ))}
-        </div>
-      )}
-      
-    </div>
-    
-  );
-};
+    );
+  };
 
 
 
@@ -2065,9 +2066,8 @@ const MultiSelect = ({
         <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
           {/* Basic Info Section */}
           <FormSection
-            title={`Edit ${
-              category.charAt(0).toUpperCase() + category.slice(1)
-            }`}
+            title={`Edit ${category.charAt(0).toUpperCase() + category.slice(1)
+              }`}
             description="Update your digital product details, pricing, and availability on the marketplace."
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -2103,30 +2103,30 @@ const MultiSelect = ({
                 onChange={handleChange}
                 error={errors.discount_percentage}
               />
-    {/*multipleselected*/}          
-<div>
-<MultiSelect
-  label="Mood"
-  required
-  options={moods}
-  selectedValues={formData.mood_ids}
-  onChange={(values: string[]) => {
-    setFormData((prev) => ({
-      ...prev,
-      mood_ids: values,
-    }));
+              {/*multipleselected*/}
+              <div>
+                <MultiSelect
+                  label="Mood"
+                  required
+                  options={moods}
+                  selectedValues={formData.mood_ids}
+                  onChange={(values: string[]) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      mood_ids: values,
+                    }));
 
-    setErrors((prev) => ({
-      ...prev,
-      mood_ids: "",
-    }));
-  }}
-/>
+                    setErrors((prev) => ({
+                      ...prev,
+                      mood_ids: "",
+                    }));
+                  }}
+                />
 
-{errors.mood_ids && (
-  <span className="text-red-500 text-sm">{errors.mood_ids}</span>
-)}
-</div>
+                {errors.mood_ids && (
+                  <span className="text-red-500 text-sm">{errors.mood_ids}</span>
+                )}
+              </div>
 
 
 
@@ -2168,11 +2168,10 @@ const MultiSelect = ({
                   </div>
                 ) : (
                   <label
-                    className={`relative flex flex-col items-center justify-center h-64 cursor-pointer rounded-lg p-6 text-center transition-all ${
-                      isMainVideoUploading
+                    className={`relative flex flex-col items-center justify-center h-64 cursor-pointer rounded-lg p-6 text-center transition-all ${isMainVideoUploading
                         ? "pointer-events-none opacity-70"
                         : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                    }`}
+                      }`}
                   >
                     <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                       <rect
@@ -2274,11 +2273,10 @@ const MultiSelect = ({
                 </div>
               ) : (
                 <label
-                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
-                    isThumbnailUploading
+                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isThumbnailUploading
                       ? "pointer-events-none opacity-70"
                       : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                  }`}
+                    }`}
                 >
                   <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                     <rect
@@ -2672,159 +2670,81 @@ const MultiSelect = ({
           </FormSection>
 
 
-<FormSection
-  title="Storytelling (Optional)"
-  description="Add or update your storytelling video and summary."
->
-  {/* Upload Storytelling Video */}
-  <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition-colors">
 
-    <input
-      type="file"
-      accept="video/*"
-      className="hidden"
-      onChange={async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const fd = new FormData();
-        fd.append("storytelling_video", file);
-
-        try {
-          const res = await UploadStoryTellingVideo(fd);
-          const data = res?.data?.data;
-
-          setStoryVideoUrl(data.storytelling_video_url);
-          //setStoryVideoPublicId(data.public_id);
-
-          showToast({
-            message: "Storytelling video uploaded successfully",
-            type: "success"
-          });
-        } catch (err) {
-          showToast({
-            message: "Failed to upload storytelling video",
-            type: "error"
-          });
-        }
-      }}
-    />
-
-    {!storyVideoUrl ? (
-      <div className="text-center space-y-2">
-        <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
-          <img src={uploadimg} alt="Upload" className="w-6 h-6" />
-        </div>
-        <p className="text-sm font-[poppins] text-[#242E3A]">
-          Drag & drop or click to upload
-        </p>
-        <p className="text-xs text-[#665B5B]">Supports video</p>
-      </div>
-    ) : (
-      <div className="relative w-full">
-        <video
-          src={storyVideoUrl}
-          controls
-          className="w-full h-32 object-cover rounded-lg"
-        />
-
-        {/* Remove storytelling video */}
-        <button
-          type="button"
-          onClick={() => {
-            setStoryVideoUrl("");
-          }}
-          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      </div>
-    )}
-  </label>
-
-  {/* Storytelling Description */}
-  <textarea
-    value={storyDescription}
-    onChange={(e) => setStoryDescription(e.target.value)}
-    placeholder="Write or update the story behind your content..."
-    className="w-full border border-gray-300 rounded-lg p-3 mt-4"
-    rows={4}
-  />
-</FormSection>
 
 
           <FormSection
             title="Sample Track (Optional)"
             description="Upload a preview sample so buyers can experience your content before purchasing."
           >
-      <SampleTrackUpload
-  ref={sampleUploadRef}
-  productType={category as "music" | "video" | "course" | "podcast" | "ebook" | "art"}
-  
-  onUploadSuccess={(publicId, sampleUrl) => {
-    const newSample = {
-      file_url: sampleUrl,
-      public_id: publicId,
-      title: "Sample " + (sampleFiles.length + 1),
-      file_type: category === "art" ? "image" : "audio",
-      duration: null,
-      file_size: null,
-      order_number: sampleFiles.length,
-   is_ariome: false
-  };
+            <SampleTrackUpload
+              ref={sampleUploadRef}
+              productType={category as "music" | "video" | "course" | "podcast" | "ebook" | "art"}
 
-    handleAddSample(newSample);
+              onUploadSuccess={(publicId, sampleUrl) => {
+                const newSample = {
+                  file_url: sampleUrl,
+                  public_id: publicId,
+                  title: "Sample " + (sampleFiles.length + 1),
+                  file_type: category === "art" ? "image" : "audio",
+                  duration: null,
+                  file_size: null,
+                  order_number: sampleFiles.length,
+                  is_ariome: false
+                };
 
-    // ⭐ Save the index of THIS uploaded sample
-    setLastUploadedIndex(sampleFiles.length);
-  }}
+                handleAddSample(newSample);
 
-  onDonationChange={(value) => {
-    setSampleFiles(prev => 
-      prev.map((sample, i) =>
-        i === lastUploadedIndex   // ⭐ apply donation to correct sample
-          ? { ...sample, is_ariome: value }
-          : sample
-      )
-    );
-  }}
+                // ⭐ Save the index of THIS uploaded sample
+                setLastUploadedIndex(sampleFiles.length);
+              }}
 
-  onRemove={() => {}}
-/>
+              onDonationChange={(value) => {
+                setSampleFiles(prev =>
+                  prev.map((sample, i) =>
+                    i === lastUploadedIndex   // ⭐ apply donation to correct sample
+                      ? { ...sample, is_ariome: value }
+                      : sample
+                  )
+                );
+              }}
 
-{sampleFiles.length > 0 && (
-  <div className="mt-4 space-y-3">
-    {sampleFiles.map((sample, index) => (
-      <div
-        key={index}
-        className="flex justify-between items-center bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm"
-      >
-        <div>
-          <p className="font-[Poppins] font-medium text-[#242E3A]">
-            {sample.title}
-          </p>
-          <p className="text-sm text-gray-500">{sample.file_type}</p>
-        </div>
+              onRemove={() => { }}
+            />
 
-        <button
-          onClick={() => handleDeleteSample(sample)}
-          className="text-red-500 hover:text-red-600 p-2"
-        >
-          <Trash2 size={20} />
-        </button>
-      </div>
-    ))}
-  </div>
-)}
+            {sampleFiles.length > 0 && (
+              <div className="mt-4 space-y-3">
+                {sampleFiles.map((sample, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm"
+                  >
+                    <div>
+                      <p className="font-[Poppins] font-medium text-[#242E3A]">
+                        {sample.title}
+                      </p>
+                      <p className="text-sm text-gray-500">{sample.file_type}</p>
+                    </div>
 
-<button
-  onClick={() => sampleUploadRef.current?.openPicker()}
-  className="mt-4 flex items-center gap-2 text-[#7077FE] border border-[#7077FE] px-4 py-2 rounded-lg hover:bg-[#EEF2FF]"
->
-  <span className="text-xl font-bold">+</span>
-  Add Another Sample
-</button>
-    </FormSection>
+                    <button
+                      onClick={() => handleDeleteSample(sample)}
+                      className="text-red-500 hover:text-red-600 p-2"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button
+              onClick={() => sampleUploadRef.current?.openPicker()}
+              className="mt-4 flex items-center gap-2 text-[#7077FE] border border-[#7077FE] px-4 py-2 rounded-lg hover:bg-[#EEF2FF]"
+            >
+              <span className="text-xl font-bold">+</span>
+              Add Another Sample
+            </button>
+          </FormSection>
 
           {/* Video-specific Storytelling Section */}
           {category === "video" && (
@@ -2866,11 +2786,10 @@ const MultiSelect = ({
                     </div>
                   ) : (
                     <label
-                      className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
-                        isShortVideoUploading
+                      className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isShortVideoUploading
                           ? "pointer-events-none opacity-70"
                           : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                      }`}
+                        }`}
                     >
                       <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                         <rect
@@ -2934,9 +2853,8 @@ const MultiSelect = ({
                     value={formData.summary || ""}
                     onChange={handleChange}
                     placeholder="Write a brief description of your storytelling"
-                    className={`w-full h-40 px-3 py-2 border ${
-                      errors.summary ? "border-red-500" : "border-gray-200"
-                    } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
+                    className={`w-full h-40 px-3 py-2 border ${errors.summary ? "border-red-500" : "border-gray-200"
+                      } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
                   />
                   {errors.summary && (
                     <span className="text-red-500 text-sm mt-1">
@@ -2955,14 +2873,14 @@ const MultiSelect = ({
                 category === "music"
                   ? "Tracks"
                   : category === "podcast"
-                  ? "Episodes"
-                  : category === "ebook"
-                  ? "Chapters"
-                  : category === "course"
-                  ? "Lessons"
-                  : category === "art"
-                  ? "Collections"
-                  : "Content"
+                    ? "Episodes"
+                    : category === "ebook"
+                      ? "Chapters"
+                      : category === "course"
+                        ? "Lessons"
+                        : category === "art"
+                          ? "Collections"
+                          : "Content"
               }
               description={`Manage your ${category} content`}
             >

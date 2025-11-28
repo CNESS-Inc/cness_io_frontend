@@ -36,6 +36,7 @@ import {
   GetBestpracticesByUserProfile,
   DeleteBestPractices,
   GetPublicBestpracticesByUserProfile,
+  GetFollowingFollowerUsers
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -116,6 +117,8 @@ export default function UserProfileView() {
   const [tags, setTags] = useState<string[]>([]);
   const [createTags, setCreateTags] = useState<string[]>([]); // Separate tags for create modal
   const [inputValue, setInputValue] = useState("");
+  const [followerCount, setFollowerCount] = useState(0);
+const [followingCount, setFollowingCount] = useState(0);
   const [newPractice, setNewPractice] = useState({
     title: "",
     description: "",
@@ -322,6 +325,8 @@ export default function UserProfileView() {
       // const res = await GetUserProfileDetails(id);
       const res = await GetPublicProfileDetailsById(id);
       setUserDetails(res?.data?.data);
+          console.log("USER DETAILS:", res?.data?.data); 
+
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -847,6 +852,26 @@ export default function UserProfileView() {
     }
   };
 
+const fetchFollowerFollowingCounts = async () => {
+  try {
+    const res = await GetFollowingFollowerUsers();
+
+    const followers = res?.data?.data?.followerCount ?? 0;
+    const following = res?.data?.data?.followingCount ?? 0;
+
+    setFollowerCount(followers);
+    setFollowingCount(following);
+
+  } catch (error) {
+    console.error("Error fetching follower/following counts:", error);
+  }
+};
+useEffect(() => {
+  fetchUserDetails();
+  fetchFollowerFollowingCounts();   // ← Add this
+}, []);
+
+
   return (
     <div className="relative w-full h-full mx-auto px-1 pt-2">
       <button
@@ -937,25 +962,25 @@ export default function UserProfileView() {
                 </div>
               )}
 
-              {/* <div className="mt-3 flex gap-3 text-center">
-                <span>
-                  <span className="font-['Open_Sans'] font-bold text-sm leading-[100%] text-[#64748B]">
-                    2M
-                  </span>
-                  <span className="ml-1 font-['Open_Sans'] font-semibold text-sm leading-[100%] text-[#64748B]">
-                    Resonators
-                  </span>
-                </span>
+              <div className="mt-3 flex gap-6 text-center">
+  <span>
+    <span className="font-['Open_Sans'] font-bold text-sm text-[#64748B]">
+      {followerCount}
+    </span>
+    <span className="ml-1 font-['Open_Sans'] font-semibold text-sm text-[#64748B]">
+      Followers
+    </span>
+  </span>
 
-                <span>
-                  <span className="font-['Open_Sans'] font-bold text-sm leading-[100%] text-[#64748B]">
-                    500+
-                  </span>
-                  <span className="ml-1 font-['Open_Sans'] font-semibold text-sm leading-[100%] text-[#64748B]">
-                    Connections
-                  </span>
-                </span>
-              </div> */}
+  <span>
+    <span className="font-['Open_Sans'] font-bold text-sm text-[#64748B]">
+      {followingCount}
+    </span>
+    <span className="ml-1 font-['Open_Sans'] font-semibold text-sm text-[#64748B]">
+      Following
+    </span>
+  </span>
+</div>
 
               {/* Buttons */}
               <div className="pt-4 pb-10 space-y-2 border-b border-[#E5E5E5]">

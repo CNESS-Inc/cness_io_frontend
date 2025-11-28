@@ -300,7 +300,7 @@ const AssessmentCertification = () => {
                 Complete these True Profile fields (First & Last Name,
                 Profession, Date of Birth, Phone Number, Email, and Country)
               </li>
-              <li>Select 5 Conscious Values you aspire to follow</li>
+              <li>Select Conscious Values you aspire to follow</li>
             </ol>
 
             {/* Conditionally render button or message */}

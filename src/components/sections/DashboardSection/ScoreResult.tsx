@@ -688,18 +688,11 @@ const ScoreResult = () => {
 
             {/* Summary Cards */}
             <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-2">
-              {/* Overall CIS Score Card */}
-              <div
-                className="min-h-52 p-4 rounded-xl border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2 relative"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #f5f2fc 0%, #fef3f8 100%)",
-                }}
-              >
-                {/* Lock overlay - shown when cis_score is 0 */}
-                {(!scoreData.is_assessment_submited ||
-                  !scoreData.is_submitted_by_head ||
-                  scoreData.cis_score === 0) && (
+             
+               {/* Certification Level Card */}
+              <div className="h-52 bg-white rounded-xl p-3 shadow-sm border border-[#eceef2] relative">
+                {/* Lock overlay - shown when certification level is not available */}
+                {!scoreData?.badge?.level && (
                   <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-xl shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
                     <svg
                       className="w-8 h-8 text-gray-700 opacity-80 mb-2"
@@ -715,49 +708,36 @@ const ScoreResult = () => {
                         d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
                       />
                     </svg>
-                    <p className="text-sm text-gray-700 font-medium">
-                      {!scoreData.is_assessment_submited
-                        ? "Complete Inspired Assessment to Unlock"
-                        : !scoreData.is_submitted_by_head
-                        ? "Score Under Review"
-                        : "Score Not Available"}
+                    <p className="text-[16px] font-medium text-[#222224]">
+                      Certification Level Locked
                     </p>
                   </div>
                 )}
 
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="bg-[#E8CDFD] w-7 h-7 flex items-center justify-center rounded-full p-2">
+                {/* Original content */}
+                <div className="flex items-center gap-2 mb-2">
+                  <div className=" flex items-center justify-center">
                     <img
-                      src={cisscore}
-                      alt="Lightning Icon"
-                      className="w-6 h-6"
+                      src={certifications}
+                      alt="icon"
+                      className="w-[30px] h-[30px]"
                     />
                   </div>
                   <span className="text-[16px] font-medium text-[#222224]">
-                    Overall CIS Score
+                    Certification Level
                   </span>
                 </div>
-                <hr className="border-t border-[#DADCE0] mb-3" />
 
-                <div className="flex items-end gap-2 mb-3">
-                  <span className="text-[32px] font-bold text-[#9747FF] leading-none">
-                    {Math.round(scoreData.cis_score)}
-                  </span>
-                  <span className="text-sm font-semibold text-[#222224] mb-0.5">
-                    /100
-                  </span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-[#f3f3f3] overflow-hidden mb-1">
-                  <div
-                    className="h-2 rounded-full bg-linear-to-r from-[#a392f2] to-[#f07eff]"
-                    style={{ width: `${scoreData.cis_score}%` }}
-                  ></div>
-                </div>
-                <div className="flex justify-end text-xs text-[#222224] font-medium mb-1">
-                  100%
-                </div>
-                <div className="text-xs font-medium text-[#818181]">
-                  Above 60 is considered inspired
+                <div className="border-t border-[#e6e6e6] mb-8"></div>
+
+                <div className="flex justify-center items-center h-[72px]">
+                  {scoreData?.badge?.level ? (
+                    <span className="px-18 py-4 bg-[#eaf9f5] text-[#00bfa5] text-sm font-semibold rounded-xl inline-block">
+                      {scoreData.badge.level}
+                    </span>
+                  ) : (
+                    <div className="h-14"></div>
+                  )}
                 </div>
               </div>
 
@@ -830,10 +810,19 @@ const ScoreResult = () => {
                 </div>
               </div>
 
-              {/* Certification Level Card */}
-              <div className="h-52 bg-white rounded-xl p-3 shadow-sm border border-[#eceef2] relative">
-                {/* Lock overlay - shown when certification level is not available */}
-                {!scoreData?.badge?.level && (
+             
+ {/* Overall CIS Score Card */}
+<div
+                className="min-h-52 p-4 rounded-xl border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2 relative"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #f5f2fc 0%, #fef3f8 100%)",
+                }}
+              >
+                {/* Lock overlay - shown when cis_score is 0 */}
+                {(!scoreData.is_assessment_submited ||
+                  !scoreData.is_submitted_by_head ||
+                  scoreData.cis_score === 0) && (
                   <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-xl shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
                     <svg
                       className="w-8 h-8 text-gray-700 opacity-80 mb-2"
@@ -849,38 +838,52 @@ const ScoreResult = () => {
                         d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
                       />
                     </svg>
-                    <p className="text-[16px] font-medium text-[#222224]">
-                      Certification Level Locked
+                    <p className="text-sm text-gray-700 font-medium">
+                      {!scoreData.is_assessment_submited
+                        ? "Complete Inspired Assessment to Unlock"
+                        : !scoreData.is_submitted_by_head
+                        ? "Score Under Review"
+                        : "Score Not Available"}
                     </p>
                   </div>
                 )}
 
-                {/* Original content */}
-                <div className="flex items-center gap-2 mb-2">
-                  <div className=" flex items-center justify-center">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="bg-[#E8CDFD] w-7 h-7 flex items-center justify-center rounded-full p-2">
                     <img
-                      src={certifications}
-                      alt="icon"
-                      className="w-[30px] h-[30px]"
+                      src={cisscore}
+                      alt="Lightning Icon"
+                      className="w-6 h-6"
                     />
                   </div>
                   <span className="text-[16px] font-medium text-[#222224]">
-                    Certification Level
+                    Overall CIS Score
                   </span>
                 </div>
+                <hr className="border-t border-[#DADCE0] mb-3" />
 
-                <div className="border-t border-[#e6e6e6] mb-8"></div>
-
-                <div className="flex justify-center items-center h-[72px]">
-                  {scoreData?.badge?.level ? (
-                    <span className="px-18 py-4 bg-[#eaf9f5] text-[#00bfa5] text-sm font-semibold rounded-xl inline-block">
-                      {scoreData.badge.level}
-                    </span>
-                  ) : (
-                    <div className="h-14"></div>
-                  )}
+                <div className="flex items-end gap-2 mb-3">
+                  <span className="text-[32px] font-bold text-[#9747FF] leading-none">
+                    {Math.round(scoreData.cis_score)}
+                  </span>
+                  <span className="text-sm font-semibold text-[#222224] mb-0.5">
+                    /100
+                  </span>
+                </div>
+                <div className="w-full h-2 rounded-full bg-[#f3f3f3] overflow-hidden mb-1">
+                  <div
+                    className="h-2 rounded-full bg-linear-to-r from-[#a392f2] to-[#f07eff]"
+                    style={{ width: `${scoreData.cis_score}%` }}
+                  ></div>
+                </div>
+                <div className="flex justify-end text-xs text-[#222224] font-medium mb-1">
+                  100%
+                </div>
+                <div className="text-xs font-medium text-[#818181]">
+                  Above 60 is considered inspired
                 </div>
               </div>
+
             </div>
             {/*<hr className="border-t border-gray-200 mb-2 mt-0" />
 
