@@ -17,11 +17,12 @@ type Connection = {
 
 type Props = {
   searchTerm: string;
+    onSelect: (connection: Connection) => void; 
 };
 
 const PAGE_SIZE = 12;
 
-const FriendRequests = ({ searchTerm }: Props) => {
+const FriendRequests = ({ searchTerm, onSelect }: Props) => {
   const [requests, setRequests] = useState<Connection[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -116,6 +117,7 @@ const FriendRequests = ({ searchTerm }: Props) => {
               actions={["accept", "reject"]}
               onAccept={() => handleAcceptRequest(conn.id)}
               onReject={() => handleRejectRequest(conn.id)}
+              onMaximize={() => onSelect(conn)}   
             />
           ))
         ) : (
