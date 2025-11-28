@@ -217,6 +217,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
     setCurrent((prev) => (prev + 1) % mediaItems.length);
   };
 
+
+
+
   return (
     <div className="relative w-full ">
       {/* Media Container */}
@@ -293,6 +296,30 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
 //const toggleExpand = () => setIsExpanded(!isExpanded);
 
 export default function SocialTopBar() {
+
+  const storyScrollRef = useRef<HTMLDivElement | null>(null);
+
+const scrollLeft = () => {
+  storyScrollRef.current?.scrollBy({
+    left: -300,
+    behavior: "smooth",
+  });
+};
+
+const scrollRight = () => {
+  storyScrollRef.current?.scrollBy({
+    left: 300,
+    behavior: "smooth",
+  });
+};
+//  const handlePrev = () => {
+//     setCurrent((prev) => (prev === 0 ? mediaItems.length - 1 : prev - 1));
+//   };
+
+//   const handleNext = () => {
+//     setCurrent((prev) => (prev + 1) % mediaItems.length);
+//   };
+
   // const navigate = useNavigate();
   // const [isExpanded, setIsExpanded] = useState(false);
   // const toggleExpand = () => setIsExpanded(!isExpanded);
@@ -1643,8 +1670,18 @@ export default function SocialTopBar() {
 
                   {/* Story Strip Wrapper */}
                   <h4 className="font-medium text-[16px]">Inspiration Reels</h4>
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
+
+                <div className="relative"> 
+                    {/* LEFT BUTTON */}
+                             <button
+            onClick={scrollLeft}
+            className="absolute -left-2 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
+          >
+            <ChevronLeft size={22} />
+          </button>
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4" ref={storyScrollRef}>
                     {/* Create Story Card */}
+                  
                     <div
                       onClick={() => openStoryPopup()}
                       className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start"
@@ -1706,7 +1743,7 @@ export default function SocialTopBar() {
                           videoSrc={story?.thumbnail || ""}
                         />
 
-                  <div className="absolute bottom-2 left-2 z-30 flex items-center gap-2  px-2 py-1 rounded-full">
+                  <div className="absolute top-2 left-2 z-30 flex items-center gap-2  px-2 py-1 rounded-full">
   <img
     src={
       story.storyuser?.profile?.profile_picture
@@ -1764,7 +1801,15 @@ export default function SocialTopBar() {
                         </div>
                       </div>
                     )}
+                 
+                      <button
+            onClick={scrollRight}
+            className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
+          >
+            <ChevronRight size={22} />
+          </button>
                   </div>
+                  </div> 
 
                   {/* Posts Section */}
                   <div className="mt-1 h-14 px-6 py-4 bg-[rgba(112,119,254,0.1)] text-[#7077FE] font-medium rounded-lg text-left w-full font-family-Poppins text-[16px]">

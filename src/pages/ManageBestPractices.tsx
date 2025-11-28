@@ -555,8 +555,15 @@ useEffect(() => {
     isCreateModal: boolean = false
   ) => {
     const value = isCreateModal ? inputValue : editInputValue;
+    const isTriggerKey =
+      e.key === "Enter" ||
+      e.key === "Tab" ||
+      e.key === " " ||
+      e.key === "Space" ||
+      e.key === "Spacebar" ||
+      e.code === "Space";
 
-    if (e.key === "Enter" && value.trim()) {
+    if (isTriggerKey && value.trim()) {
       e.preventDefault();
       const newTag = value.trim();
 
@@ -570,17 +577,6 @@ useEffect(() => {
           setTags([...tags, newTag]);
           setEditInputValue("");
         }
-      }
-    }
-  };
-
-  const handleTagAddKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && inputValue.trim()) {
-      e.preventDefault();
-      const newTag = inputValue.trim();
-      if (!tags.includes(newTag)) {
-        setTags([...tags, newTag]);
-        setInputValue("");
       }
     }
   };
@@ -1182,11 +1178,11 @@ useEffect(() => {
         newPractice={newPractice}
         profession={profession}
         interest={interest}
-        tags={tags}
+        tags={createTags}
         inputValue={inputValue}
         setInputValue={setInputValue}
-        removeTag={removeTag}
-        handleTagKeyDown={handleTagAddKeyDown}
+        removeTag={(idx) => removeTag(idx, true)}
+        handleTagKeyDown={(e) => handleTagKeyDown(e, true)}
         handleInputChange={handleCreateInputChange}
         handleFileChange={handleCreateFileChange}
         handleRemoveFile={handleRemoveFile}

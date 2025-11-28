@@ -3108,7 +3108,7 @@ export function BestPracticesSection({
                   `/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`
                 )
               }
-              className="snap-start shrink-0 w-[332px] h-[317px] rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
+              className="snap-start w-[272px] h-[317px] rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
             >
               {/* Image */}
               <div className="h-[135px] rounded-lg overflow-hidden">
@@ -3208,14 +3208,14 @@ export function BestPracticesSection({
       </div>
 
       {/* --- DESKTOP list (keep your 2-up pager) --- */}
-      <div className="mt-3 hidden sm:flex gap-4 overflow-hidden">
+      <div className="mt-3 hidden flex flex-col-2 sm:flex gap-4 overflow-hidden">
         {visible.map((bp) => (
           <div
             key={bp.id}
             onClick={() =>
               navigate(`/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`)
             }
-            className="shrink-0 w-[332px] h-[317px] rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
+            className="w-[282px] h-[317px] rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
           >
             <div className="h-[135px] rounded-lg overflow-hidden">
               <img

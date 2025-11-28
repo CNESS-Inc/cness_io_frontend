@@ -140,7 +140,7 @@ export default function FeaturedSection() {
             (step >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")
           }
         >
-          <h5 className="poppins font-medium text-[18px] mb-2">
+          <h5 className="font-[poppins] font-medium text-[18px] mb-2">
             Go live. Share your voice. Be seen by the conscious world.
           </h5>
           <p className="font-['Open_Sans'] font-light text-[16px] leading-6 tracking-[0px] text-[#242424]">
