@@ -36,7 +36,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import CreditAnimation from "../Common/CreditAnimation";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 //import defaultImg from "../assets/profile.png";
-import home from "../assets/home1.svg";
+//import home from "../assets/home1.svg";
 import thumbs from "../assets/thumbsup.svg";
 import cnessicon from "../assets/cnessi.svg";
 
@@ -983,20 +983,20 @@ const SingleBP = () => {
 
         {/* ======= Page Container ======= */}
         <div className="max-w-7xl mx-auto -mt-10 sm:-mt-14 md:-mt-16 px-3 sm:px-6 md:px-8 relative z-10">
-          <div className="bg-white rounded-[30px] shadow-lg border border-gray-200 p-5 sm:p-6 md:p-8">
+          <div className="bg-white rounded-[30px] mb-4 shadow-lg border border-gray-200 p-5 sm:p-6 md:p-8">
             {/* ======= Breadcrumb + Icons ======= */}
             <div className="flex flex-wrap items-center justify-between text-sm text-gray-600 mb-6 gap-3">
               {/* Breadcrumb */}
               <div className="flex flex-wrap items-center gap-2 text-gray-500">
-                <img
+                 {/*<img
                   src={home}
                   alt="Home"
                   className="w-[15px] h-[15px] cursor-pointer"
                   onClick={() => navigate("/dashboard")}
-                />
+                /> 
                 <span className="text-dark text-[24px] sm:text-[30px] -mt-1.5 mx-1">
                   ›
-                </span>
+                </span>*/}
                 <span
                   className="text-black text-[14px] cursor-pointer hover:underline whitespace-nowrap"
                   onClick={() => navigate("/dashboard/bestpractices")}
@@ -1248,7 +1248,7 @@ const SingleBP = () => {
 
                   {/* Article Body */}
                   <div
-                    className="font-open-sans rich-text-content text-gray-800 leading-relaxed text-sm sm:text-base
+                    className="font-['Open_Sans'] rich-text-content text-gray-800 leading-relaxed text-sm sm:text-base
                                [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
                                [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
                                [&_li]:my-1 [&_li]:pl-1
@@ -1341,7 +1341,7 @@ const SingleBP = () => {
 
                     {/* Comments List Header */}
                     <div className="flex justify-between items-center mb-3">
-                      <h3 className="text-[16px] font-semibold text-gray-700">
+                      <h3 className="font-[poppins] text-[16px] font-semibold text-gray-700">
                         All Comments ({commentCount})
                       </h3>
                       <button
@@ -1374,7 +1374,7 @@ const SingleBP = () => {
 
                 {/* ======= RIGHT: Related Section ======= */}
                 <aside className="lg:col-span-4 bg-[#F9F9F9] rounded-[30px] shadow-sm p-4 h-fit">
-                  <h3 className="font-semibold text-gray-900 text-[20px] mb-4">
+                  <h3 className="font-[poppins] font-semibold text-gray-900 text-[20px] mb-4">
                     Related Best Practices
                   </h3>
                   <div className="space-y-3">
