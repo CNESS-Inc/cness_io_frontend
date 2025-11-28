@@ -50,3 +50,9 @@ a {
   border-radius: 50%;
   animation: sparkle 0.8s ease-out forwards;
 }
+
+
+.custom-checkbox:checked {
+  background: linear-gradient(50deg, #F07EFF, #897AFF);
+  border-color: transparent; /* optional */
+}
