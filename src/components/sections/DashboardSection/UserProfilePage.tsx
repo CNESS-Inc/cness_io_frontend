@@ -25,6 +25,16 @@ import { useSearchParams } from "react-router-dom";
 import CreatableSelect from "react-select/creatable";
 import Modal from "../../ui/Modal";
 import Cropper from "../../ui/Cropper";
+import {parsePhoneNumberFromString,getExampleNumber} from "libphonenumber-js/min";
+import examples from "libphonenumber-js/examples.mobile.json";
+import { getCountryCallingCode, getCountries } from "libphonenumber-js/min";
+
+const callingCodeToISO: Record<string, string> = {};
+getCountries().forEach((iso) => {
+  const code = "+" + getCountryCallingCode(iso as any);
+  // If some calling codes map to multiple countries, last one wins — good fallback.
+  callingCodeToISO[code] = iso;
+});
 
 const tabNames = [
   "Basic Information",
@@ -260,6 +270,27 @@ interface SocialLink {
   url: string;
 }
 
+const getMaxDigits = (isoCountry: string): number => {
+  try {
+    const example = getExampleNumber(isoCountry as any, examples); // examples.mobile.json
+    const national = example?.nationalNumber || "";
+    return national.length || 10;
+  } catch {
+    return 10; // fallback when unknown
+  }
+};
+
+// format digits (numbers only) to the country's national representation
+const formatPhoneForCountry = (digits: string, isoCountry: string): string => {
+  // parse expects a string of digits or a string with +country prefix, but it's okay with digits + country param
+  const phone = parsePhoneNumberFromString(digits, isoCountry as any);
+  if (phone) return phone.formatNational(); // e.g. (987) 654-3210 or 98765 43210
+  // if library can't format, do a simple grouped format (fallback)
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+};
+
 const socialPlatforms = [
   { value: "facebook", label: "Facebook" },
   { value: "twitter", label: "Twitter" },
@@ -401,6 +432,10 @@ const UserProfilePage = () => {
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [services, setServices] = useState<any[]>([]);
   const [serviceInput, setServiceInput] = useState("");
+const [basicData, setBasicData] = useState<any>(null);
+const [_loading, setLoading] = useState(false);
+
+
 
   const [cropModal, setCropModal] = useState<{
   open: boolean;
@@ -619,8 +654,8 @@ const UserProfilePage = () => {
         // Keep validation only for these 3 fields
         phone: yup
           .string()
-          .required("Phone number is required")
-          .matches(/^[0-9]{8,13}$/, "Phone must be between 8-13 digits"),
+          .required("Phone number is required"),
+         // .matches(/^[0-9]{8,13}$/, "Phone must be between 8-13 digits"),
         email: yup
           .string()
           .required("Email is required")
@@ -1543,7 +1578,28 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
   };*/
 
 
+const MeDetail = async () => {
+  try {
+    setLoading(true);
+    const response = await MeDetails();
+    // response?.data?.data?.user should contain the user object
+    setBasicData(response?.data?.data?.user);
+  } catch (error) {
+    console.error("Error fetching me details:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+useEffect(() => {
+  MeDetail();
+}, []);
 
+
+useEffect(() => {
+  if (basicData?.email) {
+    contactInfoForm.setValue("email", basicData.email);
+  }
+}, [basicData, contactInfoForm]);
   return (
     <>
       <section className="w-full px-1 sm:px-2 lg:px-1 pt-2 pb-10">
@@ -2296,17 +2352,17 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                       {/* Professional Bio */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Bio {/* <span className="text-red-500">*</span> */}
+                          Describe Yourself {/* <span className="text-red-500">*</span> */}
                         </label>
-                        <input
-                          type="text"
+                        <textarea
+                          rows={4}
                           {...basicInfoForm.register("bio")}
                           placeholder="Add a short professional bio"
                           className={`w-full px-4 py-2 border bg-white ${
                             basicInfoForm.formState.errors.bio
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl h-[41px]    text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                          } rounded-xl min-h-[100px] resize-y text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
                             basicInfoForm.formState.errors.bio
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
@@ -2320,29 +2376,32 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                       </div>
                       {/* Vision Statement - Full Width */}
                       <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
-                          Personal Vision Statement
-                        </label>
-                        <textarea
-                          rows={4}
-                          {...basicInfoForm.register("vision")}
-                          placeholder="What is your conscious vision?"
-                          className={`w-full px-4 py-2  border bg-white ${
-                            basicInfoForm.formState.errors.vision
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.vision
-                              ? "focus:ring-red-500"
-                              : "focus:ring-purple-500"
-                          }`}
-                        />
-                        {basicInfoForm.formState.errors.vision && (
-                          <p className="text-sm text-red-500 mt-1">
-                            {basicInfoForm.formState.errors.vision.message}
-                          </p>
-                        )}
-                      </div>
+  <label className="block text-sm font-medium text-gray-800 mb-2">
+    Personal Vision Statement
+  </label>
+
+  <input
+    type="text"
+    {...basicInfoForm.register("vision")}
+    placeholder="What is your conscious vision?"
+    className={`w-full px-4 py-3 border bg-white ${
+      basicInfoForm.formState.errors.vision
+        ? "border-red-500"
+        : "border-gray-300"
+    } rounded-xl text-sm placeholder-gray-400 
+    focus:outline-none focus:ring-2 ${
+      basicInfoForm.formState.errors.vision
+        ? "focus:ring-red-500"
+        : "focus:ring-purple-500"
+    } transition-all`}
+  />
+
+  {basicInfoForm.formState.errors.vision && (
+    <p className="text-sm text-red-500 mt-1">
+      {basicInfoForm.formState.errors.vision.message}
+    </p>
+  )}
+</div>
                     </div>
                     <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
                       <Button
@@ -2397,35 +2456,57 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                                   selectedOption?.value || countryCode[0]
                                 )
                               }
-                              isSearchable={false}
+                              isSearchable={true}
                               placeholder="Code"
                             />
                           </div>
-                          <input
-                            type="tel"
-                            placeholder="Enter Your Phone Number"
-                            {...contactInfoForm.register("phone")}
-                            minLength={8}
-                            maxLength={13}
-                            onKeyDown={(e) => {
-                              if (
-                                !/[0-9]/.test(e.key) &&
-                                e.key !== "Backspace" &&
-                                e.key !== "Tab"
-                              ) {
-                                e.preventDefault();
-                              }
-                            }}
-                            className={`w-full px-4 py-2 border bg-white ${
-                              contactInfoForm.formState.errors.phone
-                                ? "border-red-500"
-                                : "border-gray-300"
-                            } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400  ${
-                              contactInfoForm.formState.errors.phone
-                                ? "focus:ring-red-500"
-                                : "focus:ring-purple-500"
-                            }`}
-                          />
+                        <input
+  type="tel"
+  placeholder="Enter Your Phone Number"
+  // we intentionally DO NOT use {...contactInfoForm.register("phone")} here,
+  // because we update the field programmatically (setValue) to control formatting.
+  value={contactInfoForm.watch("phone") || ""}
+  onChange={(e) => {
+    // 1) get selected calling code from your form (e.g. "+91")
+    const selectedCallingCode = contactInfoForm.watch("country_code") || "+91";
+
+    // 2) convert calling code to ISO (e.g. "IN")
+    const isoCountry = callingCodeToISO[selectedCallingCode] || "IN";
+
+    // 3) keep digits only
+    let digits = e.target.value.replace(/\D/g, "");
+
+    // 4) enforce max digits automatically for that country
+    const maxDigits = getMaxDigits(isoCountry);
+    if (digits.length > maxDigits) digits = digits.slice(0, maxDigits);
+
+    // 5) format according to country rules
+    const formatted = formatPhoneForCountry(digits, isoCountry);
+
+    // 6) write back into React Hook Form
+    contactInfoForm.setValue("phone", formatted, { shouldValidate: true, shouldDirty: true });
+  }}
+  onKeyDown={(e) => {
+    // allow digits, Backspace, Delete, Arrow keys, Tab
+    if (
+      !/^\d$/.test(e.key) &&
+      e.key !== "Backspace" &&
+      e.key !== "Delete" &&
+      e.key !== "ArrowLeft" &&
+      e.key !== "ArrowRight" &&
+      e.key !== "Tab"
+    ) {
+      e.preventDefault();
+    }
+  }}
+  className={`w-full px-4 py-2 border bg-white ${
+    contactInfoForm.formState.errors.phone ? "border-red-500" : "border-gray-300"
+  } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
+    contactInfoForm.formState.errors.phone ? "focus:ring-red-500" : "focus:ring-purple-500"
+  }`}
+/>
+
+
                         </div>
                         {contactInfoForm.formState.errors.phone && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2443,27 +2524,20 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                           Email <span className="text-red-500">*</span>
                         </label>
                         <input
-                          type="email"
-                          placeholder="Enter Your Email"
-                          {...contactInfoForm.register("email")}
-                          className={`w-full px-4 py-2 border bg-white ${
-                            contactInfoForm.formState.errors.email
-                              ? "border-red-500"
-                              : "border-gray-300"
-                          } rounded-xl focus:outline-none h-[41px] focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
-                            contactInfoForm.formState.errors.email
-                              ? "focus:ring-red-500"
-                              : "focus:ring-purple-500"
-                          }`}
-                        />
-                        {contactInfoForm.formState.errors.email && (
-                          <p className="text-sm text-red-500 mt-1">
-                            {
-                              contactInfoForm.formState.errors.email
-                                .message as string
-                            }
-                          </p>
-                        )}
+  type="email"
+  placeholder="Enter Your Email"
+  {...contactInfoForm.register("email")}
+  readOnly
+  className={`w-full px-4 py-2 border bg-gray-100 text-gray-600 cursor-not-allowed ${
+    contactInfoForm.formState.errors.email ? "border-red-500" : "border-gray-300"
+  } rounded-xl h-[41px] focus:outline-none`}
+/>
+
+{contactInfoForm.formState.errors.email && (
+  <p className="text-sm text-red-500 mt-1">
+    {contactInfoForm.formState.errors.email.message as string}
+  </p>
+)}
                       </div>
 
                       {/* Address - No validation */}
@@ -2994,59 +3068,75 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                               )}
                             </div>
 
-                            {/* Start Date */}
-                            <div>
-                              <label className="block text-sm font-medium text-gray-800 mb-2">
-                                Start Date
-                              </label>
-                              <input
-                                type="date"
-                                {...educationForm.register(
-                                  `educations.${index}.start_date`
-                                )}
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  educationErrors?.start_date
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                  educationErrors?.start_date
-                                    ? "focus:ring-red-500"
-                                    : "focus:ring-purple-500"
-                                }`}
-                              />
-                              {educationErrors?.start_date && (
-                                <p className="text-sm text-red-500 mt-1">
-                                  {educationErrors.start_date.message}
-                                </p>
-                              )}
-                            </div>
+ {/* Start Date */}
+<div className="relative">
+  <label className="block text-sm font-medium text-gray-800 mb-2">
+    Start Date
+  </label>
 
-                            {/* End Date */}
-                            <div>
-                              <label className="block text-sm font-medium text-gray-800 mb-2">
-                                End Date
-                              </label>
-                              <input
-                                type="date"
-                                {...educationForm.register(
-                                  `educations.${index}.end_date`
-                                )}
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  educationErrors?.end_date
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                  educationErrors?.end_date
-                                    ? "focus:ring-red-500"
-                                    : "focus:ring-purple-500"
-                                }`}
-                              />
-                              {educationErrors?.end_date && (
-                                <p className="text-sm text-red-500 mt-1">
-                                  {educationErrors.end_date.message}
-                                </p>
-                              )}
-                            </div>
+  {!educationForm.watch(`educations.${index}.start_date`) && (
+    <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
+      Please select month & year
+    </span>
+  )}
+
+  <input
+    type="month"
+    {...educationForm.register(`educations.${index}.start_date`)}
+    className={`w-full h-[41px] px-4 py-2 border bg-white ${
+      educationErrors?.start_date ? "border-red-500" : "border-gray-300"
+    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+      educationErrors?.start_date ? "focus:ring-red-500" : "focus:ring-purple-500"
+    }`}
+    style={{
+      color: educationForm.watch(`educations.${index}.start_date`)
+        ? "#000"
+        : "transparent"
+    }}
+  />
+
+  {educationErrors?.start_date && (
+    <p className="text-sm text-red-500 mt-1">
+      {educationErrors.start_date.message}
+    </p>
+  )}
+</div>
+
+
+ {/* End Date */}
+  <div className="relative">
+  <label className="block text-sm font-medium text-gray-800 mb-2">
+    End Date
+  </label>
+
+  {/* Placeholder */}
+  {!educationForm.watch(`educations.${index}.end_date`) && (
+    <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
+      Please select month & year
+    </span>
+  )}
+
+  <input
+    type="month"
+    {...educationForm.register(`educations.${index}.end_date`)}
+    className={`w-full h-[41px] px-4 py-2 border bg-white ${
+      educationErrors?.end_date ? "border-red-500" : "border-gray-300"
+    } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
+      educationErrors?.end_date ? "focus:ring-red-500" : "focus:ring-purple-500"
+    }`}
+    style={{
+      color: educationForm.watch(`educations.${index}.end_date`)
+        ? "#000"        // show text when selected
+        : "transparent" // hide default ----
+    }}
+  />
+
+  {educationErrors?.end_date && (
+    <p className="text-sm text-red-500 mt-1">
+      {educationErrors.end_date.message}
+    </p>
+  )}
+</div>
 
                             {/* Individual education entry error */}
                             {hasEducationError && (
@@ -3282,7 +3372,7 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                               )}
                             </div>
 
-                            {/* Country */}
+                            {/* Country 
                             <div className="lg:w-[48%] md:w-[48%] w-full">
                               <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Country
@@ -3338,9 +3428,9 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                                   {experienceErrors.work_country.message}
                                 </p>
                               )}
-                            </div>
+                            </div>*/}
 
-                            {/* State */}
+                            {/* State 
                             <div className="lg:w-[48%] md:w-[48%] w-full relative">
                               <label className="block text-sm font-medium text-gray-700 mb-2">
                                 State
@@ -3385,7 +3475,7 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                                   {experienceErrors.work_state.message}
                                 </p>
                               )}
-                            </div>
+                            </div>*/}
 
                             {/* City */}
                             <div className="lg:w-[48%] md:w-[48%] w-full">
@@ -3415,38 +3505,7 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                               )}
                             </div>
 
-                            {/* Currently Working */}
-                            <div className="w-full flex items-center gap-1">
-                              <input
-                                type="checkbox"
-                                checked={
-                                  !!workExperienceForm.watch(
-                                    `workExperiences.${index}.currently_working`
-                                  )
-                                }
-                                onChange={(e) => {
-                                  const checked = (e.target as HTMLInputElement)
-                                    .checked;
-                                  workExperienceForm.setValue(
-                                    `workExperiences.${index}.currently_working`,
-                                    checked
-                                  );
-                                  if (checked)
-                                    workExperienceForm.setValue(
-                                      `workExperiences.${index}.end_date`,
-                                      ""
-                                    );
-                                }}
-                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                                id={`currently_working_${index}`}
-                              />
-                              <label
-                                htmlFor={`currently_working_${index}`}
-                                className="ml-2 block text-sm text-gray-800"
-                              >
-                                Currently Working
-                              </label>
-                            </div>
+                        
 
                             {/* Start Date */}
                             <div className="lg:w-[48%] md:w-[48%] w-full">
@@ -3527,6 +3586,39 @@ const handleCropSave = async (blob: Blob, previewUrl: string) => {
                               </div>
                             )}
 
+
+    {/* Currently Working */}
+                            <div className="w-full flex items-center gap-1">
+                              <input
+                                type="checkbox"
+                                checked={
+                                  !!workExperienceForm.watch(
+                                    `workExperiences.${index}.currently_working`
+                                  )
+                                }
+                                onChange={(e) => {
+                                  const checked = (e.target as HTMLInputElement)
+                                    .checked;
+                                  workExperienceForm.setValue(
+                                    `workExperiences.${index}.currently_working`,
+                                    checked
+                                  );
+                                  if (checked)
+                                    workExperienceForm.setValue(
+                                      `workExperiences.${index}.end_date`,
+                                      ""
+                                    );
+                                }}
+                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                id={`currently_working_${index}`}
+                              />
+                              <label
+                                htmlFor={`currently_working_${index}`}
+                                className="ml-2 block text-sm text-gray-800"
+                              >
+                                Currently Working
+                              </label>
+                            </div>
                             {/* Individual work experience entry error */}
                             {hasExperienceError && (
                               <div className="md:col-span-2 w-full">
