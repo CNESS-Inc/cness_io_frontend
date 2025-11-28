@@ -70,6 +70,7 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       try {
         const response = await GetMarketPlaceBuyerProductById(id);
         const productData = response?.data?.data;
+        console.log('productData', productData)
         setProduct(productData);
         console.log("ART SAMPLE → ",
   productData?.product_details?.sample_image_url

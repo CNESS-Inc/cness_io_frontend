@@ -163,17 +163,7 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string
         P{String((currentPage - 1) * 10 + index + 1).padStart(4, '0')}
       </td>
       <td className="py-6 px-6">
-        {category.slug === 'video' ? (
-          <img
-            src='https://cdn.cness.io/VIDEO%20(1).svg'
-            alt={product_name}
-            className="w-[90px] h-[58px] rounded-md object-cover shadow-sm"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://cdn.cness.io/VIDEO%20(1).svg';
-            }}
-          />
-        ) : (
-          <img
+        <img
             src={thumbnail_url}
             alt={product_name}
             className="w-[90px] h-[58px] rounded-md object-cover shadow-sm"
@@ -181,7 +171,6 @@ const ProductRow: React.FC<ProductRowProps & { onEdit: (id: string, slug: string
               (e.target as HTMLImageElement).src = 'https://cdn.cness.io/VIDEO%20(1).svg';
             }}
           />
-        )}
       </td>
       <td className="py-6 px-6 text-[#1A1A1A] text-sm leading-5 max-w-[220px] truncate" title={product_name}>
         {product_name}
