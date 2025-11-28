@@ -882,7 +882,7 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
   useEffect(() => {
     if (!userDetails) return;
 
-    const pageUrl = `${window.location.origin}/dashboard/userprofile/${id}`;
+    const pageUrl = `${window.location.origin}/directory/user-profile/${id}`;
     const profileImage = userDetails?.profile_picture || "https://cdn.cness.io/default-avatar.svg";
     const userName = `${userDetails?.first_name} ${userDetails?.last_name}` || "CNESS User";
     const userDescription = userDetails?.bio || `Check out ${userName}'s profile on CNESS`;
