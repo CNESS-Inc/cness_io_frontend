@@ -177,7 +177,9 @@ const MyConnection = () => {
           />
         )}
         {activeTab === "Friend Requests" && (
-          <FriendRequests searchTerm={searchTerm} />
+          <FriendRequests searchTerm={searchTerm}
+                 onSelect={(user) => setSelectedFriend(user)}  />
+    
         )}
         {activeTab === "Suggestions" && (
           <Suggestions

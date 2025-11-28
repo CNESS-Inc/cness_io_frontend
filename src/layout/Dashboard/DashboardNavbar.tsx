@@ -50,9 +50,9 @@ const DashboardNavbar = ({
       
       // Special handling for profile dropdown
       if (item.id === "TrueProfile" && (
-        location.pathname.startsWith("/dashboard/user-profile") ||
-        location.pathname.startsWith("/dashboard/company-profile") ||
-        location.pathname.includes("/dashboard/userprofile/")
+        location.pathname === `/dashboard/userprofile/${loggedInUserID}` || 
+    location.pathname.startsWith("/dashboard/user-profile") || // edit profile
+    location.pathname.startsWith("/dashboard/company-profile")
       )) {
         newOpenDropdown[item.id] = true;
       }
@@ -274,10 +274,11 @@ const DashboardNavbar = ({
 
     // Special handling for profile dropdown
     if (item.isProfileDropdown) {
-      const isProfileActive = 
-        location.pathname.startsWith("/dashboard/user-profile") ||
-        location.pathname.startsWith("/dashboard/company-profile") ||
-        location.pathname.includes("/dashboard/userprofile/");
+     
+  const isProfileActive =
+  location.pathname === `/dashboard/userprofile/${loggedInUserID}` ||  
+  location.pathname.startsWith("/dashboard/user-profile") ||          
+  location.pathname.startsWith("/dashboard/company-profile");  
       
       const isProfileOpen = !!openDropdown["TrueProfile"];
       

@@ -36,7 +36,8 @@ import {
   GetBestpracticesByUserProfile,
   DeleteBestPractices,
   GetPublicBestpracticesByUserProfile,
-  GetFollowingFollowerUsers
+  //GetFollowingFollowerUsers
+  GetFollowerFollowingByUserId,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -278,7 +279,13 @@ const [followingCount, setFollowingCount] = useState(0);
       fetchProfession();
       fetchIntrusts();
     }
-  }, []);
+  }, [id, token]);
+
+  useEffect(() => {
+  if (id) {
+    fetchFollowerFollowingCounts(id);
+  }
+}, [id]);
 
   const fetchProfession = async () => {
     try {
@@ -852,24 +859,19 @@ const [followingCount, setFollowingCount] = useState(0);
     }
   };
 
-const fetchFollowerFollowingCounts = async () => {
+const fetchFollowerFollowingCounts = async (profileUserId: string | number) => {
   try {
-    const res = await GetFollowingFollowerUsers();
+    const res = await GetFollowerFollowingByUserId(profileUserId);
 
-    const followers = res?.data?.data?.followerCount ?? 0;
-    const following = res?.data?.data?.followingCount ?? 0;
-
-    setFollowerCount(followers);
-    setFollowingCount(following);
+    setFollowerCount(res?.data?.data?.followerCount ?? 0);
+    setFollowingCount(res?.data?.data?.followingCount ?? 0);
 
   } catch (error) {
     console.error("Error fetching follower/following counts:", error);
   }
 };
-useEffect(() => {
-  fetchUserDetails();
-  fetchFollowerFollowingCounts();   // ← Add this
-}, []);
+
+
 
 
   return (

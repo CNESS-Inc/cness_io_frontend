@@ -36,7 +36,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import CreditAnimation from "../Common/CreditAnimation";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 //import defaultImg from "../assets/profile.png";
-import home from "../assets/home1.svg";
+//import home from "../assets/home1.svg";
 import thumbs from "../assets/thumbsup.svg";
 import cnessicon from "../assets/cnessi.svg";
 
@@ -988,15 +988,15 @@ const SingleBP = () => {
             <div className="flex flex-wrap items-center justify-between text-sm text-gray-600 mb-6 gap-3">
               {/* Breadcrumb */}
               <div className="flex flex-wrap items-center gap-2 text-gray-500">
-                <img
+                 {/*<img
                   src={home}
                   alt="Home"
                   className="w-[15px] h-[15px] cursor-pointer"
                   onClick={() => navigate("/dashboard")}
-                />
+                /> 
                 <span className="text-dark text-[24px] sm:text-[30px] -mt-1.5 mx-1">
                   ›
-                </span>
+                </span>*/}
                 <span
                   className="text-black text-[14px] cursor-pointer hover:underline whitespace-nowrap"
                   onClick={() => navigate("/dashboard/bestpractices")}

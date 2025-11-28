@@ -1469,6 +1469,15 @@ export const GetFollowingFollowerUsers = () => {
     EndPoint.following_followers
   );
 };
+
+export const GetFollowerFollowingByUserId = (userId: string | number) => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.following_followers}?id=${userId}`
+  );
+};
+
 export const GetConnectionUser = (
   search?: string,
   page?: number,
@@ -1572,7 +1581,7 @@ export const GetUserPostsByUserId = (userId: string, page: number = 1) => {
 export const GetFollowingFollowersByUserId = (userId: string) => {
   let data = {};
   let params: { [key: string]: any } = {};
-  params["user_id"] = userId;
+  params["id"] = userId;
   return executeAPI(
     ServerAPI.APIMethod.GET,
     data,
