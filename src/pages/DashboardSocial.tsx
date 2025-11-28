@@ -1679,7 +1679,7 @@ export default function SocialTopBar() {
                         </div>
                       </div>
                       <div className="absolute bottom-5 w-full text-center text-white text-xs md:text-[15px] font-normal z-20">
-                        Create Story
+                        Inspirational Story
                       </div>
                       <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
                     </div>
