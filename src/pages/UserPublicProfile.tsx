@@ -858,7 +858,7 @@ export default function UserProfileView() {
     }
   };
 
-const fetchFollowerFollowingCounts = async (profileUserId: string | number) => {
+const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) => {
   try {
     const res = await GetFollowerFollowingByUserId(profileUserId);
 
@@ -869,17 +869,10 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | number) => {
     console.error("Error fetching follower/following counts:", error);
   }
 };
-
-      setFollowerCount(followers);
-      setFollowingCount(following);
-    } catch (error) {
-      console.error("Error fetching follower/following counts:", error);
-    }
-  };
   useEffect(() => {
     fetchUserDetails();
     if (isOwnProfile && token) {
-      fetchFollowerFollowingCounts(); // ← Add this
+      fetchFollowerFollowingCounts(id); // ← Add this
     }
   }, []);
 

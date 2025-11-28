@@ -1470,7 +1470,7 @@ export const GetFollowingFollowerUsers = () => {
   );
 };
 
-export const GetFollowerFollowingByUserId = (userId: string | number) => {
+export const GetFollowerFollowingByUserId = (userId: string | undefined) => {
   return executeAPI(
     ServerAPI.APIMethod.GET,
     {},
