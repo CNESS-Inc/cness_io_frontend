@@ -95,7 +95,7 @@ const Suggestions = ({ searchTerm, onSelect }: Props) => {
           <button
             onClick={() => fetchSuggestions(page, searchTerm, true)}
             disabled={!hasMore || isLoading}
-            className="px-4 py-2 text-sm rounded-full border border-gray-300 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="font-['Open_Sans'] px-4 py-2 text-sm rounded-full border border-gray-300 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isLoading
               ? "Loading..."
