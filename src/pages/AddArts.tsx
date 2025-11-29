@@ -1375,11 +1375,11 @@ const addSample = () => {
                 className="w-full h-40 px-3 py-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
               ></textarea>
 
-              {errors.story_summary && (
+              {/* {errors.story_summary && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.story_summary}
                 </p>
-              )}
+              )} */}
             </div>
           </div>
         </FormSection>

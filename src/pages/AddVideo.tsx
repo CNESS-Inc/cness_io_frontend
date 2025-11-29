@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import uploadimg from "../assets/upload1.svg";
-//import { ChevronRight } from "lucide-react";
 import Breadcrumb from "../components/MarketPlace/Breadcrumb";
 import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +12,7 @@ import {
   UploadProductThumbnail,
   UploadVideoProductDocument,
 } from "../Common/ServerAPI";
-import { Plus, SquarePen, X } from "lucide-react";
+import { Plus, SquarePen, X, Trash2 } from "lucide-react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
@@ -130,7 +129,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("video/")) {
       showToast({
         message: "Please upload a video file",
@@ -140,7 +138,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
       return;
     }
 
-    // Validate file size (100MB max for videos)
     if (file.size > 100 * 1024 * 1024) {
       showToast({
         message: "File size should be less than 100MB",
@@ -190,7 +187,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
       setThumbnail(null);
     } finally {
       setIsUploading(false);
-      // Reset file input
       if (fileRef.current) {
         fileRef.current.value = "";
       }
@@ -202,7 +198,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
     if (onRemove) {
       onRemove();
     }
-    // Reset file input
     if (fileRef.current) {
       fileRef.current.value = "";
     }
@@ -225,7 +220,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
             : ""
         }`}
       >
-        {/* ✅ SVG Dashed Border */}
         <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
           <rect
             x="1"
@@ -253,18 +247,22 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
         {thumbnail ? (
           <div className="relative">
-            <img
-              src={thumbnail}
-              alt="Video Thumbnail"
-              className="w-full max-h-64 rounded-lg object-cover"
-              onError={(e) => {
-                // Handle broken images
-                const target = e.target as HTMLImageElement;
-                target.style.display = "none";
-                // You could show a fallback here
-              }}
-            />
-            {/* Edit/Replace Button */}
+            <div className="flex items-center justify-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="text-sm text-gray-700 truncate max-w-xs">
+                Video uploaded successfully
+              </span>
+            </div>
             <button
               type="button"
               onClick={(e) => {
@@ -274,21 +272,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
               className="absolute top-2 right-12 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition"
               title="Replace Video"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                />
-              </svg>
+              <SquarePen className="w-4 h-4" />
             </button>
-            {/* Remove Button */}
             <button
               type="button"
               onClick={(e) => {
@@ -300,7 +285,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
             >
               <X className="w-4 h-4" />
             </button>
-            {/* Play Icon Overlay */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="bg-black bg-opacity-50 rounded-full p-4">
                 <svg
@@ -336,6 +320,19 @@ const FileUpload: React.FC<FileUploadProps> = ({
   );
 };
 
+// Sample File Interface
+interface SampleFile {
+  id?: string;
+  file_url: string;
+  public_id: string;
+  title: string;
+  file_type: string;
+  order_number?: number;
+  is_ariome?: boolean;
+  duration?: number | null;
+  file_size?: number | null;
+}
+
 const AddVideoForm: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -343,19 +340,17 @@ const AddVideoForm: React.FC = () => {
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [moods, setMoods] = useState<string[]>([]);
+  const [moods, setMoods] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [newHighlight, setNewHighlight] = useState("");
   const [showAIModal, setShowAIModal] = useState(false);
-  const [sampleList, setSampleList] = useState<string[]>([""]);
+  
+  // Sample files state like in edit page
+  const [sampleFiles, setSampleFiles] = useState<SampleFile[]>([]);
+  const [lastUploadedIndex, setLastUploadedIndex] = useState<number | null>(null);
+  
+  const sampleUploadRef = useRef<any>(null);
 
-  const addSample = () => {
-    setSampleList([...sampleList, ""]);
-  };
-
-  const removeSample = (index: number) => {
-    setSampleList(sampleList.filter((_, i) => i !== index));
-  };
   const [thumbnailData, setThumbnailData] = useState<{
     thumbnail_url: string;
     public_id: string;
@@ -373,6 +368,36 @@ const AddVideoForm: React.FC = () => {
     thumbnail: string;
     video_url: string;
   } | null>(null);
+
+  const [loadedThumbnail, setLoadedThumbnail] = useState<string>();
+
+  // Sample functions like in edit page
+  const handleAddSample = (fileData: SampleFile) => {
+    setSampleFiles((prev) => [...prev, fileData]);
+  };
+
+  const handleDeleteSample = (sample: SampleFile) => {
+    setSampleFiles((prev) => prev.filter((s) => s !== sample));
+  };
+
+  // Helper function to determine sample file type
+  const getSampleFileType = (category: string): string => {
+    switch (category) {
+      case "music":
+      case "podcast":
+        return "audio";
+      case "video":
+        return "video";
+      case "art":
+        return "image";
+      case "ebook":
+        return "document";
+      case "course":
+        return "video";
+      default:
+        return "file";
+    }
+  };
 
   const handleSelectCategory = (categoryName: string) => {
     setShowModal(false);
@@ -433,26 +458,23 @@ const AddVideoForm: React.FC = () => {
     price: 0,
     discount_percentage: 0,
     mood_ids: [] as string[],
-    video_url: "", // video_id
+    video_url: "",
     overview: "",
     highlights: [] as string[],
     duration: "",
     language: "",
-    storytelling_video_url: "", // short video_id
+    storytelling_video_url: "",
     storytelling_description: "",
     status: "",
-    sample_track: "",
     thumbnail_url: "",
   });
 
-  // Add these thumbnail handler functions
   const handleThumbnailUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       showToast({
         message: "Please upload an image file",
@@ -462,7 +484,6 @@ const AddVideoForm: React.FC = () => {
       return;
     }
 
-    // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
       showToast({
         message: "Image size should be less than 5MB",
@@ -506,7 +527,6 @@ const AddVideoForm: React.FC = () => {
       });
     } finally {
       setIsThumbnailUploading(false);
-      // Reset input
       e.target.value = "";
     }
   };
@@ -518,20 +538,6 @@ const AddVideoForm: React.FC = () => {
       thumbnail_url: "",
     }));
   };
-
-  const handleSampleTrackUpload = (sampleId: string, index: number) => {
-    setSampleList((prev) => {
-      const updated = [...prev];
-      updated[index] = sampleId;
-      return updated;
-    });
-  };
-  //const handleRemoveSampleTrack = () => {
-  //setFormData((prev) => ({
-  //  ...prev,
-  ///  sample_track: "",
-  // }));
-  // };
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -572,8 +578,6 @@ const AddVideoForm: React.FC = () => {
       }
     }
     if (!formData.duration.trim()) newErrors.duration = "Duration is required.";
-
-    if (!formData.storytelling_description.trim()) newErrors.storytelling_description = "Summary is required.";
 
     setErrors(newErrors);
 
@@ -666,7 +670,7 @@ const AddVideoForm: React.FC = () => {
         if (!valStr) message = "Description is required";
         break;
 
-      case "thumbnail_url": // Add this case
+      case "thumbnail_url":
         if (!valStr) message = "Thumbnail is required";
         break;
 
@@ -696,12 +700,26 @@ const AddVideoForm: React.FC = () => {
     }
     setIsLoading(true);
     try {
+      // Prepare sample files payload like in edit page
+      const sampleFilesPayload = sampleFiles.map((s, index) => ({
+        file_url: s.file_url,
+        public_id: s.public_id,
+        title: s.title,
+        file_type: s.file_type,
+        duration: s.duration,
+        file_size: s.file_size,
+        order_number: index,
+        is_ariome: s.is_ariome ?? false,
+      }));
+
       const payload = {
         ...formData,
         video_url: mainVideo.video_id,
         storytelling_video_url: shortVideoData?.video_url || "",
         status: isDraft ? "draft" : "published",
+        sample_files: sampleFilesPayload, // Add sample files to payload
       };
+      console.log("🚀 ~ handleSubmit ~ payload:", payload)
 
       const response = await CreateVideoProduct(payload);
 
@@ -800,7 +818,6 @@ const AddVideoForm: React.FC = () => {
       video_url: videoUrl,
     });
 
-    // Update formData with short_video_id
     setFormData((prev) => ({
       ...prev,
       storytelling_video_url: videoId,
@@ -814,10 +831,6 @@ const AddVideoForm: React.FC = () => {
       storytelling_video_url: "",
     }));
   };
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
 
   const handleMultipleMainVideos = async (
     e: React.ChangeEvent<HTMLInputElement>
@@ -857,7 +870,6 @@ const AddVideoForm: React.FC = () => {
 
       setLoadedThumbnail(data?.thumbnail);
 
-      // Set single video instead of adding to array
       setMainVideo({
         video_id: data.video_id,
         thumbnail: `${finalUrl}&timecode=1`,
@@ -879,14 +891,12 @@ const AddVideoForm: React.FC = () => {
 
     e.target.value = "";
   };
-  const [loadedThumbnail, setLoadedThumbnail] = useState();
 
   const retryLoading = async (finalUrl: any) => {
     const url = finalUrl;
     let attempts = 0;
     const maxAttempts = 10;
-    const delay = 100; // 1.5 seconds
-    console.log("🚀 ~ retryLoading ~ res:");
+    const delay = 100;
 
     while (attempts < maxAttempts) {
       try {
@@ -894,7 +904,7 @@ const AddVideoForm: React.FC = () => {
         console.log("🚀 ~ retryLoading ~ res:", res);
 
         if (res.ok) {
-          setLoadedThumbnail(url); // thumbnail is now ready 🎉
+          setLoadedThumbnail(url);
           return;
         }
       } catch (e) {
@@ -911,9 +921,11 @@ const AddVideoForm: React.FC = () => {
     setLoadedThumbnail(undefined);
   };
 
-  {
-    /*mood multi select*/
+  if (isLoading) {
+    return <LoadingSpinner />;
   }
+
+  // MultiSelect Component (same as in edit page)
   const MultiSelect = ({
     label,
     options,
@@ -937,7 +949,6 @@ const AddVideoForm: React.FC = () => {
           {label} {required && <span className="text-red-500">*</span>}
         </label>
 
-        {/* Input Box */}
         <div
           className="border border-gray-300 rounded-md px-3 py-2 bg-white cursor-pointer flex flex-wrap gap-2 min-h-[42px]"
           onClick={() => setOpen(!open)}
@@ -980,7 +991,6 @@ const AddVideoForm: React.FC = () => {
           </svg>
         </div>
 
-        {/* Dropdown List */}
         {open && (
           <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-md z-20">
             {options.map((opt: any) => (
@@ -1081,7 +1091,6 @@ const AddVideoForm: React.FC = () => {
                   alt="Thumbnail"
                   className="w-full h-40 object-cover"
                 />
-                {/* Edit/Replace Button */}
                 <label
                   htmlFor="thumbnail-replace"
                   className="absolute top-2 right-12 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition cursor-pointer"
@@ -1097,7 +1106,6 @@ const AddVideoForm: React.FC = () => {
                     disabled={isThumbnailUploading}
                   />
                 </label>
-                {/* Remove Button */}
                 <button
                   type="button"
                   onClick={handleRemoveThumbnail}
@@ -1190,7 +1198,6 @@ const AddVideoForm: React.FC = () => {
                 <p className="text-red-500 text-sm mt-1">{errors.video_url}</p>
               )}
 
-              {/* Show single uploaded video */}
               {mainVideo && (
                 <div className="mt-4">
                   <div className="relative rounded-lg border border-gray-200 overflow-hidden max-w-md">
@@ -1201,7 +1208,6 @@ const AddVideoForm: React.FC = () => {
                       onError={() => retryLoading(mainVideo.thumbnail)}
                     />
 
-                    {/* Play Icon */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="bg-black bg-opacity-40 rounded-full p-3">
                         <svg
@@ -1214,7 +1220,6 @@ const AddVideoForm: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Remove Button */}
                     <button
                       type="button"
                       onClick={removeMainVideo}
@@ -1392,7 +1397,7 @@ const AddVideoForm: React.FC = () => {
             />
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                Summary of the video <span className="text-red-500">*</span>
+                Summary of the video
               </label>
               <textarea
                 name="storytelling_description"
@@ -1402,38 +1407,78 @@ const AddVideoForm: React.FC = () => {
                 className="w-full h-38 px-3 py-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
                 required
               />
-              {errors.storytelling_description && (
-                <span className="text-red-500 text-sm mt-1">
-                  {errors.storytelling_description}
-                </span>
-              )}
             </div>
           </div>
         </FormSection>
 
+        {/* Sample Video Section - Updated to match edit page */}
         <FormSection
-          title="Sample Video"
+          title="Sample Video (Optional)"
           description="Upload a preview sample so buyers can experience your content before purchasing."
         >
-          {sampleList.map((item, index) => (
-            <div key={index} className="mb-6">
-              <SampleTrackUpload
-                productType="video"
-                defaultValue={item}
-                onUploadSuccess={(sampleId) =>
-                  handleSampleTrackUpload(sampleId, index)
-                }
-                onRemove={() => removeSample(index)}
-              />
+          <SampleTrackUpload
+            ref={sampleUploadRef}
+            productType="video"
+            onUploadSuccess={(publicId, sampleUrl) => {
+              const newSample: SampleFile = {
+                file_url: sampleUrl,
+                public_id: publicId,
+                title: `Sample ${sampleFiles.length + 1}`,
+                file_type: getSampleFileType("video"),
+                duration: null,
+                file_size: null,
+                order_number: sampleFiles.length,
+                is_ariome: false,
+              };
+
+              handleAddSample(newSample);
+              setLastUploadedIndex(sampleFiles.length);
+            }}
+            onDonationChange={(value) => {
+              setSampleFiles((prev) =>
+                prev.map((sample, i) =>
+                  i === lastUploadedIndex
+                    ? { ...sample, is_ariome: value }
+                    : sample
+                )
+              );
+            }}
+            onRemove={() => {}}
+          />
+
+          {sampleFiles.length > 0 && (
+            <div className="mt-4 space-y-3">
+              {sampleFiles.map((sample, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm"
+                >
+                  <div>
+                    <p className="font-[Poppins] font-medium text-[#242E3A]">
+                      {sample.title}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {sample.file_type}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => handleDeleteSample(sample)}
+                    className="text-red-500 hover:text-red-600 p-2"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
 
           <button
-            type="button"
-            onClick={addSample}
-            className="px-4 py-2 mt-4 bg-[#7077FE] text-white rounded-md"
+            onClick={() => sampleUploadRef.current?.openPicker()}
+            className="mt-4 flex items-center gap-2 text-[#7077FE] border border-[#7077FE] px-4 py-2 rounded-lg hover:bg-[#EEF2FF]"
           >
-            + Add Another Sample
+            <span className="text-xl font-bold">+</span>
+            Add Another Sample
           </button>
         </FormSection>
 

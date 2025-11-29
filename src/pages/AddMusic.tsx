@@ -1285,12 +1285,13 @@ const MultiSelect = ({
       <label
         className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition-colors"
       >
-        <input
+              <input
           type="file"
-          accept="audio/*, video/*"
+          accept="video/*"
           className="hidden"
           onChange={handleStoryUpload}
         />
+
 
         <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
           <rect
@@ -1401,7 +1402,7 @@ const MultiSelect = ({
 </FormSection>
 
         {/* Uploads Section */}
-        <FormSection title="Uploads" description="">
+        <FormSection title="Tracks" description="">
           <div className="space-y-6">
             {tracks.map((track, trackIndex) => (
               <div

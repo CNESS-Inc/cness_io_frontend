@@ -271,7 +271,7 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
                             disabled={isDonated}
                             className={`w-full py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${isDonated
                                 ? "bg-green-50 text-green-700 border-2 border-green-200 cursor-not-allowed"
-                                : "bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white hover:shadow-lg"
+                                : "bg-linear-to-r from-[#7077FE] to-[#5E65F6] text-white hover:shadow-lg"
                                 }`}
                         >
                             {isDonated ? (
@@ -328,7 +328,7 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
                     ></div>
                     <div className="relative z-10 bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
                         <div className="text-center">
-                            <div className="w-16 h-16 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <div className="w-16 h-16 bg-linear-to-r from-[#7077FE] to-[#5E65F6] rounded-full flex items-center justify-center mx-auto mb-4">
                                 <svg
                                     className="w-8 h-8 text-white"
                                     fill="none"
@@ -359,7 +359,7 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
                                 </button>
                                 <button
                                     onClick={confirmDonation}
-                                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition"
+                                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition"
                                 >
                                     Confirm Donation
                                 </button>
@@ -425,7 +425,7 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
                             </div>
                             <button
                                 onClick={() => setShowAriomeModal(false)}
-                                className="w-full px-4 py-2.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition"
+                                className="w-full px-4 py-2.5 bg-linear-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition"
                             >
                                 Got It!
                             </button>
