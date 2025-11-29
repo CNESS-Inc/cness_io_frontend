@@ -496,6 +496,7 @@ const EditSellerProductPage: React.FC = () => {
           setShortVideoPreview(productData?.storytelling_video_url || "");
           setStoryDescription(productData.storytelling_description || "");
           commonData.summary = productData?.storytelling_description || "";
+            setStoryVideoUrl(productData?.storytelling_video_url || "");
 
           // Category-specific fields
           if (category === "video") {
