@@ -5,7 +5,15 @@ import CategoryModel from "../components/MarketPlace/CategoryModel";
 import { useNavigate } from "react-router-dom";
 import { Music, Plus, SquarePen, Trash2, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { CreateMusicProduct, GetMarketPlaceCategories, GetMarketPlaceMoods, UploadProductDocument, UploadProductThumbnail,UploadStoryTellingVideo } from "../Common/ServerAPI";
+import {
+  CreateMusicProduct,
+  GetMarketPlaceCategories,
+  GetMarketPlaceMoods,
+  MeDetails,
+  UploadProductDocument,
+  UploadProductThumbnail,
+  UploadStoryTellingVideo,
+} from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import AIModal from "../components/MarketPlace/AIModal";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
@@ -27,7 +35,9 @@ const FormSection: React.FC<FormSectionProps> = ({
       <h2 className="font-[poppins] font-semibold text-[18px] text-[#242E3A] mb-1">
         {title}
       </h2>
-      <p className="font-['Open_Sans'] text-[14px] text-[#665B5B]">{description}</p>
+      <p className="font-['Open_Sans'] text-[14px] text-[#665B5B]">
+        {description}
+      </p>
     </div>
     <div className="bg-white rounded-xl border border-gray-200 p-4">
       {children}
@@ -91,17 +101,16 @@ const AddMusicForm: React.FC = () => {
   const [showAIModal, setShowAIModal] = useState(false);
   //const [sampleFiles, setSampleFiles] = useState<any[]>([]);
 
-const [storyMedia, setStoryMedia] = useState<{
-  type: "audio" | "video" | null;
-  url: string;
-  thumbnail?: string;
+  const [storyMedia, setStoryMedia] = useState<{
+    type: "audio" | "video" | null;
+    url: string;
+    thumbnail?: string;
     public_id?: string;
-
-}>({
-  type: null,
-  url: "",
-});
-const [storySummary, setStorySummary] = useState("");
+  }>({
+    type: null,
+    url: "",
+  });
+  const [storySummary, setStorySummary] = useState("");
 
   const [tracks, setTracks] = useState<any[]>([
     {
@@ -111,7 +120,7 @@ const [storySummary, setStorySummary] = useState("");
       description: "",
       duration: "",
       order_number: 1,
-      is_free: false
+      is_free: false,
     },
   ]);
 
@@ -119,7 +128,7 @@ const [storySummary, setStorySummary] = useState("");
     product_title: "",
     price: 0,
     discount_percentage: 0,
-   mood_ids: [] as string[],
+    mood_ids: [] as string[],
     overview: "",
     highlights: [] as string[],
     total_duration: "",
@@ -131,18 +140,20 @@ const [storySummary, setStorySummary] = useState("");
     sample_track_url: "",
   });
 
-const [sampleList, setSampleList] = useState([0]); 
-const [sampleFiles, setSampleFiles] = useState<{
-  file_url: string;
-  public_id: string;
-  title: string;
-  file_type: string;
-  order_number: number;
-  is_ariome: boolean;
-}[]>([]);
-const addSample = () => setSampleList(prev => [...prev, prev.length]);
-const removeSample = (index: number) =>
-  setSampleList(prev => prev.filter((_, i) => i !== index));
+  const [sampleList, setSampleList] = useState([0]);
+  const [sampleFiles, setSampleFiles] = useState<
+    {
+      file_url: string;
+      public_id: string;
+      title: string;
+      file_type: string;
+      order_number: number;
+      is_ariome: boolean;
+    }[]
+  >([]);
+  const addSample = () => setSampleList((prev) => [...prev, prev.length]);
+  const removeSample = (index: number) =>
+    setSampleList((prev) => prev.filter((_, i) => i !== index));
 
   useEffect(() => {
     const fetchMoods = async () => {
@@ -169,7 +180,8 @@ const removeSample = (index: number) =>
           setCategories(response.data.data);
         }
       } catch (error: any) {
-        const errorMessage = error?.response?.data?.error?.message || "Failed to load categories.";
+        const errorMessage =
+          error?.response?.data?.error?.message || "Failed to load categories.";
         showToast({
           message: errorMessage,
           type: "error",
@@ -180,38 +192,38 @@ const removeSample = (index: number) =>
 
     fetchCategories();
   }, []);
-const handleSampleTrackUpload = (
-  sampleUrl: string,
-  publicId?: string,
-  title?: string
-) => {
-  setSampleFiles((prev) => [
-    ...prev,
-    {
-      file_url: sampleUrl,
-      public_id: publicId || "",
-      title: title || "",
-      file_type: "audio",
-      order_number: prev.length,
-      is_ariome: false,
-    },
-  ]);
-};
+  const handleSampleTrackUpload = (
+    sampleUrl: string,
+    publicId?: string,
+    title?: string
+  ) => {
+    setSampleFiles((prev) => [
+      ...prev,
+      {
+        file_url: sampleUrl,
+        public_id: publicId || "",
+        title: title || "",
+        file_type: "audio",
+        order_number: prev.length,
+        is_ariome: false,
+      },
+    ]);
+  };
 
   //const handleRemoveSampleTrack = () => {
-   // setFormData(prev => ({
-    //  ...prev,
-     // sample_track_url: "",
-    //}));
+  // setFormData(prev => ({
+  //  ...prev,
+  // sample_track_url: "",
+  //}));
   //};
 
   const handleAIGenerate = (generatedText: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      overview: generatedText
+      overview: generatedText,
     }));
 
-    setErrors(prev => ({ ...prev, overview: "" }));
+    setErrors((prev) => ({ ...prev, overview: "" }));
 
     setShowAIModal(false);
   };
@@ -234,7 +246,9 @@ const handleSampleTrackUpload = (
     }
   };
 
-  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleThumbnailUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -273,7 +287,7 @@ const handleSampleTrackUpload = (
         public_id: publicId,
       });
 
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         thumbnail_url: thumbnailUrl,
       }));
@@ -285,7 +299,8 @@ const handleSampleTrackUpload = (
       });
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to upload thumbnail",
+        message:
+          error?.response?.data?.error?.message || "Failed to upload thumbnail",
         type: "error",
         duration: 3000,
       });
@@ -298,7 +313,7 @@ const handleSampleTrackUpload = (
 
   const handleRemoveThumbnail = () => {
     setThumbnailData(null);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       image_url: "",
     }));
@@ -315,7 +330,7 @@ const handleSampleTrackUpload = (
         description: "",
         duration: "",
         order_number: prev.length + 1,
-        is_free: false
+        is_free: false,
       },
     ]);
   };
@@ -326,11 +341,13 @@ const handleSampleTrackUpload = (
       prev.map((track) =>
         track.id === trackId
           ? {
-            ...track,
-            track_files: track.track_files.map((f: any) =>
-              f.order_number === fileOrderNumber ? { ...f, isEditing: !f.isEditing } : f
-            ),
-          }
+              ...track,
+              track_files: track.track_files.map((f: any) =>
+                f.order_number === fileOrderNumber
+                  ? { ...f, isEditing: !f.isEditing }
+                  : f
+              ),
+            }
           : track
       )
     );
@@ -345,11 +362,13 @@ const handleSampleTrackUpload = (
       prev.map((track) =>
         track.id === trackId
           ? {
-            ...track,
-            track_files: track.track_files.map((f: any) =>
-              f.order_number === fileOrderNumber ? { ...f, title: newTitle } : f
-            ),
-          }
+              ...track,
+              track_files: track.track_files.map((f: any) =>
+                f.order_number === fileOrderNumber
+                  ? { ...f, title: newTitle }
+                  : f
+              ),
+            }
           : track
       )
     );
@@ -360,13 +379,13 @@ const handleSampleTrackUpload = (
       prev.map((track) =>
         track.id === trackId
           ? {
-            ...track,
-            track_files: track.track_files.map((f: any) =>
-              f.order_number === fileOrderNumber
-                ? { ...f, isEditing: false }
-                : f
-            ),
-          }
+              ...track,
+              track_files: track.track_files.map((f: any) =>
+                f.order_number === fileOrderNumber
+                  ? { ...f, isEditing: false }
+                  : f
+              ),
+            }
           : track
       )
     );
@@ -377,9 +396,11 @@ const handleSampleTrackUpload = (
       prev.map((track) =>
         track.id === trackId
           ? {
-            ...track,
-            track_files: track.track_files.filter((f: any) => f.order_number !== fileOrderNumber)
-          }
+              ...track,
+              track_files: track.track_files.filter(
+                (f: any) => f.order_number !== fileOrderNumber
+              ),
+            }
           : track
       )
     );
@@ -396,7 +417,8 @@ const handleSampleTrackUpload = (
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!formData.product_title.trim()) newErrors.product_title = "Product title is required.";
+    if (!formData.product_title.trim())
+      newErrors.product_title = "Product title is required.";
 
     if (isNaN(formData.price) || formData.price <= 0) {
       newErrors.price = "Price must be a positive number.";
@@ -404,14 +426,19 @@ const handleSampleTrackUpload = (
 
     if (isNaN(formData.discount_percentage)) {
       newErrors.discount_percentage = "Discount percentage must be a number.";
-    } else if (formData.discount_percentage < 0 || formData.discount_percentage > 100) {
-      newErrors.discount_percentage = "Discount percentage must be between 0 and 100.";
+    } else if (
+      formData.discount_percentage < 0 ||
+      formData.discount_percentage > 100
+    ) {
+      newErrors.discount_percentage =
+        "Discount percentage must be between 0 and 100.";
     }
 
-if (!formData.mood_ids || formData.mood_ids.length === 0) {
-  newErrors.mood_ids = "Please select at least one mood.";
-}
-    if (!formData.thumbnail_url.trim()) newErrors.thumbnail_url = "Thumbnail url is required.";
+    if (!formData.mood_ids || formData.mood_ids.length === 0) {
+      newErrors.mood_ids = "Please select at least one mood.";
+    }
+    if (!formData.thumbnail_url.trim())
+      newErrors.thumbnail_url = "Thumbnail url is required.";
 
     if (!formData.overview.trim()) newErrors.overview = "Overview is required.";
 
@@ -419,16 +446,20 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
       newErrors.highlights = "At least one highlight is required.";
     }
 
-   // if (formData.total_duration) {
-     // if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)) {
-     //   newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
+    // if (formData.total_duration) {
+    // if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.total_duration)) {
+    //   newErrors.total_duration = "Duration must be in HH:MM:SS format (e.g., 01:10:00)";
     //  }
     //}
     //if (!formData.total_duration.trim()) newErrors.total_duration = "Duration is required.";
 
     const validFormats = ["MP3", "AAC", "WAV", "FLAC", "OGG"];
-    if (!formData.format || !validFormats.includes(formData.format.toUpperCase())) {
-      newErrors.format = "Format must be one of the following: MP3, AAC, WAV, FLAC, OGG.";
+    if (
+      !formData.format ||
+      !validFormats.includes(formData.format.toUpperCase())
+    ) {
+      newErrors.format =
+        "Format must be one of the following: MP3, AAC, WAV, FLAC, OGG.";
     }
 
     if (tracks.length === 0) {
@@ -438,7 +469,9 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
     // Validate each track has at least one file
     tracks.forEach((track, index) => {
       if (track.track_files.length === 0) {
-        newErrors[`track_${track.id}`] = `Track ${index + 1} must have at least one audio file.`;
+        newErrors[`track_${track.id}`] = `Track ${
+          index + 1
+        } must have at least one audio file.`;
       }
     });
 
@@ -446,9 +479,12 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
 
     if (Object.keys(newErrors).length > 0) {
       setTimeout(() => {
-        const firstErrorElement = document.querySelector('.text-red-500');
+        const firstErrorElement = document.querySelector(".text-red-500");
         if (firstErrorElement) {
-          firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstErrorElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
         }
       }, 100);
     }
@@ -457,7 +493,9 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const target = e.target;
     const { name, value } = target;
@@ -467,7 +505,8 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
       [name]: value,
     }));
 
-    const toStr = (v: unknown) => (v === undefined || v === null ? "" : String(v));
+    const toStr = (v: unknown) =>
+      v === undefined || v === null ? "" : String(v);
     const valStr = toStr(value).trim();
 
     let message = "";
@@ -477,7 +516,11 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
         break;
 
       case "price":
-        if (value === "" || isNaN(parseFloat(value)) || parseFloat(value) <= 0) {
+        if (
+          value === "" ||
+          isNaN(parseFloat(value)) ||
+          parseFloat(value) <= 0
+        ) {
           message = "Price must be a positive number";
         }
         break;
@@ -506,19 +549,24 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
       case "highlights":
         if (Array.isArray(value) && value.length === 0) {
           message = "At least one highlight is required";
-        } else if (Array.isArray(value) && value.some((highlight: string) => !highlight.trim())) {
+        } else if (
+          Array.isArray(value) &&
+          value.some((highlight: string) => !highlight.trim())
+        ) {
           message = "Highlights cannot contain empty values";
         }
         break;
 
       case "total_duration":
         if (!valStr) message = "Duration is required";
-        if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr)) message = "Invalid duration format. Use HH:MM:SS";
+        if (valStr && !/^\d{2}:\d{2}:\d{2}$/.test(valStr))
+          message = "Invalid duration format. Use HH:MM:SS";
         break;
 
       case "status":
         const validStatuses = ["draft", "published"];
-        if (valStr && !validStatuses.includes(valStr)) message = "Status must be either 'draft' or 'published'.";
+        if (valStr && !validStatuses.includes(valStr))
+          message = "Status must be either 'draft' or 'published'.";
         break;
 
       default:
@@ -563,9 +611,9 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
       prevTracks.map((track) =>
         track.id === trackId
           ? {
-            ...track,
-            track_files: [...track.track_files, tempFile],
-          }
+              ...track,
+              track_files: [...track.track_files, tempFile],
+            }
           : track
       )
     );
@@ -574,7 +622,10 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
       const uploadFormData = new FormData();
       uploadFormData.append("track", file);
 
-      const response = await UploadProductDocument("music-track", uploadFormData);
+      const response = await UploadProductDocument(
+        "music-track",
+        uploadFormData
+      );
       const uploadedFileUrl = response?.data?.data?.track_url;
 
       setTracks((prevTracks) =>
@@ -583,11 +634,11 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
             const updatedFiles = track.track_files.map((f: any) =>
               f.file === file
                 ? {
-                  url: uploadedFileUrl,
-                  title: file.name,
-                  order_number: track.track_files.length,
-                  isUploading: false,
-                }
+                    url: uploadedFileUrl,
+                    title: file.name,
+                    order_number: track.track_files.length,
+                    isUploading: false,
+                  }
                 : f
             );
             return { ...track, track_files: updatedFiles };
@@ -612,15 +663,19 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
         prevTracks.map((track) =>
           track.id === trackId
             ? {
-              ...track,
-              track_files: track.track_files.filter((f: any) => f.file !== file),
-            }
+                ...track,
+                track_files: track.track_files.filter(
+                  (f: any) => f.file !== file
+                ),
+              }
             : track
         )
       );
 
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to upload audio file",
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to upload audio file",
         type: "error",
         duration: 3000,
       });
@@ -643,7 +698,17 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
   };
 
   const handleDeleteTrack = (trackId: any) => {
-    setTracks(prev => prev.filter(ch => ch.id !== trackId));
+    setTracks((prev) => prev.filter((ch) => ch.id !== trackId));
+  };
+
+  const fetchMeDetails = async () => {
+    try {
+      const res = await MeDetails();
+      localStorage.setItem(
+        "karma_credits",
+        res?.data?.data?.user?.karma_credits || 0
+      );
+    } catch (error) {}
   };
 
   const handleSubmit = async (isDraft: boolean = false) => {
@@ -705,13 +770,13 @@ if (!formData.mood_ids || formData.mood_ids.length === 0) {
         theme: formData.theme,
         format: formData.format,
         thumbnail_url: formData.thumbnail_url,
-sample_files: sampleFiles,
-        status: isDraft ? 'draft' : 'published',
-storytelling_video_url: storyMedia.url,
-// storytelling_video_public_id: storyMedia.public_id,
-storytelling_description: storySummary,
+        sample_files: sampleFiles,
+        status: isDraft ? "draft" : "published",
+        storytelling_video_url: storyMedia.url,
+        // storytelling_video_public_id: storyMedia.public_id,
+        storytelling_description: storySummary,
 
-        tracks: tracksData,       
+        tracks: tracksData,
       };
 
       const response = await CreateMusicProduct(payload);
@@ -729,13 +794,19 @@ storytelling_description: storySummary,
 
       // Navigate based on action
       if (isDraft && productId) {
-        navigate(`/dashboard/products/music-preview/${productId}?category=music`);
+        navigate(
+          `/dashboard/products/music-preview/${productId}?category=music`
+        );
       } else {
-        navigate('/dashboard/products');
+        navigate("/dashboard/products");
+        await fetchMeDetails();
       }
     } catch (error: any) {
       showToast({
-        message: error?.message || error?.response?.data?.error?.message || 'Failed to create music product',
+        message:
+          error?.message ||
+          error?.response?.data?.error?.message ||
+          "Failed to create music product",
         type: "error",
         duration: 3000,
       });
@@ -755,29 +826,29 @@ storytelling_description: storySummary,
         return;
       }
 
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        highlights: [...prev.highlights, newHighlight.trim()]
+        highlights: [...prev.highlights, newHighlight.trim()],
       }));
       setNewHighlight("");
 
       if (errors.highlights) {
-        setErrors(prev => ({ ...prev, highlights: "" }));
+        setErrors((prev) => ({ ...prev, highlights: "" }));
       }
     }
   };
 
   const handleRemoveHighlight = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      highlights: prev.highlights.filter((_, i) => i !== index)
+      highlights: prev.highlights.filter((_, i) => i !== index),
     }));
   };
 
   const handleEditHighlight = (index: number, newValue: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      highlights: prev.highlights.map((h, i) => i === index ? newValue : h)
+      highlights: prev.highlights.map((h, i) => (i === index ? newValue : h)),
     }));
   };
 
@@ -787,13 +858,11 @@ storytelling_description: storySummary,
 
   const confirmDiscard = () => {
     setShowDiscardModal(false);
-    navigate('/dashboard/products');
+    navigate("/dashboard/products");
   };
 
   if (isLoading) {
-    return (
-      <LoadingSpinner />
-    );
+    return <LoadingSpinner />;
   }
 
   const handleOverviewChange = (data: any) => {
@@ -812,147 +881,149 @@ storytelling_description: storySummary,
     }
   };
 
+  const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-const handleStoryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+    const isAudio = file.type.startsWith("audio/");
+    const isVideo = file.type.startsWith("video/");
 
-  const isAudio = file.type.startsWith("audio/");
-  const isVideo = file.type.startsWith("video/");
+    if (!isAudio && !isVideo) {
+      showToast({
+        message: "Please upload audio or video file only.",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
 
-  if (!isAudio && !isVideo) {
-    showToast({
-      message: "Please upload audio or video file only.",
-      type: "error",
-      duration: 3000,
-    });
-    return;
-  }
+    const formData = new FormData();
+    formData.append("storytelling_video", file); // ✔ Correct field name
 
-  const formData = new FormData();
-  formData.append("storytelling_video", file); // ✔ Correct field name
+    try {
+      const response = await UploadStoryTellingVideo(formData);
+      const data = response?.data?.data;
 
-  try {
-    const response = await UploadStoryTellingVideo(formData);
-    const data = response?.data?.data;
+      setStoryMedia({
+        type: isAudio ? "audio" : "video",
+        url:
+          data?.url ||
+          data?.secure_url ||
+          data?.storytelling_video_url ||
+          data?.video_url ||
+          data?.file_url ||
+          data?.path ||
+          "",
+        thumbnail: data?.thumbnail,
+        public_id: data?.public_id,
+      });
 
-   setStoryMedia({
-  type: isAudio ? "audio" : "video",
-  url:
-    data?.url ||
-    data?.secure_url ||
-    data?.storytelling_video_url ||
-    data?.video_url ||
-    data?.file_url ||
-    data?.path ||
-    "",
-  thumbnail: data?.thumbnail,
-  public_id: data?.public_id,
-});
-
-    showToast({
-      message: `Storytelling ${isAudio ? "audio" : "video"} uploaded successfully`,
-      type: "success",
-      duration: 3000,
-    });
-  } catch {
-    showToast({
-      message: "Failed to upload storytelling media",
-      type: "error",
-      duration: 3000,
-    });
-  }
-};
-
-{/*mood multi select*/}
-const MultiSelect = ({
-  label,
-  options,
-  selectedValues,
-  onChange,
-  required = false,
-}: any) => {
-  const [open, setOpen] = useState(false);
-
-  const toggleOption = (value: string) => {
-    if (selectedValues.includes(value)) {
-      onChange(selectedValues.filter((v: string) => v !== value));
-    } else {
-      onChange([...selectedValues, value]);
+      showToast({
+        message: `Storytelling ${
+          isAudio ? "audio" : "video"
+        } uploaded successfully`,
+        type: "success",
+        duration: 3000,
+      });
+    } catch {
+      showToast({
+        message: "Failed to upload storytelling media",
+        type: "error",
+        duration: 3000,
+      });
     }
   };
 
-  return (
-    <div className="relative">
-      <label className="block font-['Open_Sans'] font-semibold text-[16px] mb-2 text-[#242E3A]">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+  {
+    /*mood multi select*/
+  }
+  const MultiSelect = ({
+    label,
+    options,
+    selectedValues,
+    onChange,
+    required = false,
+  }: any) => {
+    const [open, setOpen] = useState(false);
 
-      {/* Input Box */}
-      <div
-        className="border border-gray-300 rounded-md px-3 py-2 bg-white cursor-pointer flex flex-wrap gap-2 min-h-[42px]"
-        onClick={() => setOpen(!open)}
-      >
-        {selectedValues.length === 0 ? (
-          <span className="text-gray-400">Select Mood</span>
-        ) : (
-          selectedValues.map((val: string) => {
-            const item = options.find((o: any) => o.id === val);
-            return (
-              <span
-                key={val}
-                className="bg-[#7077FE] text-white px-2 py-1 rounded-md text-sm flex items-center gap-1"
-              >
-                {item?.name}
-                <X
-                  size={14}
-                  className="cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleOption(val);
-                  }}
-                />
-              </span>
-            );
+    const toggleOption = (value: string) => {
+      if (selectedValues.includes(value)) {
+        onChange(selectedValues.filter((v: string) => v !== value));
+      } else {
+        onChange([...selectedValues, value]);
+      }
+    };
 
-            
-          })
-          
-        )}
-        <svg
-  className="w-4 h-4 absolute right-3 text-gray-500 pointer-events-none"
-  fill="none"
-  stroke="currentColor"
-  strokeWidth="2"
-  viewBox="0 0 24 24"
->
-  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-</svg>
-      </div>
+    return (
+      <div className="relative">
+        <label className="block font-['Open_Sans'] font-semibold text-[16px] mb-2 text-[#242E3A]">
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
 
-      {/* Dropdown List */}
-      {open && (
-        <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-md z-20">
-          {options.map((opt: any) => (
-            <div
-              key={opt.id}
-              onClick={() => toggleOption(opt.id)}
-              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-                selectedValues.includes(opt.id)
-                  ? "bg-[#EEF3FF] text-[#7077FE]"
-                  : "text-gray-700"
-              }`}
-            >
-              {opt.name}
-            </div>
-          ))}
+        {/* Input Box */}
+        <div
+          className="border border-gray-300 rounded-md px-3 py-2 bg-white cursor-pointer flex flex-wrap gap-2 min-h-[42px]"
+          onClick={() => setOpen(!open)}
+        >
+          {selectedValues.length === 0 ? (
+            <span className="text-gray-400">Select Mood</span>
+          ) : (
+            selectedValues.map((val: string) => {
+              const item = options.find((o: any) => o.id === val);
+              return (
+                <span
+                  key={val}
+                  className="bg-[#7077FE] text-white px-2 py-1 rounded-md text-sm flex items-center gap-1"
+                >
+                  {item?.name}
+                  <X
+                    size={14}
+                    className="cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleOption(val);
+                    }}
+                  />
+                </span>
+              );
+            })
+          )}
+          <svg
+            className="w-4 h-4 absolute right-3 text-gray-500 pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
         </div>
-      )}
-      
-    </div>
-    
-  );
-};
+
+        {/* Dropdown List */}
+        {open && (
+          <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-md z-20">
+            {options.map((opt: any) => (
+              <div
+                key={opt.id}
+                onClick={() => toggleOption(opt.id)}
+                className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                  selectedValues.includes(opt.id)
+                    ? "bg-[#EEF3FF] text-[#7077FE]"
+                    : "text-gray-700"
+                }`}
+              >
+                {opt.name}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <>
@@ -990,32 +1061,36 @@ const MultiSelect = ({
               label="Discount in %"
               placeholder="Enter discount in %"
               name="discount_percentage"
-              value={formData.discount_percentage === 0 ? "" : formData.discount_percentage.toString()}
+              value={
+                formData.discount_percentage === 0
+                  ? ""
+                  : formData.discount_percentage.toString()
+              }
               onChange={handleChange}
               error={errors.discount_percentage}
             />
             <div>
               <MultiSelect
-  label="Mood"
-  required
-  options={moods}
-  selectedValues={formData.mood_ids}
-  onChange={(values: string[]) => {
-    setFormData((prev) => ({
-      ...prev,
-      mood_ids: values,
-    }));
+                label="Mood"
+                required
+                options={moods}
+                selectedValues={formData.mood_ids}
+                onChange={(values: string[]) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    mood_ids: values,
+                  }));
 
-    setErrors((prev) => ({
-      ...prev,
-      mood_ids: "",
-    }));
-  }}
-/>
+                  setErrors((prev) => ({
+                    ...prev,
+                    mood_ids: "",
+                  }));
+                }}
+              />
 
-{errors.mood_ids && (
-  <span className="text-red-500 text-sm">{errors.mood_ids}</span>
-)}
+              {errors.mood_ids && (
+                <span className="text-red-500 text-sm">{errors.mood_ids}</span>
+              )}
             </div>
 
             <div>
@@ -1057,8 +1132,11 @@ const MultiSelect = ({
                 </div>
               ) : (
                 <label
-                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isThumbnailUploading ? "pointer-events-none opacity-70" : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                    }`}
+                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                    isThumbnailUploading
+                      ? "pointer-events-none opacity-70"
+                      : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                  }`}
                 >
                   <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                     <rect
@@ -1085,7 +1163,9 @@ const MultiSelect = ({
                   {isThumbnailUploading ? (
                     <div className="flex flex-col items-center space-y-2">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
-                      <p className="text-sm text-[#7077FE]">Uploading thumbnail...</p>
+                      <p className="text-sm text-[#7077FE]">
+                        Uploading thumbnail...
+                      </p>
                     </div>
                   ) : (
                     <div className="text-center space-y-2">
@@ -1102,7 +1182,11 @@ const MultiSelect = ({
                   )}
                 </label>
               )}
-              {errors.thumbnail_url && <span className="text-red-500 text-sm mt-1">{errors.thumbnail_url}</span>}
+              {errors.thumbnail_url && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.thumbnail_url}
+                </span>
+              )}
             </div>
           </div>
         </FormSection>
@@ -1137,14 +1221,16 @@ const MultiSelect = ({
                   <div className="w-1 h-1 bg-white rounded-full animate-ping"></div>
                 </button>
               </div>
-              
+
               {/* Replaced textarea with CustomRichTextEditor */}
               <CustomRichTextEditor
                 value={formData.overview}
                 onChange={handleOverviewChange}
                 onBlur={() => {
                   // Validate on blur
-                  const overviewText = formData.overview.replace(/<[^>]*>/g, '').trim();
+                  const overviewText = formData.overview
+                    .replace(/<[^>]*>/g, "")
+                    .trim();
                   if (!overviewText) {
                     setErrors((prev) => ({
                       ...prev,
@@ -1155,7 +1241,11 @@ const MultiSelect = ({
                 placeholder="Describe your artwork, including inspiration, techniques used, and what makes it special..."
                 error={!!errors.overview}
               />
-              {errors.overview && <span className="text-red-500 text-sm mt-1">{errors.overview}</span>}
+              {errors.overview && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.overview}
+                </span>
+              )}
             </div>
             <div>
               <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
@@ -1163,12 +1253,17 @@ const MultiSelect = ({
               </label>
               <div className="space-y-3">
                 {formData?.highlights?.map((highlight: any, index: number) => (
-                  <div key={index} className="flex items-start gap-2 p-3 border border-gray-200 rounded-md bg-white">
+                  <div
+                    key={index}
+                    className="flex items-start gap-2 p-3 border border-gray-200 rounded-md bg-white"
+                  >
                     <span className="text-[#7077FE] font-bold mt-1">•</span>
                     <input
                       type="text"
                       value={highlight}
-                      onChange={(e) => handleEditHighlight(index, e.target.value)}
+                      onChange={(e) =>
+                        handleEditHighlight(index, e.target.value)
+                      }
                       className="flex-1 border-none focus:outline-none text-[#242E3A]"
                     />
                     <button
@@ -1188,7 +1283,7 @@ const MultiSelect = ({
                       value={newHighlight}
                       onChange={(e) => setNewHighlight(e.target.value)}
                       onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                           e.preventDefault();
                           handleAddHighlight();
                         }
@@ -1207,10 +1302,16 @@ const MultiSelect = ({
                 )}
 
                 <p className="text-sm text-gray-500">
-                  Add up to 3 key highlights about your video (e.g., "Guided relaxation for stress relief", "Mindfulness and breathing techniques")
+                  Add up to 3 key highlights about your video (e.g., "Guided
+                  relaxation for stress relief", "Mindfulness and breathing
+                  techniques")
                 </p>
               </div>
-              {errors.highlights && <span className="text-red-500 text-sm mt-1">{errors.highlights}</span>}
+              {errors.highlights && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.highlights}
+                </span>
+              )}
             </div>
 
             {/*<InputField
@@ -1240,11 +1341,12 @@ const MultiSelect = ({
                 name="format"
                 value={formData.format}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+              >
                 <option value="">Select Format</option>
                 <option value="MP3">MP3</option>
                 <option value="WAV">WAV</option>
-               {/* <option value="AAC">AAC</option>
+                {/* <option value="AAC">AAC</option>
                 <option value="FLAC">FLAC</option>
                 <option value="OGG">OGG</option>*/}
               </select>
@@ -1258,148 +1360,148 @@ const MultiSelect = ({
                 name="language"
                 value={formData.language}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]">
+                className="w-full px-3 py-2 border border-gray-200 rounded-md bg-white text-[#242E3A] focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+              >
                 <option value="">Select Language</option>
                 <option value="English">English</option>
                 <option value="Spanish">Spanish</option>
                 <option value="French">French</option>
                 <option value="German">German</option>
               </select>
-              {errors.language && <span className="text-red-500 text-sm mt-1">{errors.language}</span>}
+              {errors.language && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.language}
+                </span>
+              )}
             </div>
           </div>
         </FormSection>
 
-<FormSection
-  title="Storytelling"
-  description="Add an video or text description that explains your music content."
->
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <FormSection
+          title="Storytelling"
+          description="Add an video or text description that explains your music content."
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* MEDIA UPLOAD CARD */}
+            <div>
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Upload Video (Optional)
+              </label>
 
-    {/* MEDIA UPLOAD CARD */}
-    <div>
-      <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-        Upload Video (Optional)
-      </label>
+              <label className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition-colors">
+                <input
+                  type="file"
+                  accept="video/*"
+                  className="hidden"
+                  onChange={handleStoryUpload}
+                />
 
-      <label
-        className="relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center bg-[#F9FAFB] hover:bg-[#EEF3FF] transition-colors"
-      >
-              <input
-          type="file"
-          accept="video/*"
-          className="hidden"
-          onChange={handleStoryUpload}
-        />
+                <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                  <rect
+                    x="1"
+                    y="1"
+                    width="calc(100% - 2px)"
+                    height="calc(100% - 2px)"
+                    rx="12"
+                    ry="12"
+                    stroke="#CBD5E1"
+                    strokeWidth="2"
+                    strokeDasharray="6,6"
+                    fill="none"
+                  />
+                </svg>
 
+                {!storyMedia.url ? (
+                  <div className="text-center space-y-2">
+                    <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
+                      <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+                    </div>
+                    <p className="text-sm font-[poppins] text-[#242E3A]">
+                      Drag & drop or click to upload
+                    </p>
+                    <p className="text-xs text-[#665B5B]">Supports video</p>
+                  </div>
+                ) : (
+                  <div className="relative w-full">
+                    {/* Preview */}
+                    {storyMedia.type === "video" ? (
+                      <video
+                        src={storyMedia.url}
+                        controls
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                    ) : (
+                      <audio
+                        controls
+                        src={storyMedia.url}
+                        className="w-full"
+                      ></audio>
+                    )}
 
-        <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
-          <rect
-            x="1"
-            y="1"
-            width="calc(100% - 2px)"
-            height="calc(100% - 2px)"
-            rx="12"
-            ry="12"
-            stroke="#CBD5E1"
-            strokeWidth="2"
-            strokeDasharray="6,6"
-            fill="none"
-          />
-        </svg>
-
-        {!storyMedia.url ? (
-          <div className="text-center space-y-2">
-            <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
-              <img src={uploadimg} alt="Upload" className="w-6 h-6" />
+                    {/* Remove Button */}
+                    <button
+                      type="button"
+                      onClick={() => setStoryMedia({ type: null, url: "" })}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+                      title="Remove Media"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </label>
             </div>
-            <p className="text-sm font-[poppins] text-[#242E3A]">
-              Drag & drop or click to upload
-            </p>
-            <p className="text-xs text-[#665B5B]">Supports video</p>
+
+            {/* TEXT DESCRIPTION */}
+            <div>
+              <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                Summary of the Storytelling
+              </label>
+
+              <textarea
+                value={storySummary}
+                onChange={(e) => setStorySummary(e.target.value)}
+                placeholder="Describe the idea, inspiration, or meaning behind your music..."
+                className="w-full h-40 px-3 py-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+              ></textarea>
+            </div>
           </div>
-        ) : (
-          <div className="relative w-full">
-            {/* Preview */}
-            {storyMedia.type === "video" ? (
-              <video
-                src={storyMedia.url}
-                controls
-                className="w-full h-32 object-cover rounded-lg"
+        </FormSection>
+
+        <FormSection
+          title="Sample Track"
+          description="Upload a preview sample so buyers can experience your content before purchasing."
+        >
+          {sampleList.map((_, i) => (
+            <div key={i} className="mb-6">
+              <SampleTrackUpload
+                productType="music"
+                onUploadSuccess={(publicId, sampleUrl, title) =>
+                  handleSampleTrackUpload(sampleUrl, publicId, title)
+                }
+                onDonationChange={(value) => {
+                  setSampleFiles((prev) =>
+                    prev.map((sample, i) =>
+                      i === prev.length - 1
+                        ? { ...sample, is_ariome: value }
+                        : sample
+                    )
+                  );
+                }}
+                onRemove={() => removeSample(i)}
               />
-            ) : (
-              <audio controls src={storyMedia.url} className="w-full"></audio>
-            )}
+            </div>
+          ))}
 
-            {/* Remove Button */}
-            <button
-              type="button"
-              onClick={() => setStoryMedia({ type: null, url: "" })}
-              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
-              title="Remove Media"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-      </label>
-    </div>
-
-    {/* TEXT DESCRIPTION */}
-    <div>
-      <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-        Summary of the Storytelling
-      </label>
-
-      <textarea
-        value={storySummary}
-        onChange={(e) => setStorySummary(e.target.value)}
-        placeholder="Describe the idea, inspiration, or meaning behind your music..."
-        className="w-full h-40 px-3 py-2 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
-      ></textarea>
-    </div>
-
-  </div>
-</FormSection>
-        
-
-    <FormSection
-  title="Sample Track"
-  description="Upload a preview sample so buyers can experience your content before purchasing."
->
-  {sampleList.map((_, i) => (
-    <div key={i} className="mb-6">
-    <SampleTrackUpload
-  productType="music"
-  onUploadSuccess={(publicId, sampleUrl, title) =>
-    handleSampleTrackUpload(sampleUrl, publicId, title)
-  }
-
-  onDonationChange={(value) => {
-    setSampleFiles(prev =>
-      prev.map((sample, i) =>
-        i === prev.length - 1
-          ? { ...sample, is_ariome: value }
-          : sample
-      )
-    );
-  }}
-
-  onRemove={() => removeSample(i)}
-/>
-    
-    </div>
-  ))}
-
-  {/* ➕ ADD SAMPLE BUTTON */}
-  <button
-    type="button"
-    onClick={addSample}
-    className="mt-2 text-[#7077FE] font-medium flex items-center gap-2"
-  >
-    <span className="text-2xl">＋</span> Add Another Sample
-  </button>
-</FormSection>
+          {/* ➕ ADD SAMPLE BUTTON */}
+          <button
+            type="button"
+            onClick={addSample}
+            className="mt-2 text-[#7077FE] font-medium flex items-center gap-2"
+          >
+            <span className="text-2xl">＋</span> Add Another Sample
+          </button>
+        </FormSection>
 
         {/* Uploads Section */}
         <FormSection title="Tracks" description="">
@@ -1416,14 +1518,17 @@ const MultiSelect = ({
                       value={track.title}
                       onChange={(e) => {
                         const newTitle = e.target.value;
-                        setTracks(prev => prev.map(t =>
-                          t.id === track.id ? { ...t, title: newTitle } : t
-                        ));
+                        setTracks((prev) =>
+                          prev.map((t) =>
+                            t.id === track.id ? { ...t, title: newTitle } : t
+                          )
+                        );
                       }}
                       className="text-[16px] font-semibold text-[#242E3A] border-b border-transparent hover:border-gray-300 focus:border-[#7077FE] focus:outline-none mb-2"
                     />
                     <p className="text-sm text-[#665B5B]">
-                      Upload track {trackIndex + 1} audio files <span className="text-red-500">*</span>
+                      Upload track {trackIndex + 1} audio files{" "}
+                      <span className="text-red-500">*</span>
                     </p>
                   </div>
 
@@ -1449,7 +1554,9 @@ const MultiSelect = ({
                         height="calc(100% - 2px)"
                         rx="12"
                         ry="12"
-                        stroke={errors[`track_${track.id}`] ? "#EF4444" : "#CBD5E1"}
+                        stroke={
+                          errors[`track_${track.id}`] ? "#EF4444" : "#CBD5E1"
+                        }
                         strokeWidth="2"
                         strokeDasharray="6,6"
                         fill="none"
@@ -1492,7 +1599,9 @@ const MultiSelect = ({
                               {file.isUploading ? (
                                 <>
                                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#7077FE]"></div>
-                                  <span className="text-sm text-gray-600">Uploading...</span>
+                                  <span className="text-sm text-gray-600">
+                                    Uploading...
+                                  </span>
                                 </>
                               ) : (
                                 <>
@@ -1502,7 +1611,11 @@ const MultiSelect = ({
                                       type="text"
                                       value={file.title}
                                       onChange={(e) =>
-                                        handleEditFileName(track.id, file.order_number, e.target.value)
+                                        handleEditFileName(
+                                          track.id,
+                                          file.order_number,
+                                          e.target.value
+                                        )
                                       }
                                       className="flex-1 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
                                       autoFocus
@@ -1521,7 +1634,9 @@ const MultiSelect = ({
                                 {file.isEditing ? (
                                   <button
                                     type="button"
-                                    onClick={() => saveFileName(track.id, file.order_number)}
+                                    onClick={() =>
+                                      saveFileName(track.id, file.order_number)
+                                    }
                                     className="text-[#7077FE] text-sm font-semibold hover:text-[#5E65F6]"
                                   >
                                     Save
@@ -1530,7 +1645,12 @@ const MultiSelect = ({
                                   <>
                                     <button
                                       type="button"
-                                      onClick={() => toggleEditFile(track.id, file.order_number)}
+                                      onClick={() =>
+                                        toggleEditFile(
+                                          track.id,
+                                          file.order_number
+                                        )
+                                      }
                                       className="text-gray-500 hover:text-[#7077FE] transition-colors"
                                       title="Edit filename"
                                     >
@@ -1538,7 +1658,9 @@ const MultiSelect = ({
                                     </button>
                                     <button
                                       type="button"
-                                      onClick={() => deleteFile(track.id, file.order_number)}
+                                      onClick={() =>
+                                        deleteFile(track.id, file.order_number)
+                                      }
                                       className="text-gray-500 hover:text-red-500 transition-colors"
                                       title="Delete file"
                                     >
@@ -1554,7 +1676,9 @@ const MultiSelect = ({
                             <>
                               <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
                                 <span>
-                                  {file.file ? formatFileSize(file.file.size) : "Uploaded"}
+                                  {file.file
+                                    ? formatFileSize(file.file.size)
+                                    : "Uploaded"}
                                 </span>
                                 <span className="text-green-600 flex items-center gap-1">
                                   <span className="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
@@ -1578,7 +1702,9 @@ const MultiSelect = ({
                   </div>
                 </div>
                 {errors[`track_${track.id}`] && (
-                  <p className="text-red-500 text-sm mt-2">{errors[`track_${track.id}`]}</p>
+                  <p className="text-red-500 text-sm mt-2">
+                    {errors[`track_${track.id}`]}
+                  </p>
                 )}
               </div>
             ))}
@@ -1588,9 +1714,7 @@ const MultiSelect = ({
               onClick={handleAddTrack}
               className="relative w-full rounded-lg py-4 text-[#7077FE] font-medium bg-white cursor-pointer group overflow-hidden transition-all"
             >
-              <svg
-                className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-              >
+              <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                 <rect
                   x="1"
                   y="1"
@@ -1615,7 +1739,8 @@ const MultiSelect = ({
           <button
             type="button"
             onClick={handleDiscard}
-            className=" px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0]  hover:text-blue-500 transition-colors">
+            className=" px-5 py-3 text-[#7077FE] rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0]  hover:text-blue-500 transition-colors"
+          >
             Discard
           </button>
           <button
@@ -1627,10 +1752,11 @@ const MultiSelect = ({
             {isLoading ? "Saving..." : "Preview"}
           </button>
           <button
-            type='button'
+            type="button"
             onClick={() => handleSubmit(false)}
             disabled={isLoading}
-            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0] hover:bg-[#5a60ea] transition-colors disabled:opacity-50">
+            className="px-5 py-3 bg-[#7077FE] text-white rounded-lg font-['Plus_Jakarta_Sans'] font-medium text-[16px] leading-[100%] tracking-[0] hover:bg-[#5a60ea] transition-colors disabled:opacity-50"
+          >
             {isLoading ? "Submitting..." : "Submit"}
           </button>
         </div>
@@ -1646,13 +1772,17 @@ const MultiSelect = ({
       )}
       {showDiscardModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowDiscardModal(false)}></div>
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowDiscardModal(false)}
+          ></div>
           <div className="relative z-10 bg-white rounded-[20px] shadow-lg p-8 w-[450px]">
             <h3 className="text-[20px] font-semibold font-['Poppins'] text-[#242E3A] mb-4">
               Discard Product?
             </h3>
             <p className="text-[14px] text-[#665B5B] font-['Open_Sans'] mb-6">
-              Are you sure you want to discard this product? All your entered details will not be saved.
+              Are you sure you want to discard this product? All your entered
+              details will not be saved.
             </p>
             <div className="flex justify-end gap-3">
               <button
