@@ -32,12 +32,12 @@ import {
   GetFollowingFollowerUsers,
   DeleteUserPost,
   PostsLike,
-  GetConnectionUser,
   UnFriend,
   MeDetails,
   GetSavedPosts,
   SavePost,
   GetUserReel,
+  GetFollowingUser,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Modal from "../components/ui/Modal";
@@ -293,14 +293,15 @@ export default function Profile() {
 
   const fetchFollowingUsers = async () => {
     try {
-      const res = await GetConnectionUser();
+      // const res = await GetConnectionUser();
+      const res = await GetFollowingUser();
       // Transform the API response to match FollowedUser interface
       const transformedUsers = res.data.data.rows.map((item: any) => ({
-        id: item.friend_id,
-        username: item.friend_user.username,
-        first_name: item.friend_user.profile.first_name,
-        last_name: item.friend_user.profile.last_name,
-        profile_picture: item.friend_user.profile.profile_picture,
+        id: item.following_id,
+        username: item.following_user.username,
+        first_name: item.following_user.profile.first_name || "",
+        last_name: item.following_user.profile.last_name || "",
+        profile_picture: item.following_user.profile.profile_picture,
         is_following: true, // Since these are users you're following
       }));
 
@@ -323,8 +324,8 @@ export default function Profile() {
       const transformedUsers = res.data.data.rows.map((item: any) => ({
         id: item.follower_id,
         username: item.follower_user.username,
-        first_name: item.follower_user.profile.first_name,
-        last_name: item.follower_user.profile.last_name,
+        first_name: item.follower_user.profile.first_name || "",
+        last_name: item.follower_user.profile.last_name || "",
         profile_picture: item.follower_user.profile.profile_picture,
         is_following: true, // Since these are users you're following
       }));
