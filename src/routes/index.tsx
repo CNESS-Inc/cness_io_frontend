@@ -41,6 +41,7 @@ import Tracking from "../pages/Tracking";
 import CreatorGuideline from "../pages/CreatorGuideline";
 import Profile from "../pages/Profile";
 import MyConnection from "../pages/MyConnection";
+import Certification from "../pages/Certification";
 import ComingSoon from "../pages/ComingSoon";
 import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 import DashboardSocial from "../pages/DashboardSocial";
@@ -632,6 +633,10 @@ export const router = createBrowserRouter([
           {
             path: "MyConnection",
             element: <MyConnection />,
+          },
+           {
+            path: "Certification",
+            element: <Certification />,
           },
           {
             path: "comingSoon",
