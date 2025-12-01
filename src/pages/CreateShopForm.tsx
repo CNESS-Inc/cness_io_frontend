@@ -1732,7 +1732,7 @@ const CreateShopForm: React.FC = () => {
                         setCurrentAIField("about_shop");
                         setShowAIModal(true);
                       }}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group text-sm"
+                      className="flex items-center gap-2 px-3 py-1.5 bg-linear-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 group text-sm"
                     >
                       <Sparkles className="w-4 h-4 animate-pulse" />
                       <span className="font-medium">Generate with AI</span>
@@ -1786,7 +1786,7 @@ const CreateShopForm: React.FC = () => {
                           setCurrentAIField("why_choose_your_shop");
                           setShowAIModal(true);
                         }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 text-xs font-medium"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-linear-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 text-xs font-medium"
                       >
                         <Sparkles className="w-3.5 h-3.5" />
                         <span>Generate with AI</span>
@@ -1845,7 +1845,7 @@ const CreateShopForm: React.FC = () => {
                           setCurrentAIField("shop_philosophy");
                           setShowAIModal(true);
                         }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 text-xs font-medium"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-linear-to-r from-[#7077FE] to-[#5E65F6] text-white rounded-lg hover:shadow-lg transition-all duration-300 text-xs font-medium"
                       >
                         <Sparkles className="w-3.5 h-3.5" />
                         <span>Generate with AI</span>
@@ -2176,7 +2176,7 @@ const CreateShopForm: React.FC = () => {
                       onClick={() => togglePolicy(index)}
                     >
                       <div
-                        className={`w-6 h-6 rounded border flex items-center justify-center flex-shrink-0 transition-colors duration-200 cursor-pointer ${policy.checked
+                        className={`w-6 h-6 rounded border flex items-center justify-center shrink-0 transition-colors duration-200 cursor-pointer ${policy.checked
                           ? "bg-[#7077FE] border-[#7077FE]"
                           : "border-[#7077FE]"
                           }`}
