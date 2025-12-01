@@ -32,7 +32,6 @@ import {
   GetFollowingFollowerUsers,
   DeleteUserPost,
   PostsLike,
-  GetConnectionUser,
   UnFriend,
   MeDetails,
   GetSavedPosts,
