@@ -324,8 +324,8 @@ export default function Profile() {
       const transformedUsers = res.data.data.rows.map((item: any) => ({
         id: item.follower_id,
         username: item.follower_user.username,
-        first_name: item.follower_user.profile.first_name,
-        last_name: item.follower_user.profile.last_name,
+        first_name: item.follower_user.profile.first_name || "",
+        last_name: item.follower_user.profile.last_name || "",
         profile_picture: item.follower_user.profile.profile_picture,
         is_following: true, // Since these are users you're following
       }));
