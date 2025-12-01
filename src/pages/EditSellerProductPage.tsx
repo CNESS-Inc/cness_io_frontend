@@ -25,6 +25,7 @@ import {
   DeletPodcastEpisode,
   GetMarketPlaceMoods,
   GetPreviewProduct,
+  MeDetails,
   UpdateArtProduct,
   UpdateCourseProduct,
   UpdateEbookProduct,
@@ -496,7 +497,7 @@ const EditSellerProductPage: React.FC = () => {
           setShortVideoPreview(productData?.storytelling_video_url || "");
           setStoryDescription(productData.storytelling_description || "");
           commonData.summary = productData?.storytelling_description || "";
-            setStoryVideoUrl(productData?.storytelling_video_url || "");
+          setStoryVideoUrl(productData?.storytelling_video_url || "");
 
           // Category-specific fields
           if (category === "video") {
@@ -1640,8 +1641,8 @@ const EditSellerProductPage: React.FC = () => {
       }
     }
 
-    if (!formData.language?.trim())
-      newErrors.language = "Language is required.";
+    // if (!formData.language?.trim())
+    //   newErrors.language = "Language is required.";
 
     setErrors(newErrors);
 
@@ -1842,6 +1843,16 @@ const EditSellerProductPage: React.FC = () => {
     return basePayload;
   };
 
+  const fetchMeDetails = async () => {
+    try {
+      const res = await MeDetails();
+      localStorage.setItem(
+        "karma_credits",
+        res?.data?.data?.user?.karma_credits || 0
+      );
+    } catch (error) {}
+  };
+
   // Main submit handler
   const handleSubmit = async (isDraft: boolean = false) => {
     if (!validateForm()) {
@@ -1934,6 +1945,7 @@ const EditSellerProductPage: React.FC = () => {
       } else {
         // Navigate to products list for published
         navigate("/dashboard/products");
+        await fetchMeDetails();
       }
     } catch (error: any) {
       showToast({
@@ -2652,7 +2664,7 @@ const EditSellerProductPage: React.FC = () => {
               {/* All Categories - Language */}
               <div>
                 <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                  Language <span className="text-red-500">*</span>
+                  Language
                 </label>
                 <select
                   name="language"
@@ -2715,7 +2727,15 @@ const EditSellerProductPage: React.FC = () => {
             >
               <SampleTrackUpload
                 ref={sampleUploadRef}
-                productType={category as "video" | "music" | "course" | "podcast" | "ebook" | "art"}
+                productType={
+                  category as
+                    | "video"
+                    | "music"
+                    | "course"
+                    | "podcast"
+                    | "ebook"
+                    | "art"
+                }
                 onUploadSuccess={(publicId, sampleUrl) => {
                   const newSample = {
                     file_url: sampleUrl,

@@ -8,6 +8,7 @@ import {
   CreateVideoProduct,
   GetMarketPlaceCategories,
   GetMarketPlaceMoods,
+  MeDetails,
   UploadProductDocument,
   UploadProductThumbnail,
   UploadVideoProductDocument,
@@ -681,6 +682,16 @@ const AddVideoForm: React.FC = () => {
     setErrors((prev) => ({ ...prev, [name]: message }));
   };
 
+    const fetchMeDetails = async () => {
+      try {
+        const res = await MeDetails();
+        localStorage.setItem(
+          "karma_credits",
+          res?.data?.data?.user?.karma_credits || 0
+        );
+      } catch (error) {}
+    };
+
   const handleSubmit = async (isDraft: boolean = false) => {
     if (!validateForm()) {
       showToast({
@@ -737,6 +748,7 @@ const AddVideoForm: React.FC = () => {
           ? `/dashboard/products/preview/${response?.data?.data?.product_id}?category=video`
           : "/dashboard/products"
       );
+      await fetchMeDetails()
     } catch (error: any) {
       showToast({
         message:
