@@ -295,13 +295,12 @@ export default function Profile() {
     try {
       // const res = await GetConnectionUser();
       const res = await GetFollowingUser();
-      console.log("🚀 ~ fetchFollowingUsers ~ res:", res)
       // Transform the API response to match FollowedUser interface
       const transformedUsers = res.data.data.rows.map((item: any) => ({
         id: item.following_id,
         username: item.following_user.username,
-        first_name: item.following_user.profile.first_name,
-        last_name: item.following_user.profile.last_name,
+        first_name: item.following_user.profile.first_name || "",
+        last_name: item.following_user.profile.last_name || "",
         profile_picture: item.following_user.profile.profile_picture,
         is_following: true, // Since these are users you're following
       }));
