@@ -4,20 +4,24 @@ import { FaYoutube, FaFacebookF, FaXTwitter } from "react-icons/fa6";
 import { FiSun } from "react-icons/fi";
 import { RiInstagramLine } from "react-icons/ri";
 import { Palette, Image, FileText, Download } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { GetPreviewProduct, UpdateProductStatus } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
-const artistAvatar = 'https://cdn.cness.io/frame1.svg';
+const artistAvatar = "https://cdn.cness.io/frame1.svg";
 
 const ArtPreview = () => {
   const params = useParams();
   const id = params?.productNo || {};
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const category = queryParams.get('category') || '';
+  const category = queryParams.get("category") || "";
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [data, setData] = useState<any>(null);
@@ -42,8 +46,39 @@ const ArtPreview = () => {
     }
   }, [id, category]);
 
+  const editUrl = useRef(`/dashboard/products/edit/${id}?category=${category}`);
+
+  useEffect(() => {
+    editUrl.current = `/dashboard/products/edit/${id}?category=${category}`;
+  }, [id, category]);
+
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      event.preventDefault();
+      navigate(editUrl.current);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    window.history.pushState(
+      { fromPreview: true },
+      "",
+      window.location.pathname + window.location.search
+    );
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      if (window.history.state?.fromPreview) {
+        window.history.replaceState(
+          null,
+          "",
+          window.location.pathname + window.location.search
+        );
+      }
+    };
+  }, [navigate, id, category]);
+
   const handleBack = () => {
-    navigate(-1);
+    navigate(`/dashboard/products/edit/${id}?category=${category}`);
   };
 
   const handleSubmit = async () => {
@@ -52,7 +87,7 @@ const ArtPreview = () => {
     setIsSubmitting(true);
     try {
       const payload = {
-        status: 'published',
+        status: "published",
       };
 
       await UpdateProductStatus(payload, id);
@@ -63,10 +98,11 @@ const ArtPreview = () => {
         duration: 3000,
       });
 
-      navigate('/dashboard/products');
+      navigate("/dashboard/products");
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to submit product.",
+        message:
+          error?.response?.data?.error?.message || "Failed to submit product.",
         type: "error",
         duration: 3000,
       });
@@ -76,8 +112,8 @@ const ArtPreview = () => {
   };
 
   const getFileIcon = (fileName: string) => {
-    const ext = fileName.split('.').pop()?.toLowerCase();
-    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext || '')) {
+    const ext = fileName.split(".").pop()?.toLowerCase();
+    if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext || "")) {
       return <Image className="w-4 h-4" />;
     }
     return <FileText className="w-4 h-4" />;
@@ -120,30 +156,41 @@ const ArtPreview = () => {
               className="rounded-xl w-full h-54 object-cover"
               onError={() => {
                 return (
-                  <div className="rounded-xl w-full h-54 bg-gradient-to-br from-[#EC4899] to-[#F43F5E] flex items-center justify-center">
+                  <div className="rounded-xl w-full h-54 bg-linear-to-br from-[#EC4899] to-[#F43F5E] flex items-center justify-center">
                     <Palette className="w-32 h-32 text-white opacity-80" />
                   </div>
-                )
+                );
               }}
             />
           </div>
 
           <div className="p-6 flex flex-col justify-between w-full">
             <div>
-              <h2 className="text-2xl md:text-2xl font-bold mb-2" style={{ fontFamily: "Poppins" }}>
+              <h2
+                className="text-2xl md:text-2xl font-bold mb-2"
+                style={{ fontFamily: "Poppins" }}
+              >
                 {data.product_title}
               </h2>
-              <div className="flex items-center gap-2 mb-2" style={{ fontFamily: "Poppins" }}>
+              <div
+                className="flex items-center gap-2 mb-2"
+                style={{ fontFamily: "Poppins" }}
+              >
                 <img
                   src={data.seller?.shop_logo || artistAvatar}
                   alt={data.seller?.shop_name || "Seller"}
                   className="w-8 h-8 rounded-full object-cover"
                 />
-                <span className="text-sm font-medium">{data.seller?.shop_name || "Seller"}</span>
-                <span className="ml-2 text-blue-500 text-xl"><IoMdCheckmark /></span>
+                <span className="text-sm font-medium">
+                  {data.seller?.shop_name || "Seller"}
+                </span>
+                <span className="ml-2 text-blue-500 text-xl">
+                  <IoMdCheckmark />
+                </span>
               </div>
               <div className="flex items-center gap-3">
-                {data.discount_percentage && parseFloat(data.discount_percentage) > 0 ? (
+                {data.discount_percentage &&
+                parseFloat(data.discount_percentage) > 0 ? (
                   <>
                     <div className="text-2xl font-bold text-[#7077FE]">
                       ${data.final_price}
@@ -166,15 +213,26 @@ const ArtPreview = () => {
 
       {/* Overview Section */}
       <div className="bg-white rounded-xl shadow-md w-full p-6 mb-8">
-        <h3 className="font-semibold text-lg mb-3" style={{ fontFamily: "Poppins" }}>Overview</h3>
+        <h3
+          className="font-semibold text-lg mb-3"
+          style={{ fontFamily: "Poppins" }}
+        >
+          Overview
+        </h3>
         <p className="mb-4 text-gray-700" style={{ fontFamily: "Poppins" }}>
           {data.overview}
         </p>
         {data.highlights && (
           <>
             <h4 className="font-semibold mb-2">Highlights:</h4>
-            <ul className="list-disc ml-6 mb-4 text-gray-700" style={{ fontFamily: "Poppins" }}>
-              {(typeof data.highlights === 'string' ? data.highlights.split(',') : data.highlights).map((highlight: string, index: number) => (
+            <ul
+              className="list-disc ml-6 mb-4 text-gray-700"
+              style={{ fontFamily: "Poppins" }}
+            >
+              {(typeof data.highlights === "string"
+                ? data.highlights.split(",")
+                : data.highlights
+              ).map((highlight: string, index: number) => (
                 <li key={index}>{highlight.trim()}</li>
               ))}
             </ul>
@@ -188,7 +246,9 @@ const ArtPreview = () => {
                 <MdLanguage style={{ color: "#EC4899" }} />
                 <span>Language</span>
               </div>
-              <span className="text-sm" style={{ fontFamily: "Poppins" }}>{data.language}</span>
+              <span className="text-sm" style={{ fontFamily: "Poppins" }}>
+                {data.language}
+              </span>
             </div>
           )}
           {data.arts_details?.theme && (
@@ -197,25 +257,41 @@ const ArtPreview = () => {
                 <Palette className="w-4 h-4" style={{ color: "#EC4899" }} />
                 <span>Theme</span>
               </div>
-              <span className="text-sm" style={{ fontFamily: "Poppins" }}>{data.arts_details.theme}</span>
+              <span className="text-sm" style={{ fontFamily: "Poppins" }}>
+                {data.arts_details.theme}
+              </span>
             </div>
           )}
           {data.arts_details?.mediums && (
             <div>
               <div className="flex items-center gap-1 mb-1 font-semibold">
-                <span className="text-sm font-bold" style={{ color: "#EC4899" }}>🎨</span>
+                <span
+                  className="text-sm font-bold"
+                  style={{ color: "#EC4899" }}
+                >
+                  🎨
+                </span>
                 <span>Mediums</span>
               </div>
-              <span className="text-sm" style={{ fontFamily: "Poppins" }}>{data.arts_details.mediums}</span>
+              <span className="text-sm" style={{ fontFamily: "Poppins" }}>
+                {data.arts_details.mediums}
+              </span>
             </div>
           )}
           {data.arts_details?.modern_trends && (
             <div>
               <div className="flex items-center gap-1 mb-1 font-semibold">
-                <span className="text-sm font-bold" style={{ color: "#EC4899" }}>✨</span>
+                <span
+                  className="text-sm font-bold"
+                  style={{ color: "#EC4899" }}
+                >
+                  ✨
+                </span>
                 <span>Trends</span>
               </div>
-              <span className="text-sm" style={{ fontFamily: "Poppins" }}>{data.arts_details.modern_trends}</span>
+              <span className="text-sm" style={{ fontFamily: "Poppins" }}>
+                {data.arts_details.modern_trends}
+              </span>
             </div>
           )}
         </div>
@@ -224,15 +300,27 @@ const ArtPreview = () => {
       {/* Collections Section */}
       {data.content_items && data.content_items.length > 0 && (
         <div className="bg-white rounded-xl shadow-md w-full p-6 mb-8">
-          <h3 className="font-semibold text-lg mb-4" style={{ fontFamily: "Poppins" }}>Art Collections</h3>
+          <h3
+            className="font-semibold text-lg mb-4"
+            style={{ fontFamily: "Poppins" }}
+          >
+            Art Collections
+          </h3>
           <div className="space-y-4">
             {data.content_items.map((collection: any) => (
-              <div key={collection.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition">
+              <div
+                key={collection.id}
+                className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition"
+              >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h4 className="font-semibold text-[#242E3A] mb-1">{collection.title}</h4>
+                    <h4 className="font-semibold text-[#242E3A] mb-1">
+                      {collection.title}
+                    </h4>
                     {collection.description && (
-                      <p className="text-sm text-gray-600">{collection.description}</p>
+                      <p className="text-sm text-gray-600">
+                        {collection.description}
+                      </p>
                     )}
                   </div>
                   <span className="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded">
@@ -243,18 +331,27 @@ const ArtPreview = () => {
                 {/* Collection Files */}
                 {collection.file_urls && collection.file_urls.length > 0 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                    {collection.file_urls.map((file: any, fileIndex: number) => (
-                      <div key={fileIndex} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="w-10 h-10 bg-gradient-to-br from-[#EC4899] to-[#F43F5E] rounded-lg flex items-center justify-center">
-                          {getFileIcon(file.title)}
+                    {collection.file_urls.map(
+                      (file: any, fileIndex: number) => (
+                        <div
+                          key={fileIndex}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                        >
+                          <div className="w-10 h-10 bg-linear-to-br from-[#EC4899] to-[#F43F5E] rounded-lg flex items-center justify-center">
+                            {getFileIcon(file.title)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-[#242E3A] truncate">
+                              {file.title}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              File {file.order_number}
+                            </p>
+                          </div>
+                          <Download className="w-4 h-4 text-gray-400" />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[#242E3A] truncate">{file.title}</p>
-                          <p className="text-xs text-gray-500">File {file.order_number}</p>
-                        </div>
-                        <Download className="w-4 h-4 text-gray-400" />
-                      </div>
-                    ))}
+                      )
+                    )}
                   </div>
                 )}
               </div>
@@ -277,7 +374,9 @@ const ArtPreview = () => {
               <IoMdCheckmark className="text-white text-sm" />
             </span>
           </div>
-          <div className="text-sm text-gray-500">{data.product_category?.name || "Digital Artist"}</div>
+          <div className="text-sm text-gray-500">
+            {data.product_category?.name || "Digital Artist"}
+          </div>
         </div>
 
         {data.seller?.social_links && (

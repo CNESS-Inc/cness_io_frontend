@@ -25,6 +25,7 @@ import {
   DeletPodcastEpisode,
   GetMarketPlaceMoods,
   GetPreviewProduct,
+  MeDetails,
   UpdateArtProduct,
   UpdateCourseProduct,
   UpdateEbookProduct,
@@ -34,6 +35,7 @@ import {
   UpdateVideoProduct,
   UploadProductDocument,
   UploadProductThumbnail,
+  UploadStoryTellingVideo,
 } from "../Common/ServerAPI";
 import SampleTrackUpload from "../components/MarketPlace/SampleTrackUpload";
 import AIModal from "../components/MarketPlace/AIModal";
@@ -346,7 +348,6 @@ interface SampleFile {
   is_ariome?: boolean;
 }
 
-
 // Main Component
 const EditSellerProductPage: React.FC = () => {
   const navigate = useNavigate();
@@ -386,7 +387,9 @@ const EditSellerProductPage: React.FC = () => {
   console.log("shortVideoPreview", shortVideoPreview);
   const [isMainVideoUploading, setIsMainVideoUploading] = useState(false);
   const [isShortVideoUploading, setIsShortVideoUploading] = useState(false);
-  const [lastUploadedIndex, setLastUploadedIndex] = useState<number | null>(null);
+  const [lastUploadedIndex, setLastUploadedIndex] = useState<number | null>(
+    null
+  );
 
   const sampleUploadRef = useRef<any>(null);
 
@@ -394,7 +397,6 @@ const EditSellerProductPage: React.FC = () => {
   const [contentItems, setContentItems] = useState<
     (Track | Episode | Chapter | Lesson | Collection)[]
   >([]);
-  console.log("contentItems", contentItems);
   const [deletingItems, setDeletingItems] = useState<Set<string>>(new Set());
 
   type FormDataType = {
@@ -421,7 +423,6 @@ const EditSellerProductPage: React.FC = () => {
     modern_trends: string;
     storytelling_video_url?: string;
     storytelling_description?: string;
-
   };
 
   // Form Data State (dynamic based on category)
@@ -452,12 +453,13 @@ const EditSellerProductPage: React.FC = () => {
     // Art specific
     mediums: "",
     modern_trends: "",
-
   });
+  console.log("🚀 ~ EditSellerProductPage ~ formData:", formData);
 
   const [storyVideoUrl, setStoryVideoUrl] = useState<string>(
-    formData.storytelling_video_url || ""
+    formData.short_video_url || ""
   );
+  console.log("🚀 ~ EditSellerProductPage ~ storyVideoUrl:", storyVideoUrl);
 
   const [storyDescription, setStoryDescription] = useState<string>(
     formData.storytelling_description || ""
@@ -492,29 +494,29 @@ const EditSellerProductPage: React.FC = () => {
             highlights: productData.highlights || [],
             language: productData.language || "",
           };
+          setShortVideoPreview(productData?.storytelling_video_url || "");
+          setStoryDescription(productData.storytelling_description || "");
+          commonData.summary = productData?.storytelling_description || "";
+          setStoryVideoUrl(productData?.storytelling_video_url || "");
 
           // Category-specific fields
           if (category === "video") {
-            commonData.video_url =
-              productData.video_details?.video_files || "";
+            commonData.video_url = productData.video_details?.video_files || "";
             commonData.thumbnail_url =
               productData.video_details?.thumbnail_url || "";
             commonData.duration = productData.video_details?.duration || "";
             commonData.short_video_url =
               productData?.storytelling_video_url || "";
-            commonData.summary =
-              productData?.storytelling_description || "";
+            commonData.summary = productData?.storytelling_description || "";
 
-              setStoryVideoUrl(productData?.storytelling_video_url || "")
+            setStoryVideoUrl(productData?.storytelling_video_url || "");
 
-              setStoryDescription(productData.storytelling_description || "")
+            setStoryDescription(productData.storytelling_description || "");
 
             setMainVideoPreview(
               productData.video_details?.main_video?.thumbnail || ""
             );
-            setShortVideoPreview(
-              productData.video_details?.short_video?.thumbnail || ""
-            );
+            setShortVideoPreview(productData?.storytelling_video_url || "");
 
             // ✅ FIX: Set thumbnail data for video category too
             if (productData.video_details?.thumbnail_url) {
@@ -890,7 +892,7 @@ const EditSellerProductPage: React.FC = () => {
       setFormData((prev: any) => ({
         ...prev,
         video_url: videoData?.video_id,
-        thumbnail_url: videoData?.thumbnail,
+        // thumbnail_url: videoData?.thumbnail,
       }));
       console.log("videoData", formData);
 
@@ -923,7 +925,7 @@ const EditSellerProductPage: React.FC = () => {
     setFormData((prev: any) => ({
       ...prev,
       video_url: "",
-      thumbnail_url: "",
+      // thumbnail_url: "",
     }));
   };
 
@@ -957,19 +959,23 @@ const EditSellerProductPage: React.FC = () => {
     setShortVideoPreview(videoURL);
 
     try {
-      const uploadFormData = new FormData();
-      uploadFormData.append("short_video", file);
+      // const uploadFormData = new FormData();
+      // uploadFormData.append("short_video", file);
 
-      const response = await UploadProductDocument(
-        "short-video",
-        uploadFormData
-      );
+      // const response = await UploadProductDocument(
+      //   "short-video",
+      //   uploadFormData
+      // );
+      const formData = new FormData();
+      formData.append("storytelling_video", file); // ✔ Correct field name
+      const response = await UploadStoryTellingVideo(formData);
       const videoData = response?.data?.data;
 
       setFormData((prev: any) => ({
         ...prev,
-        short_video_url: videoData?.video_url,
+        short_video_url: videoData?.storytelling_video_url,
       }));
+      setStoryVideoUrl(videoData?.storytelling_video_url);
 
       showToast({
         message: "Short video uploaded successfully",
@@ -1151,11 +1157,11 @@ const EditSellerProductPage: React.FC = () => {
             const updatedFiles = fileArray.map((f: any) =>
               f.file === file
                 ? {
-                  ...f,
-                  url: uploadedUrl,
-                  order_number: fileArray.length - 1,
-                  isUploading: false,
-                }
+                    ...f,
+                    url: uploadedUrl,
+                    order_number: fileArray.length - 1,
+                    isUploading: false,
+                  }
                 : f
             );
 
@@ -1539,17 +1545,17 @@ const EditSellerProductPage: React.FC = () => {
   // ✅ ADD SAMPLE FUNCTIONS HERE
 
   const handleAddSample = (fileData: SampleFile) => {
-    setSampleFiles(prev => [...prev, fileData]);
+    setSampleFiles((prev) => [...prev, fileData]);
   };
 
   const handleDeleteSample = (sample: SampleFile) => {
     const id = sample.id;
 
     if (id) {
-      setDeleteSampleFiles(prev => [...prev, id]);
+      setDeleteSampleFiles((prev) => [...prev, id]);
     }
 
-    setSampleFiles(prev => prev.filter(s => s !== sample));
+    setSampleFiles((prev) => prev.filter((s) => s !== sample));
   };
   // Form validation
   const validateForm = (): boolean => {
@@ -1587,7 +1593,7 @@ const EditSellerProductPage: React.FC = () => {
       //newErrors.duration =
       //"Duration must be in HH:MM:SS format (e.g., 01:10:00)";
       // }
-      if (!formData.summary?.trim()) newErrors.summary = "Summary is required.";
+      // if (!formData.summary?.trim()) newErrors.summary = "Summary is required.";
     } else {
       // Non-video categories need thumbnail
       if (!formData.thumbnail_url && !thumbnailData?.thumbnail_url) {
@@ -1635,8 +1641,8 @@ const EditSellerProductPage: React.FC = () => {
       }
     }
 
-    if (!formData.language?.trim())
-      newErrors.language = "Language is required.";
+    // if (!formData.language?.trim())
+    //   newErrors.language = "Language is required.";
 
     setErrors(newErrors);
 
@@ -1661,16 +1667,17 @@ const EditSellerProductPage: React.FC = () => {
       product_title: formData.product_title,
       price: formData.price,
       discount_percentage: formData.discount_percentage,
+      mood_ids: Array.isArray(formData.mood_ids)
+        ? formData.mood_ids
+        : [formData.mood_ids].filter(Boolean),
       overview: formData.overview,
       highlights: formData.highlights,
       language: formData.language,
-
     };
 
-
     // Add sample file updates
-    basePayload.sample_files = sampleFiles.map(s => ({
-      ...(s.id ? { id: s.id } : {}),     // ← FIXED
+    basePayload.sample_files = sampleFiles.map((s) => ({
+      ...(s.id ? { id: s.id } : {}), // ← FIXED
       file_url: s.file_url,
       public_id: s.public_id,
       title: s.title,
@@ -1678,7 +1685,7 @@ const EditSellerProductPage: React.FC = () => {
       duration: s.duration,
       file_size: s.file_size,
       order_number: s.order_number,
-      is_ariome: s.is_ariome ?? false
+      is_ariome: s.is_ariome ?? false,
     }));
 
     basePayload.delete_sample_files = deleteSampleFiles;
@@ -1833,9 +1840,17 @@ const EditSellerProductPage: React.FC = () => {
       };
     }
 
-
-
     return basePayload;
+  };
+
+  const fetchMeDetails = async () => {
+    try {
+      const res = await MeDetails();
+      localStorage.setItem(
+        "karma_credits",
+        res?.data?.data?.user?.karma_credits || 0
+      );
+    } catch (error) {}
   };
 
   // Main submit handler
@@ -1930,6 +1945,7 @@ const EditSellerProductPage: React.FC = () => {
       } else {
         // Navigate to products list for published
         navigate("/dashboard/products");
+        await fetchMeDetails();
       }
     } catch (error: any) {
       showToast({
@@ -1967,8 +1983,9 @@ const EditSellerProductPage: React.FC = () => {
     }
   };
 
-
-  {/*mood multi select*/ }
+  {
+    /*mood multi select*/
+  }
   const MultiSelect = ({
     label,
     options,
@@ -2018,10 +2035,7 @@ const EditSellerProductPage: React.FC = () => {
                   />
                 </span>
               );
-
-
             })
-
           )}
           <svg
             className="w-4 h-4 absolute right-3 text-gray-500 pointer-events-none"
@@ -2030,7 +2044,11 @@ const EditSellerProductPage: React.FC = () => {
             strokeWidth="2"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </div>
 
@@ -2041,25 +2059,39 @@ const EditSellerProductPage: React.FC = () => {
               <div
                 key={opt.id}
                 onClick={() => toggleOption(opt.id)}
-                className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${selectedValues.includes(opt.id)
+                className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                  selectedValues.includes(opt.id)
                     ? "bg-[#EEF3FF] text-[#7077FE]"
                     : "text-gray-700"
-                  }`}
+                }`}
               >
                 {opt.name}
               </div>
             ))}
           </div>
         )}
-
       </div>
-
     );
   };
 
-
-
-
+  // Helper function to determine sample file type based on category
+  const getSampleFileType = (category: string): string => {
+    switch (category) {
+      case "music":
+      case "podcast":
+        return "audio";
+      case "video":
+        return "video";
+      case "art":
+        return "image";
+      case "ebook":
+        return "document";
+      case "course":
+        return "video"; // or "document" depending on your course content
+      default:
+        return "file";
+    }
+  };
 
   return (
     <>
@@ -2071,8 +2103,9 @@ const EditSellerProductPage: React.FC = () => {
         <div className="max-w-9xl mx-auto px-2 py-1 space-y-10">
           {/* Basic Info Section */}
           <FormSection
-            title={`Edit ${category.charAt(0).toUpperCase() + category.slice(1)
-              }`}
+            title={`Edit ${
+              category.charAt(0).toUpperCase() + category.slice(1)
+            }`}
             description="Update your digital product details, pricing, and availability on the marketplace."
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -2114,7 +2147,9 @@ const EditSellerProductPage: React.FC = () => {
                   label="Mood"
                   required
                   options={moods}
-                  selectedValues={formData.mood_ids}
+                  selectedValues={
+                    Array.isArray(formData.mood_ids) ? formData.mood_ids : []
+                  }
                   onChange={(values: string[]) => {
                     setFormData((prev) => ({
                       ...prev,
@@ -2129,13 +2164,11 @@ const EditSellerProductPage: React.FC = () => {
                 />
 
                 {errors.mood_ids && (
-                  <span className="text-red-500 text-sm">{errors.mood_ids}</span>
+                  <span className="text-red-500 text-sm">
+                    {errors.mood_ids}
+                  </span>
                 )}
               </div>
-
-
-
-
             </div>
 
             {/* Video Category - Main Video Upload */}
@@ -2146,11 +2179,22 @@ const EditSellerProductPage: React.FC = () => {
                 </label>
                 {mainVideoPreview ? (
                   <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
-                    <video
-                      src={mainVideoPreview}
-                      className="w-full h-64 object-cover"
-                      controls
-                    />
+                    {mainVideoPreview.match(/\.(mp4|mov|avi|mkv|wmv|webm)$/i) ||
+                    mainVideoPreview.startsWith("blob:") ? (
+                      // It's a video file - show video player
+                      <video
+                        src={mainVideoPreview}
+                        className="w-full h-64 object-cover"
+                        controls
+                      />
+                    ) : (
+                      // It's likely a thumbnail/image - show image
+                      <img
+                        src={mainVideoPreview}
+                        alt="Video thumbnail"
+                        className="w-full h-64 object-cover"
+                      />
+                    )}
                     <button
                       type="button"
                       onClick={handleRemoveMainVideo}
@@ -2173,10 +2217,11 @@ const EditSellerProductPage: React.FC = () => {
                   </div>
                 ) : (
                   <label
-                    className={`relative flex flex-col items-center justify-center h-64 cursor-pointer rounded-lg p-6 text-center transition-all ${isMainVideoUploading
+                    className={`relative flex flex-col items-center justify-center h-64 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                      isMainVideoUploading
                         ? "pointer-events-none opacity-70"
                         : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                      }`}
+                    }`}
                   >
                     <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                       <rect
@@ -2278,10 +2323,11 @@ const EditSellerProductPage: React.FC = () => {
                 </div>
               ) : (
                 <label
-                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isThumbnailUploading
+                  className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                    isThumbnailUploading
                       ? "pointer-events-none opacity-70"
                       : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                    }`}
+                  }`}
                 >
                   <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
                     <rect
@@ -2388,7 +2434,7 @@ const EditSellerProductPage: React.FC = () => {
               {/* Highlights - All Categories */}
               <div className={category === "video" ? "" : "lg:col-span-2"}>
                 <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                  Highlights <span className="text-red-500">*</span> (Max 3)
+                  Highlights <span className="text-red-500">*</span>
                 </label>
                 <div className="space-y-3">
                   {formData?.highlights?.map(
@@ -2453,7 +2499,7 @@ const EditSellerProductPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Video Category - Duration 
+              {/* {/* Video Category - Duration  */}
               {category === "video" && (
                 <InputField
                   label="Duration (HH:MM:SS)"
@@ -2463,7 +2509,7 @@ const EditSellerProductPage: React.FC = () => {
                   onChange={handleChange}
                   error={errors.duration}
                 />
-              )}*/}
+              )}
 
               {/* Music & Podcast - Total Duration
               {(category === "music" || category === "podcast") && (
@@ -2618,7 +2664,7 @@ const EditSellerProductPage: React.FC = () => {
               {/* All Categories - Language */}
               <div>
                 <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                  Language <span className="text-red-500">*</span>
+                  Language
                 </label>
                 <select
                   name="language"
@@ -2673,203 +2719,208 @@ const EditSellerProductPage: React.FC = () => {
               )}
             </div>
           </FormSection>
-
-
-
-
-
-          <FormSection
-            title="Sample Track (Optional)"
-            description="Upload a preview sample so buyers can experience your content before purchasing."
-          >
-            <SampleTrackUpload
-              ref={sampleUploadRef}
-              productType={category as "music" | "video" | "course" | "podcast" | "ebook" | "art"}
-
-              onUploadSuccess={(publicId, sampleUrl) => {
-                const newSample = {
-                  file_url: sampleUrl,
-                  public_id: publicId,
-                  title: "Sample " + (sampleFiles.length + 1),
-                  file_type: category === "art" ? "image" : "audio",
-                  duration: null,
-                  file_size: null,
-                  order_number: sampleFiles.length,
-                  is_ariome: false
-                };
-
-                handleAddSample(newSample);
-
-                // ⭐ Save the index of THIS uploaded sample
-                setLastUploadedIndex(sampleFiles.length);
-              }}
-
-              onDonationChange={(value) => {
-                setSampleFiles(prev =>
-                  prev.map((sample, i) =>
-                    i === lastUploadedIndex   // ⭐ apply donation to correct sample
-                      ? { ...sample, is_ariome: value }
-                      : sample
-                  )
-                );
-              }}
-
-              onRemove={() => { }}
-            />
-
-            {sampleFiles.length > 0 && (
-              <div className="mt-4 space-y-3">
-                {sampleFiles.map((sample, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm"
-                  >
-                    <div>
-                      <p className="font-[Poppins] font-medium text-[#242E3A]">
-                        {sample.title}
-                      </p>
-                      <p className="text-sm text-gray-500">{sample.file_type}</p>
-                    </div>
-
-                    <button
-                      onClick={() => handleDeleteSample(sample)}
-                      className="text-red-500 hover:text-red-600 p-2"
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <button
-              onClick={() => sampleUploadRef.current?.openPicker()}
-              className="mt-4 flex items-center gap-2 text-[#7077FE] border border-[#7077FE] px-4 py-2 rounded-lg hover:bg-[#EEF2FF]"
-            >
-              <span className="text-xl font-bold">+</span>
-              Add Another Sample
-            </button>
-          </FormSection>
-
-          {/* Video-specific Storytelling Section */}
-          {category === "video" && (
+          {/* Sample Track Section - Only for Music */}
+          {category && (
             <FormSection
-              title="Storytelling"
-              description="Update short video and description"
+              title={`Sample ${category} (Optional)`}
+              description={`Upload a preview sample so buyers can experience your ${category} before purchasing.`}
             >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Short Video Upload */}
-                <div>
-                  <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                    Short Preview Video (Optional)
-                  </label>
-                  {shortVideoPreview ? (
-                    <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 h-40">
-                      <video
-                        src={shortVideoPreview}
-                        className="w-full h-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleRemoveShortVideo}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
-                        title="Remove Short Video"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="bg-black bg-opacity-50 rounded-full p-4">
-                          <svg
-                            className="w-12 h-12 text-white"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <label
-                      className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${isShortVideoUploading
-                          ? "pointer-events-none opacity-70"
-                          : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
-                        }`}
-                    >
-                      <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
-                        <rect
-                          x="1"
-                          y="1"
-                          width="calc(100% - 2px)"
-                          height="calc(100% - 2px)"
-                          rx="12"
-                          ry="12"
-                          stroke="#CBD5E1"
-                          strokeWidth="2"
-                          strokeDasharray="6,6"
-                          fill="none"
-                          className="transition-all duration-300 group-hover:stroke-[#7077FE]"
-                        />
-                      </svg>
-                      <input
-                        type="file"
-                        accept="video/*"
-                        className="hidden"
-                        onChange={handleShortVideoUpload}
-                        disabled={isShortVideoUploading}
-                      />
-                      {isShortVideoUploading ? (
-                        <div className="flex flex-col items-center space-y-2">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
-                          <p className="text-sm text-[#7077FE]">
-                            Uploading short video...
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="text-center space-y-2">
-                          <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
-                            <Video className="w-6 h-6" />
-                          </div>
-                          <p className="text-sm font-[poppins] text-[#242E3A]">
-                            Upload Short Video
-                          </p>
-                          <p className="text-xs text-[#665B5B]">
-                            MP4, MOV (max 100 MB)
-                          </p>
-                        </div>
-                      )}
-                    </label>
-                  )}
-                  {formData.short_video_url && !shortVideoPreview && (
-                    <p className="text-sm text-gray-500 mt-2">
-                      Current short video is uploaded. Upload a new one to
-                      replace it.
-                    </p>
-                  )}
-                </div>
+              <SampleTrackUpload
+                ref={sampleUploadRef}
+                productType={
+                  category as
+                    | "video"
+                    | "music"
+                    | "course"
+                    | "podcast"
+                    | "ebook"
+                    | "art"
+                }
+                onUploadSuccess={(publicId, sampleUrl) => {
+                  const newSample = {
+                    file_url: sampleUrl,
+                    public_id: publicId,
+                    title: `Sample ${sampleFiles.length + 1}`,
+                    file_type: getSampleFileType(category), // Determine file type based on category
+                    duration: null,
+                    file_size: null,
+                    order_number: sampleFiles.length,
+                    is_ariome: false,
+                  };
 
-                {/* Summary */}
-                <div>
-                  <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
-                    Summary of the video <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="summary"
-                    value={formData.summary || ""}
-                    onChange={handleChange}
-                    placeholder="Write a brief description of your storytelling"
-                    className={`w-full h-40 px-3 py-2 border ${errors.summary ? "border-red-500" : "border-gray-200"
-                      } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
-                  />
-                  {errors.summary && (
-                    <span className="text-red-500 text-sm mt-1">
-                      {errors.summary}
-                    </span>
-                  )}
+                  handleAddSample(newSample);
+                  setLastUploadedIndex(sampleFiles.length);
+                }}
+                onDonationChange={(value) => {
+                  setSampleFiles((prev) =>
+                    prev.map((sample, i) =>
+                      i === lastUploadedIndex
+                        ? { ...sample, is_ariome: value }
+                        : sample
+                    )
+                  );
+                }}
+                onRemove={() => {}}
+              />
+
+              {sampleFiles.length > 0 && (
+                <div className="mt-4 space-y-3">
+                  {sampleFiles.map((sample, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm"
+                    >
+                      <div>
+                        <p className="font-[Poppins] font-medium text-[#242E3A]">
+                          {sample.title}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {sample.file_type}
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={() => handleDeleteSample(sample)}
+                        className="text-red-500 hover:text-red-600 p-2"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              </div>
+              )}
+
+              <button
+                onClick={() => sampleUploadRef.current?.openPicker()}
+                className="mt-4 flex items-center gap-2 text-[#7077FE] border border-[#7077FE] px-4 py-2 rounded-lg hover:bg-[#EEF2FF]"
+              >
+                <span className="text-xl font-bold">+</span>
+                Add Another Sample
+              </button>
             </FormSection>
           )}
+
+          {/* Video-specific Storytelling Section */}
+          {/* {category === "video" && ( */}
+          <FormSection
+            title="Storytelling"
+            description="Update short video and description"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Short Video Upload */}
+              <div>
+                <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                  Short Preview Video (Optional)
+                </label>
+                {shortVideoPreview ? (
+                  <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 h-40">
+                    <video
+                      src={shortVideoPreview}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveShortVideo}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+                      title="Remove Short Video"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="bg-black bg-opacity-50 rounded-full p-4">
+                        <svg
+                          className="w-12 h-12 text-white"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <label
+                    className={`relative flex flex-col items-center justify-center h-40 cursor-pointer rounded-lg p-6 text-center transition-all ${
+                      isShortVideoUploading
+                        ? "pointer-events-none opacity-70"
+                        : "bg-[#F9FAFB] hover:bg-[#EEF3FF]"
+                    }`}
+                  >
+                    <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                      <rect
+                        x="1"
+                        y="1"
+                        width="calc(100% - 2px)"
+                        height="calc(100% - 2px)"
+                        rx="12"
+                        ry="12"
+                        stroke="#CBD5E1"
+                        strokeWidth="2"
+                        strokeDasharray="6,6"
+                        fill="none"
+                        className="transition-all duration-300 group-hover:stroke-[#7077FE]"
+                      />
+                    </svg>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      className="hidden"
+                      onChange={handleShortVideoUpload}
+                      disabled={isShortVideoUploading}
+                    />
+                    {isShortVideoUploading ? (
+                      <div className="flex flex-col items-center space-y-2">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
+                        <p className="text-sm text-[#7077FE]">
+                          Uploading short video...
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-center space-y-2">
+                        <div className="w-10 h-10 mx-auto rounded-full bg-[#7077FE]/10 flex items-center justify-center text-[#7077FE]">
+                          <Video className="w-6 h-6" />
+                        </div>
+                        <p className="text-sm font-[poppins] text-[#242E3A]">
+                          Upload Short Video
+                        </p>
+                        <p className="text-xs text-[#665B5B]">
+                          MP4, MOV (max 100 MB)
+                        </p>
+                      </div>
+                    )}
+                  </label>
+                )}
+                {formData.short_video_url && !shortVideoPreview && (
+                  <p className="text-sm text-gray-500 mt-2">
+                    Current short video is uploaded. Upload a new one to replace
+                    it.
+                  </p>
+                )}
+              </div>
+
+              {/* Summary */}
+              <div>
+                <label className="block font-['Open_Sans'] font-semibold text-[16px] text-[#242E3A] mb-2">
+                  Summary of the {category}
+                </label>
+                <textarea
+                  name="summary"
+                  value={formData.summary || ""}
+                  onChange={handleChange}
+                  placeholder="Write a brief description of your storytelling"
+                  className={`w-full h-40 px-3 py-2 border ${
+                    errors.summary ? "border-red-500" : "border-gray-200"
+                  } rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-[#7077FE]`}
+                />
+                {errors.summary && (
+                  <span className="text-red-500 text-sm mt-1">
+                    {errors.summary}
+                  </span>
+                )}
+              </div>
+            </div>
+          </FormSection>
+          {/* )} */}
 
           {/* Content Upload Section - Category Specific (Not for video) */}
           {category !== "video" && (
@@ -2878,14 +2929,14 @@ const EditSellerProductPage: React.FC = () => {
                 category === "music"
                   ? "Tracks"
                   : category === "podcast"
-                    ? "Episodes"
-                    : category === "ebook"
-                      ? "Chapters"
-                      : category === "course"
-                        ? "Lessons"
-                        : category === "art"
-                          ? "Collections"
-                          : "Content"
+                  ? "Episodes"
+                  : category === "ebook"
+                  ? "Chapters"
+                  : category === "course"
+                  ? "Lessons"
+                  : category === "art"
+                  ? "Collections"
+                  : "Content"
               }
               description={`Manage your ${category} content`}
             >

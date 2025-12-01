@@ -38,6 +38,7 @@ import {
   GetPublicBestpracticesByUserProfile,
   //GetFollowingFollowerUsers
   GetFollowerFollowingByUserId,
+  CreateBestPractice,
   //UnFriend,
 } from "../Common/ServerAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -217,10 +218,7 @@ export default function UserProfileView() {
             is_bp_following: practice.is_bp_following,
           })
         );
-        console.log(
-          "🚀 ~ fetchMineBestPractices ~ transformedCompanies:",
-          transformedCompanies
-        );
+        console.log("🚀 ~ fetchMineBestPractices ~ transformedCompanies:", transformedCompanies)
         setmineBestPractices(transformedCompanies);
       }
     } catch (error: any) {
@@ -511,10 +509,30 @@ export default function UserProfileView() {
           type: "success",
           duration: 3000,
         });
+      }else{
+        const formData = new FormData();
+              formData.append("title", newPractice.title);
+              formData.append("description", newPractice.description);
+              formData.append("profession", newPractice.profession);
+              formData.append("interest", newPractice.interest);
+              formData.append("tags", JSON.stringify(tags));
+              if (newPractice.file) {
+                formData.append("file", newPractice.file);
+              }
+        
+              await CreateBestPractice(formData);
+        
+              showToast({
+                message:
+                  "Best practices has been created and please wait until admin reviews it!",
+                type: "success",
+                duration: 5000,
+              });
+        
+              closeModal();
       }
 
       closeModal();
-      await fetchMineBestPractices();
       await fetchMineBestPractices();
     } catch (error: any) {
       console.error("Error saving best practice:", error);
@@ -2184,7 +2202,7 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
           </div>
         </div>
       </div>
-      {!isOwnProfile && token ? (
+      {isOwnProfile && token ? (
         <>
           <AddBestPracticeModal
             open={activeModal}
