@@ -1,5 +1,9 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { BsClockHistory } from "react-icons/bs";
 import { MdLanguage } from "react-icons/md";
 import { IoMdCheckmark } from "react-icons/io";
@@ -46,6 +50,41 @@ const Preview = () => {
     if (id && category) fetchProductData();
   }, [id, category]);
 
+  const editUrl = useRef(`/dashboard/products/edit/${id}?category=${category}`);
+  
+    useEffect(() => {
+      editUrl.current = `/dashboard/products/edit/${id}?category=${category}`;
+    }, [id, category]);
+  
+    useEffect(() => {
+      const handlePopState = (event: PopStateEvent) => {
+        event.preventDefault();
+        navigate(editUrl.current);
+      };
+  
+      window.addEventListener("popstate", handlePopState);
+      window.history.pushState(
+        { fromPreview: true },
+        "",
+        window.location.pathname + window.location.search
+      );
+  
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+        if (window.history.state?.fromPreview) {
+          window.history.replaceState(
+            null,
+            "",
+            window.location.pathname + window.location.search
+          );
+        }
+      };
+    }, [navigate, id, category]);
+  
+    const handleBack = () => {
+      navigate(`/dashboard/products/edit/${id}?category=${category}`);
+    };
+
   const handleSubmit = async () => {
     if (!data) return;
     setIsSubmitting(true);
@@ -57,12 +96,11 @@ const Preview = () => {
         duration: 3000,
       });
 
-      navigate('/dashboard/products');
+      navigate("/dashboard/products");
     } catch (error: any) {
       showToast({
         message:
-          error?.response?.data?.error?.message ||
-          "Failed to submit product.",
+          error?.response?.data?.error?.message || "Failed to submit product.",
         type: "error",
         duration: 3000,
       });
@@ -78,7 +116,7 @@ const Preview = () => {
       <main className="flex flex-col items-center justify-center h-screen text-gray-600">
         <p>No product data available</p>
         <button
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
           className="mt-4 px-4 py-2 bg-[#7077FE] text-white rounded-lg hover:bg-[#5a60ea]"
         >
           Go Back
@@ -97,7 +135,7 @@ const Preview = () => {
 
     return (
       <div
-        className="w-full h-[326px] rounded-[12px] border border-gray-200 overflow-hidden relative bg-white"
+        className="w-full h-[326px] rounded-xl border border-gray-200 overflow-hidden relative bg-white"
         onClick={() => setIsPlaying(true)}
       >
         {!isPlaying ? (
@@ -157,7 +195,7 @@ const Preview = () => {
       <div className="transition-all duration-300 pt-[30px] px-6 max-w-6xl mx-auto">
         {/* Product Header */}
         <div className="bg-white rounded-xl shadow-md p-4 flex flex-col md:flex-row gap-[30px]">
-          <div className="flex-shrink-0 w-full md:max-w-[533px]">
+          <div className="shrink-0 w-full md:max-w-[533px]">
             <RenderMedia />
           </div>
 
@@ -318,7 +356,7 @@ const Preview = () => {
         {/* Action Buttons */}
         <div className="flex justify-end gap-3 mt-8">
           <button
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
             className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm"
           >
             Back
