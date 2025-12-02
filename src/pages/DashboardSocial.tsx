@@ -2516,7 +2516,7 @@ const scrollRight = () => {
                   className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
                 >
                   <img src={Collection} className="w-5 h-5" alt="" /> My
-                  Collection
+                  Favorites
                 </li>
                 <li
                   onClick={() => {
