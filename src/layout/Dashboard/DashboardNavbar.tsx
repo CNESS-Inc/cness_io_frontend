@@ -162,10 +162,11 @@ if (item.id === "directory") {
       label: "Social",
       active: false,
       isSocialDropdown: true,
-      childPaths: ["/dashboard/Feed", "/dashboard/Profile", "/dashboard/MyConnection"],
+      childPaths: ["/dashboard/Feed", "/dashboard/Profile", "/dashboard/MyConnection", "/dashboard/Certification"],
       children: [
         { label: "Feed", path: "/dashboard/feed" },
         { label: "Profile", path: "/dashboard/Profile" },
+        { label: "Certification", path: "/dashboard/Certification" },
         { label: "Connections", path: "/dashboard/MyConnection" },
       ],
     },
