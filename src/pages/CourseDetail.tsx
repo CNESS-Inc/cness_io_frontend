@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AiOutlinePlus } from "react-icons/ai";
-import { AddProductToCollection, CreateCollectionList, GetCollectionList, GetContinueWatchingProductById, GetLibraryrDetailsById } from "../Common/ServerAPI";
+import { AiOutlinePlus, AiFillPlusCircle } from "react-icons/ai";
+import { AddProductToCollection, RemoveProductToCollection, CreateCollectionList, GetCollectionList, GetContinueWatchingProductById, GetLibraryrDetailsById } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import ContentTabs from "../components/MarketPlace/library/ContentTabs";
 import OverviewTab from "../components/MarketPlace/library/OverviewTab";
@@ -10,6 +10,7 @@ import ReviewsTab from "../components/MarketPlace/library/ReviewsTab";
 import ContentList from "../components/MarketPlace/library/ContentList";
 import VideoDisplay from "../components/MarketPlace/library/VideoDisplay";
 import MusicDisplay from "../components/MarketPlace/library/MusicDisplay";
+import ArtDisplay from "../components/MarketPlace/library/ArtDisplay";
 import { X } from "lucide-react";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
@@ -18,8 +19,10 @@ type SaveToCollectionsModalProps = {
   closeModal: () => void;
   collections: any[];
   onAddToCollection: (collectionId: string) => void;
+  onRemoveFromCollection: (collectionId: string) => void;
   onCreateCollection: (name: string) => void;
   productThumbnail: string;
+  productCollections: any[];
 };
 // ----------------- SaveToCollectionsModal Component -----------------
 function SaveToCollectionsModal({
@@ -27,8 +30,10 @@ function SaveToCollectionsModal({
   closeModal,
   collections,
   onAddToCollection,
+  onRemoveFromCollection,
   onCreateCollection,
-  productThumbnail
+  productThumbnail,
+  productCollections
 }: SaveToCollectionsModalProps) {
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState("");
@@ -54,24 +59,31 @@ function SaveToCollectionsModal({
         </button>
         <h2 className="text-xl font-semibold text-center font-poppins mb-6">Save to My Collection</h2>
         <div className="flex flex-col gap-6 mb-5">
-          {collections.map((col) => (
-            <div key={col.name} className="flex items-center justify-between border-b pb-3">
-              <div className="flex items-center gap-3">
-                <img
-                  src={col.thumbnail_url || productThumbnail || "https://via.placeholder.com/64"}
-                  alt={col.name}
-                  className="w-16 h-12 rounded-md object-cover"
-                />
-                <span className="text-lg font-medium">{col.name}</span>
+          {collections.map((col) => {
+            const isInCollection = productCollections.some((pc: any) => pc.id === col.id);
+            return (
+              <div key={col.name} className="flex items-center justify-between border-b pb-3">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={col.thumbnail_url || productThumbnail || "https://via.placeholder.com/64"}
+                    alt={col.name}
+                    className="w-16 h-12 rounded-md object-cover"
+                  />
+                  <span className="text-lg font-medium">{col.name}</span>
+                </div>
+                <button
+                  onClick={() => isInCollection ? onRemoveFromCollection(col.id) : onAddToCollection(col.id)}
+                  className="rounded-full border border-slate-400 p-1 hover:bg-slate-100 transition-all flex items-center justify-center"
+                >
+                  {isInCollection ? (
+                    <AiFillPlusCircle className="text-xl font-bold text-[#7077FE]" />
+                  ) : (
+                    <AiOutlinePlus className="text-xl font-bold text-[#000000]" />
+                  )}
+                </button>
               </div>
-              <button
-                onClick={() => onAddToCollection(col.id)}
-                className="rounded-full border border-slate-400 p-1 hover:bg-slate-100 transition-all flex items-center justify-center"
-              >
-                <AiOutlinePlus className="text-xl font-bold text-[#000000]" />
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
         {showCreateInput ? (
           <div className="space-y-3">
@@ -103,7 +115,7 @@ function SaveToCollectionsModal({
               {isCreating ? "Creating..." : "Create Collection"}
             </button>
           </div>
-        ) : (
+        ) : collections.length > 0 && (
           <button
             onClick={() => setShowCreateInput(true)}
             className="py-2 px-4 rounded-md bg-[#7077FE] text-white font-semibold hover:bg-[#6D28D9] mt-2 flex items-center justify-center gap-2 text-sm mx-auto font-[Poppins]"
@@ -150,6 +162,8 @@ export default function CourseDetail() {
       console.log("📦 Product Data:", data);
       console.log("📂 Contents:", data?.contents);
       console.log("🎬 Category:", data?.category?.slug);
+      console.log("🗂️ Product Collections:", data?.collections);
+      console.log("📊 Total Collections:", data?.total_collections);
       console.log("🎥 Available fields:", {
         hasContent: !!data?.content,
         content: data?.content,
@@ -158,7 +172,9 @@ export default function CourseDetail() {
         hasVideoUrl: !!data?.video_url,
         video_url: data?.video_url,
         id: data?.id,
-        title: data?.title
+        title: data?.title,
+        isInCollections: data?.collections?.length > 0,
+        collectionsCount: data?.collections?.length || 0
       });
       setProductData(data);
 
@@ -192,6 +208,22 @@ export default function CourseDetail() {
         console.log("📝 Created mock content:", mockContent);
         setActiveFile(mockFile);
         setActiveContent(mockContent);
+      } else if (data?.category?.slug === "art") {
+        // Art products have contents with files structure (same as other products)
+        console.log("✅ Setting activeFile and activeContent for art product");
+        console.log("🔍 contents:", data?.contents);
+
+        if (data?.contents?.[0]?.files?.[0]) {
+          const firstContent = data.contents[0];
+          const firstFile = firstContent.files[0];
+
+          console.log("📝 First file for art:", firstFile);
+          console.log("📝 First content for art:", firstContent);
+          setActiveFile(firstFile);
+          setActiveContent(firstContent);
+        } else {
+          console.warn("⚠️ No contents/files found in art product data");
+        }
       } else {
         console.warn("⚠️ No contents/files found in product data");
       }
@@ -242,11 +274,45 @@ export default function CourseDetail() {
         duration: 3000,
       });
 
-      setShowModal(false);
-      fetchCollections();
+      // Update productData collections array without full reload
+      const collection = collections.find(c => c.id === collectionId);
+      if (collection) {
+        setProductData((prev: any) => ({
+          ...prev,
+          collections: [...(prev?.collections || []), { id: collection.id, name: collection.name }]
+        }));
+      }
+
+      await fetchCollections();
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message || "Failed to add to collection",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleRemoveFromCollection = async (collectionId: string) => {
+    try {
+      await RemoveProductToCollection(collectionId, id);
+
+      showToast({
+        message: "Removed from collection successfully!",
+        type: "success",
+        duration: 3000,
+      });
+
+      // Update productData collections array without full reload
+      setProductData((prev: any) => ({
+        ...prev,
+        collections: (prev?.collections || []).filter((c: any) => c.id !== collectionId)
+      }));
+
+      await fetchCollections();
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to remove from collection",
         type: "error",
         duration: 3000,
       });
@@ -321,8 +387,10 @@ export default function CourseDetail() {
           closeModal={() => setShowModal(false)}
           collections={collections}
           onAddToCollection={handleAddToCollection}
+          onRemoveFromCollection={handleRemoveFromCollection}
           onCreateCollection={handleCreateCollection}
           productThumbnail={productData?.thumbnail_url || ""}
+          productCollections={productData?.collections || []}
         />
 
         {/* Two-column layout starts from breadcrumbs */}
@@ -345,6 +413,7 @@ export default function CourseDetail() {
                 currentContent={activeContent}
                 productId={id!}
                 productProgress={productProgress}
+                isInCollections={productData?.collections?.length > 0}
                 onTrackEnd={handleTrackEnd}
                 onProgressUpdate={fetchProductProgress}
                 onSaveToCollection={() => setShowModal(true)}
@@ -367,9 +436,29 @@ export default function CourseDetail() {
                 currentContent={activeContent}
                 productId={id!}
                 productProgress={productProgress}
+                isInCollections={productData?.collections?.length > 0}
                 onVideoEnd={handleTrackEnd}
                 onProgressUpdate={fetchProductProgress}
                 onSaveToCollection={() => setShowModal(true)}
+              />
+            )}
+
+            {productData?.category?.slug === "art" && (
+              <ArtDisplay
+                thumbnail={productData?.thumbnail_url}
+                title={productData?.title}
+                seller={productData?.seller}
+                rating={productData?.rating}
+                purchase={productData?.purchase?.purchased_at}
+                category={productData?.category}
+                content={productData?.contents}
+                currentFile={activeFile}
+                currentContent={activeContent}
+                productId={id!}
+                isInCollections={productData?.collections?.length > 0}
+                onSaveToCollection={() => setShowModal(true)}
+                onImageSelect={handleTrackSelect}
+                artsDetails={productData?.arts_details}
               />
             )}
 

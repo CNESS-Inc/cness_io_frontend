@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { BsBookmarkFill } from "react-icons/bs";
+import { BsBookmarkFill, BsBookmark } from "react-icons/bs";
 import { LuGalleryVerticalEnd } from "react-icons/lu";
 import { FiCalendar } from "react-icons/fi";
 import {
@@ -44,6 +44,7 @@ interface MusicDisplayProps {
     currentContent: any;
     productId: string;
     productProgress?: any;
+    isInCollections?: boolean;
     onTrackEnd?: () => void;
     onProgressUpdate?: () => void;
     onSaveToCollection?: () => void;
@@ -62,6 +63,7 @@ const MusicDisplay: React.FC<MusicDisplayProps> = ({
     currentContent,
     productId,
     productProgress,
+    isInCollections = false,
     onTrackEnd,
     onProgressUpdate,
     onSaveToCollection,
@@ -514,8 +516,12 @@ console.log('productProgress', productProgress)
                                   onClick={onSaveToCollection}
                                     className="text-sm text-[#000000] hover:text-[#000000] font-[Open_Sans] flex items-center gap-2"
                                 >
-                                    Save to Collections
-                                    <BsBookmarkFill color="#7C3AED" size={16} />
+                                    {isInCollections ? "Saved to Collections" : "Save to Collections"}
+                                    {isInCollections ? (
+                                        <BsBookmarkFill color="#7C3AED" size={16} />
+                                    ) : (
+                                        <BsBookmark color="#7C3AED" size={16} />
+                                    )}
                                 </button>
                             </div>
                         </div>
