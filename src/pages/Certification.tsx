@@ -35,21 +35,31 @@ const Certification: React.FC = () => {
             onClick={() => setSelectedPlan('yearly')}
           >
   {/* Outer gradient border like Figma */}
-  <div className={`rounded-[22px]   pt-6 pr-1 pl-1 pb-1 ${
+  <div className={`rounded-[22px]   pt-1 pr-1 pl-1 pb-1 ${
     selectedPlan === 'yearly' 
-      ? 'bg-gradient-to-b from-[#6745FF] to-[#F07EFF]' 
+      ? 'bg-gradient-to-b from-[#F07EFF] to-[#6745FF]' 
       : 'bg-transparent'
   }`}>
-    {/* Inner white card */}
-    <div className={`relative bg-white rounded-[18px] shadow-[0_18px_45px_rgba(49,45,119,0.18)] px-8 pt-6 pb-8 ${
-      selectedPlan !== 'yearly' ? 'border-2 border-[#E5E7EB]' : ''
-    }`}>
-      {/* Badge */}
-      <div className="flex justify-center mb-4">
-        <span className="px-4 py-1 font-[Poppins] rounded-[12px] text-[14px] font-medium bg-transparent text-gray-500 shadow-sm tracking-[0.08em]">
+      {selectedPlan === 'yearly' && (
+      <div className="flex justify-center">
+        <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-white tracking-[0.12em]">
           YEARLY
         </span>
       </div>
+    )}
+    
+    {/* Inner white card */}
+    <div className={`relative bg-white rounded-[18px] shadow-[0_18px_45px_rgba(49,45,119,0.18)] px-8 pt-6 pb-6 ${
+      selectedPlan !== 'yearly' ? 'border-2 border-[#E5E7EB]' : ''
+    }`}>
+      {/* Badge */}
+        {selectedPlan !== 'yearly' && (
+        <div className="flex justify-center mb-4">
+          <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-[#1F2328] tracking-[0.08em]">
+            YEARLY
+          </span>
+        </div>
+      )}
 
       <h2 className="text-[24px] font-light font-[Poppins] text-[#1A1A1A] text-center leading-[28px] tracking-[-0.24px]">
         Premium Membership
@@ -62,19 +72,19 @@ const Certification: React.FC = () => {
       <div className="mt-6 text-center space-y-2">
         <button
           type="button"
-          className="inline-flex items-center font-[Poppins] justify-center rounded-full bg-transparent px-3 py-1 text-[10px] uppercase tracking-[0.08em] text-[#8157FF] border border-[#E0D6FF]"
+          className="inline-flex  font-[Poppins] items-center justify-center rounded-[12px] bg-transparent px-3 py-1 text-[12px] tracking-[0.08em] text-[#59636E] border border-[#E0D6FF]"
         >
           Starting at
         </button>
 
         <div className="flex items-end justify-center gap-2">
-          <span className="text-4xl font-[Poppins] text-[#C2C4D1] line-through">
+          <span className="text-4xl font-[Poppins] text-[#59636E] line-through">
             $108
           </span>
           <span className="text-4xl font-semibold font-[Poppins] text-[#1A1A1A]">
             $99
           </span>
-          <span className="text-xs font-[Poppins] text-[#777A8C] mb-1">
+          <span className="text-sm font-[Poppins] text-[#777A8C] mb-1">
             per user
           </span>
         </div>
@@ -82,31 +92,31 @@ const Certification: React.FC = () => {
 
       <button
         type="button"
-        className={`mt-6 w-full font-[Poppins] rounded-[12px] py-2.5 text-sm font-medium shadow-md hover:brightness-105 transition ${
+        className={`mt-6 w-full font-[Poppins] rounded-[8px] py-2.5 text-sm font-medium shadow-md hover:brightness-105 transition ${
           selectedPlan === 'yearly'
-            ? 'bg-gradient-to-r from-[#6745FF] to-[#F07EFF] text-white'
-            : 'bg-white border-2 border-[#8157FF] text-[#8157FF]'
+            ? 'bg-[#6340FF] text-white'
+            : 'bg-white border-2 border-[#CBD5E1] text-[#8157FF]'
         }`}
       >
-        Start a free trial
+        Buy Now
       </button>
 
       {/* Features */}
       <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
         <li className="flex items-start gap-2">
-          <MdOutlineKeyboardArrowRight className="text-[#8157FF] text-base flex-shrink-0" />
+          <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
           <span>Full access to directory</span>
         </li>
         <li className="flex items-start gap-2">
-          <MdOutlineKeyboardArrowRight className="text-[#8157FF] text-base flex-shrink-0" />
+          <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
           <span>Marketplace</span>
         </li>
         <li className="flex items-start gap-2">
-          <MdOutlineKeyboardArrowRight className="text-[#8157FF] text-base flex-shrink-0" />
+          <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
           <span>Best practice hub</span>
         </li>
         <li className="flex items-start gap-2">
-          <MdOutlineKeyboardArrowRight className="text-[#8157FF] text-base flex-shrink-0" />
+          <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
           <span>Social media</span>
         </li>
       </ul>
@@ -120,21 +130,35 @@ const Certification: React.FC = () => {
             className="relative w-full max-w-sm cursor-pointer"
             onClick={() => setSelectedPlan('monthly')}
           >
-          <div className={`rounded-[22px]  pt-6 pr-1 pl-1 pb-1 ${
+          {/* Outer gradient border like Figma */} 
+          <div className={`rounded-[22px]  pt-1 pr-1 pl-1 pb-1 ${
             selectedPlan === 'monthly' 
-              ? 'bg-gradient-to-b from-[#6745FF] to-[#F07EFF]' 
+              ? 'bg-gradient-to-b from-[#F07EFF] to-[#6745FF]' 
               : 'bg-transparent'
           }`}>
-          <div className={`relative bg-white rounded-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] px-8 pt-6 pb-8 ${
+          
+              {selectedPlan === 'monthly' && (
+      <div className="flex justify-center">
+        <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-white tracking-[0.12em]">
+          MONTHLY
+        </span>
+      </div>
+    )}
+
+
+          {/* Inner white card */}
+
+          <div className={`relative bg-white rounded-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] px-8 pt-6 pb-6 ${
             selectedPlan !== 'monthly' ? 'border-2 border-[#E5E7EB]' : ''
           }`}>
             {/* Badge */}
-            <div className="flex justify-center mb-4">
-              <span className="px-4 py-1 font-[Poppins] rounded-[12px] text-[14px] font-medium bg-transparent text-gray-500 shadow-sm tracking-[0.08em]">
-                MONTHLY
-              </span>
-            </div>
-
+            {selectedPlan !== 'monthly' && (
+        <div className="flex justify-center mb-4">
+          <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-[#1F2328] tracking-[0.08em]">
+            MONTHLY
+          </span>
+        </div>
+      )}
             <h2 className="text-[24px] font-light font-[Poppins] text-[#1A1A1A] text-center leading-[28px] tracking-[-0.24px]">
               Premium Membership
             </h2>
@@ -146,16 +170,16 @@ const Certification: React.FC = () => {
             <div className="mt-6 text-center">
               <button
                     type="button"
-                    className="inline-flex  font-[Poppins] items-center justify-center rounded-full bg-transparent px-3 py-1 text-[10px] uppercase tracking-[0.08em] text-[#8157FF] border border-[#E0D6FF]"
+                    className="inline-flex  font-[Poppins] items-center justify-center rounded-[12px] bg-transparent px-3 py-1 text-[12px] tracking-[0.08em] text-[#59636E] border border-[#E0D6FF]"
                     >
                     Starting at
                     </button>
 
-              <div className="flex items-end justify-center gap-2">
+              <div className="flex pt-2 items-end justify-center gap-2">
                 <span className="text-4xl font-[Poppins] font-semibold text-[#1A1A1A]">
                   $9
                 </span>
-                <span className="text-xs text-[#777A8C] mb-1">
+                <span className="text-sm text-[#777A8C] mb-1 block">
                   per user
                 </span>
               </div>
@@ -163,31 +187,31 @@ const Certification: React.FC = () => {
 
             <button
               type="button"
-              className={`mt-6 w-full font-[Poppins] rounded-[12px] py-2.5 text-sm font-medium shadow-md hover:brightness-105 transition ${
+              className={`mt-6 w-full font-[Poppins] rounded-[8px] py-2.5 text-sm font-medium shadow-md hover:brightness-105 transition ${
                 selectedPlan === 'monthly'
-                  ? 'bg-gradient-to-r from-[#6745FF] to-[#F07EFF] text-white'
-                  : 'bg-white border-2 border-[#8157FF] text-[#8157FF]'
+                  ? 'bg-[#6340FF] text-white'
+                  : 'bg-white border-2 border-[#CBD5E1] text-[#8157FF]'
               }`}
             >
-              Start a free trial
+              Buy Now
             </button>
 
             {/* Features */}
             <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
               <li className="flex items-start gap-2">
-                <MdOutlineKeyboardArrowRight className="text-[#9CA3AF] text-base flex-shrink-0" />
+                <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
                 <span>Full access to directory</span>
               </li>
               <li className="flex items-start gap-2">
-                <MdOutlineKeyboardArrowRight className="text-[#9CA3AF] text-base flex-shrink-0" />
+                <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
                 <span>Marketplace</span>
               </li>
               <li className="flex items-start gap-2">
-                <MdOutlineKeyboardArrowRight className="text-[#9CA3AF] text-base flex-shrink-0" />
+                <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
                 <span>Best practice hub</span>
               </li>
               <li className="flex items-start gap-2">
-                <MdOutlineKeyboardArrowRight className="text-[#9CA3AF] text-base flex-shrink-0" />
+                <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
                 <span>Social media</span>
               </li>
             </ul>
