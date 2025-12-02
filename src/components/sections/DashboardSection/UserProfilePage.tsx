@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Tab } from "@headlessui/react";
-import { useForm } from "react-hook-form";
+import { useForm ,Controller } from "react-hook-form";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
   GetCountryDetails,
   GetInterestsDetails,
   GetProfessionalDetails,
-  GetProfileDetails,
+  GetProfileDetails,  
   GetPublicProfileDetails,
   GetServiceDetails,
   GetStateDetails,
@@ -30,6 +30,7 @@ import {
 } from "libphonenumber-js/min";
 import examples from "libphonenumber-js/examples.mobile.json";
 import { getCountryCallingCode, getCountries } from "libphonenumber-js/min";
+import Monthpicker from "../../ui/Monthpicker";
 
 const callingCodeToISO: Record<string, string> = {};
 getCountries().forEach((iso) => {
@@ -3118,7 +3119,7 @@ const UserProfilePage = () => {
                         return (
                           <div
                             key={index}
-                            className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative"
+                            className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative overflow-visible"
                           >
                             {/* Add remove button */}
                             {index > 0 && (
@@ -3237,96 +3238,102 @@ const UserProfilePage = () => {
                                   Please select month & year
                                 </span>
                               )}
+<Controller
+  control={educationForm.control}
+  name={`educations.${index}.start_date`}
+  rules={{
+    validate: (startVal) => {
+      const endVal = educationForm.getValues(`educations.${index}.end_date`);
+      if (!startVal || !endVal) return true;
 
-                              <input
-                                type="month"
-                                {...educationForm.register(
-                                  `educations.${index}.start_date`
-                                )}
-                                onChange={(e) => {
-                                  educationForm.setValue(
-                                    `educations.${index}.start_date`,
-                                    e.target.value
-                                  );
-                                  handleFormChange("education"); // Track changes
-                                }}
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  educationErrors?.start_date
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                  educationErrors?.start_date
-                                    ? "focus:ring-red-500"
-                                    : "focus:ring-purple-500"
-                                }`}
-                                style={{
-                                  color: educationForm.watch(
-                                    `educations.${index}.start_date`
-                                  )
-                                    ? "#000"
-                                    : "transparent",
-                                }}
-                              />
+      const start = new Date(startVal);
+      const end = new Date(endVal);
 
-                              {educationErrors?.start_date && (
-                                <p className="text-sm text-red-500 mt-1">
-                                  {educationErrors.start_date.message}
-                                </p>
-                              )}
+      if (start >= end) {
+        return "Start date must be earlier than end date";
+      }
+
+      return true;
+    }
+  }}
+  render={({ field }) => (
+    <Monthpicker
+      value={field.value || ""}
+      onChange={(val) => {
+        field.onChange(val);
+    
+        educationForm.trigger(`educations.${index}.start_date`);
+        educationForm.trigger(`educations.${index}.end_date`);
+        handleFormChange("education");
+      }}
+      placeholder="Select Month & Year"
+    />
+  )}
+/>
+
+{educationErrors?.start_date && (
+  <p className="text-sm text-red-500 mt-1">
+    {educationErrors.start_date.message}
+  </p>
+)}
                             </div>
 
                             {/* End Date */}
-                            <div className="relative">
-                              <label className="block text-sm font-medium text-gray-800 mb-2">
-                                End Date
-                              </label>
+                           <div className="relative">
+  <label className="block text-sm font-medium text-gray-800 mb-2">
+    End Date
+  </label>
 
-                              {/* Placeholder */}
-                              {!educationForm.watch(
-                                `educations.${index}.end_date`
-                              ) && (
-                                <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
-                                  Please select month & year
-                                </span>
-                              )}
+  {/* Placeholder */}
+  {!educationForm.watch(`educations.${index}.end_date`) && (
+    <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
+      Please select month & year
+    </span>
+  )}
 
-                              <input
-                                type="month"
-                                {...educationForm.register(
-                                  `educations.${index}.end_date`
-                                )}
-                                onChange={(e) => {
-                                  educationForm.setValue(
-                                    `educations.${index}.end_date`,
-                                    e.target.value
-                                  );
-                                  handleFormChange("education"); // Track changes
-                                }}
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  educationErrors?.end_date
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                  educationErrors?.end_date
-                                    ? "focus:ring-red-500"
-                                    : "focus:ring-purple-500"
-                                }`}
-                                style={{
-                                  color: educationForm.watch(
-                                    `educations.${index}.end_date`
-                                  )
-                                    ? "#000" // show text when selected
-                                    : "transparent", // hide default ----
-                                }}
-                              />
+  {/* Register with validation */}
+ <Controller
+  control={educationForm.control}
+  name={`educations.${index}.end_date`}
+  rules={{
+    validate: (endVal) => {
+      const startVal = educationForm.getValues(`educations.${index}.start_date`);
+      if (!startVal || !endVal) return true;
 
-                              {educationErrors?.end_date && (
-                                <p className="text-sm text-red-500 mt-1">
-                                  {educationErrors.end_date.message}
-                                </p>
-                              )}
-                            </div>
+      const start = new Date(startVal);
+      const end = new Date(endVal);
 
+      const minEnd = new Date(start);
+      minEnd.setMonth(minEnd.getMonth() + 1);
+
+      if (end < minEnd) {
+        return "End date must be at least 1 month after start date";
+      }
+
+      return true;
+    }
+  }}
+  render={({ field }) => (
+    <Monthpicker
+      value={field.value || ""}
+      onChange={(val) => {
+        field.onChange(val);
+        // 🔥 Force validation
+        educationForm.trigger(`educations.${index}.end_date`);
+        educationForm.trigger(`educations.${index}.start_date`);
+        handleFormChange("education");
+      }}
+      placeholder="Select Month & Year"
+    />
+  )}
+/>
+
+{educationErrors?.end_date && (
+  <p className="text-sm text-red-500 mt-1">
+    {educationErrors.end_date.message}
+  </p>
+)}
+</div>
                             {/* Individual education entry error */}
                             {hasEducationError && (
                               <div className="md:col-span-2">
@@ -3634,98 +3641,108 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </div>
 
                             {/* Start Date */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
-                              <label className="block text-sm font-medium text-gray-800 mb-2">
-                                Start Date
-                              </label>
-                              <input
-                                type="date"
-                                {...workExperienceForm.register(
-                                  `workExperiences.${index}.start_date`
-                                )}
-                                onChange={(e) => {
-                                  workExperienceForm.setValue(
-                                    `workExperiences.${index}.start_date`,
-                                    e.target.value
-                                  );
-                                  handleFormChange("work");
-                                }}
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  experienceErrors?.start_date
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                  experienceErrors?.start_date
-                                    ? "focus:ring-red-500"
-                                    : "focus:ring-purple-500"
-                                }`}
-                              />
-                              {experienceErrors?.start_date && (
-                                <p className="text-sm text-red-500 mt-1">
-                                  {experienceErrors.start_date.message}
-                                </p>
-                              )}
-                            </div>
+                           <div className="lg:w-[48%] md:w-[48%] w-full">
+  <label className="block text-sm font-medium text-gray-800 mb-2">
+    Start Date
+  </label>
+
+  <Controller
+    control={workExperienceForm.control}
+    name={`workExperiences.${index}.start_date`}
+    rules={{
+      validate: (startVal) => {
+        const endVal = workExperienceForm.getValues(
+          `workExperiences.${index}.end_date`
+        );
+
+        if (!startVal || !endVal) return true;
+
+        const start = new Date(startVal);
+        const end = new Date(endVal);
+
+        if (start > end) {
+          return "Start date cannot be after end date";
+        }
+
+        return true;
+      },
+    }}
+    render={({ field }) => (
+      <Monthpicker
+        value={field.value || ""}
+        onChange={(val) => {
+          field.onChange(val);
+          workExperienceForm.trigger(`workExperiences.${index}.start_date`);
+          workExperienceForm.trigger(`workExperiences.${index}.end_date`);
+          handleFormChange("work");
+        }}
+        placeholder="Select Month & Year"
+      />
+    )}
+  />
+
+  {experienceErrors?.start_date && (
+    <p className="text-sm text-red-500 mt-1">
+      {experienceErrors.start_date.message}
+    </p>
+  )}
+</div>
 
                             {/* End Date (hide when currently working) */}
-                            {!workExperienceForm.watch(
-                              `workExperiences.${index}.currently_working`
-                            ) && (
-                              <div className="lg:w-[48%] md:w-[48%] w-full">
-                                <label className="block text-sm font-medium text-gray-800 mb-2">
-                                  End Date
-                                </label>
-                                <input
-                                  type="date"
-                                  min={
-                                    workExperienceForm.watch(
-                                      `workExperiences.${index}.start_date`
-                                    )
-                                      ? new Date(
-                                          new Date(
-                                            workExperienceForm.watch(
-                                              `workExperiences.${index}.start_date`
-                                            )
-                                          ).setDate(
-                                            new Date(
-                                              workExperienceForm.watch(
-                                                `workExperiences.${index}.start_date`
-                                              )
-                                            ).getDate() + 1
-                                          )
-                                        )
-                                          .toISOString()
-                                          .split("T")[0]
-                                      : ""
-                                  }
-                                  {...workExperienceForm.register(
-                                    `workExperiences.${index}.end_date`
-                                  )}
-                                  onChange={(e) => {
-                                    workExperienceForm.setValue(
-                                      `workExperiences.${index}.end_date`,
-                                      e.target.value
-                                    );
-                                    handleFormChange("work");
-                                  }}
-                                  className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                    experienceErrors?.end_date
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  } rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 ${
-                                    experienceErrors?.end_date
-                                      ? "focus:ring-red-500"
-                                      : "focus:ring-purple-500"
-                                  }`}
-                                />
-                                {experienceErrors?.end_date && (
-                                  <p className="text-sm text-red-500 mt-1">
-                                    {experienceErrors.end_date.message}
-                                  </p>
-                                )}
-                              </div>
-                            )}
+                            {!workExperienceForm.watch(`workExperiences.${index}.currently_working`) && (
+  <div className="lg:w-[48%] md:w-[48%] w-full">
+    <label className="block text-sm font-medium text-gray-800 mb-2">
+      End Date
+    </label>
 
+    <Controller
+      control={workExperienceForm.control}
+      name={`workExperiences.${index}.end_date`}
+      rules={{
+        validate: (endVal) => {
+          const startVal = workExperienceForm.getValues(
+            `workExperiences.${index}.start_date`
+          );
+          if (!startVal || !endVal) return true;
+
+          const start = new Date(startVal);
+          const end = new Date(endVal);
+
+          if (end < start) {
+            return "End date cannot be before start date";
+          }
+
+          // Optional: enforce at least 1 month difference
+          const minEnd = new Date(start);
+          minEnd.setMonth(minEnd.getMonth() + 1);
+          if (end < minEnd) {
+            return "End date must be at least 1 month after start date";
+          }
+
+          return true;
+        }
+      }}
+      render={({ field }) => (
+        <Monthpicker
+          value={field.value || ""}
+          onChange={(val) => {
+            field.onChange(val);
+            workExperienceForm.trigger(`workExperiences.${index}.end_date`);
+            workExperienceForm.trigger(`workExperiences.${index}.start_date`);
+            handleFormChange("work");
+          }}
+          placeholder="Select Month & Year"
+        />
+      )}
+    />
+
+    {experienceErrors?.end_date && (
+      <p className="text-sm text-red-500 mt-1">
+        {experienceErrors.end_date.message}
+      </p>
+    )}
+  </div>
+)}
                             {/* Currently Working */}
                             <div className="w-full flex items-center gap-1">
                               <input
