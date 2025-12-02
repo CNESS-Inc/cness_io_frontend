@@ -404,7 +404,7 @@ export default function CourseDetail() {
                 title={productData?.title}
                 seller={productData?.seller}
                 rating={productData?.rating}
-                purchase={productData?.purchase?.purchased_at}
+                purchase={productData?.purchased_at}
                 duration={productData?.duration}
                 moods={productData?.moods}
                 category={productData?.category}
@@ -426,7 +426,7 @@ export default function CourseDetail() {
                 title={productData?.title}
                 seller={productData?.seller}
                 rating={productData?.rating}
-                purchase={productData?.purchase?.purchased_at}
+                purchase={productData?.purchased_at}
                 duration={productData?.duration}
                 mood={productData?.mood}
                 category={productData?.category}
@@ -449,7 +449,7 @@ export default function CourseDetail() {
                 title={productData?.title}
                 seller={productData?.seller}
                 rating={productData?.rating}
-                purchase={productData?.purchase?.purchased_at}
+                purchase={productData?.purchased_at}
                 category={productData?.category}
                 content={productData?.contents}
                 currentFile={activeFile}

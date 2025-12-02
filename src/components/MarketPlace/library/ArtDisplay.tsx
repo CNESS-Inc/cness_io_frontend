@@ -269,17 +269,19 @@ const ArtDisplay: React.FC<ArtDisplayProps> = ({
                         {allImagesData.length} Artworks
                         <span className="mx-2">•</span>
                     </span>
-                    <span className="flex items-center font-[Poppins]">
-                        <FiCalendar className="w-4 h-4 text-[#7077fe] mr-1" />
-                        Purchased on
-                        <span className="font-semibold ml-1">
-                            {new Date(purchase).toLocaleDateString('en-IN', {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric'
-                            })}
+                    {purchase && (
+                        <span className="flex items-center font-[Poppins]">
+                            <FiCalendar className="w-4 h-4 text-[#7077fe] mr-1" />
+                            Purchased on
+                            <span className="font-semibold ml-1">
+                                {new Date(purchase).toLocaleDateString('en-IN', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric'
+                                })}
+                            </span>
                         </span>
-                    </span>
+                    )}
                 </div>
 
                 {/* Art Viewer */}
