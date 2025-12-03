@@ -115,6 +115,7 @@ import EditSellerProductPage from "../pages/EditSellerProductPage";
 import PaymentConfirmation from "../pages/PaymentConfirmation";
 import BestPracticeSearch from "../pages/BestPracticeSearch";
 import CollectionDetail from "../pages/CollectionDetail";
+import EditProfile from "../pages/EditProfile";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -625,10 +626,16 @@ export const router = createBrowserRouter([
             path: "CreatorGuideline",
             element: <CreatorGuideline />,
           },
+          
           {
             path: "Profile/:id?",
             element: <Profile />,
           },
+          
+  {
+  path: "Profile/editprofile",
+  element: <EditProfile />,
+},
 
           {
             path: "MyConnection",
