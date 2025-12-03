@@ -27,6 +27,7 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
     language: searchParams.get("language") || "",
     sort_by: searchParams.get("sort_by") || "createdAt",
     sort_order: searchParams.get("sort_order") || "desc",
+    creator_search: searchParams.get("creator_search") || "",
   });
 
   useEffect(() => {
@@ -38,7 +39,10 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           limit: 12,
         };
 
-        if (searchQuery) params.search = searchQuery;
+        // Combine searchQuery and creator_search into single 'search' param
+        const combinedSearch = [searchQuery, filters.creator_search].filter(Boolean).join(" ");
+        if (combinedSearch) params.search = combinedSearch;
+
         if (selectedMood) params.mood_slug = selectedMood;
         if (filters.category_slug) params.category_slug = filters.category_slug;
         if (filters.min_price) params.min_price = parseFloat(filters.min_price);
@@ -76,6 +80,7 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
     if (filters.min_price) params.set("min_price", filters.min_price);
     if (filters.max_price) params.set("max_price", filters.max_price);
     if (filters.language) params.set("language", filters.language);
+    if (filters.creator_search) params.set("creator_search", filters.creator_search);
     if (filters.sort_by) params.set("sort_by", filters.sort_by);
     if (filters.sort_order) params.set("sort_order", filters.sort_order);
 
@@ -110,6 +115,7 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       min_price: "",
       max_price: "",
       language: "",
+      creator_search: "",
       sort_by: "createdAt",
       sort_order: "desc",
     });
@@ -175,7 +181,19 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                 </button>
               </div>
             )}
-            {(searchQuery || selectedMood || filters.category_slug || filters.min_price || filters.max_price || filters.language) && (
+            {filters.creator_search && (
+              <div className="flex items-center gap-2 bg-green-50 text-green-600 px-4 py-2 rounded-full text-sm">
+                <span>Creator: "{filters.creator_search}"</span>
+                <button onClick={() => {
+                  const newFilters = { ...filters, creator_search: "" };
+                  setFilters(newFilters);
+                  setCurrentPage(1);
+                }}>
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+            {(searchQuery || selectedMood || filters.category_slug || filters.min_price || filters.max_price || filters.language || filters.creator_search) && (
               <button
                 onClick={clearAllFilters}
                 className="text-red-500 hover:text-red-700 text-sm font-medium"
