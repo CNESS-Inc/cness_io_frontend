@@ -3,12 +3,10 @@ import Button from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import {
   MeDetails,
-  PaymentDetails,
   GetAspiringQuestionDetails,
   submitPersonReadinessDetails,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import Modal from "../components/ui/Modal";
 
 const AspiringAssessment = () => {
   const navigate = useNavigate();
@@ -18,10 +16,8 @@ const AspiringAssessment = () => {
   const [readlineQuestion, setReadlineQuestion] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
-
-  const [activeModal, setActiveModal] = useState<"price" | null>(null);
-  const [personPricing, setPersonPricing] = useState<any[]>([]);
-  const [isAnnual, setIsAnnual] = useState(true);
+  // const [plansData, setPlansData] = useState<any[]>([]);
+  const [isAnnual] = useState(true);
 
   const handleToggle = (optionId: string) => {
     setSelected((prev) =>
@@ -46,7 +42,7 @@ const AspiringAssessment = () => {
   const fetchAllDataDetails = async () => {
     try {
       const response = await GetAspiringQuestionDetails();
-      const res = response?.data?.data || []
+      const res = response?.data?.data || [];
       setReadlineQuestion(res?.questions || []);
       if (res?.questions?.length == 1) {
         if (res?.aspiring_ans_completed == true) {
@@ -54,7 +50,6 @@ const AspiringAssessment = () => {
           setSelected(res?.selectedId || []);
         }
       }
-
     } catch (error: any) {
       showToast({
         message:
@@ -116,8 +111,6 @@ const AspiringAssessment = () => {
       const res = await submitPersonReadinessDetails(payload);
 
       if (res?.success) {
-        setActiveModal("price");
-
         const plansByRange: Record<string, any> = {};
         res?.data?.data?.plan.forEach((plan: any) => {
           if (!plansByRange[plan.plan_range]) {
@@ -138,7 +131,8 @@ const AspiringAssessment = () => {
           response?.data?.data?.user.margaret_name
         );
 
-        // Create combined plan objects with both monthly and yearly data
+        localStorage.setItem("is_disqualify", "fasle");
+
         const updatedPlans = Object.values(plansByRange)?.map(
           (planGroup: any) => {
             const monthlyPlan = planGroup.monthly;
@@ -147,34 +141,48 @@ const AspiringAssessment = () => {
             return {
               id: monthlyPlan?.id || yearlyPlan?.id,
               title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              description: "This helps us support your experience and gives you access to all premium features.",
+              description:
+                "This helps us support your experience and gives you access to all premium features.",
               monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
               yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
               period: isAnnual ? "/year" : "/month",
               billingNote: yearlyPlan
                 ? isAnnual
-                  ? `Billed ${isAnnual?`annually`:`monthly`} ($${yearlyPlan.amount})`
+                  ? `Billed ${isAnnual ? `annually` : `monthly`} ($${
+                      yearlyPlan.amount
+                    })`
                   : `or $${monthlyPlan?.amount}/month`
                 : undefined,
-              features: [], // Add any features you need here
+              features: [],
               buttonText: "Pay Now",
               buttonClass: yearlyPlan
                 ? ""
                 : "bg-gray-100 text-gray-800 hover:bg-gray-200",
               borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
               popular: !!yearlyPlan,
+              monthlyPlanData: monthlyPlan, // Keep original data if needed
+              yearlyPlanData: yearlyPlan, // Keep original data if needed
             };
           }
         );
 
-        setPersonPricing(updatedPlans);
-        localStorage.setItem("is_disqualify", "fasle");
-        // showToast({
-        //   message: "Assessment submitted successfully!",
-        //   type: "success",
-        //   duration: 4000,
-        // });
-        // navigate("/dashboard/assesmentcertification");
+        // setPlansData(updatedPlans);
+        localStorage.setItem("is_disqualify", "false");
+
+        showToast({
+          message: "Assessment submitted successfully!",
+          type: "success",
+          duration: 4000,
+        });
+
+        // Redirect to Certification page with plans data
+        navigate("/dashboard/Certification", {
+          state: {
+            plans: updatedPlans,
+            isAnnual: isAnnual,
+            assessmentSubmitted: true,
+          },
+        });
       } else {
         showToast({
           message: res?.data?.message || "Failed to submit assessment.",
@@ -193,46 +201,6 @@ const AspiringAssessment = () => {
       });
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handlePlanSelection = async (plan: any) => {
-    try {
-      const payload = {
-        plan_id: plan.id,
-        plan_type: isAnnual ? "Yearly" : "Monthly",
-      };
-
-      const res = await PaymentDetails(payload);
-      if (res?.data?.data?.url) {
-        const url = res.data.data.url;
-        console.log("Redirecting to:", url); // Log the actual URL
-        window.location.href = url; // Redirect in the same tab
-      } else {
-        console.error("URL not found in response");
-      }
-    } catch (error: any) {
-      console.error("Error in handlePlanSelection:", error);
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
-
-  const closeModal = async () => {
-    setActiveModal(null);
-  };
-
-  const getBillingNote = (plan: any) => {
-    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
-
-    if (isAnnual) {
-      // For annual billing: show "billed annually (yearly price)"
-      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 11})`;
-    } else {
-      return `or ${plan.monthlyPrice}/month`;
     }
   };
 
@@ -264,7 +232,7 @@ const AspiringAssessment = () => {
         {/* Select All Checkbox */}
         <div className="pb-4">
           <div className="relative flex items-start gap-3 sm:gap-4 pl-1">
-            <div className="relative flex-shrink-0">
+            <div className="relative shrink-0">
               <input
                 type="checkbox"
                 id="select-all"
@@ -272,7 +240,7 @@ const AspiringAssessment = () => {
                 checked={allSelected}
                 onChange={handleSelectAll}
                 className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer appearance-none border border-gray-400 rounded-sm 
-                checked:bg-[length:100%_100%] relative custom-checkbox"
+                checked:bg-size-[100%_100%] relative custom-checkbox"
               />
               {allSelected && (
                 <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -310,7 +278,7 @@ const AspiringAssessment = () => {
               key={opt.id || index}
               className="relative flex items-start gap-3 sm:gap-4 pl-1"
             >
-              <div className="relative flex-shrink-0">
+              <div className="relative shrink-0">
                 <input
                   type="checkbox"
                   id={`option-${index}`}
@@ -318,7 +286,7 @@ const AspiringAssessment = () => {
                   checked={selected.includes(opt.id)}
                   onChange={() => handleToggle(opt.id)}
                   className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer appearance-none border border-gray-400 rounded-sm 
-                  checked:bg-[length:100%_100%] relative custom-checkbox"
+                  checked:bg-size-[100%_100%] relative custom-checkbox"
                 />
                 {selected.includes(opt.id) && (
                   <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -362,7 +330,7 @@ const AspiringAssessment = () => {
           onClick={() => navigate("/dashboard/assesmentcertification")}
           variant="white-outline"
           className="font-plusJakarta text-[14px] sm:text-[15px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-            hover:bg-gradient-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
           type="button"
         >
@@ -378,73 +346,6 @@ const AspiringAssessment = () => {
           {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </div>
-
-      <Modal isOpen={activeModal === "price"} onClose={closeModal}>
-        <div className="p-6 rounded-lg w-full mx-auto z-10 relative">
-          <h2 className="text-xl poppins font-bold mb-4 text-center">
-            Pricing Plan
-          </h2>
-
-          <div className="flex justify-center">
-            {personPricing.map((plan) => (
-              <div
-                key={plan.id}
-                className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
-              >
-                {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
-                    Popular
-                  </div>
-                )}
-                <h3 className="font-semibold text-lg mb-2 mt-2">
-                  {plan.title}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
-                <div className="mb-4">
-                  <span className="text-3xl font-bold">
-                    {isAnnual
-                      ? plan.yearlyPrice || plan.monthlyPrice
-                      : plan.monthlyPrice}
-                  </span>
-                  <span className="text-gray-500">/month</span>
-                  {getBillingNote(plan) && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      {getBillingNote(plan)}
-                    </p>
-                  )}
-                </div>
-                <Button
-                  variant="gradient-primary"
-                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                  onClick={() => handlePlanSelection(plan)}
-                >
-                  {plan.buttonText}
-                </Button>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 text-center">
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="mr-3 text-sm font-medium text-gray-700">
-                Monthly billing
-              </span>
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={isAnnual}
-                  onChange={() => setIsAnnual(!isAnnual)}
-                />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
-              </div>
-              <span className="ml-3 text-sm font-medium text-gray-700">
-                Annual billing
-              </span>
-            </label>
-          </div>
-        </div>
-      </Modal>
     </>
   );
 };
