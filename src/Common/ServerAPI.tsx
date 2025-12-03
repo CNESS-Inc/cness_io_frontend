@@ -119,7 +119,9 @@ export const EndPoint = {
   emailverify: "/auth/email-verify",
   paymentverify: "/payment/payment-confirm",
   profile: "/profile",
+  social_user_profile: "/profile/social-user-profile",
   public_profile: "/profile/public",
+  social_profile: "/profile/social-user-profile",
   profile_remove: "/profile/image/remove",
   organizationProfile: "/organization-profile",
   organizationNumber: "/organization-profile/verify-identify",
@@ -715,6 +717,9 @@ export const GetSubDomainDetails = (formData: string): ApiResponse => {
 export const SubmitProfileDetails = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.profile);
 };
+export const SubmitSocialProfileDetails = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.social_user_profile);
+};
 export const removeProfileImage = (type: any): ApiResponse => {
   let params: { [key: string]: any } = {};
   params["type"] = type;
@@ -1100,6 +1105,10 @@ export const GetProfileDetailsById = (id: any): ApiResponse => {
 export const GetPublicProfileDetailsById = (id: any): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.public_profile}/${id}`);
+};
+export const GetSocialProfileDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.social_profile}`);
 };
 export const GetOrganiZationProfileDetails = (): ApiResponse => {
   const data = {};

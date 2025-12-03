@@ -603,10 +603,10 @@ export default function Profile() {
     if (activeTab === "Connections") {
       fetchFollowingUsers();
     }
-    if (activeTab === "Reels") {
+    if (activeTab === "Inspiration Reels") {
       fetchUsersReel();
     }
-    if (activeTab === "Posts") {
+    if (activeTab === "Conscious Acts") {
       fetchUserPosts();
     }
     fetchFollowingFollowerUsers();
@@ -650,7 +650,7 @@ export default function Profile() {
 ))}
       {/* Content */}
       <div className="flex-1 py-5">
-        {activeTab === "Posts" && (
+        {activeTab === "Conscious Acts" && (
           <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
             {userPosts.length ? (
               userPosts.map((post, i) => (
@@ -711,7 +711,7 @@ export default function Profile() {
                 selectedPost.media ??
                 ({ type: "text", src: selectedPost.body || "" } as const),
               body: selectedPost.body,
-              is_reel: selectedPost.is_reel || activeTab === "Reels", // Add this line
+              is_reel: selectedPost.is_reel || activeTab === "Inspiration Reels", // Add this line
             }}
             onClose={() => setSelectedPost(null)}
             onDeletePost={() => {
@@ -803,7 +803,7 @@ export default function Profile() {
             </div>
           ))}
 
-        {activeTab === "Reels" && (
+        {activeTab === "Inspiration Reels" && (
           <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
             {userReels.length ? (
               userReels.map((reel, i) => (
