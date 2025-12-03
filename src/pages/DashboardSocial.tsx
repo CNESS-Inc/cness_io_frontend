@@ -21,7 +21,7 @@ import { iconMap } from "../assets/icons";
 // import { MdContentCopy } from "react-icons/md";
 
 import {
-  AddPost,
+  // AddPost,
   AddStory,
   GetFollowingUser,
   GetStory,
@@ -71,38 +71,39 @@ import {
   TwitterShareButton,
   WhatsappShareButton,
 } from "react-share";
+import CreatePostModal from "./CreatePost";
 // import { buildShareUrl } from "../lib/utils";
 
-interface Post {
-  friend_request_status: string;
-  product_id: any;
-  id: string;
-  user_id: string;
-  content: string;
-  file: string | null;
-  file_type: string | null;
-  is_poll: boolean;
-  poll_id: string | null;
-  createdAt: string;
-  likes_count: number;
-  comments_count: number;
-  if_following: boolean;
-  if_friend: boolean;
-  is_liked: boolean;
-  is_saved: boolean;
-  is_requested: boolean;
-  user: {
-    id: string;
-    username: string;
-  };
-  profile: {
-    id: string;
-    user_id: string;
-    first_name: string;
-    last_name: string;
-    profile_picture: string;
-  };
-}
+// interface Post {
+//   friend_request_status: string;
+//   product_id: any;
+//   id: string;
+//   user_id: string;
+//   content: string;
+//   file: string | null;
+//   file_type: string | null;
+//   is_poll: boolean;
+//   poll_id: string | null;
+//   createdAt: string;
+//   likes_count: number;
+//   comments_count: number;
+//   if_following: boolean;
+//   if_friend: boolean;
+//   is_liked: boolean;
+//   is_saved: boolean;
+//   is_requested: boolean;
+//   user: {
+//     id: string;
+//     username: string;
+//   };
+//   profile: {
+//     id: string;
+//     user_id: string;
+//     first_name: string;
+//     last_name: string;
+//     profile_picture: string;
+//   };
+// }
 
 interface FollowedUser {
   id: string;
@@ -208,7 +209,6 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
     });
   }, [current, mediaItems]);
 
-  
   const handlePrev = () => {
     setCurrent((prev) => (prev === 0 ? mediaItems.length - 1 : prev - 1));
   };
@@ -216,9 +216,6 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
   const handleNext = () => {
     setCurrent((prev) => (prev + 1) % mediaItems.length);
   };
-
-
-
 
   return (
     <div className="relative w-full ">
@@ -296,29 +293,28 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
 //const toggleExpand = () => setIsExpanded(!isExpanded);
 
 export default function SocialTopBar() {
-
   const storyScrollRef = useRef<HTMLDivElement | null>(null);
 
-const scrollLeft = () => {
-  storyScrollRef.current?.scrollBy({
-    left: -300,
-    behavior: "smooth",
-  });
-};
+  const scrollLeft = () => {
+    storyScrollRef.current?.scrollBy({
+      left: -300,
+      behavior: "smooth",
+    });
+  };
 
-const scrollRight = () => {
-  storyScrollRef.current?.scrollBy({
-    left: 300,
-    behavior: "smooth",
-  });
-};
-//  const handlePrev = () => {
-//     setCurrent((prev) => (prev === 0 ? mediaItems.length - 1 : prev - 1));
-//   };
+  const scrollRight = () => {
+    storyScrollRef.current?.scrollBy({
+      left: 300,
+      behavior: "smooth",
+    });
+  };
+  //  const handlePrev = () => {
+  //     setCurrent((prev) => (prev === 0 ? mediaItems.length - 1 : prev - 1));
+  //   };
 
-//   const handleNext = () => {
-//     setCurrent((prev) => (prev + 1) % mediaItems.length);
-//   };
+  //   const handleNext = () => {
+  //     setCurrent((prev) => (prev + 1) % mediaItems.length);
+  //   };
 
   // const navigate = useNavigate();
   // const [isExpanded, setIsExpanded] = useState(false);
@@ -329,8 +325,8 @@ const scrollRight = () => {
   const [showStoryPopup, setShowStoryPopup] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-  const [postMessage, setPostMessage] = useState("");
-  const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
+  // const [postMessage, setPostMessage] = useState("");
+  // const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const [_apiMessage, setApiMessage] = useState<string | null>(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const [storyMessage, setStoryMessage] = useState("");
@@ -341,7 +337,7 @@ const scrollRight = () => {
   const [_apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
   const [copy, setCopy] = useState<Boolean>(false);
 
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  // const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const [userPosts, setUserPosts] = useState<any[]>([]);
 
@@ -351,9 +347,9 @@ const scrollRight = () => {
   const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>(
     {}
   );
-  const [postVideoPreviewUrl, setPostVideoPreviewUrl] = useState<string | null>(
-    null
-  );
+  // const [postVideoPreviewUrl, setPostVideoPreviewUrl] = useState<string | null>(
+  //   null
+  // );
   // const [openMenuPostId, setOpenMenuPostId] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<{
     postId: string | null;
@@ -401,7 +397,7 @@ const scrollRight = () => {
   //const [showTopicModal, setShowTopicModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [animations, setAnimations] = useState<any[]>([]);
-  const [isPosting, setIsPosting] = useState(false);
+  // const [isPosting, setIsPosting] = useState(false);
   const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
 
   useEffect(() => {
@@ -414,18 +410,18 @@ const scrollRight = () => {
   }, [location, navigate]);
 
   useEffect(() => {
-  if (showPopup) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "auto";
-  }
+    if (showPopup) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
 
-  return () => {
-    document.body.style.overflow = "auto";
-  };
-}, [showPopup]);
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showPopup]);
 
-  const maxChars = 2000;
+  // const maxChars = 2000;
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -726,199 +722,199 @@ const scrollRight = () => {
     fetchStory();
   }, []);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = Array.from(e.target.files || []);
 
-    // Validate file types
-    const allowedImageTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/webp",
-    ];
-    const invalidFiles = files.filter(
-      (file) => !allowedImageTypes.includes(file.type)
-    );
+  //   // Validate file types
+  //   const allowedImageTypes = [
+  //     "image/jpeg",
+  //     "image/jpg",
+  //     "image/png",
+  //     "image/webp",
+  //   ];
+  //   const invalidFiles = files.filter(
+  //     (file) => !allowedImageTypes.includes(file.type)
+  //   );
 
-    if (invalidFiles.length > 0) {
-      showToast({
-        message: "Only JPG, JPEG, PNG, and WEBP image files are allowed.",
-        type: "error",
-        duration: 3000,
-      });
-      // Clear the file input so the same file can be selected again
-      e.target.value = "";
-      return;
-    }
+  //   if (invalidFiles.length > 0) {
+  //     showToast({
+  //       message: "Only JPG, JPEG, PNG, and WEBP image files are allowed.",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //     // Clear the file input so the same file can be selected again
+  //     e.target.value = "";
+  //     return;
+  //   }
 
-    setSelectedImages((prev) => [...prev, ...files]); // Append new images to existing ones
-  };
+  //   setSelectedImages((prev) => [...prev, ...files]); // Append new images to existing ones
+  // };
 
-  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
-      const allowedVideoTypes = ["video/mp4"];
+  // const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     // Validate file type
+  //     const allowedVideoTypes = ["video/mp4"];
 
-      if (!allowedVideoTypes.includes(file.type)) {
-        showToast({
-          message: "Only MP4 video files are allowed.",
-          type: "error",
-          duration: 3000,
-        });
-        // Clear the file input so the same file can be selected again
-        e.target.value = "";
-        return;
-      }
+  //     if (!allowedVideoTypes.includes(file.type)) {
+  //       showToast({
+  //         message: "Only MP4 video files are allowed.",
+  //         type: "error",
+  //         duration: 3000,
+  //       });
+  //       // Clear the file input so the same file can be selected again
+  //       e.target.value = "";
+  //       return;
+  //     }
 
-      setSelectedVideo(file);
-      // Create preview URL
-      const videoUrl = URL.createObjectURL(file);
-      setPostVideoPreviewUrl(videoUrl);
-    }
-  };
+  //     setSelectedVideo(file);
+  //     // Create preview URL
+  //     const videoUrl = URL.createObjectURL(file);
+  //     setPostVideoPreviewUrl(videoUrl);
+  //   }
+  // };
 
-  const handleRemoveImage = (index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
-  };
+  // const handleRemoveImage = (index: number) => {
+  //   setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+  // };
 
-  const handleSubmitPost = async () => {
-    // Validation checks
-    if (!postMessage || postMessage.trim().length < 1) {
-      showToast({
-        message: "Message is required and must contain at least one character.",
-        type: "error",
-        duration: 3000,
-      });
-      return;
-    }
+  // const handleSubmitPost = async () => {
+  //   // Validation checks
+  //   if (!postMessage || postMessage.trim().length < 1) {
+  //     showToast({
+  //       message: "Message is required and must contain at least one character.",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //     return;
+  //   }
 
-    if (postMessage.length > 2000) {
-      showToast({
-        message: "Message must not exceed 2000 characters.",
-        type: "error",
-        duration: 3000,
-      });
-      return;
-    }
+  //   if (postMessage.length > 2000) {
+  //     showToast({
+  //       message: "Message must not exceed 2000 characters.",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //     return;
+  //   }
 
-    // Validate image file types
-    const allowedImageTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/webp",
-    ];
-    const invalidImages = selectedImages.filter(
-      (file) => !allowedImageTypes.includes(file.type)
-    );
-    if (invalidImages.length > 0) {
-      showToast({
-        message: "Only JPG, JPEG, PNG, and WEBP image files are allowed.",
-        type: "error",
-        duration: 3000,
-      });
-      return;
-    }
+  //   // Validate image file types
+  //   const allowedImageTypes = [
+  //     "image/jpeg",
+  //     "image/jpg",
+  //     "image/png",
+  //     "image/webp",
+  //   ];
+  //   const invalidImages = selectedImages.filter(
+  //     (file) => !allowedImageTypes.includes(file.type)
+  //   );
+  //   if (invalidImages.length > 0) {
+  //     showToast({
+  //       message: "Only JPG, JPEG, PNG, and WEBP image files are allowed.",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //     return;
+  //   }
 
-    // Validate video file type
-    if (selectedVideo && !["video/mp4"].includes(selectedVideo.type)) {
-      showToast({
-        message: "Only MP4 video files are allowed.",
-        type: "error",
-        duration: 3000,
-      });
-      return;
-    }
+  //   // Validate video file type
+  //   if (selectedVideo && !["video/mp4"].includes(selectedVideo.type)) {
+  //     showToast({
+  //       message: "Only MP4 video files are allowed.",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //     return;
+  //   }
 
-    setIsPosting(true); // Start loading
+  //   setIsPosting(true); // Start loading
 
-    const formData = new FormData();
-    formData.append("content", postMessage);
-    formData.append("topic_id", selectedTopic);
+  //   const formData = new FormData();
+  //   formData.append("content", postMessage);
+  //   formData.append("topic_id", selectedTopic);
 
-    // Append all selected images
-    selectedImages.forEach((image) => {
-      formData.append("file", image);
-    });
+  //   // Append all selected images
+  //   selectedImages.forEach((image) => {
+  //     formData.append("file", image);
+  //   });
 
-    // Append video if selected
-    if (selectedVideo) {
-      formData.append("file", selectedVideo);
-    }
+  //   // Append video if selected
+  //   if (selectedVideo) {
+  //     formData.append("file", selectedVideo);
+  //   }
 
-    try {
-      const response = await AddPost(formData);
+  //   try {
+  //     const response = await AddPost(formData);
 
-      if (response) {
-        showToast({
-          message: "Post created successfully",
-          type: "success",
-          duration: 3000,
-        });
+  //     if (response) {
+  //       showToast({
+  //         message: "Post created successfully",
+  //         type: "success",
+  //         duration: 3000,
+  //       });
 
-        // Add the new post to the beginning of the userPosts array
-        if (response.data && response.data.data) {
-          const newPost = response.data.data;
+  //       // Add the new post to the beginning of the userPosts array
+  //       if (response.data && response.data.data) {
+  //         const newPost = response.data.data;
 
-          // Transform the API response to match your Post interface
-          const transformedPost: Post = {
-            id: newPost.id,
-            user_id: newPost.user_id,
-            content: newPost.content,
-            file: newPost.file,
-            file_type: newPost.file_type,
-            is_poll: newPost.is_poll,
-            poll_id: newPost.poll_id,
-            createdAt: newPost.createdAt,
-            likes_count: newPost.likes_count,
-            comments_count: newPost.comments_count,
-            if_following: newPost.if_following,
-            if_friend: newPost.if_friend,
-            is_liked: newPost.is_liked,
-            is_saved: newPost.is_saved,
-            is_requested: newPost.is_requested,
-            product_id: null,
-            user: {
-              id: newPost.user.id,
-              username: newPost.user.username,
-            },
-            profile: {
-              id: newPost.profile.id,
-              user_id: newPost.profile.user_id,
-              first_name: newPost.profile.first_name,
-              last_name: newPost.profile.last_name,
-              profile_picture: newPost.profile.profile_picture,
-            },
-            friend_request_status: "",
-          };
+  //         // Transform the API response to match your Post interface
+  //         const transformedPost: Post = {
+  //           id: newPost.id,
+  //           user_id: newPost.user_id,
+  //           content: newPost.content,
+  //           file: newPost.file,
+  //           file_type: newPost.file_type,
+  //           is_poll: newPost.is_poll,
+  //           poll_id: newPost.poll_id,
+  //           createdAt: newPost.createdAt,
+  //           likes_count: newPost.likes_count,
+  //           comments_count: newPost.comments_count,
+  //           if_following: newPost.if_following,
+  //           if_friend: newPost.if_friend,
+  //           is_liked: newPost.is_liked,
+  //           is_saved: newPost.is_saved,
+  //           is_requested: newPost.is_requested,
+  //           product_id: null,
+  //           user: {
+  //             id: newPost.user.id,
+  //             username: newPost.user.username,
+  //           },
+  //           profile: {
+  //             id: newPost.profile.id,
+  //             user_id: newPost.profile.user_id,
+  //             first_name: newPost.profile.first_name,
+  //             last_name: newPost.profile.last_name,
+  //             profile_picture: newPost.profile.profile_picture,
+  //           },
+  //           friend_request_status: "",
+  //         };
 
-          // Add the new post to the beginning of the array
-          setUserPosts((prevPosts) => [transformedPost, ...prevPosts]);
-        }
+  //         // Add the new post to the beginning of the array
+  //         setUserPosts((prevPosts) => [transformedPost, ...prevPosts]);
+  //       }
 
-        // Reset form state
-        setPostMessage("");
-        setSelectedTopic("");
-        setSelectedImages([]);
-        setSelectedVideo(null);
-        if (postVideoPreviewUrl) {
-          URL.revokeObjectURL(postVideoPreviewUrl);
-          setPostVideoPreviewUrl(null);
-        }
-        setShowPopup(false);
-      }
-    } catch (err: any) {
-      console.error(err);
-      showToast({
-        message: err?.response?.data?.error?.message || "Failed to create post",
-        type: "error",
-        duration: 5000,
-      });
-    } finally {
-      setIsPosting(false); // End loading regardless of success/error
-    }
-  };
+  //       // Reset form state
+  //       setPostMessage("");
+  //       setSelectedTopic("");
+  //       setSelectedImages([]);
+  //       setSelectedVideo(null);
+  //       if (postVideoPreviewUrl) {
+  //         URL.revokeObjectURL(postVideoPreviewUrl);
+  //         setPostVideoPreviewUrl(null);
+  //       }
+  //       setShowPopup(false);
+  //     }
+  //   } catch (err: any) {
+  //     console.error(err);
+  //     showToast({
+  //       message: err?.response?.data?.error?.message || "Failed to create post",
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   } finally {
+  //     setIsPosting(false); // End loading regardless of success/error
+  //   }
+  // };
 
   const handleStoryVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1061,6 +1057,7 @@ const scrollRight = () => {
   const openPostPopup = () => {
     setShowPopup(true);
     setApiMessage(null);
+    setShowPostModal(true);
   };
 
   const openStoryPopup = () => {
@@ -1069,7 +1066,7 @@ const scrollRight = () => {
   };
 
   const handleLike = async (postId: string, event: React.MouseEvent) => {
-    console.log("🚀 ~ handleLike ~ event:", event);
+    console.log("🚀 ~ handleLike ~ event:", event)
     try {
       const formattedData = { post_id: postId };
 
@@ -1329,14 +1326,14 @@ const scrollRight = () => {
     };
   }, []);
 
-  const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
+  // const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
   const [topics, setTopics] = useState<Topic[]>([]); // list of topics
   const [userSelectedTopics, setUserSelectedTopics] = useState<Topic[]>([]); // list of user selected topics
   const [visibleTopic, setVisibleTopic] = useState(10);
   const [showTopicModal, setShowTopicModal] = useState(false);
-  const [isTopicDropdownOpen, setIsTopicDropdownOpen] = useState(false);
-  const [topicSearchQuery, setTopicSearchQuery] = useState("");
-  const topicDropdownRef = useRef<HTMLDivElement>(null);
+  // const [isTopicDropdownOpen, setIsTopicDropdownOpen] = useState(false);
+  // const [topicSearchQuery, setTopicSearchQuery] = useState("");
+  // const topicDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchUserSelectedTopics();
@@ -1403,16 +1400,16 @@ const scrollRight = () => {
     }
   };
 
-  // Add filtered topics based on search
-  const filteredTopics = topics.filter((topic) =>
-    topic.topic_name.toLowerCase().includes(topicSearchQuery.toLowerCase())
-  );
+  // // Add filtered topics based on search
+  // const filteredTopics = topics.filter((topic) =>
+  //   topic.topic_name.toLowerCase().includes(topicSearchQuery.toLowerCase())
+  // );
 
-  // Function to get selected topic name
-  const getSelectedTopicName = () => {
-    const selected = topics.find((t) => t.id === selectedTopic);
-    return selected ? selected.topic_name : "-- What's this post about? --";
-  };
+  // // Function to get selected topic name
+  // const getSelectedTopicName = () => {
+  //   const selected = topics.find((t) => t.id === selectedTopic);
+  //   return selected ? selected.topic_name : "-- What's this post about? --";
+  // };
 
   const handleTopicsSelected = async (ids: string[]) => {
     if (!loggedInUserID) {
@@ -1597,6 +1594,14 @@ const scrollRight = () => {
     };
   }, [postIdsSignature]);
 
+  const [showPostModal, setShowPostModal] = useState(false);
+
+  // 4. Replace the handleSubmitPost function in SocialTopBar with:
+  const handlePostCreated = (newPost: any) => {
+    // Add the new post to the beginning of the userPosts array
+    setUserPosts((prevPosts) => [newPost, ...prevPosts]);
+  };
+
   return (
     <>
       {isAdult ? (
@@ -1664,97 +1669,100 @@ const scrollRight = () => {
                           </button>
                         </div>
                       </div>
-                      
                     </div>
                   </div>
 
                   {/* Story Strip Wrapper */}
                   <h4 className="font-medium text-[16px]">Inspiration Reels</h4>
 
-                <div className="relative"> 
+                  <div className="relative">
                     {/* LEFT BUTTON */}
-                             <button
-            onClick={scrollLeft}
-            className="absolute -left-2 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
-          >
-            <ChevronLeft size={22} />
-          </button>
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4" ref={storyScrollRef}>
-                    {/* Create Story Card */}
-                  
-                    <div
-                      onClick={() => openStoryPopup()}
-                      className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start"
+                    <button
+                      onClick={scrollLeft}
+                      className="absolute -left-2 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
                     >
-                      <img
-                        src={createstory}
-                        alt="Create Story Background"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/profile.png";
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
-                      <svg
-                        viewBox="0 0 162 70"
-                        preserveAspectRatio="none"
-                        className="absolute bottom-0 left-0 w-full h-[70px] z-10"
-                      >
-                        <path
-                          d="M0,0 H61 C65,0 81,22 81,22 C81,22 97,0 101,0 H162 V70 H0 Z"
-                          fill="#7C81FF"
-                        />
-                      </svg>
-                      <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
-                        <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl border-5">
-                          <img
-                            src={iconMap["storyplus"]}
-                            alt="plus"
-                            className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert"
-                          />
-                        </div>
-                      </div>
-                      <div className="absolute bottom-5 w-full text-center text-white text-xs md:text-[15px] font-normal z-20">
-                        Inspirational Story
-                      </div>
-                      <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
-                    </div>
+                      <ChevronLeft size={22} />
+                    </button>
+                    <div
+                      className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4"
+                      ref={storyScrollRef}
+                    >
+                      {/* Create Story Card */}
 
-                    {storiesData.slice(0, 10).map((story) => (
                       <div
-                        key={story.id}
-                        className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative"
+                        onClick={() => openStoryPopup()}
+                        className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start"
                       >
-                        <StoryCard
-                          id={story.id}
-                          userId={story.user_id}
-                          userIcon={
-                            story.storyuser?.profile?.profile_picture
-                              ? story.storyuser?.profile?.profile_picture
-                              : "/profile.png"
-                          }
-                          userName={
-                            `${story.storyuser?.profile?.first_name || ""} ${
-                              story.storyuser?.profile?.last_name || ""
-                            }`.trim() || ""
-                          }
-                          title={story.description || "Untitled Story"}
-                          videoSrc={story?.thumbnail || ""}
+                        <img
+                          src={createstory}
+                          alt="Create Story Background"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/profile.png";
+                          }}
                         />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
+                        <svg
+                          viewBox="0 0 162 70"
+                          preserveAspectRatio="none"
+                          className="absolute bottom-0 left-0 w-full h-[70px] z-10"
+                        >
+                          <path
+                            d="M0,0 H61 C65,0 81,22 81,22 C81,22 97,0 101,0 H162 V70 H0 Z"
+                            fill="#7C81FF"
+                          />
+                        </svg>
+                        <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
+                          <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl border-5">
+                            <img
+                              src={iconMap["storyplus"]}
+                              alt="plus"
+                              className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert"
+                            />
+                          </div>
+                        </div>
+                        <div className="absolute bottom-5 w-full text-center text-white text-xs md:text-[15px] font-normal z-20">
+                          Inspirational Story
+                        </div>
+                        <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
+                      </div>
 
-                  <div className="absolute top-2 left-2 z-30 flex items-center gap-2  px-2 py-1 rounded-full">
-  <img
-    src={
-      story.storyuser?.profile?.profile_picture
-        ? story.storyuser?.profile?.profile_picture
-        : "/profile.png"
-    }
-    alt="user"
-    className="w-6 h-6 rounded-full object-cover"
-  />
+                      {storiesData.slice(0, 10).map((story) => (
+                        <div
+                          key={story.id}
+                          className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative"
+                        >
+                          <StoryCard
+                            id={story.id}
+                            userId={story.user_id}
+                            userIcon={
+                              story.storyuser?.profile?.profile_picture
+                                ? story.storyuser?.profile?.profile_picture
+                                : "/profile.png"
+                            }
+                            userName={
+                              `${story.storyuser?.profile?.first_name || ""} ${
+                                story.storyuser?.profile?.last_name || ""
+                              }`.trim() || ""
+                            }
+                            title={story.description || "Untitled Story"}
+                            videoSrc={story?.thumbnail || ""}
+                          />
 
-<span className="
+                          <div className="absolute top-2 left-2 z-30 flex items-center gap-2  px-2 py-1 rounded-full">
+                            <img
+                              src={
+                                story.storyuser?.profile?.profile_picture
+                                  ? story.storyuser?.profile?.profile_picture
+                                  : "/profile.png"
+                              }
+                              alt="user"
+                              className="w-6 h-6 rounded-full object-cover"
+                            />
+
+                            <span
+                              className="
   text-white 
   text-[12px] 
   font-normal 
@@ -1763,53 +1771,56 @@ const scrollRight = () => {
   font-['Open_Sans'] 
   whitespace-nowrap 
   drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]
-">    {story.storyuser?.profile?.first_name || ""}{" "}
-    {story.storyuser?.profile?.last_name || ""}
-  </span>
-</div>
-                      </div>
-                    ))}
-
-                    {/* Show "See More" button if there are more than 10 stories */}
-                    {storiesData.length > 10 && (
-                      <div
-                        onClick={() => navigate("/story-design")}
-                        className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start bg-gradient-to-br from-purple-400 to-pink-500 flex flex-col items-center justify-center"
-                      >
-                        <div className="text-white text-center p-4">
-                          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-3 mx-auto">
-                            <svg
-                              className="w-6 h-6 text-white"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
+"
                             >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M13 7l5 5m0 0l-5 5m5-5H6"
-                              />
-                            </svg>
+                              {" "}
+                              {story.storyuser?.profile?.first_name || ""}{" "}
+                              {story.storyuser?.profile?.last_name || ""}
+                            </span>
                           </div>
-                          <span className="text-sm font-semibold block">
-                            See More
-                          </span>
-                          <span className="text-xs opacity-90 mt-1 block">
-                            {storiesData.length - 10}+ more stories
-                          </span>
                         </div>
-                      </div>
-                    )}
-                 
+                      ))}
+
+                      {/* Show "See More" button if there are more than 10 stories */}
+                      {storiesData.length > 10 && (
+                        <div
+                          onClick={() => navigate("/story-design")}
+                          className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start bg-linear-to-br from-purple-400 to-pink-500 flex flex-col items-center justify-center"
+                        >
+                          <div className="text-white text-center p-4">
+                            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-3 mx-auto">
+                              <svg
+                                className="w-6 h-6 text-white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                                />
+                              </svg>
+                            </div>
+                            <span className="text-sm font-semibold block">
+                              See More
+                            </span>
+                            <span className="text-xs opacity-90 mt-1 block">
+                              {storiesData.length - 10}+ more stories
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
                       <button
-            onClick={scrollRight}
-            className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
-          >
-            <ChevronRight size={22} />
-          </button>
+                        onClick={scrollRight}
+                        className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
+                      >
+                        <ChevronRight size={22} />
+                      </button>
+                    </div>
                   </div>
-                  </div> 
 
                   {/* Posts Section */}
                   <div className="mt-1 h-14 px-6 py-4 bg-[rgba(112,119,254,0.1)] text-[#7077FE] font-medium rounded-lg text-left w-full font-family-Poppins text-[16px]">
@@ -1902,12 +1913,13 @@ const scrollRight = () => {
                               </span>
                             </button>
                             {/* Follow Button */}
-                             <button
+                            <button
                               onClick={() => handleFollow(post.user_id)}
                               className={`flex justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors h-[35px]
-                                ${post.if_following
-                                  ? "bg-[#7077FE] text-white hover:bg-indigo-600"
-                                  : "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                ${
+                                  post.if_following
+                                    ? "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                    : "bg-[#7077FE] text-white hover:bg-indigo-600"
                                 }`}
                             >
                               {post.if_following ? (
@@ -2202,10 +2214,7 @@ const scrollRight = () => {
                       <div className="flex justify-between items-center mt-6 px-1 text-xs md:text-sm text-gray-600 gap-2">
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1 md:gap-2">
-                            <div className="flex items-center -space-x-2 md:-space-x-3">
-                            
-                              
-                            </div>
+                            <div className="flex items-center -space-x-2 md:-space-x-3"></div>
                           </div>
                           {/* <div className="flex items-center gap-2">
                             <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
@@ -2236,15 +2245,14 @@ const scrollRight = () => {
                           }`}
                         >
                           <span className="hidden sm:flex text-lg text-black">
-                                {post.likes_count}
-                              </span>
+                            {post.likes_count}
+                          </span>
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6 shrink-0"
                             fill={post.is_liked ? "#7077FE" : "none"}
                             stroke={post.is_liked ? "#7077FE" : "#000"}
                           />
 
-                          
                           <span
                             className={`hidden sm:flex ${
                               post.is_liked ? "text-[#7077FE]" : "text-black"
@@ -2535,7 +2543,7 @@ const scrollRight = () => {
             {userSelectedTopics?.length > 0 && (
               <div className="w-full h-fit bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm lg:mx-0">
                 <div className="flex items-center justify-between mb-3 md:mb-4 px-4">
-              <h3 className="text-[#081021] font-semibold text-base md:text-[14px]">
+                  <h3 className="text-[#081021] font-semibold text-base md:text-[14px]">
                     My interests
                   </h3>
                   <button
@@ -2615,367 +2623,62 @@ const scrollRight = () => {
           </div>
 
           {/* Popup Modals (unchanged) */}
-          {showPopup && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-            onClick={() => setShowPopup(false)}
-           >
-              <div className=" bg-white rounded-[18px] w-full overflow-y-auto max-w-md mx-4 p-4 shadow-lg relative"
-              onClick={(e) => e.stopPropagation()}
+          {showPostModal && (
+            <CreatePostModal
+              isOpen={showPostModal}
+              onClose={() => setShowPostModal(false)}
+              userInfo={userInfo}
+              onPostCreated={handlePostCreated}
+              topics={topics}
+            />
+          )}
+
+          {showCloseConfirm && (
+            <div
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-9999"
+              onClick={() => setShowCloseConfirm(false)}
+            >
+              <div
+                className="bg-white rounded-xl w-full max-w-sm p-6 shadow-lg"
+                onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
-                  <div className="w-fit h-fit">
-                    {/*<Image
-                      src="/popup-plus-icon.png"
-                      alt="plus-icon"
-                      width={36}
-                      height={36}
-                      className="object-contain"
-                    />*/}
-                  </div>
-                  <h2 className="text-lg font-semibold mb-0 text-[#897AFF]">
-                    Create Post
-                  </h2>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Do you want to save this as a draft?
+                </h3>
+
+                <div className="flex justify-center items-center flex-col gap-3">
                   <button
-                    onClick={() => setShowCloseConfirm(true)}
-                    className="text-[#E1056D] text-[26px] hover:text-black cursor-pointer"
-                  >
-                    ×
-                  </button>
-                </div>
-                <div className="mt-4 px-3 flex items-center gap-2 md:gap-3">
-                  <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
-                    <img
-                      src={
-                        !userInfo?.profile_picture ||
-                        userInfo?.profile_picture === "null" ||
-                        userInfo?.profile_picture === "undefined" ||
-                        !userInfo?.profile_picture.startsWith("http")
-                          ? "/profile.png"
-                          : userInfo?.profile_picture
-                      }
-                      className="w-8 h-8 md:w-10 md:h-10 rounded-full"
-                      alt="User"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/profile.png";
-                      }}
-                    />
-                  </Link>
-                  <div>
-                    <p className="font-semibold text-sm md:text-base text-black">
-                      <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
-                        {userInfo?.name}
-                      </Link>
-                    </p>
-                  </div>
-                </div>
-
-                {/* {apiMessage && (
-                <div
-                  className={`poppins text-center mb-4 ${
-                    apiMessage.includes("verification")
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }`}
-                >
-                  {apiMessage}
-                </div>
-              )} */}
-                <div className="px-3 mt-4 pb-5">
-                  <textarea
-                    rows={4}
-                    className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
-                    placeholder={`What's on your mind? ${userInfo?.main_name}...`}
-                    value={postMessage}
-                    onChange={(e) => {
-                      if (e.target.value.length <= maxChars) {
-                        setPostMessage(e.target.value);
-                      }
+                    className="w-[50%] flex justify-center items-center py-2 bg-[#7077FE] text-white rounded-lg text-sm"
+                    onClick={() => {
+                      // TODO: handle save draft
+                      console.log("Draft saved");
+                      setShowCloseConfirm(false);
+                      setShowPopup(false);
                     }}
-                  />
-                  <div className="flex justify-end text-xs text-gray-500">
-                    {postMessage.length}/{maxChars}
-                  </div>
+                  >
+                    Save Draft
+                  </button>
 
-                  <div className="space-y-3 mb-4 flex rounded-lg border border-[#F07EFF1A]  justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
-                    <p className="mb-0 text-sm font-semibold">
-                      Add to your post :
-                    </p>
-                    <div className="flex justify-end gap-4 w-6/12">
-                      <div>
-                        <label
-                          className="flex gap-2 items-center text-sm font-medium text-gray-700 mb-1"
-                          htmlFor="video-upload"
-                        >
-                          <Image
-                            src="/youtube.png"
-                            alt="youtube"
-                            width={24}
-                            height={16}
-                            className="object-contain rounded-0 cursor-pointer"
-                          />
-                          <span className="text-black text-sm cursor-pointer">
-                            Video
-                          </span>
-                        </label>
-                        <input
-                          type="file"
-                          accept="video/mp4"
-                          id="video-upload"
-                          className="w-full hidden cursor-pointer"
-                          onChange={handleVideoChange}
-                        />
-                      </div>
+                  <button
+                    className="w-[50%] flex justify-center items-center py-2 bg-red-500 text-white rounded-lg text-sm"
+                    onClick={() => {
+                      setShowCloseConfirm(false);
+                      setShowPopup(false); // close main popup
+                    }}
+                  >
+                    Discard
+                  </button>
 
-                      <div>
-                        <label
-                          className="flex gap-2 items-center text-sm font-medium text-gray-700 mb-1 "
-                          htmlFor="photo-upload"
-                        >
-                          <Image
-                            src="/picture.png"
-                            alt="picture"
-                            width={22}
-                            height={20}
-                            className="object-contain rounded-0 cursor-pointer"
-                          />
-                          <span className="text-black text-sm cursor-pointer">
-                            Photo
-                          </span>
-                        </label>
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/jpg,image/png,image/webp"
-                          id="photo-upload"
-                          className="w-full hidden cursor-pointer"
-                          multiple
-                          onChange={handleImageChange}
-                        />
-
-                        {/* Show preview below input */}
-                        {/* <div className="grid grid-cols-2 gap-4 mt-4">
-                        {selectedImages.map((file, index) => (
-                          <Image
-                            key={index}
-                            src={URL.createObjectURL(file)}
-                            alt={`Selected image ${index + 1}`}
-                            className="rounded-md"
-                            width={200}
-                            height={200}
-                          />
-                        ))}
-                      </div> */}
-                      </div>
-                    </div>
-                  </div>
-                  {/* Image Previews */}
-                  {selectedImages.length > 0 && (
-                    <div className="mb-4">
-                      <div className="grid grid-cols-2 gap-2">
-                        {selectedImages.map((file, index) => (
-                          <div key={index} className="relative">
-                            <img
-                              src={URL.createObjectURL(file)}
-                              alt={`Preview ${index}`}
-                              className="w-full h-32 object-cover rounded-lg"
-                            />
-                            <button
-                              onClick={() => handleRemoveImage(index)}
-                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Video Preview */}
-                  {postVideoPreviewUrl && (
-                    <div className="mb-4 relative">
-                      <video
-                        controls
-                        className="w-full max-h-[300px] rounded-lg object-cover"
-                        src={postVideoPreviewUrl}
-                      />
-                      <button
-                        onClick={() => {
-                          setSelectedVideo(null);
-                          URL.revokeObjectURL(postVideoPreviewUrl);
-                          setPostVideoPreviewUrl(null);
-                        }}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between items-center mt-3">
-                    <div className="relative w-80 mr-3" ref={topicDropdownRef}>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setIsTopicDropdownOpen(!isTopicDropdownOpen)
-                        }
-                        className="w-full p-2 border border-[#ECEEF2] text-sm rounded-md outline-none focus:border-[#7077FE] bg-white text-left flex justify-between items-center"
-                      >
-                        <span
-                          className={
-                            selectedTopic ? "text-black" : "text-gray-500"
-                          }
-                        >
-                          {getSelectedTopicName()}
-                        </span>
-                        <svg
-                          className={`w-4 h-4 transition-transform ${
-                            isTopicDropdownOpen ? "rotate-180" : ""
-                          }`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </button>
-
-                      {isTopicDropdownOpen && (
-                        <div className="absolute z-10 w-full mt-1 bg-white border border-[#ECEEF2] rounded-md shadow-lg max-h-64 overflow-hidden">
-                          <div className="p-2 border-b border-[#ECEEF2] sticky top-0 bg-white">
-                            <input
-                              type="text"
-                              value={topicSearchQuery}
-                              onChange={(e) =>
-                                setTopicSearchQuery(e.target.value)
-                              }
-                              placeholder="Search topics..."
-                              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md outline-none focus:border-[#7077FE]"
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                          </div>
-
-                          <div className="max-h-48 overflow-y-auto">
-                            {filteredTopics.length > 0 ? (
-                              filteredTopics.map((topic) => (
-                                <button
-                                  key={topic.id}
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedTopic(topic.id);
-                                    setIsTopicDropdownOpen(false);
-                                    setTopicSearchQuery("");
-                                  }}
-                                  className={`w-full text-left px-4 py-2 text-sm hover:bg-[#7077FE]/10 transition-colors ${
-                                    selectedTopic === topic.id
-                                      ? "bg-[#7077FE]/20 text-[#7077FE] font-medium"
-                                      : "text-gray-700"
-                                  }`}
-                                >
-                                  {topic.topic_name}
-                                </button>
-                              ))
-                            ) : (
-                              <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                                No topics found
-                              </div>
-                            )}
-
-                            {topics.length > 0 && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setSelectedTopic("999999");
-                                  setIsTopicDropdownOpen(false);
-                                  setTopicSearchQuery("");
-                                }}
-                                className={`w-full text-left px-4 py-2 text-sm border-t border-[#ECEEF2] hover:bg-[#7077FE]/10 transition-colors ${
-                                  selectedTopic === "999999"
-                                    ? "bg-[#7077FE]/20 text-[#7077FE] font-medium"
-                                    : "text-gray-700"
-                                }`}
-                              >
-                                Other
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={handleSubmitPost}
-                      disabled={isPosting}
-                      className="bg-[#7077FE] text-white px-6 py-2 rounded-full hover:bg-[#5b63e6] disabled:opacity-50 disabled:cursor-not-allowed relative flex items-center justify-center min-w-20"
-                      data-post-button
-                    >
-                      {isPosting ? (
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          Posting...
-                        </div>
-                      ) : (
-                        "Post"
-                      )}
-                    </button>
-                  </div>
+                  <button
+                    className="w-[50%] flex justify-center items-center py-2 bg-gray-200 text-black rounded-lg text-sm"
+                    onClick={() => setShowCloseConfirm(false)}
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>
           )}
-
-          {showCloseConfirm && (
-  <div
-    className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
-    onClick={() => setShowCloseConfirm(false)}
-  >
-    <div
-      className="bg-white rounded-xl w-full max-w-sm p-6 shadow-lg"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Do you want to save this as a draft?
-      </h3>
-
-      <div className="flex justify-center items-center flex-col gap-3">
-        <button
-          className="w-[50%] flex justify-center items-center py-2 bg-[#7077FE] text-white rounded-lg text-sm"
-          onClick={() => {
-            // TODO: handle save draft
-            console.log("Draft saved");
-            setShowCloseConfirm(false);
-            setShowPopup(false);
-          }}
-        >
-          Save Draft
-        </button>
-
-        <button
-          className="w-[50%] flex justify-center items-center py-2 bg-red-500 text-white rounded-lg text-sm"
-          onClick={() => {
-            setShowCloseConfirm(false);
-            setShowPopup(false); // close main popup
-          }}
-        >
-          Discard
-        </button>
-
-        <button
-          className="w-[50%] flex justify-center items-center py-2 bg-gray-200 text-black rounded-lg text-sm"
-          onClick={() => setShowCloseConfirm(false)}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
 
           {showStoryPopup && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -3090,52 +2793,51 @@ const scrollRight = () => {
           )}
 
           {showCloseConfirm && (
-  <div
-    className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
-    onClick={() => setShowCloseConfirm(false)}
-  >
-    <div
-      className="bg-white rounded-xl w-full max-w-sm p-6 shadow-lg"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Do you want to save this as a draft?
-      </h3>
+            <div
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-9999"
+              onClick={() => setShowCloseConfirm(false)}
+            >
+              <div
+                className="bg-white rounded-xl w-full max-w-sm p-6 shadow-lg"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Do you want to save this as a draft?
+                </h3>
 
-      <div className="flex flex-col gap-3">
-        <button
-          className="w-full py-2 bg-[#7077FE] text-white rounded-lg text-sm"
-          onClick={() => {
-            // TODO: handle save draft
-            console.log("Draft saved");
-            setShowCloseConfirm(false);
-            setShowPopup(false);
-          }}
-        >
-          Save Draft
-        </button>
+                <div className="flex flex-col gap-3">
+                  <button
+                    className="w-full py-2 bg-[#7077FE] text-white rounded-lg text-sm"
+                    onClick={() => {
+                      // TODO: handle save draft
+                      console.log("Draft saved");
+                      setShowCloseConfirm(false);
+                      setShowPopup(false);
+                    }}
+                  >
+                    Save Draft
+                  </button>
 
-        <button
-          className="w-full py-2 bg-red-500 text-white rounded-lg text-sm"
-          onClick={() => {
-            setShowCloseConfirm(false);
-            setShowPopup(false); // close main popup
-          }}
-        >
-          Discard
-        </button>
+                  <button
+                    className="w-full py-2 bg-red-500 text-white rounded-lg text-sm"
+                    onClick={() => {
+                      setShowCloseConfirm(false);
+                      setShowPopup(false); // close main popup
+                    }}
+                  >
+                    Discard
+                  </button>
 
-        <button
-          className="w-full py-2 bg-gray-200 text-black rounded-lg text-sm"
-          onClick={() => setShowCloseConfirm(false)}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+                  <button
+                    className="w-full py-2 bg-gray-200 text-black rounded-lg text-sm"
+                    onClick={() => setShowCloseConfirm(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {showCommentBox && selectedPostId && (
             <CommentBox

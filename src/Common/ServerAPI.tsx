@@ -168,6 +168,7 @@ export const EndPoint = {
   user_post: "/user/posts",
   save_post: "/user/posts/save",
   unsave_post: "/user/posts/unsave",
+  edit_post: "/user/posts/update",
   get_save_posts: "/user/posts/get/save/posts",
   report_post: "/user/posts/report",
   mention_user_profile: "/user/post/comments/getuserprofile",
@@ -1263,6 +1264,11 @@ export const FeedPostsDetails = (page: any) => {
 export const AddPost = (formData: any): ApiResponse => {
   // console.log('POST FORMDATA----->', Object.fromEntries(formData.entries()));
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.create_post);
+};
+export const EditPost = (id: string, formData: FormData): ApiResponse => {
+  // Append ID to formData
+  formData.append("id", id);
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.edit_post);
 };
 
 export const DeleteUserPost = (id: string): ApiResponse => {
