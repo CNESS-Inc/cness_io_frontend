@@ -20,7 +20,7 @@ const Certification: React.FC = () => {
 
             <button
             type="button"
-            className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#7077FE] to-[#F07EFF] px-6 py-2 text-sm font-medium text-white shadow-md hover:brightness-105 transition-colors border-0 font-[Poppins]"
+            className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#7077FE] to-[#F07EFF] px-6 py-2 text-sm font-medium text-white hover:brightness-105 transition-colors border-0 font-[Poppins]"
             >
             Start Your Conscious Journey
             </button>
@@ -34,22 +34,22 @@ const Certification: React.FC = () => {
             className="relative w-full max-w-sm cursor-pointer"
             onClick={() => setSelectedPlan('yearly')}
           >
-  {/* Outer gradient border like Figma */}
-  <div className={`rounded-[22px]   pt-1 pr-1 pl-1 pb-1 ${
-    selectedPlan === 'yearly' 
-      ? 'bg-gradient-to-b from-[#F07EFF] to-[#6745FF]' 
-      : 'bg-transparent'
-  }`}>
-      {selectedPlan === 'yearly' && (
-      <div className="flex justify-center">
-        <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-white tracking-[0.12em]">
-          YEARLY
-        </span>
-      </div>
-    )}
+        {/* Outer gradient border like Figma */}
+        <div className={`rounded-[22px]   pt-1 pr-1 pl-1 pb-1 ${
+          selectedPlan === 'yearly' 
+            ? 'bg-gradient-to-b from-[#F07EFF] to-[#6745FF]' 
+            : 'bg-transparent'
+        }`}>
+            {selectedPlan === 'yearly' && (
+            <div className="flex justify-center">
+              <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-white tracking-[0.12em]">
+                YEARLY
+              </span>
+            </div>
+          )}
     
     {/* Inner white card */}
-    <div className={`relative bg-white rounded-[18px] shadow-[0_18px_45px_rgba(49,45,119,0.18)] px-8 pt-6 pb-6 ${
+    <div className={`relative bg-white rounded-[18px] shadow-[0_18px_45px_rgba(49,45,119,0.18)] px-8 pt-6 pb-0 ${
       selectedPlan !== 'yearly' ? 'border-2 border-[#E5E7EB]' : ''
     }`}>
       {/* Badge */}
@@ -62,7 +62,7 @@ const Certification: React.FC = () => {
       )}
 
       <h2 className="text-[24px] font-light font-[Poppins] text-[#1A1A1A] text-center leading-[28px] tracking-[-0.24px]">
-        Premium Membership
+        Membership
       </h2>
       <p className="mt-2 text-xs font-[Poppins] text-[#777A8C] text-center leading-relaxed">
         This helps us support your experience and gives you access to all premium features.
@@ -101,25 +101,29 @@ const Certification: React.FC = () => {
         Buy Now
       </button>
 
-      {/* Features */}
-      <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
-        <li className="flex items-start gap-2">
-          <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-          <span>Full access to directory</span>
-        </li>
-        <li className="flex items-start gap-2">
-          <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-          <span>Marketplace</span>
-        </li>
-        <li className="flex items-start gap-2">
-          <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-          <span>Best practice hub</span>
-        </li>
-        <li className="flex items-start gap-2">
-          <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-          <span>Social media</span>
-        </li>
-      </ul>
+      {/* Yearly Features */}
+      <div className="mt-6 -mx-8 bg-[#F6F8FA] rounded-b-[18px] px-8 py-6">
+        <ul className="space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
+          <li className="flex items-start gap-2">
+            <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
+            <span>Full access to directory</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
+            <span>Marketplace</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
+            <span>Best practice hub</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
+            <span>Social media</span>
+          </li>
+        </ul>
+      </div>
+
+
     </div>
   </div>
 </div>
@@ -148,7 +152,7 @@ const Certification: React.FC = () => {
 
           {/* Inner white card */}
 
-          <div className={`relative bg-white rounded-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] px-8 pt-6 pb-6 ${
+          <div className={`relative bg-white rounded-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] px-8 pt-6 pb-0 ${
             selectedPlan !== 'monthly' ? 'border-2 border-[#E5E7EB]' : ''
           }`}>
             {/* Badge */}
@@ -160,7 +164,7 @@ const Certification: React.FC = () => {
         </div>
       )}
             <h2 className="text-[24px] font-light font-[Poppins] text-[#1A1A1A] text-center leading-[28px] tracking-[-0.24px]">
-              Premium Membership
+              Membership
             </h2>
             <p className="mt-2 text-xs text-[#777A8C] text-center leading-relaxed font-[Poppins]">
               This helps us support your experience and gives you access to all premium features.
@@ -187,7 +191,7 @@ const Certification: React.FC = () => {
 
             <button
               type="button"
-              className={`mt-6 w-full font-[Poppins] rounded-[8px] py-2.5 text-sm font-medium shadow-md hover:brightness-105 transition ${
+              className={`mt-6 w-full font-[Poppins] rounded-[8px] py-2.5 text-sm font-medium hover:brightness-105 transition ${
                 selectedPlan === 'monthly'
                   ? 'bg-[#6340FF] text-white'
                   : 'bg-white border-2 border-[#CBD5E1] text-[#8157FF]'
@@ -196,8 +200,9 @@ const Certification: React.FC = () => {
               Buy Now
             </button>
 
-            {/* Features */}
-            <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
+            {/* Monthly Features */}
+          <div className="mt-6 -mx-8 bg-[#F6F8FA] rounded-b-[18px] px-8 py-6">
+            <ul className="space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
               <li className="flex items-start gap-2">
                 <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
                 <span>Full access to directory</span>
@@ -215,6 +220,8 @@ const Certification: React.FC = () => {
                 <span>Social media</span>
               </li>
             </ul>
+          </div>
+
           </div>
           </div>
           </div>

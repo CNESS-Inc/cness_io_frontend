@@ -469,50 +469,6 @@ export const router = createBrowserRouter([
             path: "orderlist/:id",
             element: <SellerOrderDetail />,
           },
-          {
-            path: "shop-detail/:id",
-            element: <ShopDetail />,
-          },
-
-          {
-            path: "product-review/:id",
-            element: <ReviewAll />,
-          },
-          {
-            path: "cart",
-            element: <CartPage />,
-          },
-          {
-            path: "payment-success",
-            element: <PaymentSuccess />,
-          },
-
-          {
-            path: "payment-failed",
-            element: <PaymentFailed />,
-          },
-          {
-            path: "wishlist",
-            element: <Wishlist />,
-          },
-          {
-            path: "order-history",
-            element: <OrderHistory />,
-          },
-          {
-            path: "shops",
-            element: <ShopsList />,
-          },
-
-          {
-            path: "seller-dashboard",
-            element: <VendorDashboard />,
-          },
-
-          {
-            path: "createshop",
-            element: <CreateShopForm />,
-          },
           // {
           //   path: "search-listing",
           //   element:
