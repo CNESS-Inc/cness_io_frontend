@@ -3,14 +3,15 @@ import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import FollowingModal from "../components/Profile/Following";
 import FollowersModal from "../components/Profile/Followers";
 import Connections from "../components/Profile/Connections";
-import ProfileCard from "../components/Profile/Profilecard";
+//import ProfileCard from "../components/Profile/Profilecard";
 // import person1 from "../assets/person1.jpg";
+import ProfileCardNew from "../components/Social/ProfileCardNew";
 
 import {
   Copy, // Posts & Collections
   PlayCircle, // Reels
   Users, // Connections
-  // AtSign,      // About
+   AtSign,      // About
   CirclePlay, // empty state icon
 } from "lucide-react";
 import MyPost from "../components/Profile/Mypost";
@@ -90,11 +91,11 @@ const profiles = [
     following: "",
     followers: "",
     tabs: [
-      { label: "Posts", icon: <Copy size={16} /> },
-      { label: "Videos", icon: <PlayCircle size={16} /> },
+      { label: "Conscious Acts", icon: <Copy size={16} /> },
+      { label: "Inspiration Reels", icon: <PlayCircle size={16} /> },
       { label: "Connections", icon: <Users size={16} /> },
-      { label: "Favourites", icon: <Copy size={16} /> },
-      // { label: "About", icon: <AtSign size={16} /> },
+      { label: "Collections", icon: <Copy size={16} /> },
+      { label: "About", icon: <AtSign size={16} /> },
     ],
   },
 ];
@@ -613,7 +614,7 @@ export default function Profile() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f9f9fb] pt-2 px-2 sm:px-2 md:px-1 lg:px-1">
-      {profiles.map((profile, index) => (
+     {/* {profiles.map((profile, index) => (
         <ProfileCard
           key={index}
           {...profile}
@@ -629,8 +630,24 @@ export default function Profile() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
-      ))}
-
+      ))}*/}
+   
+{profiles.map((profile, index) => (
+  <ProfileCardNew
+    key={index}
+    {...profile}
+    onOpenFollowing={() => {
+      setOpenFollowing(true);
+      fetchFollowingUsers();
+    }}
+    onOpenFollowers={() => {
+      setopenfollowers(true);
+      fetchFollowerUsers();
+    }}
+    activeTab={activeTab}
+    onTabChange={setActiveTab}
+  />
+))}
       {/* Content */}
       <div className="flex-1 py-5">
         {activeTab === "Posts" && (
