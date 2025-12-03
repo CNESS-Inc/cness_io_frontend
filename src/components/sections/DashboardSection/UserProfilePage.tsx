@@ -268,9 +268,21 @@ const countryCode = [
   "+998",
 ];
 
+
 interface SocialLink {
   platform: string;
   url: string;
+}
+
+function parseMonthYear(value?: string | null) {
+  if (!value) return null;
+  // expected stored format: "2021-03"
+  const parts = value.split("-");
+  if (parts.length !== 2) return null;
+  const year = Number(parts[0]);
+  const month = Number(parts[1]) - 1; // JS months 0-11
+  if (isNaN(year) || isNaN(month)) return null;
+  return new Date(year, month, 1);
 }
 
 const getMaxDigits = (isoCountry: string): number => {
@@ -1686,6 +1698,8 @@ const UserProfilePage = () => {
       contactInfoForm.setValue("email", basicData.email);
     }
   }, [basicData, contactInfoForm]);
+
+  
   return (
     <>
       <section className="w-full px-1 sm:px-2 lg:px-1 pt-2 pb-10">
@@ -3116,6 +3130,7 @@ const UserProfilePage = () => {
                             educationErrors.start_date ||
                             educationErrors.end_date);
 
+
                         return (
                           <div
                             key={index}
@@ -3227,112 +3242,102 @@ const UserProfilePage = () => {
 
                             {/* Start Date */}
                             <div className="relative">
-                              <label className="block text-sm font-medium text-gray-800 mb-2">
-                                Start Date
-                              </label>
+  <label className="block text-sm font-medium text-gray-800 mb-2">Start Date</label>
 
-                              {!educationForm.watch(
-                                `educations.${index}.start_date`
-                              ) && (
-                                <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
-                                  Please select month & year
-                                </span>
-                              )}
-<Controller
-  control={educationForm.control}
-  name={`educations.${index}.start_date`}
-  rules={{
-    validate: (startVal) => {
-      const endVal = educationForm.getValues(`educations.${index}.end_date`);
-      if (!startVal || !endVal) return true;
-
-      const start = new Date(startVal);
-      const end = new Date(endVal);
-
-      if (start >= end) {
-        return "Start date must be earlier than end date";
-      }
-
-      return true;
-    }
-  }}
-  render={({ field }) => (
-    <Monthpicker
-      value={field.value || ""}
-      onChange={(val) => {
-        field.onChange(val);
-    
-        educationForm.trigger(`educations.${index}.start_date`);
-        educationForm.trigger(`educations.${index}.end_date`);
-        handleFormChange("education");
-      }}
-      placeholder="Select Month & Year"
-    />
+  {!educationForm.watch(`educations.${index}.start_date`) && (
+    <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
+      Please select month & year
+    </span>
   )}
-/>
 
-{educationErrors?.start_date && (
-  <p className="text-sm text-red-500 mt-1">
-    {educationErrors.start_date.message}
-  </p>
-)}
-                            </div>
+  <Controller
+    control={educationForm.control}
+    name={`educations.${index}.start_date`}
+    rules={{
+      required: "Start date is required",
+     validate: (startVal) => {
+  const endVal = educationForm.getValues(`educations.${index}.end_date`);
 
-                            {/* End Date */}
-                           <div className="relative">
-  <label className="block text-sm font-medium text-gray-800 mb-2">
-    End Date
-  </label>
+  if (!startVal || !endVal) return true;
 
-  {/* Placeholder */}
+  const start = parseMonthYear(startVal);
+  const end   = parseMonthYear(endVal);
+
+  if (!start || !end) return "Invalid date";
+
+  if (start >= end)
+    return "Start date must be earlier than end date";
+
+  return true;
+}
+    }}
+    render={({ field }) => (
+      <Monthpicker
+        value={field.value || ""}
+        onChange={(val) => {
+          field.onChange(val);
+          // force validation for both so cross-check runs
+          educationForm.trigger(`educations.${index}.start_date`);
+          educationForm.trigger(`educations.${index}.end_date`);
+          handleFormChange("education");
+        }}
+        placeholder="Select Month & Year"
+      />
+    )}
+  />
+
+  {educationErrors?.start_date && <p className="text-sm text-red-500 mt-1">{educationErrors.start_date.message}</p>}
+</div>
+
+ {/* End Date */}
+<div className="relative">
+  <label className="block text-sm font-medium text-gray-800 mb-2">End Date</label>
+
   {!educationForm.watch(`educations.${index}.end_date`) && (
     <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
       Please select month & year
     </span>
   )}
 
-  {/* Register with validation */}
- <Controller
-  control={educationForm.control}
-  name={`educations.${index}.end_date`}
-  rules={{
-    validate: (endVal) => {
-      const startVal = educationForm.getValues(`educations.${index}.start_date`);
-      if (!startVal || !endVal) return true;
+  <Controller
+    control={educationForm.control}
+    name={`educations.${index}.end_date`}
+    rules={{
+      required: "End date is required",
+     validate: (endVal) => {
+  const startVal = educationForm.getValues(`educations.${index}.start_date`);
 
-      const start = new Date(startVal);
-      const end = new Date(endVal);
+  if (!startVal || !endVal) return true;
 
-      const minEnd = new Date(start);
-      minEnd.setMonth(minEnd.getMonth() + 1);
+  const start = parseMonthYear(startVal);
+  const end   = parseMonthYear(endVal);
 
-      if (end < minEnd) {
-        return "End date must be at least 1 month after start date";
-      }
+  if (!start || !end) return "Invalid date";
 
-      return true;
-    }
-  }}
-  render={({ field }) => (
-    <Monthpicker
-      value={field.value || ""}
-      onChange={(val) => {
-        field.onChange(val);
-        // 🔥 Force validation
-        educationForm.trigger(`educations.${index}.end_date`);
-        educationForm.trigger(`educations.${index}.start_date`);
-        handleFormChange("education");
-      }}
-      placeholder="Select Month & Year"
-    />
-  )}
-/>
+  const minEnd = new Date(start);
+  minEnd.setMonth(minEnd.getMonth() + 1);
 
-{educationErrors?.end_date && (
-  <p className="text-sm text-red-500 mt-1">
-    {educationErrors.end_date.message}
-  </p>
-)}
+  if (end < minEnd)
+    return "End date must be at least 1 month after start date";
+
+  return true;
+}
+    }}
+    render={({ field }) => (
+      <Monthpicker
+        value={field.value || ""}
+        onChange={(val) => {
+          field.onChange(val);
+          educationForm.trigger(`educations.${index}.start_date`);
+          educationForm.trigger(`educations.${index}.end_date`);
+          handleFormChange("education");
+        }}
+        placeholder="Select Month & Year"
+      />
+    )}
+  />
+
+  {educationErrors?.end_date && <p className="text-sm text-red-500 mt-1">{educationErrors.end_date.message}</p>}
 </div>
                             {/* Individual education entry error */}
                             {hasEducationError && (
