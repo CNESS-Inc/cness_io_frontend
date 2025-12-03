@@ -49,7 +49,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onWishlistUpdate,
 }) => {
-  console.log('product', product)
   const [liked, setLiked] = useState(false);
   const [carted, setCarted] = useState(false);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
