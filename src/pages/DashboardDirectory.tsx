@@ -49,8 +49,8 @@ export default function DashboardDirectory() {
 
   const [selectedDomain, setSelectedDomain] = useState("");
   const [searchQuery, setSearchQuery] = useState<any>("");
-  const [selectedDomainText, setSelectedDomainText] = useState("");
-  const [textWidth, setTextWidth] = useState(0);
+  const [, setSelectedDomainText] = useState("");
+  const [, setTextWidth] = useState(0);
   const [Domain, setDomain] = useState<Array<{ id: string | number; title: string }>>([]);
   const [badge, setBadge] = useState<any>([]);
   const measureRef = useRef<HTMLSpanElement>(null);
