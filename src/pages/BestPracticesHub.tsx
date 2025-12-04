@@ -102,7 +102,7 @@ export default function BestPracticesHub() {
   });
 
   const [activeModal, setActiveModal] = useState<"bestpractices" | null>(null);
-  const [textWidth, setTextWidth] = useState(0);
+  const textWidthRef = useRef<number>(0);
   const measureRef = useRef<HTMLSpanElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -237,7 +237,8 @@ export default function BestPracticesHub() {
 
     const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
       for (const entry of entries) {
-        setTextWidth(entry.contentRect.width);
+        // store width in a ref to avoid unused state while preserving measurement
+        textWidthRef.current = entry.contentRect.width;
       }
     });
 
