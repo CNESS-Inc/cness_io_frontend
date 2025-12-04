@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { iconMap } from "../assets/icons";
+import { CiCirclePlus, CiSearch } from "react-icons/ci";
+
 import "../App.css";
-import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   CreateBestPractice,
   GetAllBestPracticesByProfession,
@@ -109,7 +110,6 @@ export default function BestPracticesHub() {
     {}
   );
   const [saveLoading, setSaveLoading] = useState<Record<string, boolean>>({});
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const filteredProfessions = profession.filter((prof) =>
     prof.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -831,203 +831,183 @@ export default function BestPracticesHub() {
     <>
       <div className="px-2 sm:px-2 lg:px-1">
         <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2">
-          <AnimatedBackground />
 
           {/* Background Image (city illustration) */}
           <img
-            src={iconMap["heroimg"]}
+            src="https://cdn.cness.io/Best%20practice.svg"
             alt="City Skyline"
-            className="absolute bottom-[-200px] left-0 w-full object-cover z-0 pointer-events-none"
+            className="absolute left-0 w-full object-cover z-0 pointer-events-none"
           />
 
           {/* Foreground Content */}
           <div className="relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto h-full px-4 text-center -mt-5">
    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-2 sm:mb-3">
-    Best Practices Hub.
+    Best Practices Hub
   </h1>
 
-  <p className="text-base sm:text-base text-[#242424] font-openSans -mt-1">
-Empowering greater solution for life and profession.
-  </p>
-            <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-5">
-              {/* Searchable Profession Selector */}
-              <div className="relative rounded-full" ref={dropdownRef}>
-                <span
-                  className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2 "
-                  ref={measureRef}
-                  style={{
-                    fontFamily: "inherit",
-                    fontSize: "12px",
-                  }}
-                >
-                  {selectedDomainText || "All Profession"}
-                </span>
+ <p className="text-base font-semibold sm:text-base text-[#242424] font-openSans -mt-1">
+  Empowering greater solutions for life and profession.
+</p>
 
-                <div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
-                  <div
-                    className="relative w-auto md:w-fit"
-                    style={{
-                      width: textWidth ? `${textWidth}px` : "100%",
-                      minWidth: "180px",
-                      maxWidth: "100%",
-                    }}
-                  >
-                    {/* Custom Dropdown Button */}
-                    <button
-                      className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-8 appearance-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#7077FE] cursor-pointer text-[12px] w-full transition-all duration-200 flex items-center justify-between"
-                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    >
-                      <span className="truncate">
-                        {selectedDomainText || "All Profession & Interests"}
-                      </span>
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform duration-200 ${
-                          isDropdownOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    {isDropdownOpen && (
-                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-40 overflow-hidden">
-                        {/* Search Input */}
-                        <div className="p-2 border-b border-gray-100">
-                          <div className="relative">
-                            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            <input
-                              type="text"
-                              placeholder="Search professions & interests..."
-                              className="w-full pl-8 pr-8 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent"
-                              value={searchQuery}
-                              onChange={(e) => setSearchQuery(e.target.value)}
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                            {searchQuery && (
-                              <button
-                                onClick={() => setSearchQuery("")}
-                                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Clear Filter Option */}
-
-                        <div className="overflow-y-auto max-h-80">
-                          <div className="border-b border-gray-100">
-                            <button
-                              className={`w-full text-left px-4 py-2 text-xs hover:bg-gray-50 ${
-                                !selectedFilter.id
-                                  ? "bg-blue-50 text-[#7077FE]"
-                                  : ""
-                              }`}
-                              onClick={() => clearFilter()}
-                            >
-                              All Profession & Interests
-                            </button>
-                          </div>
-                          {/* Professions Section */}
-                          {filteredProfessions.length > 0 && (
-                            <div>
-                              <div className="px-2 py-2 text-left text-xs font-semibold text-gray-500 bg-gray-50 uppercase tracking-wide">
-                                Professions
-                              </div>
-                              {filteredProfessions.map((prof) => (
-                                <button
-                                  key={`p-${prof.id}`}
-                                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                                    selectedFilter.id === prof.id &&
-                                    selectedFilter.type === "profession"
-                                      ? "bg-blue-50 text-[#7077FE] font-medium"
-                                      : ""
-                                  }`}
-                                  onClick={() =>
-                                    handleFilterSelect(
-                                      prof.id,
-                                      "profession",
-                                      prof.title
-                                    )
-                                  }
-                                >
-                                  {prof.title}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Interests Section */}
-                          {filteredInterests.length > 0 && (
-                            <div>
-                              <div className="px-4 py-2 text-xs font-semibold text-gray-500 bg-gray-50 uppercase tracking-wide">
-                                Interests
-                              </div>
-                              {filteredInterests.map((int) => (
-                                <button
-                                  key={`i-${int.id}`}
-                                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                                    selectedFilter.id === int.id &&
-                                    selectedFilter.type === "interest"
-                                      ? "bg-blue-50 text-[#7077FE] font-medium"
-                                      : ""
-                                  }`}
-                                  onClick={() =>
-                                    handleFilterSelect(
-                                      int.id,
-                                      "interest",
-                                      int.name
-                                    )
-                                  }
-                                >
-                                  {int.name}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* No Results */}
-                          {filteredProfessions.length === 0 &&
-                            filteredInterests.length === 0 && (
-                              <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                                No results found for "{searchQuery}"
-                              </div>
-                            )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+            <div className="w-full max-w-xl items-center gap-3 mt-5">
+            {/* Combined Search Input + Professions Pill */}
+            <div className="relative w-full">
+              <div
+                className="flex items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden"
+                style={{ minHeight: "44px" }} /* match screenshot height */
+              >
+                {/* Left search icon + text input */}
+                <div className="flex items-center px-3">
+                  <CiSearch className="w-5 h-5 text-gray-400" />
                 </div>
-              </div>
 
-              {/* Search Input - remains the same */}
-              <div className="relative grow">
                 <input
                   type="text"
-                  placeholder="Search best practices..."
-                  className="w-full py-2 pl-3 pr-10 text-xs md:text-sm text-gray-700 placeholder:text-gray-400 bg-white border border-gray-200 rounded-full shadow-sm outline-none"
+                  placeholder="Search Best Practice"
+                  className="flex-1 text-sm md:text-base font-openSans py-3 pr-4 pl-0 text-gray-700 placeholder:text-gray-400 outline-none"
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   onKeyDown={handleKeyPress}
+                  aria-label="Search best practices"
                 />
+
+                {/* Right purple pill (dropdown trigger) */}
+              <div className="inline-block overflow-visible">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 bg-[#7077FE] text-white font-semibold rounded-full px-4 py-4 mr-[-20px] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white"
+              aria-haspopup="listbox"
+              aria-expanded={isDropdownOpen}
+              type="button"
+            >
+              <span className="text-xs md:text-sm">Professions</span>
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {isDropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                      {/* Search inside dropdown */}
+                      <div className="p-2 border-b border-gray-100">
+                        <div className="ralative">
+                          <Search className="absolute left-3 top-3/2 mt-2 -translate-y-5/1 text-gray-400 w-4 h-4" />
+
+                          <input
+                            type="text"
+                            placeholder="Search professions & interests..."
+                            className="w-full pl-8 pr-8 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          {searchQuery && (
+                            <button
+                              onClick={() => setSearchQuery("")}
+                              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="overflow-y-auto max-h-64">
+                        <div className="border-b border-gray-100">
+                          <button
+                            className={`w-full text-left px-4 py-2 text-xs hover:bg-gray-50 ${
+                              !selectedFilter.id ? "bg-blue-50 text-[#7077FE]" : ""
+                            }`}
+                            onClick={() => clearFilter()}
+                          >
+                            All Profession & Interests
+                          </button>
+                        </div>
+
+                        {filteredProfessions.length > 0 && (
+                          <div>
+                            <div className="px-2 py-2 text-left text-xs font-semibold text-black-500 bg-[#7077FE] uppercase tracking-wide">
+                              Professions
+                            </div>
+                            {filteredProfessions.map((prof) => (
+                              <button
+                                key={`p-${prof.id}`}
+                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                                  selectedFilter.id === prof.id &&
+                                  selectedFilter.type === "profession"
+                                    ? "bg-blue-50 text-[#7077FE] font-medium"
+                                    : ""
+                                }`}
+                                onClick={() =>
+                                  handleFilterSelect(prof.id, "profession", prof.title)
+                                }
+                              >
+                                {prof.title}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        {filteredInterests.length > 0 && (
+                          <div>
+                            <div className="px-4 py-2 text-xs font-semibold text-gray-500 bg-gray-50 uppercase tracking-wide">
+                              Interests
+                            </div>
+                            {filteredInterests.map((int) => (
+                              <button
+                                key={`i-${int.id}`}
+                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                                  selectedFilter.id === int.id &&
+                                  selectedFilter.type === "interest"
+                                    ? "bg-blue-50 text-[#7077FE] font-medium"
+                                    : ""
+                                }`}
+                                onClick={() =>
+                                  handleFilterSelect(int.id, "interest", int.name)
+                                }
+                              >
+                                {int.name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        {filteredProfessions.length === 0 &&
+                          filteredInterests.length === 0 && (
+                            <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                              No results found for "{searchQuery}"
+                            </div>
+                          )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Search submit button (optional click icon on the right of the pill) */}
                 <button
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#7077FE]"
                   onClick={handleSearch}
+                  className="ml-2 mr-3 focus:outline-none"
+                  aria-label="Search"
                 >
-                  🔍
                 </button>
               </div>
             </div>
+          </div>
 
-            <p className="text-gray-700 text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
-              <span
-                className="font-medium underline cursor-pointer text-[#F07EFF]"
-                onClick={openModal}
-              >
-                Add your best practice
-              </span>{" "}
-              and be an author of the best practices.
-            </p>
+
+           <p className="text-gray-700  text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
+            <span
+              className="font-medium inline-block cursor-pointer text-[#7077FE] items-center gap-3"
+              onClick={openModal}
+            >
+            <CiCirclePlus className="mr-1 inline-block w-5 h-5" />
+              Add your best practice
+            </span>{" "}
+            and be an author of the best practices.
+          </p>
+
           </div>
         </section>
       </div>

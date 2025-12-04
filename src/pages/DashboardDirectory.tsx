@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import CompanyCard from "../components/ui/CompanyCard";
 //import { Filter } from "lucide-react";
+import { CiSearch } from "react-icons/ci";
 
 import { iconMap } from "../assets/icons";
-import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   GetAspiringCompanies,
   GetBadgeListDetails,
@@ -51,7 +51,7 @@ export default function DashboardDirectory() {
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [selectedDomainText, setSelectedDomainText] = useState("");
   const [textWidth, setTextWidth] = useState(0);
-  const [Domain, setDomain] = useState([]);
+  const [Domain, setDomain] = useState<Array<{ id: string | number; title: string }>>([]);
   const [badge, setBadge] = useState<any>([]);
   const measureRef = useRef<HTMLSpanElement>(null);
   const hasFetched = useRef(false);
@@ -91,7 +91,7 @@ export default function DashboardDirectory() {
     });
 
   const [popularCompanies, setPopularCompanies] = useState<Company[]>([]);
-  console.log("🚀 ~ DashboardDirectory ~ popularCompanies:", popularCompanies)
+  console.log("🚀 ~ DashboardDirectory ~ popularCompanies:", popularCompanies);
   const [aspiringCompanies, setAspiringCompanies] = useState<Company[]>([]);
   const [inspiringCompanies, setInspiringCompanies] = useState<Company[]>([]);
 
@@ -127,10 +127,7 @@ export default function DashboardDirectory() {
   const fetchPublicCompany = async (page: number = 1) => {
     setIsLoading((prev) => ({ ...prev, popular: true }));
     try {
-      const res = await GetPublicDetails(
-        page,
-        popularPagination.itemsPerPage
-      );
+      const res = await GetPublicDetails(page, popularPagination.itemsPerPage);
       console.log("🚀 ~ fetchPopularCompany ~ res:", res);
 
       if (res?.data?.data) {
@@ -332,7 +329,7 @@ export default function DashboardDirectory() {
     if (!hasFetched.current) {
       fetchBadge();
       fetchDomain();
-      fetchPublicCompany()
+      fetchPublicCompany();
       // fetchPopularCompany();
       // fetchInspiringCompany();
       // fetchAspiringCompany();
@@ -405,101 +402,79 @@ export default function DashboardDirectory() {
   return (
     <>
       <div className="px-2 sm:px-2 lg:px-1">
-        <section className="relative w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2">
-          <AnimatedBackground />
-          <img
-            src={iconMap["heroimgs"]}
-            alt="City Skyline"
-            className="absolute bottom-0 left-0 w-full object-cover z-0 pointer-events-none"
-          />
+<section className="relative w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 flex items-center justify-center">
 
-          <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto mt-15">
-          <h1 className="text-center font-[poppins] font-semibold mb-6 
-               text-[32px] leading-[1.3] tracking-[0px]
-               bg-linear-to-b from-[#4E4E4E] to-[#232323] 
-               bg-clip-text text-transparent">
-  Connect with professionals and<br />
-  like-minded individuals.
-</h1>
+  {/* Background Image Full Fit */}
+  <img
+    src="https://cdn.cness.io/Directory%20(1).svg"
+    alt="City Skyline"
+    className="absolute w-full h-full object-fit z-0 pointer-events-none"
+  />
 
-            {/* Updated responsive container */}
-            <div className="w-full mx-auto flex flex-col md:flex-row items-stretch md:items-center gap-2 h-[34px]">
-              {/* Domain Selector - now full width on mobile */}
-              <div className="relative rounded-full ">
-                {/* Measurement span with exact same text styling */}
-                <span
-                  className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
-                  ref={measureRef}
-                  style={{
-                    fontFamily: "inherit",
-                    fontSize: "12px", // Explicitly set to match select
-                  }}
-                >
-                  {selectedDomainText || "All Domains"}
-                </span>
+  {/* CENTER CONTENT - DO NOT TOUCH INSIDE */}
+  <div className="relative z-10 max-w-7xl pb-10 text-center flex-col items-center justify-center">
 
-                <div className="w-full flex justify-center md:justify-start items-center my-1 px-4 md:px-0">
-                  <div
-                    className="relative w-full max-w-[200px] md:w-fit"
-                    style={{
-                      width: textWidth ? `${textWidth}px` : "100%",
-                      minWidth: "120px",
-                      maxWidth: "100%",
-                    }}
-                  >
-                    <select
-                      className="bg-[#7077FE] rounded-full text-white font-semibold px-3 py-2 pr-6 appearance-none focus:outline-none cursor-pointer text-[12px] w-full"
-                      value={selectedDomain}
-                      onChange={(e) => {
-                        setSelectedDomain(e.target.value);
-                        const selectedText =
-                          e.target.options[e.target.selectedIndex].text;
-                        setSelectedDomainText(selectedText);
-                      }}
-                    >
-                      <option value="" className="text-white text-[12px]">
-                        All Profession
-                      </option>
-                      {Domain.map((domain: any) => (
-                        <option
-                          key={domain.id}
-                          value={domain.id}
-                          className="text-white text-[12px]"
-                        >
-                          {domain.title}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs pointer-events-none">
-                      ▼
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* Search Input - full width on mobile */}
-              <div className="relative grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 h-full shadow-sm ">
-                <input
-                  type="text"
-                  placeholder="Technology and AI"
-                  className="w-full py-2 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-full px-2"
-                  value={searchQuery || ""}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={handleKeyPress}
-                />
-                <button
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
-                  onClick={handleSearch}
-                >
-                  🔍
-                </button>
-              </div>
-            </div>
+    <h1 className="text-center font-[poppins] font-semibold mb-6 
+      text-[32px] leading-[1.3] bg-linear-to-b from-[#4E4E4E] to-[#232323] 
+      bg-clip-text text-transparent">
+      Connect with professionals and<br />
+      like-minded individuals.
+    </h1>
 
-            <p className="text-gray-700 text-xs font-['Open_Sans'] md:text-sm mt-16 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
-              Connect with conscious audience
-            </p>
+    {/* Search Bar Wrapper */}
+    <div className="w-full flex justify-center mb-4">
+      <div className="w-full bg-white rounded-full shadow-[0_10px_30px_rgba(112,119,254,0.15)] 
+        flex items-center pl-5 h-14 max-w-[650px]">
+
+        <span className="text-[#7077FE] mr-3 text-lg">
+          <CiSearch />
+        </span>
+
+        <input
+          type="text"
+          placeholder="Search Best Practice"
+          className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none"
+          value={searchQuery || ""}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyPress}
+        />
+
+        {/* Dropdown */}
+        <div className="relative shrink-0">
+          <select
+            className="bg-[#6340FF] text-white font-semibold rounded-full h-12 px-6 pr-1 text-sm appearance-none 
+              focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]"
+            value={selectedDomain}
+            onChange={(e) => {
+              setSelectedDomain(e.target.value);
+              const selectedText = e.target.options[e.target.selectedIndex].text;
+              setSelectedDomainText(selectedText);
+            }}
+          >
+            <option value="">Professions</option>
+            {Domain.map((domain) => (
+              <option key={domain.id} value={domain.id}>
+                {domain.title}
+              </option>
+            ))}
+          </select>
+
+          <div className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-white text-xs">
+            ▼
           </div>
-        </section>
+        </div>
+
+      </div>
+    </div>
+
+    <p className="text-xs text-[#6340FF] font-[600] md:text-sm ">
+      Connect with conscious audience
+    </p>
+
+  </div>
+</section>
+
+
       </div>
 
       <section className="py-6 px-1 bg-[#f9f9f9] border-t border-gray-100 ">
@@ -579,7 +554,7 @@ export default function DashboardDirectory() {
         </section>
       ) : (
         <>
-        <section className="py-12 px-1 bg-[#f9f9f9] border-t border-gray-100 pt-2">
+          <section className="py-12 px-1 bg-[#f9f9f9] border-t border-gray-100 pt-2">
             <div className="w-full mx-auto">
               {/* <h3 className="text-lg font-semibold mb-4">Popular People</h3> */}
               {isLoading.public ? (
@@ -590,26 +565,31 @@ export default function DashboardDirectory() {
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
                     {sortByName(popularCompanies).map((company) => {
-                      console.log("🚀 ~ DashboardDirectory ~ company:", company)
-                      return <CompanyCard
-                        id={company.id}
-                        key={company.id}
-                        name={company.name}
-                        domain={company.domain}
-                        logoUrl={company.logo}
-                        bannerUrl={company.banner}
-                        location={company.location}
-                        description={company.description}
-                        tags={company.tags}
-                        rating={company.rating}
-                        isCertified={company.isCertified}
-                        is_organization={company.is_organization}
-                        is_person={company.is_person}
-                        routeKey={company.id}
-                        level={company.level}
-                        interest={company.interests}
-                        profession={company.professions}
-                      />;
+                      console.log(
+                        "🚀 ~ DashboardDirectory ~ company:",
+                        company
+                      );
+                      return (
+                        <CompanyCard
+                          id={company.id}
+                          key={company.id}
+                          name={company.name}
+                          domain={company.domain}
+                          logoUrl={company.logo}
+                          bannerUrl={company.banner}
+                          location={company.location}
+                          description={company.description}
+                          tags={company.tags}
+                          rating={company.rating}
+                          isCertified={company.isCertified}
+                          is_organization={company.is_organization}
+                          is_person={company.is_person}
+                          routeKey={company.id}
+                          level={company.level}
+                          interest={company.interests}
+                          profession={company.professions}
+                        />
+                      );
                     })}
                   </div>
                   <Pagination
