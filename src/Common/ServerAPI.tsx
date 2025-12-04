@@ -119,7 +119,9 @@ export const EndPoint = {
   emailverify: "/auth/email-verify",
   paymentverify: "/payment/payment-confirm",
   profile: "/profile",
+  social_user_profile: "/profile/social-user-profile",
   public_profile: "/profile/public",
+  social_profile: "/profile/social-user-profile",
   profile_remove: "/profile/image/remove",
   organizationProfile: "/organization-profile",
   organizationNumber: "/organization-profile/verify-identify",
@@ -168,6 +170,7 @@ export const EndPoint = {
   user_post: "/user/posts",
   save_post: "/user/posts/save",
   unsave_post: "/user/posts/unsave",
+  edit_post: "/user/posts/update",
   get_save_posts: "/user/posts/get/save/posts",
   report_post: "/user/posts/report",
   mention_user_profile: "/user/post/comments/getuserprofile",
@@ -714,6 +717,9 @@ export const GetSubDomainDetails = (formData: string): ApiResponse => {
 export const SubmitProfileDetails = (formData: any): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.profile);
 };
+export const SubmitSocialProfileDetails = (formData: any): ApiResponse => {
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.social_user_profile);
+};
 export const removeProfileImage = (type: any): ApiResponse => {
   let params: { [key: string]: any } = {};
   params["type"] = type;
@@ -1100,6 +1106,10 @@ export const GetPublicProfileDetailsById = (id: any): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.public_profile}/${id}`);
 };
+export const GetSocialProfileDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.social_profile}`);
+};
 export const GetOrganiZationProfileDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(
@@ -1263,6 +1273,11 @@ export const FeedPostsDetails = (page: any) => {
 export const AddPost = (formData: any): ApiResponse => {
   // console.log('POST FORMDATA----->', Object.fromEntries(formData.entries()));
   return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.create_post);
+};
+export const EditPost = (id: string, formData: FormData): ApiResponse => {
+  // Append ID to formData
+  formData.append("id", id);
+  return executeAPI(ServerAPI.APIMethod.POST, formData, EndPoint.edit_post);
 };
 
 export const DeleteUserPost = (id: string): ApiResponse => {

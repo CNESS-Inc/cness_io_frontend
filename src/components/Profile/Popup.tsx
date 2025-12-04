@@ -15,6 +15,7 @@ import SharePopup from "../Social/SharePopup";
 import { buildShareUrl, copyPostLink } from "../../lib/utils";
 import like from "../../assets/like.svg";
 import comment from "../../assets/comment.svg";
+import EditPostModal from "../../pages/EditPostModal";
 
 interface Media {
   type: "image" | "video" | "text";
@@ -136,7 +137,7 @@ const PostPopup: React.FC<PopupProps> = ({
       // Refresh comments after posting
       const refreshData = isReel
         ? FetchCommentStory(post.id)
-        : GetComment(post.id,1);
+        : GetComment(post.id, 1);
       refreshData
         .then((data) => {
           const rows = data.data.data?.rows || [];
@@ -210,7 +211,7 @@ const PostPopup: React.FC<PopupProps> = ({
         .finally(() => setIsCommentsLoading(false));
     } else {
       // Use post comment APIs (existing code)
-      GetComment(post.id,1)
+      GetComment(post.id, 1)
         .then((data) => {
           const rows = data.data.data?.rows || [];
           const mapped: CommentItem[] = rows.map((item: any) => ({
@@ -247,7 +248,7 @@ const PostPopup: React.FC<PopupProps> = ({
       setReplyInput("");
       setShowReplyBoxFor("");
       // Refresh comments after posting
-      GetComment(post.id,1)
+      GetComment(post.id, 1)
         .then((data) => {
           const rows = data.data.data?.rows || [];
           const mapped: CommentItem[] = rows.map((item: any) => ({
@@ -343,12 +344,18 @@ const PostPopup: React.FC<PopupProps> = ({
     });
   };
 
-  function onEditPost() {
-    throw new Error("Function not implemented.");
-  }
-
   const shouldShowMediaSection =
     post?.media?.type === "image" || post?.media?.type === "video";
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleEdit = () => {
+    setIsEditModalOpen(true);
+  };
+  const handlePostUpdated = () => {
+    setIsEditModalOpen(false);
+    setOpen(false)
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
@@ -421,16 +428,18 @@ const PostPopup: React.FC<PopupProps> = ({
                             </button>
                             <button
                               className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0] transition-colors duration-200 w-full text-left"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onEditPost?.();
-                                setOpen(false);
-                              }}
+                              onClick={handleEdit}
                               aria-label="Edit post"
                             >
                               <FiEdit2 className="text-green-500" />
                               Edit
                             </button>
+                            <EditPostModal
+                              isOpen={isEditModalOpen}
+                              onClose={() => setIsEditModalOpen(false)}
+                              posts={post}
+                              onPostUpdated={handlePostUpdated}
+                            />
                           </>
                         )}
                         <button
@@ -666,7 +675,8 @@ const PostPopup: React.FC<PopupProps> = ({
                               <div key={reply.id} className="flex gap-3 pt-2">
                                 <img
                                   src={
-                                    reply.profile.profile_picture || "/profile.png"
+                                    reply.profile.profile_picture ||
+                                    "/profile.png"
                                   }
                                   alt={`${reply.profile.first_name} ${reply.profile.last_name}`}
                                   className="w-8 h-8 rounded-full object-cover shrink-0"

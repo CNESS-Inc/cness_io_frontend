@@ -1,14 +1,112 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { useLocation } from "react-router-dom";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import { PaymentDetails } from "../Common/ServerAPI";
 
 const Certification: React.FC = () => {
+  const location = useLocation();
+  const { showToast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<'yearly' | 'monthly'>('yearly');
+  const [plansData, setPlansData] = useState<any[]>([]); // Changed to array
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.plans) {
+      setPlansData(location.state.plans || []);
+      
+      if (location.state.assessmentSubmitted) {
+        showToast({
+          message: "Assessment submitted successfully!",
+          type: "success",
+          duration: 4000,
+        });
+      }
+    }
+  }, [location]);
+
+  // Handle plan selection for payment
+  const handlePlanSelection = async (planType: 'yearly' | 'monthly') => {
+    try {
+      setIsProcessing(true);
+      
+      // Find the selected plan data
+      const selectedPlanData = plansData.find(plan => 
+        planType === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice
+      );
+      
+      if (!selectedPlanData) {
+        showToast({
+          message: "Plan data not found",
+          type: "error",
+          duration: 3000,
+        });
+        return;
+      }
+
+      // Determine which plan (monthly/yearly) to use
+      let planToUse;
+      if (planType === 'yearly' && selectedPlanData.yearlyPlanData) {
+        planToUse = selectedPlanData.yearlyPlanData;
+      } else if (planType === 'monthly' && selectedPlanData.monthlyPlanData) {
+        planToUse = selectedPlanData.monthlyPlanData;
+      } else {
+        // Fallback to the plan data structure
+        planToUse = selectedPlanData;
+      }
+
+      const payload = {
+        plan_id: planToUse.id,
+        plan_type: planType === 'yearly' ? "Yearly" : "Monthly",
+      };
+
+      console.log("Payment payload:", payload);
+
+      const res = await PaymentDetails(payload);
+      
+      if (res?.data?.data?.url) {
+        const url = res.data.data.url;
+        console.log("Redirecting to payment:", url);
+        window.location.href = url; // Redirect to payment page
+      } else {
+        console.error("Payment URL not found in response");
+        showToast({
+          message: "Payment URL not available. Please try again.",
+          type: "error",
+          duration: 4000,
+        });
+      }
+    } catch (error: any) {
+      console.error("Error in handlePlanSelection:", error);
+      showToast({
+        message: error?.response?.data?.error?.message || "Payment processing failed. Please try again.",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Extract plan data
+  const getYearlyPlanData = () => {
+    return plansData.find(plan => plan.yearlyPrice) || {};
+  };
+
+  const getMonthlyPlanData = () => {
+    return plansData.find(plan => plan.monthlyPrice) || {};
+  };
+
+  const yearlyPlan = getYearlyPlanData();
+  const monthlyPlan = getMonthlyPlanData();
+
+  const yearlyPrice = yearlyPlan?.yearlyPrice || "";
+  const originalYearlyPrice = yearlyPlan?.originalYearlyPrice || "";
+  const monthlyPrice = monthlyPlan?.monthlyPrice || "$9";
 
   return (
     <div className="min-h-screen bg-[#F5F6FB] flex flex-col">
-      {/* Top spacing to match dashboard header height */}
       <div className="pt-10 px-6 md:px-10 lg:px-16 w-full max-w-6xl mx-auto">
-        {/* Heading + CTA */}
         <div className="text-center max-w-2xl mx-auto mb-10">
           <h1 className="text-[28px] md:text-[32px] font-semibold text-[#1A1A1A] mb-3 font-[Poppins]">
             Get Your Aspiring Certification Today
@@ -18,219 +116,223 @@ const Certification: React.FC = () => {
             strengthens your practices, and guides you toward deeper personal development.
           </p>
 
-            <button
+          <button
             type="button"
-            className="mt-6 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#7077FE] to-[#F07EFF] px-6 py-2 text-sm font-medium text-white hover:brightness-105 transition-colors border-0 font-[Poppins]"
-            >
+            className="mt-6 inline-flex items-center justify-center rounded-full bg-linear-to-r from-[#7077FE] to-[#F07EFF] px-6 py-2 text-sm font-medium text-white shadow-md hover:brightness-105 transition-colors border-0 font-[Poppins]"
+            onClick={() => setSelectedPlan('yearly')}
+          >
             Start Your Conscious Journey
-            </button>
-
+          </button>
         </div>
 
-        {/* Pricing cards container */}
         <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 md:gap-10 mb-16">
-          {/* Yearly / Premium Membership (highlighted) */}
+          {/* Yearly Plan Card */}
           <div 
             className="relative w-full max-w-sm cursor-pointer"
             onClick={() => setSelectedPlan('yearly')}
           >
-        {/* Outer gradient border like Figma */}
-        <div className={`rounded-[22px]   pt-1 pr-1 pl-1 pb-1 ${
-          selectedPlan === 'yearly' 
-            ? 'bg-gradient-to-b from-[#F07EFF] to-[#6745FF]' 
-            : 'bg-transparent'
-        }`}>
-            {selectedPlan === 'yearly' && (
-            <div className="flex justify-center">
-              <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-white tracking-[0.12em]">
-                YEARLY
-              </span>
+            <div className={`rounded-[22px] pt-1 pr-1 pl-1 pb-1 ${
+              selectedPlan === 'yearly' 
+                ? 'bg-linear-to-b from-[#F07EFF] to-[#6745FF]' 
+                : 'bg-transparent'
+            }`}>
+              {selectedPlan === 'yearly' && (
+                <div className="flex justify-center">
+                  <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-white tracking-[0.12em]">
+                    YEARLY
+                  </span>
+                </div>
+              )}
+              
+              <div className={`relative bg-white rounded-[18px] shadow-[0_18px_45px_rgba(49,45,119,0.18)] px-8 pt-6 pb-6 ${
+                selectedPlan !== 'yearly' ? 'border-2 border-[#E5E7EB]' : ''
+              }`}>
+                {selectedPlan !== 'yearly' && (
+                  <div className="flex justify-center mb-4">
+                    <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-[#1F2328] tracking-[0.08em]">
+                      YEARLY
+                    </span>
+                  </div>
+                )}
+
+                <h2 className="text-[24px] font-light font-[Poppins] text-[#1A1A1A] text-center leading-7 tracking-[-0.24px]">
+                  {yearlyPlan?.title || "Premium Membership"}
+                </h2>
+                <p className="mt-2 text-xs font-[Poppins] text-[#777A8C] text-center leading-relaxed">
+                  {yearlyPlan?.description || "This helps us support your experience and gives you access to all premium features."}
+                </p>
+                <div className="mt-6 text-center space-y-2">
+                  <button
+                    type="button"
+                    className="inline-flex font-[Poppins] items-center justify-center rounded-xl bg-transparent px-3 py-1 text-[12px] tracking-[0.08em] text-[#59636E] border border-[#E0D6FF]"
+                  >
+                    Starting at
+                  </button>
+
+                  <div className="flex items-end justify-center gap-2">
+                    <span className="text-4xl font-[Poppins] text-[#59636E] line-through">
+                      {originalYearlyPrice}
+                    </span>
+                    <span className="text-4xl font-semibold font-[Poppins] text-[#1A1A1A]">
+                      {yearlyPrice}
+                    </span>
+                    <span className="text-sm font-[Poppins] text-[#777A8C] mb-1">
+                      per user/year
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className={`mt-6 w-full font-[Poppins] rounded-lg py-2.5 text-sm font-medium shadow-md hover:brightness-105 transition ${
+                    selectedPlan === 'yearly'
+                      ? 'bg-[#6340FF] text-white'
+                      : 'bg-white border-2 border-[#CBD5E1] text-[#8157FF]'
+                  }`}
+                  onClick={() => handlePlanSelection('yearly')}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? "Processing..." : (yearlyPlan?.buttonText || "Buy Now")}
+                </button>
+
+                {/* Features */}
+                <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
+                  {(yearlyPlan?.features && yearlyPlan.features.length > 0) ? (
+                    yearlyPlan.features.map((feature: string, index: number) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))
+                  ) : (
+                    <>
+                      <li className="flex items-start gap-2">
+                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                        <span>Full access to directory</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                        <span>Marketplace</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                        <span>Best practice hub</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                        <span>Social media</span>
+                      </li>
+                    </>
+                  )}
+                </ul>
+              </div>
             </div>
-          )}
-    
-    {/* Inner white card */}
-    <div className={`relative bg-white rounded-[18px] shadow-[0_18px_45px_rgba(49,45,119,0.18)] px-8 pt-6 pb-0 ${
-      selectedPlan !== 'yearly' ? 'border-2 border-[#E5E7EB]' : ''
-    }`}>
-      {/* Badge */}
-        {selectedPlan !== 'yearly' && (
-        <div className="flex justify-center mb-4">
-          <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-[#1F2328] tracking-[0.08em]">
-            YEARLY
-          </span>
-        </div>
-      )}
+          </div>
 
-      <h2 className="text-[24px] font-light font-[Poppins] text-[#1A1A1A] text-center leading-[28px] tracking-[-0.24px]">
-        Membership
-      </h2>
-      <p className="mt-2 text-xs font-[Poppins] text-[#777A8C] text-center leading-relaxed">
-        This helps us support your experience and gives you access to all premium features.
-      </p>
-
-      {/* Price block */}
-      <div className="mt-6 text-center space-y-2">
-        <button
-          type="button"
-          className="inline-flex  font-[Poppins] items-center justify-center rounded-[12px] bg-transparent px-3 py-1 text-[12px] tracking-[0.08em] text-[#59636E] border border-[#E0D6FF]"
-        >
-          Starting at
-        </button>
-
-        <div className="flex items-end justify-center gap-2">
-          <span className="text-4xl font-[Poppins] text-[#59636E] line-through">
-            $108
-          </span>
-          <span className="text-4xl font-semibold font-[Poppins] text-[#1A1A1A]">
-            $99
-          </span>
-          <span className="text-sm font-[Poppins] text-[#777A8C] mb-1">
-            per user
-          </span>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        className={`mt-6 w-full font-[Poppins] rounded-[8px] py-2.5 text-sm font-medium shadow-md hover:brightness-105 transition ${
-          selectedPlan === 'yearly'
-            ? 'bg-[#6340FF] text-white'
-            : 'bg-white border-2 border-[#CBD5E1] text-[#8157FF]'
-        }`}
-      >
-        Buy Now
-      </button>
-
-      {/* Yearly Features */}
-      <div className="mt-6 -mx-8 bg-[#F6F8FA] rounded-b-[18px] px-8 py-6">
-        <ul className="space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
-          <li className="flex items-start gap-2">
-            <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-            <span>Full access to directory</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-            <span>Marketplace</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-            <span>Best practice hub</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-            <span>Social media</span>
-          </li>
-        </ul>
-      </div>
-
-
-    </div>
-  </div>
-</div>
-
-
-          {/* Monthly / Premium Membership */}
+          {/* Monthly Plan Card */}
           <div 
             className="relative w-full max-w-sm cursor-pointer"
             onClick={() => setSelectedPlan('monthly')}
-          >
-          {/* Outer gradient border like Figma */} 
-          <div className={`rounded-[22px]  pt-1 pr-1 pl-1 pb-1 ${
-            selectedPlan === 'monthly' 
-              ? 'bg-gradient-to-b from-[#F07EFF] to-[#6745FF]' 
-              : 'bg-transparent'
-          }`}>
-          
+          > 
+            <div className={`rounded-[22px] pt-1 pr-1 pl-1 pb-1 ${
+              selectedPlan === 'monthly' 
+                ? 'bg-linear-to-b from-[#F07EFF] to-[#6745FF]' 
+                : 'bg-transparent'
+            }`}>
               {selectedPlan === 'monthly' && (
-      <div className="flex justify-center">
-        <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-white tracking-[0.12em]">
-          MONTHLY
-        </span>
-      </div>
-    )}
+                <div className="flex justify-center">
+                  <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-white tracking-[0.12em]">
+                    MONTHLY
+                  </span>
+                </div>
+              )}
+              <div className={`relative bg-white rounded-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] px-8 pt-6 pb-6 ${
+                selectedPlan !== 'monthly' ? 'border-2 border-[#E5E7EB]' : ''
+              }`}>
+                {selectedPlan !== 'monthly' && (
+                  <div className="flex justify-center mb-4">
+                    <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-[#1F2328] tracking-[0.08em]">
+                      MONTHLY
+                    </span>
+                  </div>
+                )}
+                <h2 className="text-[24px] font-light font-[Poppins] text-[#1A1A1A] text-center leading-7 tracking-[-0.24px]">
+                  {monthlyPlan?.title || "Premium Membership"}
+                </h2>
+                <p className="mt-2 text-xs text-[#777A8C] text-center leading-relaxed font-[Poppins]">
+                  {monthlyPlan?.description || "This helps us support your experience and gives you access to all premium features."}
+                </p>
 
-
-          {/* Inner white card */}
-
-          <div className={`relative bg-white rounded-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] px-8 pt-6 pb-0 ${
-            selectedPlan !== 'monthly' ? 'border-2 border-[#E5E7EB]' : ''
-          }`}>
-            {/* Badge */}
-            {selectedPlan !== 'monthly' && (
-        <div className="flex justify-center mb-4">
-          <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-[#1F2328] tracking-[0.08em]">
-            MONTHLY
-          </span>
-        </div>
-      )}
-            <h2 className="text-[24px] font-light font-[Poppins] text-[#1A1A1A] text-center leading-[28px] tracking-[-0.24px]">
-              Membership
-            </h2>
-            <p className="mt-2 text-xs text-[#777A8C] text-center leading-relaxed font-[Poppins]">
-              This helps us support your experience and gives you access to all premium features.
-            </p>
-
-            {/* Price block */}
-            <div className="mt-6 text-center">
-              <button
+                {/* Price block */}
+                <div className="mt-6 text-center">
+                  <button
                     type="button"
-                    className="inline-flex  font-[Poppins] items-center justify-center rounded-[12px] bg-transparent px-3 py-1 text-[12px] tracking-[0.08em] text-[#59636E] border border-[#E0D6FF]"
-                    >
+                    className="inline-flex font-[Poppins] items-center justify-center rounded-xl bg-transparent px-3 py-1 text-[12px] tracking-[0.08em] text-[#59636E] border border-[#E0D6FF]"
+                  >
                     Starting at
-                    </button>
+                  </button>
 
-              <div className="flex pt-2 items-end justify-center gap-2">
-                <span className="text-4xl font-[Poppins] font-semibold text-[#1A1A1A]">
-                  $9
-                </span>
-                <span className="text-sm text-[#777A8C] mb-1 block">
-                  per user
-                </span>
+                  <div className="flex pt-2 items-end justify-center gap-2">
+                    <span className="text-4xl font-[Poppins] font-semibold text-[#1A1A1A]">
+                      {monthlyPrice}
+                    </span>
+                    <span className="text-sm text-[#777A8C] mb-1 block">
+                      per user/month
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className={`mt-6 w-full font-[Poppins] rounded-lg py-2.5 text-sm font-medium shadow-md hover:brightness-105 transition ${
+                    selectedPlan === 'monthly'
+                      ? 'bg-[#6340FF] text-white'
+                      : 'bg-white border-2 border-[#CBD5E1] text-[#8157FF]'
+                  }`}
+                  onClick={() => handlePlanSelection('monthly')}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? "Processing..." : (monthlyPlan?.buttonText || "Buy Now")}
+                </button>
+
+                {/* Features */}
+                <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
+                  {(monthlyPlan?.features && monthlyPlan.features.length > 0) ? (
+                    monthlyPlan.features.map((feature: string, index: number) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))
+                  ) : (
+                    <>
+                      <li className="flex items-start gap-2">
+                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                        <span>Full access to directory</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                        <span>Marketplace</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                        <span>Best practice hub</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                        <span>Social media</span>
+                      </li>
+                    </>
+                  )}
+                </ul>
               </div>
             </div>
-
-            <button
-              type="button"
-              className={`mt-6 w-full font-[Poppins] rounded-[8px] py-2.5 text-sm font-medium hover:brightness-105 transition ${
-                selectedPlan === 'monthly'
-                  ? 'bg-[#6340FF] text-white'
-                  : 'bg-white border-2 border-[#CBD5E1] text-[#8157FF]'
-              }`}
-            >
-              Buy Now
-            </button>
-
-            {/* Monthly Features */}
-          <div className="mt-6 -mx-8 bg-[#F6F8FA] rounded-b-[18px] px-8 py-6">
-            <ul className="space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
-              <li className="flex items-start gap-2">
-                <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-                <span>Full access to directory</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-                <span>Marketplace</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-                <span>Best practice hub</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base flex-shrink-0" />
-                <span>Social media</span>
-              </li>
-            </ul>
-          </div>
-
-          </div>
-          </div>
           </div>
         </div>
       </div>
 
-      {/* Footer placeholder (matches white strip at bottom in design) */}
       <div className="mt-auto bg-white border-t border-[#E5E7EB] py-8 px-6 md:px-10 lg:px-16">
-        {/* Put your existing dashboard footer / quick links here */}
+        {/* Your existing dashboard footer / quick links here */}
       </div>
     </div>
   );
