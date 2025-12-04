@@ -437,7 +437,7 @@ const PostPopup: React.FC<PopupProps> = ({
                             <EditPostModal
                               isOpen={isEditModalOpen}
                               onClose={() => setIsEditModalOpen(false)}
-                              post={post}
+                              posts={post}
                               onPostUpdated={handlePostUpdated}
                             />
                           </>

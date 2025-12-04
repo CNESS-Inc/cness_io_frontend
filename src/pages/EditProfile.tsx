@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import altprofile from "../assets/altprofile.png";
 import { useNavigate } from "react-router-dom";
 import {
@@ -6,9 +6,14 @@ import {
   GetInterestsDetails,
   GetProfessionalDetails,
   GetSocialProfileDetails,
+  MeDetails,
+  SubmitProfileDetails,
   SubmitSocialProfileDetails,
 } from "../Common/ServerAPI";
 import CreatableSelect from "react-select/creatable";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import Cropper from "../components/ui/Cropper";
+
 
 // Add these custom styles for the select components
 const customStyles = {
@@ -176,6 +181,8 @@ const UserProfileForm: React.FC = () => {
   const [about, setAbout] = useState("");
   const [profilePicture, setProfilePicture] = useState("");
   const navigate = useNavigate();
+  // const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const inputRef = useRef(null);
 
   // Interest data state
   const [interests, setInterests] = useState<string[]>([]);
@@ -188,28 +195,114 @@ const UserProfileForm: React.FC = () => {
   // Loading states
   const [loading, setLoading] = useState(false);
 
-  const [locations , setLocations] = useState<any>([])
+  const [locations, setLocations] = useState<any>([])
+  const { showToast } = useToast();
+
+  const [cropModal, setCropModal] = useState<{
+    open: boolean;
+    src: string;
+    type: "profile" | "banner" | null;
+  }>({
+    open: false,
+    src: "",
+    type: null,
+  });
+
+  const handleImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    formKey: "profile" | "banner"
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const previewUrl = URL.createObjectURL(file);
+
+    // Open cropping modal — DO NOT upload yet
+    setCropModal({
+      open: true,
+      src: previewUrl,
+      type: formKey,
+    });
+  };
+
+  // const [uploadProgress, setUploadProgress] = useState<{
+  //   type: "profile" | "banner" | null;
+  //   message: string;
+  // }>({ type: null, message: "" });
+
+  const handleCropSave = async (blob: Blob) => {
+
+    // Convert blob -> file for backend
+    const croppedFile = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+
+    // setUploadProgress({
+    //   type: cropModal.type,
+    //   message: "Uploading cropped image...",
+    // });
+
+    try {
+      const formData = new FormData();
+
+      if (cropModal.type === "profile") {
+        formData.append("profile", croppedFile);
+      } else {
+        formData.append("banner", croppedFile);
+      }
+
+      const res = await SubmitProfileDetails(formData);
+
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+
+      // Fetch updated user profile
+      const response = await MeDetails();
+      const userData = response?.data?.data?.user;
+
+      if (cropModal.type === "profile" && userData.profile_picture) {
+        localStorage.setItem("profile_picture", userData.profile_picture);
+        setProfilePicture(userData.profile_picture || altprofile);
+      }
+
+    } catch (err: any) {
+      showToast({
+        message: err?.response?.data?.error?.message || "Image upload failed",
+        type: "error",
+        duration: 5000,
+      });
+    }
+
+    setCropModal({
+      open: false,
+      src: "",
+      type: null,
+    });
+
+    // setUploadProgress({ type: null, message: "" });
+  };
 
   const locationOptions = locations.map((loc: any) => loc.name);
 
-    const GetCountry = async () => {
-      try {
-        const response = await GetCountryDetails();
-        console.log("🚀 ~ GetCountry ~ response:", response)
-        setLocations(response.data.data);
-      } catch (error: any) {
-        console.log("🚀 ~ GetCountry ~ error:", error)
-      }
-    };
-      const handleLocationChange = (selectedCountry: string) => {
+  const GetCountry = async () => {
+    try {
+      const response = await GetCountryDetails();
+      console.log("🚀 ~ GetCountry ~ response:", response)
+      setLocations(response.data.data);
+    } catch (error: any) {
+      console.log("🚀 ~ GetCountry ~ error:", error)
+    }
+  };
+  const handleLocationChange = (selectedCountry: string) => {
     // Here you can either store just the country name
     setLocation(selectedCountry);
   };
 
-    useEffect(() => {
-      GetCountry()
-    }, [])
-    
+  useEffect(() => {
+    GetCountry()
+  }, [])
+
   // ================================
   // 🔹 HANDLE INTERESTS CHANGE
   // ================================
@@ -345,7 +438,7 @@ const UserProfileForm: React.FC = () => {
         setAbout(profileData.about_us || "");
 
         // Set location from location object
-         if (profileData.country?.name) {
+        if (profileData.country?.name) {
           setLocation(profileData.country.name);
         }
         // If location is stored differently in your API, adjust accordingly
@@ -381,49 +474,49 @@ const UserProfileForm: React.FC = () => {
   // ================================
   // 🔹 HANDLE SAVE
   // ================================
-const handleSave = async () => {
-  try {
-    // Find the selected country object from locations
-    const selectedCountry = locations.find((loc: any) => loc.name === location);
-    const countryId = selectedCountry?.id || "";
+  const handleSave = async () => {
+    try {
+      // Find the selected country object from locations
+      const selectedCountry = locations.find((loc: any) => loc.name === location);
+      const countryId = selectedCountry?.id || "";
 
-    // Prepare data for API
-    const payload = {
-      first_name: firstName,
-      last_name: lastName,
-      about_us: about,
-      username: userId.startsWith("@") ? userId.substring(1) : userId,
-      professions: professions.map((professionId) => {
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        
-        if (uuidRegex.test(professionId)) {
+      // Prepare data for API
+      const payload = {
+        first_name: firstName,
+        last_name: lastName,
+        about_us: about,
+        username: userId.startsWith("@") ? userId.substring(1) : userId,
+        professions: professions.map((professionId) => {
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+          if (uuidRegex.test(professionId)) {
+            return professionId;
+          }
           return professionId;
-        }
-        return professionId;
-      }),
-      interests: interests.map((interestId) => {
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        
-        if (uuidRegex.test(interestId)) {
-          return interestId;
-        }
-        
-        return interestId;
-      }),
-      country_id: countryId,
-    };
+        }),
+        interests: interests.map((interestId) => {
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-    console.log("Saving data:", payload);
-    const response = await SubmitSocialProfileDetails(payload);
-    if(response.success){
-      navigate(`/dashboard/Profile`);
+          if (uuidRegex.test(interestId)) {
+            return interestId;
+          }
+
+          return interestId;
+        }),
+        country_id: countryId,
+      };
+
+      console.log("Saving data:", payload);
+      const response = await SubmitSocialProfileDetails(payload);
+      if (response.success) {
+        navigate(`/dashboard/Profile`);
+      }
+      // Navigate back
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      // showToast error message here
     }
-    // Navigate back
-  } catch (error) {
-    console.error("Error saving profile:", error);
-    // showToast error message here
-  }
-};
+  };
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -464,7 +557,20 @@ const handleSave = async () => {
                 target.src = altprofile;
               }}
             />
-            <button className="text-[#7077FE] font-semibold text-[16px] ml-5">
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              ref={inputRef}
+              onChange={(e) =>
+                handleImageChange(e, "profile")
+              }
+            />
+            <button
+            //@ts-ignore
+              onClick={() => inputRef.current && inputRef.current?.click()}
+              className="text-[#7077FE] font-semibold text-[16px] ml-5"
+            >
               Edit
             </button>
           </div>
@@ -486,12 +592,12 @@ const handleSave = async () => {
           {/* ROW 2 */}
           <div className="flex gap-[26px] mt-4">
             <InputField label="User ID" value={userId} onChange={setUserId} />
-             <SelectField
-          label="Country"  // Changed from "Location" to "Country"
-          value={location}
-          options={locationOptions}
-          onChange={handleLocationChange}
-        />
+            <SelectField
+              label="Country"  // Changed from "Location" to "Country"
+              value={location}
+              options={locationOptions}
+              onChange={handleLocationChange}
+            />
           </div>
 
           {/* ABOUT */}
@@ -590,6 +696,21 @@ const handleSave = async () => {
             </button>
           </div>
         </>
+      )}
+
+      {cropModal.open && cropModal.type && (
+        <Cropper
+          imageSrc={cropModal.src}
+          type={cropModal.type}
+          onClose={() =>
+            setCropModal({
+              open: false,
+              src: "",
+              type: null,
+            })
+          }
+          onSave={handleCropSave}
+        />
       )}
     </div>
   );
