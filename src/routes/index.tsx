@@ -116,6 +116,7 @@ import PaymentConfirmation from "../pages/PaymentConfirmation";
 import BestPracticeSearch from "../pages/BestPracticeSearch";
 import CollectionDetail from "../pages/CollectionDetail";
 import EditProfile from "../pages/EditProfile";
+import EditDirectory from "../pages/EditDirectory";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -280,6 +281,10 @@ export const router = createBrowserRouter([
           {
             path: "directory-profile",
             element: <DirectoryProfile />,
+          },
+           {
+            path: "edit-profile",
+            element: <EditDirectory />,
           },
           {
             path: "notification",
