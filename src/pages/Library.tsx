@@ -218,7 +218,7 @@ export const ProductCard: React.FC<{ p: LibraryProduct }> = ({ p }) => {
           <span className="inline-flex items-center gap-2">
             {getCategoryIcon(p.category.name)} {p.category.name}
           </span>
-          {p.duration && (
+          {(p.category.name!="Art" && p.category.name!="Music" &&p.duration) && (
             <span className="inline-flex items-center gap-1 text-gray-500">
               <Clock size={14} /> {p.duration}
             </span>

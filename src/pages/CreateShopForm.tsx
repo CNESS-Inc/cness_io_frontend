@@ -504,7 +504,7 @@ const CreateShopForm: React.FC = () => {
     countryId: string,
     value: string
   ): string | null => {
-    if (!value.trim()) return "This field is required";
+    if (!value.trim()) return null; // Tax ID is optional
 
     // Find country from the list
     const countryData = country?.find((c: any) => c.id === countryId);
@@ -606,8 +606,6 @@ const CreateShopForm: React.FC = () => {
       newErrors.owner_date_of_birth = "Date of birth is required";
     if (!formData.owner_mobile_number.trim())
       newErrors.owner_mobile_number = "Mobile number is required";
-    if (!formData.ssn_or_ein.trim())
-      newErrors.ssn_or_ein = "SSN/EIN is required";
     if (formData.owner_address && formData.owner_address.trim().length < 10) {
       newErrors.owner_address =
         "Please enter a more detailed address (e.g., street, city, etc.)";
@@ -626,16 +624,19 @@ const CreateShopForm: React.FC = () => {
       newErrors.why_choose_your_shop = "This field is required";
     if (!formData.shop_philosophy.trim())
       newErrors.shop_philosophy = "Shop philosophy is required";
-    if (formData.shop_base_country_id) {
-      const ssnError = getSSNValidation(
-        formData.shop_base_country_id,
-        formData.ssn_or_ein
-      );
-      if (ssnError) {
-        newErrors.ssn_or_ein = ssnError;
+    // Validate SSN/EIN format only if value is provided
+    if (formData.ssn_or_ein && formData.ssn_or_ein.trim()) {
+      if (formData.shop_base_country_id) {
+        const ssnError = getSSNValidation(
+          formData.shop_base_country_id,
+          formData.ssn_or_ein
+        );
+        if (ssnError) {
+          newErrors.ssn_or_ein = ssnError;
+        }
+      } else {
+        newErrors.ssn_or_ein = "Please select a country first";
       }
-    } else {
-      newErrors.ssn_or_ein = "Please select a country first";
     }
 
     if (
@@ -643,13 +644,6 @@ const CreateShopForm: React.FC = () => {
       !/^\+?[\d\s-()]+$/.test(formData.owner_mobile_number)
     ) {
       newErrors.owner_mobile_number = "Invalid mobile number format";
-    }
-
-    if (
-      formData.ssn_or_ein &&
-      !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn_or_ein)
-    ) {
-      newErrors.ssn_or_ein = "Invalid format. Use XXX-XX-XXXX";
     }
 
     const allPoliciesChecked = policies.every((policy) => policy.checked);
@@ -908,11 +902,14 @@ const CreateShopForm: React.FC = () => {
         break;
 
       case "ssn_or_ein":
-        if (formData.shop_base_country_id) {
-          message =
-            getSSNValidation(formData.shop_base_country_id, value) || "";
-        } else {
-          message = "Please select a country first";
+        // Only validate if value is provided
+        if (value && value.trim()) {
+          if (formData.shop_base_country_id) {
+            message =
+              getSSNValidation(formData.shop_base_country_id, value) || "";
+          } else {
+            message = "Please select a country first";
+          }
         }
         break;
 
@@ -1573,8 +1570,7 @@ const CreateShopForm: React.FC = () => {
 
                   <div>
                     <label className="block font-['Open_Sans'] font-semibold text-[16px] leading-[100%] tracking-[0] text-[#242E3A] mb-2">
-                      {getSSNFieldInfo(formData.shop_base_country_id).label}{" "}
-                      <span className="text-red-500">*</span>
+                      {getSSNFieldInfo(formData.shop_base_country_id).label}
                     </label>
                     <input
                       type="text"

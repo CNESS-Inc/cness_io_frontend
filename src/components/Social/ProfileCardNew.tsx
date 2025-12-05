@@ -36,6 +36,11 @@ interface User {
 
 interface ProfileData {
   id: string;
+  badge?: {
+    level: string;
+    slug: string;
+    id: string;
+  } | null;
   user_id: string;
   first_name: string;
   last_name: string;
@@ -71,6 +76,24 @@ interface ProfileCardNewProps {
   onOpenFollowing: () => void;
 }
 
+const levels = [
+  {
+    key: "Aspiring",
+    label: "ASPIRED",
+    img: "https://cdn.cness.io/aspiringlogo.svg",
+  },
+  {
+    key: "Inspired",
+    label: "INSPIRED",
+    img: "https://cdn.cness.io/inspired1.svg",
+  },
+  {
+    key: "Leader",
+    label: "LEADER",
+    img: "https://cdn.cness.io/leader1.webp",
+  },
+];
+
 const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
   tabs,
   activeTab,
@@ -83,12 +106,14 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const badgeImg = profileData?.badge?.level ? levels.find((el) => el.key === profileData.badge?.level)?.img : '';
+
   const fetchMeDetails = async () => {
     try {
       setLoading(true);
       const res = await GetSocialProfileDetails();
       console.log("🚀 ~ fetchMeDetails ~ res:", res);
-      
+
       if (res?.success?.status && res?.data?.data) {
         setProfileData(res.data.data);
       } else {
@@ -154,7 +179,7 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
   const aboutText = profileData.about_us;
   const interests = profileData.interests.map(interest => interest.name);
   const professions = profileData.professions.map(profession => profession.title);
-  
+
   // Use counts from API
   const followers = profileData.followers_count.toString();
   const following = profileData.following_count.toString();
@@ -165,19 +190,24 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
       {/* TOP SECTION */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="relative w-[120px] h-20 shrink-0">
+          <div className="relative w-[120px] h-20 shrink-0 flex items-center">
             {/* Badge image (background) - you can update this with actual badge logic */}
+
+            <div className="absolute top-[50%] translate-y-[-50%] right-1.5 w-[70px] h-[70px] object-contain z-0 border-[1px] flex justify-center items-center border-gray-400 rounded-full">
             <img
-              src="badge-image-url.png"
+              src={badgeImg}
               alt="Badge"
-              className="absolute top-0 right-0 w-[60px] h-[60px] object-contain z-0"
+              className="w-[35px] h-[35px] object-contain z-0"
             />
+
+            </div>
+            
 
             {/* Profile image (front) */}
             <img
               src={profileImage}
               alt="Profile"
-              className="absolute top-1 left-0 w-[75px] h-[75px] rounded-full object-cover border-2 border-white z-10"
+              className="w-[75px] h-[75px] rounded-full object-cover border-2 border-white z-10"
             />
           </div>
           <div className="flex flex-col gap-3">
