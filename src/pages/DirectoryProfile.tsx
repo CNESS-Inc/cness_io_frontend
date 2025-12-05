@@ -1,13 +1,22 @@
 import { MapPin, Phone, Mail,Globe,Clock4, Music,BookOpen,Star,MessageSquareMoreIcon } from "lucide-react";
 import { useState } from "react";
-
+import EnquiryModal from "../components/directory/Enquire"; 
 const DirectoryProfile = () => {
     const [expanded, setExpanded] = useState(false);
+
+    const [showEnquiry, setShowEnquiry] = useState(false);
+
      const fullText =
     "Rachel Anderson is a dedicated Environmental Activist and Sustainability Consultant with over a decade of experience in driving eco-conscious initiatives. She has worked with nonprofits, businesses, and communities to design strategies that reduce environmental impact, promote renewable energy adoption, and create long-term sustainable growth.";
    const shortText = fullText.slice(0, 140) + "...";
 
  
+const directoryData = {
+  name: "White House",
+  logo_url: "https://static.codia.ai/image/2025-12-04/DUvvvgriSA.png",
+  city: "Bangalore",
+  country: "India"
+};
     return (
 
       <>
@@ -62,9 +71,14 @@ const DirectoryProfile = () => {
       </button>        </p>
       </div>
 
-      <button className="bg-[#7077FE] text-white px-5 py-2 rounded-full font-semibold text-sm">
-        Enquire now
-      </button>
+     <button
+  onClick={() => setShowEnquiry(true)}
+  className="bg-[#7077FE] text-white px-5 py-2 rounded-full font-semibold text-sm"
+>
+  Enquire now
+</button>
+
+
     </div>
   </div>
 </section>
@@ -562,7 +576,11 @@ const DirectoryProfile = () => {
 
 </section>
 </main>
-    
+    <EnquiryModal
+  open={showEnquiry}
+  onClose={() => setShowEnquiry(false)}
+  directory={directoryData}
+/>
     </>
   )
 }
