@@ -225,6 +225,8 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
 
   const handleFileSelectClick = () => {
     if (fileInputRef.current) {
+      // Reset the input value to allow selecting the same file again
+      fileInputRef.current.value = '';
       fileInputRef.current.click();
     }
   };
@@ -263,38 +265,36 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
     try {
       const formData = new FormData();
 
-      // Add content
+      /**
+       * Backend API Payload Structure:
+       * - id: added automatically by EditPost() function
+       * - content: post text content (required)
+       * - topic_id: selected topic ID (optional)
+       * - existing_files: JSON.stringify([urls]) - files to KEEP from current post
+       * - files: multipart file uploads - NEW files to ADD
+       *
+       * Examples:
+       * 1. Keep some + add new: existing_files=['url1.jpg'] + files=[newFile]
+       * 2. Remove all + add new: no existing_files + files=[newFile1, newFile2]
+       * 3. Keep all + add new: existing_files=['url1.jpg','url2.jpg'] + files=[newFile]
+       * 4. Update content only: existing_files=[...all urls...] + no files
+       * 5. Remove all files: no existing_files + no files
+       */
+
+      // Add content (required)
       formData.append("content", postMessage);
 
-      // Add topic if selected
+      // Add topic if selected (optional)
       if (selectedTopic) {
         formData.append("topic_id", selectedTopic);
       }
 
-      // Convert existing images URLs to File objects and add them
-      const existingFilePromises = existingImages.map(async (imageUrl, index) => {
-        try {
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
-          const fileName = imageUrl.split('/').pop() || `existing-image-${index}.jpg`;
-          const file = new File([blob], fileName, { type: blob.type || 'image/jpeg' });
-          return file;
-        } catch (error) {
-          console.error(`Failed to fetch existing image ${index}:`, error);
-          return null;
-        }
-      });
+      // Add existing image URLs as JSON stringified array (files to KEEP)
+      if (existingImages.length > 0) {
+        formData.append("existing_files", JSON.stringify(existingImages));
+      }
 
-      const existingFiles = await Promise.all(existingFilePromises);
-
-      // Add all existing files (as binary) to formData
-      existingFiles.forEach((file) => {
-        if (file) {
-          formData.append("file", file);
-        }
-      });
-
-      // Add all new image files (as binary) to formData
+      // Add all new image files (files to ADD)
       selectedImages.forEach((image) => {
         formData.append("file", image);
       });
@@ -302,9 +302,8 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       console.log("Submitting form data:");
       console.log("- Content:", postMessage);
       console.log("- Topic ID:", selectedTopic);
-      console.log("- Total files being sent:", existingFiles.filter(f => f).length + selectedImages.length);
-      console.log("- New images:", selectedImages.length);
-      console.log("- Existing images (converted to binary):", existingFiles.filter(f => f).length);
+      console.log("- Existing images (JSON array):", existingImages.length, existingImages);
+      console.log("- New images (files):", selectedImages.length);
 
       const response = await EditPost(post.id, formData);
 
@@ -315,12 +314,13 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           duration: 3000
         });
 
+        resetForm();
+        onClose();
+
+        // Call the parent callback to refresh the data
         if (onPostUpdated) {
           onPostUpdated(response.data);
         }
-
-        resetForm();
-        onClose();
       }
     } catch (err: any) {
       console.error("Error updating post:", err);
@@ -522,14 +522,6 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                               Add new image
                             </p>
                             <p className="text-[#6B7280] text-xs">Maximum 3 mb</p>
-                            <input
-                              ref={fileInputRef}
-                              type="file"
-                              accept="image/jpeg,image/jpg,image/png,image/webp"
-                              className="hidden"
-                              multiple
-                              onChange={handleImageChange}
-                            />
                           </div>
                         </div>
                       )}
@@ -557,7 +549,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                   </div>
                 )}
 
-                {/* Hidden File Input */}
+                {/* Hidden File Input - Single source of truth */}
                 <input
                   ref={fileInputRef}
                   type="file"

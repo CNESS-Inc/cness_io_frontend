@@ -722,6 +722,18 @@ export default function Profile() {
                 });
               }
             }}
+            onPostUpdated={() => {
+              // Refresh the data based on active tab
+              if (activeTab === "Conscious Acts") {
+                fetchUserPosts();
+              } else if (activeTab === "Inspiration Reels") {
+                fetchUsersReel();
+              } else if (activeTab === "Collections") {
+                fetchCollectionItems();
+              }
+              // Close the popup
+              setSelectedPost(null);
+            }}
             collection={activeTab === "Collections"}
             likesCount={selectedPost.likes ?? 0}
             insightsCount={selectedPost.reflections ?? 0}
