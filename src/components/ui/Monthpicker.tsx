@@ -81,7 +81,7 @@ export default function Monthpicker({ value, onChange, onBlur, placeholder }: Mo
             className="rounded-xl bg-white shadow-lg p-4 border border-gray-200"
           >
             <select
-              value={selectedYear ?? ""}
+              value={selectedYear ?? currentYear}
               onChange={(e) => {
                 const yr = Number(e.target.value);
                 if (selectedMonth !== null) {
@@ -91,7 +91,6 @@ export default function Monthpicker({ value, onChange, onBlur, placeholder }: Mo
               }}
               className="w-full mb-3 px-3 py-2 rounded-lg border border-gray-300 text-sm"
             >
-              <option value="">Select Year</option>
               {years.map((y) => (
                 <option key={y} value={y}>
                   {y}
@@ -105,8 +104,8 @@ export default function Monthpicker({ value, onChange, onBlur, placeholder }: Mo
                   key={i}
                   type="button"
                   onClick={() => {
-                    if (!selectedYear) return;
-                    onChange(`${selectedYear}-${String(i + 1).padStart(2, "0")}`);
+                    const yearToUse = selectedYear ?? currentYear;
+                    onChange(`${yearToUse}-${String(i + 1).padStart(2, "0")}`);
                     onBlur?.();
                     setOpen(false);
                   }}

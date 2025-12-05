@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CirclePlus, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { EditPost, GetSinglePost, getTopics } from "../Common/ServerAPI";
+import { EditPost, GetSinglePost, getTopics, GetConnectionUser, GetCountryDetails } from "../Common/ServerAPI";
+import { Link } from "react-router-dom";
 
 interface EditPostModalProps {
   isOpen: boolean;
@@ -40,11 +41,29 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   isOpen,
   onClose,
   posts,
-  userInfo,
+  userInfo: propUserInfo,
   onPostUpdated
 }) => {
   const { showToast } = useToast();
 
+  // Get userInfo from props or localStorage
+  const [userInfo, setUserInfo] = useState(() => {
+    if (propUserInfo) return propUserInfo;
+
+    // Fallback to localStorage if userInfo not provided
+    const storedName = localStorage.getItem("Name");
+    const storedId = localStorage.getItem("Id");
+    const storedProfilePic = localStorage.getItem("profile_picture");
+
+    return {
+      id: storedId || undefined,
+      name: storedName || undefined,
+      main_name: storedName || undefined,
+      profile_picture: storedProfilePic || undefined,
+    };
+  });
+
+  console.log('userInfo', userInfo)
   const [post, setPost] = useState({ ...posts });
   const [postMessage, setPostMessage] = useState("");
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
@@ -57,11 +76,63 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // New fields: feeling, location, tags
+  const [feeling, setFeeling] = useState<string>("");
+  const [feelingEmoji, setFeelingEmoji] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [locationId, setLocationId] = useState<string>("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagIds, setTagIds] = useState<string[]>([]);
+
+  // Popup states for feeling, location, and tags modals
+  const [isFeelingPopupOpen, setIsFeelingPopupOpen] = useState(false);
+  const [isLocationPopupOpen, setIsLocationPopupOpen] = useState(false);
+  const [isTagsPopupOpen, setIsTagsPopupOpen] = useState(false);
+  const [feelingSearchQuery, setFeelingSearchQuery] = useState<string>("");
+  const [locationSearchQuery, setLocationSearchQuery] = useState<string>("");
+
+  // Friends and countries list state
+  const [friends, setFriends] = useState<any[]>([]);
+  const [selectedFriends, setSelectedFriends] = useState<any[]>([]);
+  const [friendSearchQuery, setFriendSearchQuery] = useState<string>("");
+  const [countries, setCountries] = useState<any[]>([]);
+
   const topicDropdownRef = useRef<HTMLDivElement>(null);
   const topicButtonRef = useRef<HTMLButtonElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const maxChars = 2000;
   const [topics, setTopics] = useState<any[]>([]);
+
+  // Predefined feelings list
+  const feelings = [
+    { emoji: "😊", label: "Happy" },
+    { emoji: "😢", label: "Sad" },
+    { emoji: "😍", label: "Loved" },
+    { emoji: "😎", label: "Cool" },
+    { emoji: "🎉", label: "Excited" },
+    { emoji: "😌", label: "Blessed" },
+    { emoji: "😆", label: "Grateful" },
+    { emoji: "🤗", label: "Thankful" },
+    { emoji: "😇", label: "Peaceful" },
+    { emoji: "🥰", label: "Adored" },
+    { emoji: "😴", label: "Tired" },
+    { emoji: "😤", label: "Frustrated" },
+  ];
+
+  // Helper function to fetch and set location name from location_id
+  const fetchAndSetLocation = async (locationId: string) => {
+    try {
+      const response = await GetCountryDetails();
+      if (response?.data?.data) {
+        const country = response.data.data.find((c: any) => c.id === locationId);
+        if (country) {
+          setLocation(country.name);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching location:", error);
+    }
+  };
 
   // Fetch post details when modal opens
   useEffect(() => {
@@ -101,6 +172,46 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           setExistingImages(filesArray);
           setSelectedImages([]);
           setRemovedExistingImages([]);
+
+          // Load feeling, location, and tags
+          if (p.feeling) {
+            setFeeling(p.feeling);
+            // Find emoji for this feeling
+            const feelingData = feelings.find(f => f.label === p.feeling);
+            if (feelingData) {
+              setFeelingEmoji(feelingData.emoji);
+            }
+          }
+
+          // Load location
+          if (p.location_id) {
+            setLocationId(p.location_id.toString());
+            // Fetch country name from GetCountryDetails API
+            fetchAndSetLocation(p.location_id);
+          }
+
+          // Load tagged users
+          if (p.tagged_users && Array.isArray(p.tagged_users) && p.tagged_users.length > 0) {
+            const userNames = p.tagged_users.map((user: any) =>
+              `${user.first_name || ''} ${user.last_name || ''}`.trim()
+            );
+            const userIds = p.tagged_users.map((user: any) => user.id.toString());
+
+            setTags(userNames);
+            setTagIds(userIds);
+
+            // Convert tagged_users to match friend structure for selectedFriends
+            const friendsFormat = p.tagged_users.map((user: any) => ({
+              id: user.id,
+              user_id: user.id,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              username: user.username,
+              profile_picture: user.profile_picture,
+              friend_user: null
+            }));
+            setSelectedFriends(friendsFormat);
+          }
         } else {
           console.warn("Error during fetch post details", response);
           showToast({
@@ -144,6 +255,45 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   useEffect(() => {
     fetchTopics();
   }, []);
+
+  // Fetch friends for tagging
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const response = await GetConnectionUser(friendSearchQuery, 1, 100);
+        if (response?.data?.data?.rows) {
+          setFriends(response.data.data.rows);
+        }
+      } catch (error) {
+        console.error("Error fetching friends:", error);
+      }
+    };
+
+    if (isOpen && isTagsPopupOpen) {
+      const timeoutId = setTimeout(() => {
+        fetchFriends();
+      }, 300);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isOpen, isTagsPopupOpen, friendSearchQuery]);
+
+  // Fetch countries for location
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await GetCountryDetails();
+        if (response?.data?.data) {
+          setCountries(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching countries:", error);
+      }
+    };
+
+    if (isOpen && isLocationPopupOpen) {
+      fetchCountries();
+    }
+  }, [isOpen, isLocationPopupOpen]);
 
   // Handle body overflow
   useEffect(() => {
@@ -225,6 +375,8 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
 
   const handleFileSelectClick = () => {
     if (fileInputRef.current) {
+      // Reset the input value to allow selecting the same file again
+      fileInputRef.current.value = '';
       fileInputRef.current.click();
     }
   };
@@ -237,6 +389,82 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   const filteredTopics = topics.filter((topic) =>
     topic.topic_name.toLowerCase().includes(topicSearchQuery.toLowerCase())
   );
+
+  // Filter feelings based on search query
+  const filteredFeelings = feelings.filter((feeling) =>
+    feeling.label.toLowerCase().includes(feelingSearchQuery.toLowerCase())
+  );
+
+  // Filter countries based on search query
+  const filteredCountries = countries.filter((country) =>
+    country.name.toLowerCase().includes(locationSearchQuery.toLowerCase())
+  );
+
+  // Handle selecting a feeling
+  const handleSelectFeeling = (feelingLabel: string, emoji: string) => {
+    setFeeling(feelingLabel);
+    setFeelingEmoji(emoji);
+    setIsFeelingPopupOpen(false);
+    setFeelingSearchQuery("");
+  };
+
+  // Handle closing feeling popup
+  const handleCloseFeelingPopup = () => {
+    setIsFeelingPopupOpen(false);
+    setFeelingSearchQuery("");
+  };
+
+  // Handle selecting a location
+  const handleSelectLocation = (country: any) => {
+    setLocation(country.name);
+    setLocationId(country.id.toString());
+    setIsLocationPopupOpen(false);
+    setLocationSearchQuery("");
+  };
+
+  // Handle closing location popup
+  const handleCloseLocationPopup = () => {
+    setIsLocationPopupOpen(false);
+    setLocationSearchQuery("");
+  };
+
+  // Handle toggling friend selection
+  const handleToggleFriend = (friend: any) => {
+    const friendUserId = friend.friend_user?.id || friend.user_id || friend.id;
+    const isSelected = selectedFriends.find(f => {
+      const selectedId = f.friend_user?.id || f.user_id || f.id;
+      return selectedId?.toString() === friendUserId?.toString();
+    });
+    if (isSelected) {
+      setSelectedFriends(selectedFriends.filter(f => {
+        const selectedId = f.friend_user?.id || f.user_id || f.id;
+        return selectedId?.toString() !== friendUserId?.toString();
+      }));
+    } else {
+      setSelectedFriends([...selectedFriends, friend]);
+    }
+  };
+
+  // Handle confirming friend tags
+  const handleConfirmTags = () => {
+    const friendNames = selectedFriends.map(f =>
+      `${f.friend_user?.profile?.first_name || f.first_name} ${f.friend_user?.profile?.last_name || f.last_name}`
+    );
+    const friendIds = selectedFriends.map(f => {
+      const userId = f.friend_user?.id || f.user_id || f.id;
+      return userId.toString();
+    });
+    setTags(friendNames);
+    setTagIds(friendIds);
+    setIsTagsPopupOpen(false);
+    setFriendSearchQuery("");
+  };
+
+  // Handle closing tag popup
+  const handleCloseTagPopup = () => {
+    setIsTagsPopupOpen(false);
+    setFriendSearchQuery("");
+  };
 
   const handleSubmit = async () => {
     // Validation
@@ -263,38 +491,49 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
     try {
       const formData = new FormData();
 
-      // Add content
+      /**
+       * Backend API Payload Structure:
+       * - id: added automatically by EditPost() function
+       * - content: post text content (required)
+       * - topic_id: selected topic ID (optional)
+       * - existing_files: JSON.stringify([urls]) - files to KEEP from current post
+       * - files: multipart file uploads - NEW files to ADD
+       *
+       * Examples:
+       * 1. Keep some + add new: existing_files=['url1.jpg'] + files=[newFile]
+       * 2. Remove all + add new: no existing_files + files=[newFile1, newFile2]
+       * 3. Keep all + add new: existing_files=['url1.jpg','url2.jpg'] + files=[newFile]
+       * 4. Update content only: existing_files=[...all urls...] + no files
+       * 5. Remove all files: no existing_files + no files
+       */
+
+      // Add content (required)
       formData.append("content", postMessage);
 
-      // Add topic if selected
+      // Add topic if selected (optional)
       if (selectedTopic) {
         formData.append("topic_id", selectedTopic);
       }
 
-      // Convert existing images URLs to File objects and add them
-      const existingFilePromises = existingImages.map(async (imageUrl, index) => {
-        try {
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
-          const fileName = imageUrl.split('/').pop() || `existing-image-${index}.jpg`;
-          const file = new File([blob], fileName, { type: blob.type || 'image/jpeg' });
-          return file;
-        } catch (error) {
-          console.error(`Failed to fetch existing image ${index}:`, error);
-          return null;
-        }
-      });
+      // Add feeling, location, and tags
+      if (feeling) {
+        formData.append("feeling", feeling);
+      }
 
-      const existingFiles = await Promise.all(existingFilePromises);
+      if (locationId) {
+        formData.append("location_id", locationId);
+      }
 
-      // Add all existing files (as binary) to formData
-      existingFiles.forEach((file) => {
-        if (file) {
-          formData.append("file", file);
-        }
-      });
+      if (tagIds.length > 0) {
+        formData.append("tag_ids", JSON.stringify(tagIds));
+      }
 
-      // Add all new image files (as binary) to formData
+      // Add existing image URLs as JSON stringified array (files to KEEP)
+      if (existingImages.length > 0) {
+        formData.append("existing_files", JSON.stringify(existingImages));
+      }
+
+      // Add all new image files (files to ADD)
       selectedImages.forEach((image) => {
         formData.append("file", image);
       });
@@ -302,9 +541,8 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       console.log("Submitting form data:");
       console.log("- Content:", postMessage);
       console.log("- Topic ID:", selectedTopic);
-      console.log("- Total files being sent:", existingFiles.filter(f => f).length + selectedImages.length);
-      console.log("- New images:", selectedImages.length);
-      console.log("- Existing images (converted to binary):", existingFiles.filter(f => f).length);
+      console.log("- Existing images (JSON array):", existingImages.length, existingImages);
+      console.log("- New images (files):", selectedImages.length);
 
       const response = await EditPost(post.id, formData);
 
@@ -315,12 +553,13 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           duration: 3000
         });
 
+        resetForm();
+        onClose();
+
+        // Call the parent callback to refresh the data
         if (onPostUpdated) {
           onPostUpdated(response.data);
         }
-
-        resetForm();
-        onClose();
       }
     } catch (err: any) {
       console.error("Error updating post:", err);
@@ -411,7 +650,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           <div className="px-6 pt-5 flex items-center gap-2 md:gap-3">
             {userInfo && (
               <>
-                <div>
+                <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
                   <img
                     src={
                       !userInfo?.profile_picture ||
@@ -428,11 +667,93 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                       target.src = "/profile.png";
                     }}
                   />
-                </div>
-                <div>
-                  <p className="font-semibold text-sm md:text-base text-black">
-                    {userInfo?.name || "User"}
-                  </p>
+                </Link>
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-center gap-1 text-sm md:text-base">
+                    <Link to={`/dashboard/userprofile/${userInfo?.id}`} className="font-semibold text-black hover:underline">
+                      {userInfo?.name || "User"}
+                    </Link>
+                    {/* Formatted sentence: "is feeling Happy with John and 2 others at New York" */}
+                    {(feeling || tags.length > 0 || location) && (
+                      <>
+                        {feeling && (
+                          <>
+                            <span className="text-gray-600 text-xs md:text-sm">is feeling</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F2BF97]/30 rounded-full font-medium text-gray-800 text-xs">
+                              <button
+                                onClick={() => setIsFeelingPopupOpen(true)}
+                                className="hover:underline inline-flex items-center gap-1"
+                              >
+                                {feelingEmoji && <span className="text-sm">{feelingEmoji}</span>}
+                                {feeling}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setFeeling("");
+                                  setFeelingEmoji("");
+                                }}
+                                className="hover:text-red-500"
+                                title="Remove feeling"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          </>
+                        )}
+                        {tags.length > 0 && (
+                          <>
+                            <span className="text-gray-600 text-xs md:text-sm">with</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F4A5FF]/30 rounded-full font-medium text-gray-800 text-xs">
+                              <button
+                                onClick={() => setIsTagsPopupOpen(true)}
+                                className="hover:underline"
+                              >
+                                {tags.length === 1 ? (
+                                  tags[0]
+                                ) : (
+                                  `${tags[0]} and ${tags.length - 1} More`
+                                )}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setTags([]);
+                                  setTagIds([]);
+                                  setSelectedFriends([]);
+                                }}
+                                className="hover:text-red-500"
+                                title="Remove all tags"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          </>
+                        )}
+                        {location && (
+                          <>
+                            <span className="text-gray-600 text-xs md:text-sm">at</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#FF6F61]/30 rounded-full font-medium text-gray-800 text-xs">
+                              <button
+                                onClick={() => setIsLocationPopupOpen(true)}
+                                className="hover:underline"
+                              >
+                                {location}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setLocation("");
+                                  setLocationId("");
+                                }}
+                                className="hover:text-red-500"
+                                title="Remove location"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          </>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               </>
             )}
@@ -522,14 +843,6 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                               Add new image
                             </p>
                             <p className="text-[#6B7280] text-xs">Maximum 3 mb</p>
-                            <input
-                              ref={fileInputRef}
-                              type="file"
-                              accept="image/jpeg,image/jpg,image/png,image/webp"
-                              className="hidden"
-                              multiple
-                              onChange={handleImageChange}
-                            />
                           </div>
                         </div>
                       )}
@@ -557,7 +870,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                   </div>
                 )}
 
-                {/* Hidden File Input */}
+                {/* Hidden File Input - Single source of truth */}
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -570,12 +883,30 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 {/* Add to Post Section */}
                 <div className="space-y-3 mb-4 flex rounded-lg border border-[#F07EFF1A] justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
                   <p className="mb-0 text-sm font-semibold">Add to your post:</p>
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-2 w-6/12">
+                    {/* Tag Friends Icon */}
                     <button
                       type="button"
-                      onClick={handleFileSelectClick}
-                      className="flex gap-2 items-center text-sm font-medium text-gray-700 hover:opacity-80"
-                      title="Add images"
+                      onClick={() => setIsTagsPopupOpen(true)}
+                      className="flex gap-2 items-center text-sm font-medium text-gray-700 cursor-pointer hover:opacity-80"
+                      title="Tag Friends"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="#F4A5FF"
+                        className="size-6"
+                      >
+                        <path d="M5.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM2.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM18.75 7.5a.75.75 0 0 0-1.5 0v2.25H15a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H21a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
+                      </svg>
+                    </button>
+
+                    {/* Feeling Icon */}
+                    <button
+                      type="button"
+                      onClick={() => setIsFeelingPopupOpen(true)}
+                      className="flex gap-2 items-center text-sm font-medium text-gray-700 cursor-pointer hover:opacity-80"
+                      title="Add Feeling"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -586,6 +917,27 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                         <path
                           fillRule="evenodd"
                           d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-2.625 6c-.54 0-.828.419-.936.634a1.96 1.96 0 0 0-.189.866c0 .298.059.605.189.866.108.215.395.634.936.634.54 0 .828-.419.936-.634.13-.26.189-.568.189-.866 0-.298-.059-.605-.189-.866-.108-.215-.395-.634-.936-.634Zm4.314.634c.108-.215.395-.634.936-.634.54 0 .828.419.936.634.13.26.189.568.189.866 0 .298-.059.605-.189.866-.108.215-.395.634-.936.634-.54 0-.828-.419-.936-.634a1.96 1.96 0 0 1-.189-.866c0-.298.059-.605.189-.866Zm2.023 6.828a.75.75 0 1 0-1.06-1.06 3.75 3.75 0 0 1-5.304 0 .75.75 0 0 0-1.06 1.06 5.25 5.25 0 0 0 7.424 0Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+
+                    {/* Location Icon */}
+                    <button
+                      type="button"
+                      onClick={() => setIsLocationPopupOpen(true)}
+                      className="flex gap-2 items-center text-sm font-medium text-gray-700 cursor-pointer hover:opacity-80"
+                      title="Add Location"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="#FF6F61"
+                        className="size-6"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
                           clipRule="evenodd"
                         />
                       </svg>
@@ -706,6 +1058,361 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Feeling Popup Modal - Modern Apple-Style Design */}
+      {isFeelingPopupOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-[60] p-4 backdrop-blur-md bg-black/40"
+          onClick={handleCloseFeelingPopup}
+        >
+          <div
+            className="bg-white rounded-[32px] w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header with background #897AFF1A */}
+            <div className="flex items-center justify-between px-6 py-5 bg-[#897AFF1A]">
+              <button
+                onClick={handleCloseFeelingPopup}
+                className="w-10 h-10 rounded-full bg-gray-100/80 hover:bg-gray-200/80 flex items-center justify-center transition-all"
+              >
+                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <h3 className="text-xl font-bold text-[#0F1320] tracking-tight">How are you feeling?</h3>
+              <div className="w-10"></div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="px-6 pt-6 pb-4">
+              <div className="relative">
+                <svg
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={feelingSearchQuery}
+                  onChange={(e) => setFeelingSearchQuery(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            {/* Emoji Grid - Two Column Layout */}
+            <div className="px-6 pb-6 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+              {filteredFeelings.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {filteredFeelings.map((feel) => {
+                    const isSelected = feeling === feel.label;
+                    return (
+                      <button
+                        key={feel.label}
+                        onClick={() => handleSelectFeeling(feel.label, feel.emoji)}
+                        className={`flex items-center gap-3 px-4 py-4 rounded-3xl transition-all duration-200 ${
+                          isSelected
+                            ? "bg-[#7077FE]/8 shadow-sm ring-2 ring-[#7077FE]/30"
+                            : "bg-white/60 hover:bg-white/90 hover:shadow-sm"
+                        }`}
+                      >
+                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                          <span className="text-2xl">{feel.emoji}</span>
+                        </div>
+                      <div className="flex-1 text-left min-w-0">
+                        <p className="font-bold text-[#0F1320] text-base truncate">{feel.label}</p>
+                      </div>
+                    </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-16 px-6">
+                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                    <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p className="text-[#0F1320] font-semibold text-base mb-1">No matches found</p>
+                  <p className="text-gray-500 text-sm">Try searching with a different feeling</p>
+                </div>
+              )}
+            </div>
+
+            {/* Done Button */}
+            <div className="px-6 pb-6">
+              <button
+                onClick={handleCloseFeelingPopup}
+                className="w-full py-3 bg-[#7077FE] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#7077FE]/25 hover:shadow-xl hover:shadow-[#7077FE]/30 hover:bg-[#5b63e6] transition-all"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Location Popup Modal - Modern Apple-Style Design */}
+      {isLocationPopupOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-[60] p-4 backdrop-blur-md bg-black/40"
+          onClick={handleCloseLocationPopup}
+        >
+          <div
+            className="bg-white rounded-[32px] w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header with background #897AFF1A */}
+            <div className="flex items-center justify-between px-6 py-5 bg-[#897AFF1A]">
+              <button
+                onClick={handleCloseLocationPopup}
+                className="w-10 h-10 rounded-full bg-gray-100/80 hover:bg-gray-200/80 flex items-center justify-center transition-all"
+              >
+                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <h3 className="text-xl font-bold text-gray-900 tracking-tight">Search for location</h3>
+              <div className="w-10"></div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="px-6 pt-6 pb-4">
+              <div className="relative">
+                <svg
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={locationSearchQuery}
+                  onChange={(e) => setLocationSearchQuery(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            {/* Location List */}
+            <div className="px-4 pb-6 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+              {filteredCountries.length > 0 ? (
+                <div className="space-y-2">
+                  {filteredCountries.map((country) => {
+                    const isSelected = locationId === country.id.toString();
+                    return (
+                      <button
+                        key={country.id}
+                        onClick={() => handleSelectLocation(country)}
+                        className={`w-full flex items-center gap-4 px-4 py-4 rounded-3xl transition-all duration-200 ${
+                          isSelected
+                            ? "bg-[#7077FE]/8 shadow-sm ring-2 ring-[#7077FE]/30"
+                            : "bg-white/60 hover:bg-white/90 hover:shadow-sm"
+                        }`}
+                      >
+                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                        <svg
+                          className="w-6 h-6 text-gray-600"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="flex-1 text-left min-w-0">
+                        <p className="font-bold text-gray-900 text-base truncate">{country.name}</p>
+                        <p className="text-sm text-gray-500 font-medium">{country.name}</p>
+                      </div>
+                    </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-16 px-6">
+                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                    <svg className="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                      <path
+                        fillRule="evenodd"
+                        d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-gray-900 font-semibold text-base mb-1">
+                    {locationSearchQuery ? "No matches found" : "No locations available"}
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    {locationSearchQuery ? "Try searching with a different name" : "No locations to display"}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Done Button */}
+            <div className="px-6 pb-6">
+              <button
+                onClick={handleCloseLocationPopup}
+                className="w-full py-3 bg-[#7077FE] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#7077FE]/25 hover:shadow-xl hover:shadow-[#7077FE]/30 hover:bg-[#5b63e6] transition-all"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tag People Popup - Modern Apple-Style Design */}
+      {isTagsPopupOpen && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-[60] p-4 backdrop-blur-md bg-black/40"
+          onClick={handleCloseTagPopup}
+        >
+          <div
+            className="bg-white rounded-[32px] w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header with background #897AFF1A */}
+            <div className="flex items-center justify-between px-6 py-5 bg-[#897AFF1A]">
+              <button
+                onClick={handleCloseTagPopup}
+                className="w-10 h-10 rounded-full bg-gray-100/80 hover:bg-gray-200/80 flex items-center justify-center transition-all"
+              >
+                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <h3 className="text-xl font-bold text-[#0F1320] tracking-tight">Tag people</h3>
+              <div className="w-10"></div>
+            </div>
+
+            {/* Search Bar with Done Button */}
+            <div className="px-6 pt-6 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex-1 relative">
+                  <svg
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={friendSearchQuery}
+                    onChange={(e) => setFriendSearchQuery(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
+                    autoFocus
+                  />
+                </div>
+                <button
+                  onClick={handleConfirmTags}
+                  disabled={selectedFriends.length === 0}
+                  className="px-6 py-3 bg-[#7077FE] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#7077FE]/25 hover:shadow-xl hover:shadow-[#7077FE]/30 hover:bg-[#5b63e6] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+
+            {/* Selected Count Badge */}
+            {selectedFriends.length > 0 && (
+              <div className="px-6 pb-3">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#7077FE]/10 rounded-full border border-[#7077FE]/20">
+                  <div className="w-2 h-2 rounded-full bg-[#7077FE]"></div>
+                  <span className="text-sm font-semibold text-[#0F1320]">
+                    {selectedFriends.length} {selectedFriends.length === 1 ? 'person' : 'people'} selected
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* People List */}
+            <div className="px-4 pb-6 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+              {friends.length > 0 ? (
+                <div className="space-y-2">
+                  {friends.map((friend) => {
+                    // Get the actual user ID from friend (could be in different places)
+                    const friendUserId = friend.friend_user?.id || friend.user_id || friend.id;
+                    // Check if this friend is selected by comparing all possible ID variations
+                    const isSelected = selectedFriends.find(f => {
+                      const selectedId = f.friend_user?.id || f.user_id || f.id;
+                      return selectedId?.toString() === friendUserId?.toString();
+                    });
+                    const firstName = friend.friend_user?.profile?.first_name || friend.first_name || 'User';
+                    const lastName = friend.friend_user?.profile?.last_name || friend.last_name || '';
+                    const profilePic = friend.friend_user?.profile?.profile_picture || friend.profile_picture || '/profile.png';
+                    const username = friend.friend_user?.username || friend.username || 'user';
+
+                    return (
+                      <button
+                        key={friend.id}
+                        onClick={() => handleToggleFriend(friend)}
+                        className={`w-full flex items-center gap-4 px-4 py-4 rounded-3xl transition-all duration-200 ${
+                          isSelected
+                            ? "bg-[#7077FE]/8 shadow-sm"
+                            : "bg-white/60 hover:bg-white/90 hover:shadow-sm"
+                        }`}
+                      >
+                        <div className="relative flex-shrink-0">
+                          <img
+                            src={profilePic}
+                            alt={`${firstName} ${lastName}`}
+                            className="w-14 h-14 rounded-full object-cover shadow-sm"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "/profile.png";
+                            }}
+                          />
+                          {isSelected && (
+                            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#7077FE] rounded-full flex items-center justify-center shadow-md border-2 border-white">
+                              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 text-left min-w-0">
+                          <p className="font-bold text-[#0F1320] text-base truncate">{firstName} {lastName}</p>
+                          <p className="text-sm text-gray-500 font-medium">@{username}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-16 px-6">
+                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                    <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <p className="text-[#0F1320] font-semibold text-base mb-1">
+                    {friendSearchQuery ? "No matches found" : "No friends available"}
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    {friendSearchQuery ? "Try searching with a different name" : "Connect with friends to tag them"}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Close Confirmation Modal */}
       {showCloseConfirm && (

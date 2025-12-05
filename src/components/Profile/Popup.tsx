@@ -72,6 +72,7 @@ interface PopupProps {
   insightsCount?: number;
   likesCount?: number;
   collection?: boolean;
+  onPostUpdated?: () => void;
 }
 
 const PostPopup: React.FC<PopupProps> = ({
@@ -81,6 +82,7 @@ const PostPopup: React.FC<PopupProps> = ({
   likesCount,
   insightsCount,
   collection,
+  onPostUpdated,
 }) => {
   const isReel = post.is_reel;
   const [comments, setComments] = useState<CommentItem[]>([]);
@@ -352,9 +354,13 @@ const PostPopup: React.FC<PopupProps> = ({
   const handleEdit = () => {
     setIsEditModalOpen(true);
   };
-  const handlePostUpdated = () => {
+  const handlePostUpdatedCallback = () => {
     setIsEditModalOpen(false);
-    setOpen(false)
+    setOpen(false);
+    // Call the parent refresh callback if provided
+    if (onPostUpdated) {
+      onPostUpdated();
+    }
   };
 
   return (
@@ -438,7 +444,7 @@ const PostPopup: React.FC<PopupProps> = ({
                               isOpen={isEditModalOpen}
                               onClose={() => setIsEditModalOpen(false)}
                               posts={post}
-                              onPostUpdated={handlePostUpdated}
+                              onPostUpdated={handlePostUpdatedCallback}
                             />
                           </>
                         )}
