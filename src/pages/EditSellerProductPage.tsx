@@ -503,7 +503,7 @@ const EditSellerProductPage: React.FC = () => {
           if (category === "video") {
             commonData.video_url = productData.video_details?.video_files || "";
             commonData.thumbnail_url =
-              productData.video_details?.thumbnail_url || "";
+              productData.thumbnail_url || productData.video_details?.thumbnail_url || "";
             commonData.duration = productData.video_details?.duration || "";
             commonData.short_video_url =
               productData?.storytelling_video_url || "";
@@ -519,9 +519,9 @@ const EditSellerProductPage: React.FC = () => {
             setShortVideoPreview(productData?.storytelling_video_url || "");
 
             // ✅ FIX: Set thumbnail data for video category too
-            if (productData.video_details?.thumbnail_url) {
+            if (productData.thumbnail_url || productData.video_details?.thumbnail_url) {
               setThumbnailData({
-                thumbnail_url: productData.video_details.thumbnail_url,
+                thumbnail_url: productData.thumbnail_url || productData.video_details.thumbnail_url,
                 public_id: productData.public_id || "",
               });
             }
