@@ -402,13 +402,13 @@ export default function DashboardDirectory() {
   return (
     <>
       <div className="px-2 sm:px-2 lg:px-1">
-<section className="relative w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 flex items-center justify-center">
+<section className="relative h-auto max-w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 flex items-center justify-center">
 
   {/* Background Image Full Fit */}
   <img
     src="https://cdn.cness.io/Directory%20(1).svg"
     alt="City Skyline"
-    className="absolute w-full h-full object-fit z-0 pointer-events-none"
+    className="absolute w-full h-full object-cover z-0 pointer-events-none"
   />
 
   {/* CENTER CONTENT - DO NOT TOUCH INSIDE */}
