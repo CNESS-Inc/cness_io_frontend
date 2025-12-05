@@ -117,6 +117,9 @@ import BestPracticeSearch from "../pages/BestPracticeSearch";
 import CollectionDetail from "../pages/CollectionDetail";
 import EditProfile from "../pages/EditProfile";
 import EditDirectory from "../pages/EditDirectory";
+import MyEnquiry from "../pages/MyEnquiry";
+import DetailView from "../pages/DetailView";
+import AllServices from "../pages/AllServices";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -286,6 +289,15 @@ export const router = createBrowserRouter([
             path: "edit-profile",
             element: <EditDirectory />,
           },
+           {
+            path: "my-enquiry",
+            element: <MyEnquiry />,
+          },
+          
+          {
+            path: "detail-view/:id",
+            element: <DetailView />,
+          },
           {
             path: "notification",
             element: <Notification />,
@@ -310,6 +322,10 @@ export const router = createBrowserRouter([
           {
             path: "my-collections/:id",
             element: <CollectionDetail />,
+          },
+          {
+            path: "all-services",
+            element: <AllServices />,
           },
           {
             path: "library",

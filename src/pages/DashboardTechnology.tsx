@@ -8,6 +8,7 @@ import {
   GetValidProfessionalDetails,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import { CiSearch } from "react-icons/ci";
 import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   Award,
@@ -273,81 +274,72 @@ export default function DashboardTechnology() {
           className="absolute bottom-0 left-0 w-full object-cover z-0 pointer-events-none"
         />
 
-        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-8 md:py-20 max-w-4xl mx-auto">
-          <h1 className="text-center font-poppins font-semibold mb-6 text-[32px] leading-[100%] tracking-[0px] bg-linear-to-b from-[#4E4E4E] to-[#232323] bg-clip-text text-transparent">
-            Conscious Search Stops here.
-          </h1>
-
-          <div className="w-full mx-auto flex flex-col md:flex-row items-stretch md:items-center h-[34px] gap-2">
-            <div className="relative rounded-full">
-              <span
-                className="invisible absolute whitespace-nowrap text-[12px] font-semibold px-3 md:px-4 py-2"
-                ref={measureRef}
-                style={{
-                  fontFamily: "inherit",
-                  fontSize: "12px",
-                }}
-              >
-                {selectedDomainText || "All Domains"}
-              </span>
-
-              <select
-                className="bg-[#7077FE] rounded-full text-white h-full font-semibold px-3 md:px-4 py-2 appearance-none focus:outline-none cursor-pointer text-[12px]"
-                style={{
-                  width: `${textWidth}px`,
-                  maxWidth: "100%",
-                  minWidth: "120px",
-                }}
-                value={selectedDomain}
-                onChange={(e) => handleDomainChange(e.target.value)}
-              >
-                <option value="" className="text-white text-[12px]">
-                  All Profession
-                </option>
-                {Domain.map((domain: any) => (
-                  <option
-                    key={domain.id}
-                    value={domain.id}
-                    className="text-white text-[12px]"
-                  >
-                    {domain.title}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute top-1/2 right-2 transform -translate-y-1/2 text-white text-[10px] pointer-events-none">
-                ▼
-              </div>
-            </div>
-
-            <div className="relative grow bg-white border border-gray-200 rounded-full md:rounded-full px-3 shadow-sm h-full">
-              <input
-                type="text"
-                placeholder="Technology and AI"
-                className="w-full py-2 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none border-none h-full px-2"
-                value={searchQuery || ""}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyPress}
-              />
-              <button
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#7077FE] cursor-pointer"
-                onClick={handleSearch}
-              >
-                🔍
-              </button>
-            </div>
-          </div>
-
-          <p className="text-gray-700 text-sm mt-4 md:mt-6">
-            {/* <span
-              className="font-medium text-[#F07EFF] underline cursor-pointer"
-              onClick={() => navigate("/dashboard/company-profile")}
-            >
-              List your company now
-            </span>{" "}
-            and */}
-            connect with conscious audience
-          </p>
-        </div>
+        <div className="relative z-30 max-w-5xl px-6 flex flex-col items-center justify-center text-center">
+                    <h1
+                      className="text-center font-[poppins] font-semibold mb-6
+                          text-[26px] sm:text-[32px] md:text-[36px] leading-[1.15]
+                          bg-clip-text text-transparent"
+                      style={{
+                        backgroundImage: "linear-gradient(#111827, #111827)",
+                      }}
+                    >
+                      Connect with professionals and
+                      <br />
+                      like-minded individuals.
+                    </h1>
+        
+                    {/* Search Bar Wrapper */}
+                    <div className="w-full flex justify-center mb-4">
+                      <div
+                        className="w-full bg-white rounded-full shadow-[0_10px_30px_rgba(112,119,254,0.12)]
+                               flex items-center pl-4 pr-1 h-10 sm:h-10 max-w-[780px]"
+                        role="search"
+                        aria-label="Search best practice"
+                      >
+                        <span className="text-[#7077FE] mr-3 text-lg">
+                          <CiSearch />
+                        </span>
+        
+                        <input
+                          type="text"
+                          aria-label="Search"
+                          placeholder="Search Best Practice"
+                          className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none py-2"
+                          value={searchQuery || ""}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          onKeyDown={handleKeyPress}
+                        />
+        
+                        {/* Dropdown */}
+                        <div className="relative shrink-0 ml-3">
+                          <select
+                            className="bg-[#6340FF] text-white font-semibold rounded-full h-10 sm:h-10 px-4 pr-8 text-sm appearance-none
+                                       focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]"
+                            value={selectedDomain}
+                            onChange={(e) => {
+                              setSelectedDomain(e.target.value);
+                              const selectedText = e.target.options[e.target.selectedIndex].text;
+                              setSelectedDomainText(selectedText);
+                            }}
+                            aria-label="Select profession"
+                          >
+                            <option value="">{selectedDomainText || "Professions"}</option>
+                            {Domain.map((domain) => (
+                              <option key={domain.id} value={domain.id}>
+                                {domain.title}
+                              </option>
+                            ))}
+                          </select>
+        
+                          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs select-none">
+                            ▼
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+        
+                    <p className="text-xs text-[#6340FF] font-[600] md:text-sm">Connect with conscious audience</p>
+                  </div>
       </section>
 
       <div className="container mx-auto py-6 px-1">
