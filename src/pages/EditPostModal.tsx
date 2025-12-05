@@ -47,7 +47,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   const { showToast } = useToast();
 
   // Get userInfo from props or localStorage
-  const [userInfo, setUserInfo] = useState(() => {
+  const [userInfo] = useState(() => {
     if (propUserInfo) return propUserInfo;
 
     // Fallback to localStorage if userInfo not provided
@@ -62,8 +62,6 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       profile_picture: storedProfilePic || undefined,
     };
   });
-
-  console.log('userInfo', userInfo)
   const [post, setPost] = useState({ ...posts });
   const [postMessage, setPostMessage] = useState("");
   const [selectedImages, setSelectedImages] = useState<File[]>([]);

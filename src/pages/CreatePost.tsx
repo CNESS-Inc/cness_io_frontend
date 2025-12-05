@@ -54,7 +54,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const [locationId, setLocationId] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagIds, setTagIds] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState<string>("");
+  // const [tagInput, setTagInput] = useState<string>("");
 
   // Popup states for feeling, location, and tags modals
   const [isFeelingPopupOpen, setIsFeelingPopupOpen] = useState(false);
@@ -250,23 +250,23 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
   );
 
   // Handle adding tags
-  const handleAddTag = () => {
-    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      setTags([...tags, tagInput.trim()]);
-      setTagInput("");
-    }
-  };
+  // const handleAddTag = () => {
+  //   if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+  //     setTags([...tags, tagInput.trim()]);
+  //     setTagInput("");
+  //   }
+  // };
 
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
-  };
+  // const handleRemoveTag = (tagToRemove: string) => {
+  //   setTags(tags.filter(tag => tag !== tagToRemove));
+  // };
 
-  const handleTagKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTag();
-    }
-  };
+  // const handleTagKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (e.key === 'Enter') {
+  //     e.preventDefault();
+  //     handleAddTag();
+  //   }
+  // };
 
   // Handle selecting a feeling
   const handleSelectFeeling = (feelingLabel: string, emoji: string) => {
@@ -339,33 +339,33 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
   };
 
   // Generate formatted display sentence
-  const getFormattedSentence = () => {
-    const userName = userInfo?.name || userInfo?.main_name || "User";
-    let sentence = userName;
+  // const getFormattedSentence = () => {
+  //   const userName = userInfo?.name || userInfo?.main_name || "User";
+  //   let sentence = userName;
 
-    // Add feeling
-    if (feeling) {
-      sentence += ` is feeling ${feeling}`;
-    }
+  //   // Add feeling
+  //   if (feeling) {
+  //     sentence += ` is feeling ${feeling}`;
+  //   }
 
-    // Add tagged friends
-    if (tags.length > 0) {
-      if (tags.length === 1) {
-        sentence += ` with ${tags[0]}`;
-      } else if (tags.length === 2) {
-        sentence += ` with ${tags[0]} and ${tags[1]}`;
-      } else {
-        sentence += ` with ${tags[0]} and ${tags.length - 1} ${tags.length - 1 === 1 ? 'other' : 'others'}`;
-      }
-    }
+  //   // Add tagged friends
+  //   if (tags.length > 0) {
+  //     if (tags.length === 1) {
+  //       sentence += ` with ${tags[0]}`;
+  //     } else if (tags.length === 2) {
+  //       sentence += ` with ${tags[0]} and ${tags[1]}`;
+  //     } else {
+  //       sentence += ` with ${tags[0]} and ${tags.length - 1} ${tags.length - 1 === 1 ? 'other' : 'others'}`;
+  //     }
+  //   }
 
-    // Add location
-    if (location) {
-      sentence += ` at ${location}`;
-    }
+  //   // Add location
+  //   if (location) {
+  //     sentence += ` at ${location}`;
+  //   }
 
-    return sentence;
-  };
+  //   return sentence;
+  // };
 
   const handleSubmitPost = async () => {
     // Validation
@@ -524,7 +524,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     setLocationId("");
     setTags([]);
     setTagIds([]);
-    setTagInput("");
+    // setTagInput("");
     setSelectedFriends([]);
     setFriendSearchQuery("");
   };
