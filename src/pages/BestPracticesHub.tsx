@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { iconMap } from "../assets/icons";
-import { CiCirclePlus, CiSearch } from "react-icons/ci";
+import { CiSearch } from "react-icons/ci";
 
 import "../App.css";
 import {
@@ -998,7 +998,7 @@ export default function BestPracticesHub() {
           </div>
 
 
-           <p className="text-gray-700  text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
+           {/* <p className="text-gray-700  text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
             <span
               className="font-medium inline-block cursor-pointer text-[#7077FE] items-center gap-3"
               onClick={openModal}
@@ -1007,8 +1007,33 @@ export default function BestPracticesHub() {
               Add your best practice
             </span>{" "}
             and be an author of the best practices.
-          </p>
+          </p> */}
+            <div className="flex mt-6 gap-4 p-4">
+            <div className="flex items-center gap-3 bg-white shadow-md rounded-xl px-5 py-3 cursor-pointer shadow-lg hover:bg-[#F9FDFF] transition">
+              <img 
+                src="https://cdn.cness.io/toy-with-red-handle-green-plastic-handle%201.svg" 
+                alt="Explore Best Practice Icon" 
+                className="w-15 h-15"
+              />
+              <span 
+              onClick={openModal}
+              className="text-gray-800 font-openSans font-semibold leading-tight">
+                Explore<br />Best Practice
+              </span>
+            </div>
 
+            <div className="flex items-center gap-3 bg-white shadow-md rounded-xl px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] shadow-lg transition">
+              <img 
+                src="https://cdn.cness.io/yellow-paper-clip-isolated-back-school-education-minimal-icon-3d-illustration%201.svg" 
+                alt="Add Your Impact Story Icon" 
+                className="w-15 h-15"
+              />
+              <span className="text-gray-800 font-openSans font-semibold leading-tight">
+                Add Your<br />Impact Story
+              </span>
+            </div>
+          </div>
+      
           </div>
         </section>
       </div>
