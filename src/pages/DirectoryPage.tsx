@@ -251,7 +251,7 @@ export default function DirectoryPage() {
             Conscious Directory
           </p>
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-gray-800 mb-4">
-            Conscious Search Stops here.
+            Conscious Search Stops here1.
           </h1>
 
           <div className="w-full max-w-3xl mx-auto flex flex-nowrap items-center h-[34px] gap-2">
