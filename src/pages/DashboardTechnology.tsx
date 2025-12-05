@@ -9,7 +9,6 @@ import {
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { CiSearch } from "react-icons/ci";
-import AnimatedBackground from "../components/ui/AnimatedBackground";
 import {
   Award,
   ChevronUp,
@@ -39,65 +38,81 @@ interface Company {
   is_person?: boolean;
 }
 
+interface Profession {
+  id: string;
+  title: string;
+  slug?: string;
+}
+
+interface Badge {
+  id: string;
+  slug: string;
+  level: string;
+}
+
 export default function DashboardTechnology() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
-  const domain = searchParams.get("profession");
+  const urlDomain = searchParams.get("profession");
   const certification = searchParams.get("certification"); // Get certification from URL
   const { showToast } = useToast();
-  const [Domain, setDomain] = useState<any>([]);
-  const [badge, setBadge] = useState<any>([]);
-  const [selectedDomain, setSelectedDomain] = useState<any>(domain);
+
+  // Professions (formerly Domain) typed properly
+  const [professions, setProfessions] = useState<Profession[]>([]);
+  const [badges, setBadges] = useState<Badge[]>([]);
+
+  // selectedDomain holds the profession id (string)
+  const [selectedDomain, setSelectedDomain] = useState<string>(urlDomain || "");
 
   const hasFetched = useRef(false);
-  const [searchQuery, setSearchQuery] = useState<any>(search);
+  const [searchQuery, setSearchQuery] = useState<string>(search || "");
   const [sort, setSort] = useState<"az" | "za">("az");
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDomainText, setSelectedDomainText] = useState(
-    domain
-      ? Domain.find((d: any) => d.id === domain)?.title || "All Profession"
-      : "All Profession"
+
+  // Friendly label shown in the UI for the selected profession
+  const defaultProfessionText = "All Profession";
+  const initialSelectedDomainText =
+    urlDomain && professions.find((p) => p.id === urlDomain)
+      ? professions.find((p) => p.id === urlDomain)!.title
+      : defaultProfessionText;
+
+  const [selectedDomainText, setSelectedDomainText] = useState<string>(
+    initialSelectedDomainText
   );
-  const [textWidth, setTextWidth] = useState(0);
+
   const [open, setOpen] = useState<"cert" | "sort" | null>(null);
-  const [selectedCert, setSelectedCert] = useState<string>(certification || ""); // Initialize with URL parameter
-  const measureRef = useRef<HTMLSpanElement>(null);
+  const [selectedCert, setSelectedCert] = useState<string>(
+    certification || ""
+  );
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!measureRef.current) return;
-    const el = measureRef.current;
-
-    const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-      for (const entry of entries) {
-        setTextWidth(entry.contentRect.width);
-      }
-    });
-
-    observer.observe(el);
-
-    return () => observer.disconnect();
-  }, []);
-
-  // Update selected certification when URL parameter changes
-  useEffect(() => {
+    // When the URL certification param changes, reflect it in state
     if (certification) {
       setSelectedCert(certification);
+    } else {
+      // If certification param removed, clear selection
+      setSelectedCert("");
     }
   }, [certification]);
 
   useEffect(() => {
-    if (domain && Domain.length > 0) {
-      const foundDomain = Domain.find((d: any) => d.id === domain);
-      if (foundDomain) {
-        setSelectedDomainText(foundDomain.title);
+    // When the URL profession param or fetched professions change, update the label
+    if (urlDomain && professions.length > 0) {
+      const found = professions.find((p) => p.id === urlDomain);
+      if (found) {
+        setSelectedDomainText(found.title);
+        setSelectedDomain(urlDomain);
+      } else {
+        setSelectedDomainText(defaultProfessionText);
       }
     }
-  }, [domain, Domain]);
+  }, [urlDomain, professions]);
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
@@ -140,14 +155,20 @@ export default function DashboardTechnology() {
             if (sort === "za") return b.name.localeCompare(a.name);
             return 0;
           });
-        console.log("🚀 ~ fetchUsersearchProfileDetails ~ transformedCompanies:", transformedCompanies)
+        console.log(
+          "🚀 ~ fetchUsersearchProfileDetails ~ transformedCompanies:",
+          transformedCompanies
+        );
         setCompanies(transformedCompanies);
+      } else {
+        setCompanies([]);
+        setTotalCount(0);
       }
     } catch (err: any) {
-      setError(err.message || "Failed to fetch companies");
+      setError(err?.message || "Failed to fetch companies");
       console.error("Error fetching companies:", err);
       showToast({
-        message: err?.response?.data?.error?.message,
+        message: err?.response?.data?.error?.message || "Failed to fetch data",
         type: "error",
         duration: 5000,
       });
@@ -159,10 +180,12 @@ export default function DashboardTechnology() {
   const fetchDomain = async () => {
     try {
       const res = await GetValidProfessionalDetails();
-      setDomain(res?.data?.data);
+      // Defensive: ensure array
+      const data = Array.isArray(res?.data?.data) ? res.data.data : [];
+      setProfessions(data);
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message,
+        message: error?.response?.data?.error?.message || "Failed to fetch professions",
         type: "error",
         duration: 5000,
       });
@@ -172,10 +195,11 @@ export default function DashboardTechnology() {
   const fetchBadge = async () => {
     try {
       const res = await GetBadgeListDetails();
-      setBadge(res?.data?.data);
+      const data = Array.isArray(res?.data?.data) ? res.data.data : [];
+      setBadges(data);
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message,
+        message: error?.response?.data?.error?.message || "Failed to fetch badges",
         type: "error",
         duration: 5000,
       });
@@ -188,12 +212,16 @@ export default function DashboardTechnology() {
       fetchBadge();
       hasFetched.current = true;
     }
+    // Always fetch search results for the current page (first load and page changes)
     fetchUsersearchProfileDetails(currentPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   useEffect(() => {
+    // whenever filters/sort change, reset to page 1 and fetch
     setCurrentPage(1);
     fetchUsersearchProfileDetails(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sort, selectedDomain, selectedCert]);
 
   // Update URL when filters change to include certification
@@ -215,6 +243,10 @@ export default function DashboardTechnology() {
     if (selectedDomain || searchQuery) {
       updateURL(selectedDomain, searchQuery, selectedCert);
       fetchUsersearchProfileDetails(1);
+    } else {
+      // even if nothing selected, clear query params and fetch
+      updateURL("", "", selectedCert);
+      fetchUsersearchProfileDetails(1);
     }
   };
 
@@ -233,9 +265,9 @@ export default function DashboardTechnology() {
 
   // Update domain selection handler to also update URL
   const handleDomainChange = (domainValue: string) => {
-    setSelectedDomain(domainValue);
+    setSelectedDomain(domainValue || "");
     const selectedText =
-      Domain.find((d: any) => d.id === domainValue)?.title || "All Profession";
+      professions.find((d) => d.id === domainValue)?.title || defaultProfessionText;
     setSelectedDomainText(selectedText);
     updateURL(domainValue, searchQuery, selectedCert);
   };
@@ -246,11 +278,11 @@ export default function DashboardTechnology() {
   };
 
   const hasActiveFilters =
-    selectedDomain || searchQuery || selectedCert || sort !== "az";
+    Boolean(selectedDomain) || Boolean(searchQuery) || Boolean(selectedCert) || sort !== "az";
 
   const handleClearFilters = () => {
     setSelectedDomain("");
-    setSelectedDomainText("All Profession");
+    setSelectedDomainText(defaultProfessionText);
     setSearchQuery("");
     setSelectedCert("");
     setSort("az");
@@ -262,84 +294,73 @@ export default function DashboardTechnology() {
     // Fetch data with cleared filters
     fetchUsersearchProfileDetails(1);
   };
-  
 
   return (
     <>
-      <section className="relative h-auto md:h-[325px] rounded-xl overflow-hidden">
-        <AnimatedBackground />
+      <section className="relative h-auto max-w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 flex items-center justify-center">
+        {/* Background Image Full Fit */}
         <img
-          src={iconMap["heroimgs"]}
+          src="https://cdn.cness.io/Directory%20(1).svg"
           alt="City Skyline"
-          className="absolute bottom-0 left-0 w-full object-cover z-0 pointer-events-none"
+          className="absolute w-full h-full object-cover z-0 pointer-events-none"
         />
 
-        <div className="relative z-30 max-w-5xl px-6 flex flex-col items-center justify-center text-center">
-                    <h1
-                      className="text-center font-[poppins] font-semibold mb-6
-                          text-[26px] sm:text-[32px] md:text-[36px] leading-[1.15]
-                          bg-clip-text text-transparent"
-                      style={{
-                        backgroundImage: "linear-gradient(#111827, #111827)",
-                      }}
-                    >
-                      Connect with professionals and
-                      <br />
-                      like-minded individuals.
-                    </h1>
-        
-                    {/* Search Bar Wrapper */}
-                    <div className="w-full flex justify-center mb-4">
-                      <div
-                        className="w-full bg-white rounded-full shadow-[0_10px_30px_rgba(112,119,254,0.12)]
-                               flex items-center pl-4 pr-1 h-10 sm:h-10 max-w-[780px]"
-                        role="search"
-                        aria-label="Search best practice"
-                      >
-                        <span className="text-[#7077FE] mr-3 text-lg">
-                          <CiSearch />
-                        </span>
-        
-                        <input
-                          type="text"
-                          aria-label="Search"
-                          placeholder="Search Best Practice"
-                          className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none py-2"
-                          value={searchQuery || ""}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          onKeyDown={handleKeyPress}
-                        />
-        
-                        {/* Dropdown */}
-                        <div className="relative shrink-0 ml-3">
-                          <select
-                            className="bg-[#6340FF] text-white font-semibold rounded-full h-10 sm:h-10 px-4 pr-8 text-sm appearance-none
-                                       focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]"
-                            value={selectedDomain}
-                            onChange={(e) => {
-                              setSelectedDomain(e.target.value);
-                              const selectedText = e.target.options[e.target.selectedIndex].text;
-                              setSelectedDomainText(selectedText);
-                            }}
-                            aria-label="Select profession"
-                          >
-                            <option value="">{selectedDomainText || "Professions"}</option>
-                            {Domain.map((domain) => (
-                              <option key={domain.id} value={domain.id}>
-                                {domain.title}
-                              </option>
-                            ))}
-                          </select>
-        
-                          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white text-xs select-none">
-                            ▼
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-        
-                    <p className="text-xs text-[#6340FF] font-[600] md:text-sm">Connect with conscious audience</p>
-                  </div>
+        {/* CENTER CONTENT - DO NOT TOUCH INSIDE */}
+        <div className="relative z-10 max-w-7xl pb-10 text-center flex-col items-center justify-center">
+          <h1
+            className="text-center font-[poppins] font-semibold mb-6 
+      text-[32px] leading-[1.3] bg-linear-to-b from-[#4E4E4E] to-[#232323] 
+      bg-clip-text text-transparent"
+          >
+            Connect with professionals and
+            <br />
+            like-minded individuals.
+          </h1>
+
+          {/* Search Bar Wrapper */}
+          <div className="w-full flex justify-center mb-4">
+            <div className="w-full bg-white rounded-full shadow-[0_10px_30px_rgba(112,119,254,0.15)] 
+        flex items-center pl-5 h-14 max-w-[650px]">
+              <span className="text-[#7077FE] mr-3 text-lg">
+                <CiSearch />
+              </span>
+
+              <input
+                type="text"
+                placeholder="Search Best Practice"
+                className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none"
+                value={searchQuery || ""}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyPress}
+              />
+
+              {/* Dropdown */}
+              <div className="relative shrink-0">
+                <select
+                  className="bg-[#6340FF] text-white font-semibold rounded-full h-12 px-6 pr-1 text-sm appearance-none 
+              focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]"
+                  value={selectedDomain}
+                  onChange={(e) => handleDomainChange(e.target.value)}
+                >
+                  <option value="">Professions</option>
+                  {professions.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.title}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-white text-xs">
+                  ▼
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-xs text-[#6340FF] font-[600] md:text-sm ">
+            Connect with conscious audience
+          </p>
+        </div>
       </section>
 
       <div className="container mx-auto py-6 px-1">
@@ -361,7 +382,7 @@ export default function DashboardTechnology() {
                   {searchQuery}
                   {searchQuery && selectedCert && " "}
                   {selectedCert &&
-                    badge.find((b: any) => b.slug === selectedCert)?.level}
+                    badges.find((b) => b.slug === selectedCert)?.level}
                   "
                 </span>
               )}
@@ -389,19 +410,15 @@ export default function DashboardTechnology() {
                 <div className="flex items-center gap-2">
                   <Award className="w-4 h-4 text-purple-500" />
                   <span className="font-medium text-sm">
-                    {badge.find((b: any) => b.slug === selectedCert)?.level ||
+                    {badges.find((b) => b.slug === selectedCert)?.level ||
                       "Certification Level"}
                   </span>
                 </div>
-                {open === "cert" ? (
-                  <ChevronUp size={16} />
-                ) : (
-                  <ChevronDown size={16} />
-                )}
+                {open === "cert" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </div>
               {open === "cert" && (
                 <div className="absolute z-10 mt-1 w-auto bg-white border border-gray-200 rounded-lg shadow-lg p-2">
-                  {badge.map((item: any) => (
+                  {badges.map((item) => (
                     <label
                       key={item.id}
                       className="flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded"
@@ -416,9 +433,7 @@ export default function DashboardTechnology() {
                       />
                       <span
                         className={`text-sm ${
-                          selectedCert === item.slug
-                            ? "text-[#9747FF] font-medium"
-                            : "text-gray-600"
+                          selectedCert === item.slug ? "text-[#9747FF] font-medium" : "text-gray-600"
                         }`}
                       >
                         {item.level}
@@ -438,16 +453,9 @@ export default function DashboardTechnology() {
                 <div className="flex items-center gap-2">
                   {sort === "az" && <SortAsc size={16} />}
                   {sort === "za" && <SortDesc size={16} />}
-                  <span className="font-medium text-sm">
-                    {sort === "az" && "A-Z"}
-                    {sort === "za" && "Z-A"}
-                  </span>
+                  <span className="font-medium text-sm">{sort === "az" ? "A-Z" : "Z-A"}</span>
                 </div>
-                {open === "sort" ? (
-                  <ChevronUp size={16} />
-                ) : (
-                  <ChevronDown size={16} />
-                )}
+                {open === "sort" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </div>
               {open === "sort" && (
                 <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-2">
@@ -487,13 +495,9 @@ export default function DashboardTechnology() {
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
               </div>
             ) : error ? (
-              <div className="col-span-full text-center py-10 text-red-500">
-                {error}
-              </div>
+              <div className="col-span-full text-center py-10 text-red-500">{error}</div>
             ) : companies.length === 0 ? (
-              <div className="col-span-full text-center py-10 text-gray-500">
-                No people found
-              </div>
+              <div className="col-span-full text-center py-10 text-gray-500">No people found</div>
             ) : (
               companies.map((company) => (
                 <CompanyCard
@@ -524,10 +528,7 @@ export default function DashboardTechnology() {
         {!isLoading && !error && totalCount > 0 && (
           <div className="mt-8 mb-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-1 flex justify-center">
-              <nav
-                className="inline-flex rounded-md shadow-sm -space-x-px text-sm"
-                aria-label="Pagination"
-              >
+              <nav className="inline-flex rounded-md shadow-sm -space-x-px text-sm" aria-label="Pagination">
                 <button
                   onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
                   disabled={currentPage === 1}
@@ -553,9 +554,7 @@ export default function DashboardTechnology() {
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
                       className={`px-3 py-1 border border-gray-300 ${
-                        pageNum === currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
+                        pageNum === currentPage ? "bg-indigo-500 text-white" : "bg-white text-gray-700 hover:bg-gray-100"
                       }`}
                     >
                       {pageNum}
@@ -563,11 +562,7 @@ export default function DashboardTechnology() {
                   );
                 })}
 
-                {totalPages > 5 && currentPage < totalPages - 2 && (
-                  <span className="px-3 py-1 border border-gray-300 bg-white">
-                    ...
-                  </span>
-                )}
+                {totalPages > 5 && currentPage < totalPages - 2 && <span className="px-3 py-1 border border-gray-300 bg-white">...</span>}
 
                 {totalPages > 5 && currentPage < totalPages - 2 && (
                   <button
@@ -579,9 +574,7 @@ export default function DashboardTechnology() {
                 )}
 
                 <button
-                  onClick={() =>
-                    handlePageChange(Math.min(currentPage + 1, totalPages))
-                  }
+                  onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                 >
@@ -590,9 +583,7 @@ export default function DashboardTechnology() {
               </nav>
             </div>
             <div className="text-center mt-2 text-sm text-gray-500">
-              Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-              {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount}{" "}
-              companies
+              Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} companies
             </div>
           </div>
         )}

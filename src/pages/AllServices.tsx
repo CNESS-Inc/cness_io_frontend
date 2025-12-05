@@ -1,5 +1,4 @@
 import React from "react";
-import { iconMap } from "../assets/icons";
 
 interface Service {
   id: number;
