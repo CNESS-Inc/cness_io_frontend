@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BsFillSendFill, BsXLg } from "react-icons/bs";
 import { Link } from "react-router-dom";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { CommentStory, FetchCommentStory } from "../../../Common/ServerAPI";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 
@@ -86,14 +85,13 @@ const ReelComment = (props: any) => {
                   <div key={index} className="mt-2 mb-2 w-full">
                     <div className="flex items-start">
                       <Link to={""}>
-                        <LazyLoadImage
+                        <img
                           src={
                             comment?.profile?.profile_picture ||
                             dummyProfilePicture
                           }
                           alt="profile"
-                          className="w-8 h-8 rounded-full mr-4"
-                          effect="blur"
+                          className="w-8 h-8 rounded-full mr-4 object-cover"
                         />
                       </Link>
                       <div style={{ width: "100%" }}>
