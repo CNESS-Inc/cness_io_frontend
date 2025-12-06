@@ -62,26 +62,9 @@ export default function DashboardTechnology() {
       ? Domain.find((d: any) => d.id === domain)?.title || "All Profession"
       : "All Profession"
   );
-  const [textWidth, setTextWidth] = useState(0);
   const [open, setOpen] = useState<"cert" | "sort" | null>(null);
   const [selectedCert, setSelectedCert] = useState<string>(certification || ""); // Initialize with URL parameter
-  const measureRef = useRef<HTMLSpanElement>(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!measureRef.current) return;
-    const el = measureRef.current;
-
-    const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-      for (const entry of entries) {
-        setTextWidth(entry.contentRect.width);
-      }
-    });
-
-    observer.observe(el);
-
-    return () => observer.disconnect();
-  }, []);
 
   // Update selected certification when URL parameter changes
   useEffect(() => {
@@ -231,14 +214,6 @@ export default function DashboardTechnology() {
     updateURL(selectedDomain, searchQuery, certSlug);
   };
 
-  // Update domain selection handler to also update URL
-  const handleDomainChange = (domainValue: string) => {
-    setSelectedDomain(domainValue);
-    const selectedText =
-      Domain.find((d: any) => d.id === domainValue)?.title || "All Profession";
-    setSelectedDomainText(selectedText);
-    updateURL(domainValue, searchQuery, selectedCert);
-  };
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -324,7 +299,7 @@ export default function DashboardTechnology() {
                             aria-label="Select profession"
                           >
                             <option value="">{selectedDomainText || "Professions"}</option>
-                            {Domain.map((domain) => (
+                            {Domain.map((domain: any) => (
                               <option key={domain.id} value={domain.id}>
                                 {domain.title}
                               </option>

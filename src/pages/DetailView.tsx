@@ -42,27 +42,9 @@ const sampleData: Enquiry[] = Array.from({ length: 8 }).map((_, i) => ({
   status: i % 3 === 0 ? "Pending" : "New",
 }));
 
-function StatusBadge({ status }: { status: Enquiry["status"] }) {
-  const map: Record<string, string> = {
-    New: "bg-blue-100 text-blue-700",
-    Pending: "bg-yellow-100 text-yellow-700",
-    Contacted: "bg-indigo-100 text-indigo-700",
-    "In Progress": "bg-purple-100 text-purple-700",
-    "Not Interested": "bg-gray-100 text-gray-700",
-    Closed: "bg-green-100 text-green-700",
-    Cancelled: "bg-red-100 text-red-700",
-  };
-  return (
-    <span className={`px-3 py-1 rounded-md text-sm font-semibold ${map[status] || "bg-gray-100 text-gray-700"}`}>
-      {status}
-    </span>
-  );
-}
-
 export default function DetailViewDesigned() {
   const [id, setId] = useState<number | null>(1);
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
-  const [localStatus, setLocalStatus] = useState<Enquiry["status"] | "New">("New");
 
   useEffect(() => {
     // read id from url (if present) — fallback to 1
@@ -84,7 +66,6 @@ export default function DetailViewDesigned() {
     if (id == null) return;
     const found = sampleData.find((x) => x.id === id) ?? sampleData[0];
     setEnquiry(found);
-    setLocalStatus(found.status);
   }, [id]);
 
 //   function handleBack() {
