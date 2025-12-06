@@ -12,11 +12,14 @@ const AppLayout = () => {
     const checkAuth = () => {
       const token = localStorage.getItem("jwt");
       const completed_step = localStorage.getItem("completed_step");
+
+      // Only redirect if user is logged in and on landing page
       if (token && completed_step !== "0" && location.pathname === "/") {
         navigate("/dashboard", { replace: true });
-      } else if (!token || completed_step === "0") {
-        navigate("/", { replace: true });
       }
+      // Allow pre-login pages to be accessed when not logged in
+      // No else redirect needed - let users access all public routes
+
       setIsCheckingAuth(false);
     };
     checkAuth();
