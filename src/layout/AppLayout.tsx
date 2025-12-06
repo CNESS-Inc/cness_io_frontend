@@ -23,7 +23,8 @@ const AppLayout = () => {
       setIsCheckingAuth(false);
     };
     checkAuth();
-  }, [navigate, location.pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isCheckingAuth) {
     return (
