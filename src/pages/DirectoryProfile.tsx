@@ -2,7 +2,7 @@ import { MapPin, Phone, Mail, Globe, Clock4, Music, BookOpen, Star, MessageSquar
 import React, { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import EnquiryModal from "../components/directory/Enquire";
-import { GetDirectoryProfileByUserId } from "../Common/ServerAPI";
+import { GetDirectoryProfileByUserId, CreateOrUpdateDirectoryReview, GetAllDirectoryReviews } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 
 const DirectoryProfile = () => {
@@ -11,6 +11,13 @@ const DirectoryProfile = () => {
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState<any>(null);
   const [expandedPractices, setExpandedPractices] = useState<Set<string>>(new Set());
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    rating: 0,
+    description: "",
+  });
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const { showToast } = useToast();
@@ -55,6 +62,32 @@ const DirectoryProfile = () => {
 
     fetchDirectoryProfile();
   }, [userId]);
+
+  // Fetch reviews
+  useEffect(() => {
+    const fetchReviews = async () => {
+      const currentUserId = localStorage.getItem("Id");
+      if (!currentUserId) {
+        return;
+      }
+
+      try {
+        setLoadingReviews(true);
+        const response = await GetAllDirectoryReviews(currentUserId);
+        if (response?.success?.status && response?.data?.data) {
+          setReviews(response.data.data.rows || []);
+        }
+      } catch (error: any) {
+        console.error("Error fetching reviews:", error);
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+
+    if (profileData?.bussiness_profile?.id) {
+      fetchReviews();
+    }
+  }, [profileData]);
 
   if (loading) {
     return (
@@ -170,6 +203,66 @@ const DirectoryProfile = () => {
       return date.getFullYear().toString();
     }
     return "";
+  };
+
+  // Handle submit review
+  const handleSubmitReview = async () => {
+    if (!reviewForm.rating || !reviewForm.description.trim()) {
+      showToast({
+        message: "Please provide both rating and description",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (!businessProfile.id) {
+      showToast({
+        message: "Directory information is missing",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      setSubmittingReview(true);
+      const payload = {
+        directory_info_id: businessProfile.id,
+        description: reviewForm.description.trim(),
+        rating: reviewForm.rating,
+      };
+
+      await CreateOrUpdateDirectoryReview(payload);
+      showToast({
+        message: "Review submitted successfully",
+        type: "success",
+        duration: 3000,
+      });
+
+      // Reset form
+      setReviewForm({
+        rating: 0,
+        description: "",
+      });
+
+      // Refresh reviews
+      const currentUserId = localStorage.getItem("Id");
+      if (currentUserId) {
+        const response = await GetAllDirectoryReviews(currentUserId);
+        if (response?.success?.status && response?.data?.data) {
+          setReviews(response.data.data.rows || []);
+        }
+      }
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to submit review",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setSubmittingReview(false);
+    }
   };
   return (
 
@@ -694,41 +787,58 @@ const DirectoryProfile = () => {
             {/* Star Rating */}
             <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-1">
-                {/* Filled stars */}
-                {[1, 2, 3].map((star) => (
-                  <Star
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
                     key={star}
-                    className="w-5 h-5 text-[#FACC15] fill-[#FACC15]"
-                    strokeWidth={1.5}
-                  />
-                ))}
-
-                {/* Outlined stars */}
-                {[4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className="w-5 h-5 text-[#9CA3AF]"
-                    strokeWidth={1.5}
-                  />
+                    type="button"
+                    onClick={() => setReviewForm(prev => ({ ...prev, rating: star }))}
+                    className="focus:outline-none"
+                  >
+                    <Star
+                      className={`w-5 h-5 ${
+                        star <= reviewForm.rating
+                          ? "text-[#FACC15] fill-[#FACC15]"
+                          : "text-[#9CA3AF]"
+                      }`}
+                      strokeWidth={1.5}
+                    />
+                  </button>
                 ))}
               </div>
-              <span className="text-black text-sm">3</span>
+              {reviewForm.rating > 0 && (
+                <span className="text-black text-sm">{reviewForm.rating}</span>
+              )}
             </div>
 
             {/* Comment Box */}
             <div className="space-y-2">
               <div className="border border-[#D1D5DB] rounded-2xl p-5 min-h-[170px] flex flex-col justify-between">
-                <p className="font-['open_sans'] text-[#9CA3AF]">Post a comment...</p>
+                <textarea
+                  className="w-full outline-none resize-none font-['open_sans'] text-[#1F2937] bg-transparent"
+                  placeholder="Post a comment..."
+                  value={reviewForm.description}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length <= 2000) {
+                      setReviewForm(prev => ({ ...prev, description: value }));
+                    }
+                  }}
+                  rows={4}
+                />
 
-                <div className="flex justify-end items-end space-x-3">
+                <div className="flex justify-end items-end space-x-3 mt-4">
                   <div className="bg-white px-3 py-2 rounded-full">
                     <span className="font-['open_sans'] text-[#9CA3AF] text-[12px]">
-                      2000 Characters remaining
+                      {2000 - reviewForm.description.length} Characters remaining
                     </span>
                   </div>
 
-                  <button className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-5 py-3 rounded-full font-[Poppins] font-semibold text-sm">
-                    Submit
+                  <button
+                    onClick={handleSubmitReview}
+                    disabled={submittingReview || !reviewForm.rating || !reviewForm.description.trim()}
+                    className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-5 py-3 rounded-full font-[Poppins] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {submittingReview ? "Submitting..." : "Submit"}
                   </button>
                 </div>
               </div>
@@ -746,50 +856,98 @@ const DirectoryProfile = () => {
               All Reviews
             </h3>
 
-            <div className="space-y-5">
-              {[1, 2].map((review) => (
-                <div key={review} className="bg-[#F9FAFB] rounded-lg p-4 space-y-5">
+            {loadingReviews ? (
+              <div className="text-center py-8 text-[#64748B]">Loading reviews...</div>
+            ) : reviews.length > 0 ? (
+              <div className="space-y-5">
+                {reviews.map((review: any) => {
+                  const reviewDate = review.createdAt
+                    ? new Date(review.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })
+                    : "";
 
-                  {/* Reviewer + Comment */}
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="font-[Poppins] font-semibold text-black">
-                        John Doe
-                      </span>
-                      <div className="w-1.5 h-1.5 bg-[#9CA3AF] rounded-full"></div>
-                      <span className="font-['open_sans']  text-[#9CA3AF] text-xs">Today</span>
+                  return (
+                    <div key={review.id} className="bg-[#F9FAFB] rounded-lg p-4 space-y-5">
+                      {/* Reviewer + Comment */}
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          {review.profile?.profile_picture && (
+                            <img
+                              src={review.profile.profile_picture}
+                              alt={`${review.profile.first_name} ${review.profile.last_name}`}
+                              className="w-8 h-8 rounded-full object-cover"
+                            />
+                          )}
+                          <span className="font-[Poppins] font-semibold text-black">
+                            {`${review.profile?.first_name || ""} ${review.profile?.last_name || ""}`.trim() || "Anonymous"}
+                          </span>
+                          <div className="w-1.5 h-1.5 bg-[#9CA3AF] rounded-full"></div>
+                          <span className="font-['open_sans'] text-[#9CA3AF] text-xs">{reviewDate}</span>
+                          {review.is_my_review && (
+                            <>
+                              <div className="w-1.5 h-1.5 bg-[#9CA3AF] rounded-full"></div>
+                              <span className="font-['open_sans'] text-[#7077FE] text-xs">Your review</span>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Rating */}
+                        <div className="flex items-center space-x-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`w-4 h-4 ${
+                                star <= review.rating
+                                  ? "text-[#FACC15] fill-[#FACC15]"
+                                  : "text-[#94A3B8]"
+                              }`}
+                              strokeWidth={1.2}
+                            />
+                          ))}
+                        </div>
+
+                        <p className="font-['open_sans'] text-xs text-[#1F2937] leading-relaxed">
+                          {review.description}
+                        </p>
+                      </div>
+
+                      {/* Like / Reply Section */}
+                      <div className="flex items-center space-x-2 p-2">
+                        {/* Like Icon */}
+                        <button
+                          className={`flex items-center space-x-1 ${review.is_liked ? "text-[#7077FE]" : "text-[#1F2937]"}`}
+                        >
+                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill={review.is_liked ? "currentColor" : "none"} stroke="currentColor">
+                            <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
+                          </svg>
+                          {review.likes_count > 0 && (
+                            <span className="font-['open_sans'] text-xs">{review.likes_count}</span>
+                          )}
+                        </button>
+
+                        {/* Divider */}
+                        <div className="w-px h-5 bg-[#D1D5DB]"></div>
+
+                        {/* Reply Button */}
+                        <button className="flex items-center space-x-1 bg-transparent px-2 py-1 rounded-full text-[#1F2937] hover:bg-gray-100">
+                          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M15.73 5.5h1.035A7.465 7.465 0 0118 9.625a7.465 7.465 0 01-1.235 4.125h-.148c-.806 0-1.534.446-2.031 1.08a9.04 9.04 0 01-2.861 2.4c-.723.384-1.35.956-1.653 1.715a4.498 4.498 0 00-.322 1.672V21a.75.75 0 01-.75.75 2.25 2.25 0 01-2.25-2.25c0-1.152.26-2.243.723-3.218C7.74 15.724 7.366 15 6.748 15H3.622c-1.026 0-1.945-.694-2.054-1.715A12.134 12.134 0 011.5 12c0-2.848.992-5.464 2.649-7.521C4.537 3.997 5.136 3.75 5.754 3.75h1.616c.483 0 .964.078 1.423.23l3.114 1.04a4.5 4.5 0 001.423.23h2.394z" />
+                          </svg>
+                          <span className="font-['open_sans'] text-xs">
+                            Reply {review.reply_count > 0 && `(${review.reply_count})`}
+                          </span>
+                        </button>
+                      </div>
                     </div>
-
-                    <p className="font-['open_sans'] text-xs text-[#1F2937] leading-relaxed">
-                      We should also take into consideration other factors in detecting hate
-                      speech. In case the algorithm mistakenly flags a comment as hate speech.
-                    </p>
-                  </div>
-
-                  {/* Like / Reply Section */}
-                  <div className="flex items-center space-x-2 p-2">
-
-                    {/* Like Icon */}
-                    <svg className="w-6 h-6 text-[#1F2937]" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
-                    </svg>
-
-                    {/* Divider */}
-                    <div className="w-px h-5 bg-[#D1D5DB]"></div>
-
-                    {/* Reply Button */}
-                    <div className="flex items-center space-x-1 bg-transparent px-2 py-1 rounded-full">
-                      <svg className="w-6 h-6 text-[#1F2937]" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M15.73 5.5h1.035A7.465 7.465 0 0118 9.625a7.465 7.465 0 01-1.235 4.125h-.148c-.806 0-1.534.446-2.031 1.08a9.04 9.04 0 01-2.861 2.4c-.723.384-1.35.956-1.653 1.715a4.498 4.498 0 00-.322 1.672V21a.75.75 0 01-.75.75 2.25 2.25 0 01-2.25-2.25c0-1.152.26-2.243.723-3.218C7.74 15.724 7.366 15 6.748 15H3.622c-1.026 0-1.945-.694-2.054-1.715A12.134 12.134 0 011.5 12c0-2.848.992-5.464 2.649-7.521C4.537 3.997 5.136 3.75 5.754 3.75h1.616c.483 0 .964.078 1.423.23l3.114 1.04a4.5 4.5 0 001.423.23h2.394z" />
-                      </svg>
-                      <span className="font-['open_sans'] text-[#1F2937] text-xs">Reply</span>
-                    </div>
-
-                  </div>
-
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-[#64748B]">No reviews yet</div>
+            )}
           </div>
 
         </section>

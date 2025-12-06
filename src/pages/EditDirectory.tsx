@@ -44,7 +44,6 @@ interface DirectoryFormData {
 const EditDirectory: React.FC = () => {
 
   const [serviceData, setServiceData] = useState<any>(null);
-  const [basicInfo, setBasicInfo] = useState<any>(null);
   const [countryData, setCountryData] = useState<any[]>([]);
   const [serviceInput, setServiceInput] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
@@ -347,13 +346,8 @@ const EditDirectory: React.FC = () => {
     }
   };
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const editPhotoInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
-
-  const handleAddImageClick = () => {
-    fileInputRef.current?.click(); // opens file picker
-  };
 
   const handleAddPhotoClick = () => {
     photoInputRef.current?.click(); // opens file picker for photos
@@ -599,7 +593,6 @@ const EditDirectory: React.FC = () => {
     try {
       const response = await GetBasicInfoDetails();
       const data = response.data.data;
-      setBasicInfo(data);
 
       // Populate form with API data
       if (data) {

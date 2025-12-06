@@ -349,6 +349,8 @@ upload_storytelling_video: "/marketplace-product/product/upload-storytelling-vid
   directory_enquiry_update_status: "/directory-enquiry/status",
   directory_enquiry_count: "/directory-enquiry/count",
   directory_enquiry_create: "/directory-enquiry",
+  directory_review_create_or_update: "/directory-review",
+  directory_review_get_all: "/directory-review",
 };
 
 // Messaging endpoints
@@ -2751,6 +2753,26 @@ export const CreateDirectoryEnquiry = (data: {
     ServerAPI.APIMethod.POST,
     data,
     EndPoint.directory_enquiry_create
+  );
+};
+
+export const CreateOrUpdateDirectoryReview = (data: {
+  directory_info_id: string;
+  description: string;
+  rating: number;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_review_create_or_update
+  );
+};
+
+export const GetAllDirectoryReviews = (userId: string): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.directory_review_get_all}/${userId}`
   );
 };
 
