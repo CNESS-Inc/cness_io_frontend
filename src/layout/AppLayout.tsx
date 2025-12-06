@@ -14,9 +14,7 @@ const AppLayout = () => {
       const completed_step = localStorage.getItem("completed_step");
       if (token && completed_step !== "0" && location.pathname === "/") {
         navigate("/dashboard", { replace: true });
-      } else if (!token || completed_step === "0") {
-        navigate("/", { replace: true });
-      }
+      } 
       setIsCheckingAuth(false);
     };
     checkAuth();
