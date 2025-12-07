@@ -85,8 +85,8 @@ export const ServerAPI = {
 
 export const API = {
   //  BaseUrl: "http://192.168.1.18:5025/api", //local
-  // BaseUrl: "http://localhost:5025/api", //local
-  BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
+  BaseUrl: "http://localhost:5025/api", //local
+  // BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
   MarketplaceBaseUrl: "http://localhost:3000/",
 };
 
@@ -351,6 +351,11 @@ upload_storytelling_video: "/marketplace-product/product/upload-storytelling-vid
   directory_enquiry_create: "/directory-enquiry",
   directory_review_create_or_update: "/directory-review",
   directory_review_get_all: "/directory-review",
+  directory_review_reply: "/directory-review/reply",
+  directory_review_get_replies: "/directory-review/reply",
+  directory_review_like: "/directory-review/like",
+  directory_review_reply_like: "/directory-review/reply/like",
+  directory_review_delete_reply: "/directory-review/delete/reply",
 };
 
 // Messaging endpoints
@@ -1262,7 +1267,7 @@ export const UpdateBusinessHours = (formData: any): ApiResponse => {
 
 export const GetDirectoryProfileByUserId = (userId: string): ApiResponse => {
   const params: { [key: string]: any } = {
-    user_id: userId,
+    userId,
   };
   return executeAPI(
     ServerAPI.APIMethod.GET,
@@ -2768,11 +2773,75 @@ export const CreateOrUpdateDirectoryReview = (data: {
   );
 };
 
-export const GetAllDirectoryReviews = (userId: string): ApiResponse => {
+export const GetAllDirectoryReviews = (userId: string, pageNo: number = 1, limit: number = 5): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.GET,
     {},
-    `${EndPoint.directory_review_get_all}/${userId}`
+    `${EndPoint.directory_review_get_all}/${userId}?page_no=${pageNo}&limit=${limit}`
+  );
+};
+
+export const CreateDirectoryReviewReply = (data: {
+  directory_info_id: string;
+  review_id: string;
+  text: string;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_review_reply
+  );
+};
+
+export const GetDirectoryReviewReplies = (reviewId: string, pageNo: number = 1, limit: number = 5): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.directory_review_get_replies}/${reviewId}?page_no=${pageNo}&limit=${limit}`
+  );
+};
+
+export const LikeDirectoryReview = (data: {
+  directory_info_id: string;
+  review_id: string;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_review_like
+  );
+};
+
+export const LikeDirectoryReviewReply = (data: {
+  directory_info_id: string;
+  review_id: string;
+  reply_id: string;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_review_reply_like
+  );
+};
+
+export const UpdateDirectoryReviewReply = (data: {
+  id: string;
+  text: string;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    data,
+    EndPoint.directory_review_reply
+  );
+};
+
+export const DeleteDirectoryReviewReply = (data: {
+  id: string;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_review_delete_reply
   );
 };
 
