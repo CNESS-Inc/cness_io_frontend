@@ -1,6 +1,6 @@
 import { MapPin, Phone, Mail, Globe, Clock4, Music, BookOpen, Star, MessageSquareMoreIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import EnquiryModal from "../components/directory/Enquire";
 import { GetDirectoryProfileByUserId, CreateOrUpdateDirectoryReview, GetAllDirectoryReviews, CreateDirectoryReviewReply, GetDirectoryReviewReplies, LikeDirectoryReview, LikeDirectoryReviewReply, UpdateDirectoryReviewReply, DeleteDirectoryReviewReply } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -30,11 +30,12 @@ const DirectoryProfile = () => {
   const [deletingReply, setDeletingReply] = useState<Record<string, boolean>>({});
   const [pagination, setPagination] = useState<Record<string, { pageNo: number; hasMore: boolean; loadingMore: boolean }>>({});
   const { id } = useParams();
-  const [searchParams] = useSearchParams();
+  // const [searchParams] = useSearchParams();
   const { showToast } = useToast();
 
   // Get user_id from URL params, search params, or localStorage
-  const userId = id || searchParams.get("user_id") || localStorage.getItem("Id") || "";
+  // const userId = id ? id : searchParams.get("user_id") || localStorage.getItem("Id") || "";
+  const userId = id ? id : localStorage.getItem("Id") || "";
 
   useEffect(() => {
     const fetchDirectoryProfile = async () => {
@@ -77,7 +78,7 @@ const DirectoryProfile = () => {
   // Fetch reviews with pagination
   const fetchReviews = async (pageNo: number = 1, append: boolean = false) => {
     const currentUserId = profileData?.bussiness_profile?.id;
-    
+
     if (!currentUserId) {
       return;
     }
@@ -93,12 +94,12 @@ const DirectoryProfile = () => {
       if (response?.success?.status && response?.data?.data) {
         const reviewsData = response.data.data.rows || [];
         const totalCount = response.data.data.count || 0;
-        
+
         setReviews(prev => {
           const updatedReviews = append ? [...prev, ...reviewsData] : reviewsData;
           const currentLoaded = updatedReviews.length;
           const hasMore = currentLoaded < totalCount;
-          
+
           setReviewsPagination({ pageNo, hasMore, loadingMore: false });
           return updatedReviews;
         });
@@ -287,7 +288,7 @@ const DirectoryProfile = () => {
 
         setChildReviews(prev => ({
           ...prev,
-          [reviewId]: append 
+          [reviewId]: append
             ? [...(prev[reviewId] || []), ...replies]
             : replies
         }));
@@ -328,7 +329,7 @@ const DirectoryProfile = () => {
   // Handle submit reply
   const handleSubmitReply = async (reviewId: string) => {
     const replyText = replyTexts[reviewId]?.trim();
-    
+
     if (!replyText) {
       showToast({
         message: "Please enter a reply",
@@ -356,10 +357,10 @@ const DirectoryProfile = () => {
       };
 
       const response = await CreateDirectoryReviewReply(payload);
-      
+
       if (response?.success?.status && response?.data?.data) {
         const newReply = response.data.data;
-        
+
         // Add new reply to the top of child reviews without refreshing
         setChildReviews(prevChildReviews => {
           const currentReplies = prevChildReviews[reviewId] || [];
@@ -374,9 +375,9 @@ const DirectoryProfile = () => {
           prevReviews.map(review =>
             review.id === reviewId
               ? {
-                  ...review,
-                  reply_count: (review.reply_count || 0) + 1
-                }
+                ...review,
+                reply_count: (review.reply_count || 0) + 1
+              }
               : review
           )
         );
@@ -425,16 +426,16 @@ const DirectoryProfile = () => {
       await LikeDirectoryReview(payload);
 
       // Update state directly instead of refreshing all reviews
-      setReviews(prevReviews => 
-        prevReviews.map(review => 
+      setReviews(prevReviews =>
+        prevReviews.map(review =>
           review.id === reviewId
             ? {
-                ...review,
-                is_liked: !review.is_liked,
-                likes_count: review.is_liked 
-                  ? Math.max(0, (review.likes_count || 0) - 1)
-                  : (review.likes_count || 0) + 1
-              }
+              ...review,
+              is_liked: !review.is_liked,
+              likes_count: review.is_liked
+                ? Math.max(0, (review.likes_count || 0) - 1)
+                : (review.likes_count || 0) + 1
+            }
             : review
         )
       );
@@ -473,12 +474,12 @@ const DirectoryProfile = () => {
         const updatedReplies = currentReplies.map((reply: any) =>
           reply.id === replyId
             ? {
-                ...reply,
-                is_liked: !reply.is_liked,
-                likes_count: reply.is_liked
-                  ? Math.max(0, (reply.likes_count || 0) - 1)
-                  : (reply.likes_count || 0) + 1
-              }
+              ...reply,
+              is_liked: !reply.is_liked,
+              likes_count: reply.is_liked
+                ? Math.max(0, (reply.likes_count || 0) - 1)
+                : (reply.likes_count || 0) + 1
+            }
             : reply
         );
         return {
@@ -514,7 +515,7 @@ const DirectoryProfile = () => {
   // Handle update reply
   const handleUpdateReply = async (reviewId: string, replyId: string) => {
     const editText = editReplyTexts[replyId]?.trim();
-    
+
     if (!editText) {
       showToast({
         message: "Please enter a reply",
@@ -532,7 +533,7 @@ const DirectoryProfile = () => {
       };
 
       await UpdateDirectoryReviewReply(payload);
-      
+
       // Update state directly
       setChildReviews(prevChildReviews => {
         const currentReplies = prevChildReviews[reviewId] || [];
@@ -583,7 +584,7 @@ const DirectoryProfile = () => {
       };
 
       await DeleteDirectoryReviewReply(payload);
-      
+
       // Remove from state directly
       setChildReviews(prevChildReviews => {
         const currentReplies = prevChildReviews[reviewId] || [];
@@ -599,9 +600,9 @@ const DirectoryProfile = () => {
         prevReviews.map(review =>
           review.id === reviewId
             ? {
-                ...review,
-                reply_count: Math.max(0, (review.reply_count || 0) - 1)
-              }
+              ...review,
+              reply_count: Math.max(0, (review.reply_count || 0) - 1)
+            }
             : review
         )
       );
@@ -651,13 +652,13 @@ const DirectoryProfile = () => {
       };
 
       const response = await CreateOrUpdateDirectoryReview(payload);
-      
+
       if (response?.success?.status && response?.data?.data) {
         const newReview = response.data.data;
-        
+
         // Check if user already has a review
         const existingReviewIndex = reviews.findIndex((r: any) => r.is_my_review === true);
-        
+
         if (existingReviewIndex !== -1) {
           // Update existing review in state
           setReviews(prevReviews =>
@@ -1000,7 +1001,7 @@ const DirectoryProfile = () => {
                     const description = item.description || "";
                     const isExpanded = expandedPractices.has(item.id);
                     const shouldTruncate = description.length >= 100;
-                    const displayText = shouldTruncate && !isExpanded 
+                    const displayText = shouldTruncate && !isExpanded
                       ? description.slice(0, 100) + "..."
                       : description;
 
@@ -1223,11 +1224,10 @@ const DirectoryProfile = () => {
                     className="focus:outline-none"
                   >
                     <Star
-                      className={`w-5 h-5 ${
-                        star <= reviewForm.rating
-                          ? "text-[#FACC15] fill-[#FACC15]"
-                          : "text-[#9CA3AF]"
-                      }`}
+                      className={`w-5 h-5 ${star <= reviewForm.rating
+                        ? "text-[#FACC15] fill-[#FACC15]"
+                        : "text-[#9CA3AF]"
+                        }`}
                       strokeWidth={1.5}
                     />
                   </button>
@@ -1287,7 +1287,7 @@ const DirectoryProfile = () => {
             {loadingReviews ? (
               <div className="text-center py-8 text-[#64748B]">Loading reviews...</div>
             ) : reviews.length > 0 ? (
-              <div 
+              <div
                 className="space-y-5 max-h-[800px] overflow-y-auto"
                 onScroll={(e) => {
                   const target = e.target as HTMLElement;
@@ -1300,10 +1300,10 @@ const DirectoryProfile = () => {
                 {reviews.map((review: any) => {
                   const reviewDate = review.createdAt
                     ? new Date(review.createdAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })
                     : "";
 
                   return (
@@ -1336,11 +1336,10 @@ const DirectoryProfile = () => {
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Star
                               key={star}
-                              className={`w-4 h-4 ${
-                                star <= review.rating
-                                  ? "text-[#FACC15] fill-[#FACC15]"
-                                  : "text-[#94A3B8]"
-                              }`}
+                              className={`w-4 h-4 ${star <= review.rating
+                                ? "text-[#FACC15] fill-[#FACC15]"
+                                : "text-[#94A3B8]"
+                                }`}
                               strokeWidth={1.2}
                             />
                           ))}
@@ -1370,7 +1369,7 @@ const DirectoryProfile = () => {
                         <div className="w-px h-5 bg-[#D1D5DB]"></div>
 
                         {/* Reply Button */}
-                        <button 
+                        <button
                           onClick={() => toggleReplyInput(review.id)}
                           className="flex items-center space-x-1 bg-transparent px-2 py-1 rounded-full text-[#1F2937] hover:bg-gray-100"
                         >
@@ -1425,7 +1424,7 @@ const DirectoryProfile = () => {
                           </div>
 
                           {/* Child Reviews (Replies) */}
-                          <div 
+                          <div
                             className="space-y-3 max-h-[600px] overflow-y-auto"
                             onScroll={(e) => {
                               const target = e.target as HTMLElement;
@@ -1440,118 +1439,118 @@ const DirectoryProfile = () => {
                             ) : childReviews[review.id] && childReviews[review.id].length > 0 ? (
                               <>
                                 {childReviews[review.id].map((childReview: any) => {
-                                const childReviewDate = childReview.createdAt
-                                  ? new Date(childReview.createdAt).toLocaleDateString('en-US', {
+                                  const childReviewDate = childReview.createdAt
+                                    ? new Date(childReview.createdAt).toLocaleDateString('en-US', {
                                       year: 'numeric',
                                       month: 'short',
                                       day: 'numeric'
                                     })
-                                  : "";
+                                    : "";
 
-                                return (
-                                  <div key={childReview.id} className="bg-white border border-[#ECEEF2] rounded-lg p-3 space-y-2">
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center space-x-2">
-                                        {childReview.profile?.profile_picture && (
-                                          <img
-                                            src={childReview.profile.profile_picture}
-                                            alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
-                                            className="w-6 h-6 rounded-full object-cover"
-                                          />
-                                        )}
-                                        <span className="font-[Poppins] font-semibold text-sm text-black">
-                                          {`${childReview.profile?.first_name || ""} ${childReview.profile?.last_name || ""}`.trim() || "Anonymous"}
-                                        </span>
-                                        <div className="w-1 h-1 bg-[#9CA3AF] rounded-full"></div>
-                                        <span className="font-['open_sans'] text-[#9CA3AF] text-xs">{childReviewDate}</span>
-                                      </div>
-                                      {/* Edit/Delete Buttons */}
-                                      {childReview.is_my_reply && editingReplyId !== childReview.id && (
+                                  return (
+                                    <div key={childReview.id} className="bg-white border border-[#ECEEF2] rounded-lg p-3 space-y-2">
+                                      <div className="flex items-center justify-between">
                                         <div className="flex items-center space-x-2">
+                                          {childReview.profile?.profile_picture && (
+                                            <img
+                                              src={childReview.profile.profile_picture}
+                                              alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
+                                              className="w-6 h-6 rounded-full object-cover"
+                                            />
+                                          )}
+                                          <span className="font-[Poppins] font-semibold text-sm text-black">
+                                            {`${childReview.profile?.first_name || ""} ${childReview.profile?.last_name || ""}`.trim() || "Anonymous"}
+                                          </span>
+                                          <div className="w-1 h-1 bg-[#9CA3AF] rounded-full"></div>
+                                          <span className="font-['open_sans'] text-[#9CA3AF] text-xs">{childReviewDate}</span>
+                                        </div>
+                                        {/* Edit/Delete Buttons */}
+                                        {childReview.is_my_reply && editingReplyId !== childReview.id && (
+                                          <div className="flex items-center space-x-2">
+                                            <button
+                                              onClick={() => handleEditReply(childReview.id, childReview.text || childReview.description)}
+                                              className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
+                                              disabled={deletingReply[childReview.id]}
+                                            >
+                                              Edit
+                                            </button>
+                                            <span className="text-[#D1D5DB]">|</span>
+                                            <button
+                                              onClick={() => handleDeleteReply(review.id, childReview.id)}
+                                              className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
+                                              disabled={deletingReply[childReview.id]}
+                                            >
+                                              {deletingReply[childReview.id] ? "Deleting..." : "Delete"}
+                                            </button>
+                                          </div>
+                                        )}
+                                      </div>
+
+                                      {/* Edit Mode or Display Mode */}
+                                      {editingReplyId === childReview.id ? (
+                                        <div className="space-y-2">
+                                          <div className="border border-[#D1D5DB] rounded-2xl p-3">
+                                            <textarea
+                                              className="w-full outline-none resize-none font-['open_sans'] text-[#1F2937] bg-transparent"
+                                              placeholder="Edit your reply..."
+                                              value={editReplyTexts[childReview.id] || ""}
+                                              onChange={(e) => {
+                                                const value = e.target.value;
+                                                if (value.length <= 1000) {
+                                                  setEditReplyTexts(prev => ({
+                                                    ...prev,
+                                                    [childReview.id]: value
+                                                  }));
+                                                }
+                                              }}
+                                              rows={3}
+                                            />
+                                            <div className="flex justify-end items-center space-x-3 mt-2">
+                                              <span className="font-['open_sans'] text-[#9CA3AF] text-[12px]">
+                                                {1000 - (editReplyTexts[childReview.id]?.length || 0)} Characters remaining
+                                              </span>
+                                              <button
+                                                onClick={() => handleCancelEdit(childReview.id)}
+                                                className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
+                                                disabled={submittingEditReply[childReview.id]}
+                                              >
+                                                Cancel
+                                              </button>
+                                              <button
+                                                onClick={() => handleUpdateReply(review.id, childReview.id)}
+                                                disabled={submittingEditReply[childReview.id] || !editReplyTexts[childReview.id]?.trim()}
+                                                className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-5 py-2 rounded-full font-[Poppins] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                              >
+                                                {submittingEditReply[childReview.id] ? "Updating..." : "Update"}
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <p className="font-['open_sans'] text-xs text-[#1F2937] leading-relaxed pl-8">
+                                          {childReview.text || childReview.description}
+                                        </p>
+                                      )}
+
+                                      {/* Like Button for Child Review */}
+                                      {editingReplyId !== childReview.id && (
+                                        <div className="flex items-center pl-8 pt-1">
                                           <button
-                                            onClick={() => handleEditReply(childReview.id, childReview.text || childReview.description)}
-                                            className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
-                                            disabled={deletingReply[childReview.id]}
+                                            onClick={() => handleLikeReply(review.id, childReview.id)}
+                                            className={`flex items-center space-x-1 ${childReview.is_liked ? "text-[#7077FE]" : "text-[#1F2937]"}`}
                                           >
-                                            Edit
-                                          </button>
-                                          <span className="text-[#D1D5DB]">|</span>
-                                          <button
-                                            onClick={() => handleDeleteReply(review.id, childReview.id)}
-                                            className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
-                                            disabled={deletingReply[childReview.id]}
-                                          >
-                                            {deletingReply[childReview.id] ? "Deleting..." : "Delete"}
+                                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill={childReview.is_liked ? "currentColor" : "none"} stroke="currentColor">
+                                              <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
+                                            </svg>
+                                            {childReview.likes_count > 0 && (
+                                              <span className="font-['open_sans'] text-xs">{childReview.likes_count}</span>
+                                            )}
                                           </button>
                                         </div>
                                       )}
                                     </div>
-                                    
-                                    {/* Edit Mode or Display Mode */}
-                                    {editingReplyId === childReview.id ? (
-                                      <div className="space-y-2">
-                                        <div className="border border-[#D1D5DB] rounded-2xl p-3">
-                                          <textarea
-                                            className="w-full outline-none resize-none font-['open_sans'] text-[#1F2937] bg-transparent"
-                                            placeholder="Edit your reply..."
-                                            value={editReplyTexts[childReview.id] || ""}
-                                            onChange={(e) => {
-                                              const value = e.target.value;
-                                              if (value.length <= 1000) {
-                                                setEditReplyTexts(prev => ({
-                                                  ...prev,
-                                                  [childReview.id]: value
-                                                }));
-                                              }
-                                            }}
-                                            rows={3}
-                                          />
-                                          <div className="flex justify-end items-center space-x-3 mt-2">
-                                            <span className="font-['open_sans'] text-[#9CA3AF] text-[12px]">
-                                              {1000 - (editReplyTexts[childReview.id]?.length || 0)} Characters remaining
-                                            </span>
-                                            <button
-                                              onClick={() => handleCancelEdit(childReview.id)}
-                                              className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
-                                              disabled={submittingEditReply[childReview.id]}
-                                            >
-                                              Cancel
-                                            </button>
-                                            <button
-                                              onClick={() => handleUpdateReply(review.id, childReview.id)}
-                                              disabled={submittingEditReply[childReview.id] || !editReplyTexts[childReview.id]?.trim()}
-                                              className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-5 py-2 rounded-full font-[Poppins] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                            >
-                                              {submittingEditReply[childReview.id] ? "Updating..." : "Update"}
-                                            </button>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <p className="font-['open_sans'] text-xs text-[#1F2937] leading-relaxed pl-8">
-                                        {childReview.text || childReview.description}
-                                      </p>
-                                    )}
-                                    
-                                    {/* Like Button for Child Review */}
-                                    {editingReplyId !== childReview.id && (
-                                      <div className="flex items-center pl-8 pt-1">
-                                        <button
-                                          onClick={() => handleLikeReply(review.id, childReview.id)}
-                                          className={`flex items-center space-x-1 ${childReview.is_liked ? "text-[#7077FE]" : "text-[#1F2937]"}`}
-                                        >
-                                          <svg className="w-5 h-5" viewBox="0 0 24 24" fill={childReview.is_liked ? "currentColor" : "none"} stroke="currentColor">
-                                            <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
-                                          </svg>
-                                          {childReview.likes_count > 0 && (
-                                            <span className="font-['open_sans'] text-xs">{childReview.likes_count}</span>
-                                          )}
-                                        </button>
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
+                                  );
+                                })}
                                 {/* Load More Indicator */}
                                 {pagination[review.id]?.loadingMore && (
                                   <div className="text-center py-4 text-[#64748B] text-xs">Loading more replies...</div>

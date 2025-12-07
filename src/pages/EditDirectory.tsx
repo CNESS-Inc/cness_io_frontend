@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
-import edit from '../assets/Edit.svg';
 import { useState, useRef } from 'react';
-import { CirclePlus, Trash2, Star } from 'lucide-react';
+import { CirclePlus, Trash2, Star, Pencil } from 'lucide-react';
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import { CreateOrUpdateBasicInfo, GetBasicInfoDetails, GetServiceDetails, GetCountryDetails, UploadDirectoryLogo, UploadDirectoryPhotos, ChangeDirectoryPhoto, DeleteDirectoryPhoto, UpdateBusinessHours, GetAllDirectoryReviews, CreateDirectoryReviewReply, GetDirectoryReviewReplies, LikeDirectoryReview, LikeDirectoryReviewReply, UpdateDirectoryReviewReply, DeleteDirectoryReviewReply, CreateOrUpdateDirectoryReview } from '../Common/ServerAPI';
@@ -1740,7 +1739,7 @@ const EditDirectory: React.FC = () => {
                       onClick={() => photoId && handleEditPhotoClick(photoId)}
                       title="Edit photo"
                     >
-                      <img src={edit} alt="Edit" className="w-5 h-5" />
+                      <Pencil className="w-4 h-4" />
                     </div>
 
                     {/* DELETE ICON */}
@@ -1749,7 +1748,7 @@ const EditDirectory: React.FC = () => {
                       onClick={() => photoId && handlePhotoDelete(photoId)}
                       title="Delete photo"
                     >
-                      <Trash2 className="w-5 h-5 text-red-500" />
+                      <Trash2 className="w-4 h-4 text-red-500" />
                     </div>
                   </div>
 
@@ -2049,8 +2048,8 @@ const EditDirectory: React.FC = () => {
                                 <Star
                                   key={star}
                                   className={`w-4 h-4 ${star <= review.rating
-                                      ? "text-[#FACC15] fill-[#FACC15]"
-                                      : "text-[#94A3B8]"
+                                    ? "text-[#FACC15] fill-[#FACC15]"
+                                    : "text-[#94A3B8]"
                                     }`}
                                   strokeWidth={1.2}
                                 />
@@ -2067,8 +2066,8 @@ const EditDirectory: React.FC = () => {
                                 >
                                   <Star
                                     className={`w-4 h-4 ${star <= (editReviewRating[review.id] || review.rating)
-                                        ? "text-[#FACC15] fill-[#FACC15]"
-                                        : "text-[#94A3B8]"
+                                      ? "text-[#FACC15] fill-[#FACC15]"
+                                      : "text-[#94A3B8]"
                                       }`}
                                     strokeWidth={1.2}
                                   />
@@ -2100,6 +2099,7 @@ const EditDirectory: React.FC = () => {
                                   {2000 - (editReviewText[review.id]?.length || 0)} Characters remaining
                                 </span>
                                 <button
+                                  type="button"
                                   onClick={() => handleCancelEditReview(review.id)}
                                   className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
                                   disabled={submittingEditReview[review.id]}
@@ -2107,6 +2107,7 @@ const EditDirectory: React.FC = () => {
                                   Cancel
                                 </button>
                                 <button
+                                  type="button"
                                   onClick={() => handleUpdateReview(review.id)}
                                   disabled={submittingEditReview[review.id] || !editReviewText[review.id]?.trim()}
                                   className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-6 py-3 rounded-full font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed"
@@ -2124,6 +2125,7 @@ const EditDirectory: React.FC = () => {
                         {/* Edit Button for Parent Review */}
                         {review.is_my_review && editingReviewId !== review.id && (
                           <button
+                            type="button"
                             onClick={() => handleEditReview(review.id, review.description, review.rating)}
                             className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs self-start"
                           >
@@ -2137,6 +2139,7 @@ const EditDirectory: React.FC = () => {
                         <div className="flex items-center gap-2.5 p-2.5">
                           {/* Like Icon */}
                           <button
+                            type="button"
                             onClick={() => handleLikeReview(review.id)}
                             className={`w-6 h-6 flex items-center justify-center ${review.is_liked ? "text-[#7077FE]" : "text-[#1E1E1E]"}`}
                           >
@@ -2152,6 +2155,7 @@ const EditDirectory: React.FC = () => {
                           <div className="w-px h-5 bg-[#E0E0E0]"></div>
                           {/* Reply Button */}
                           <button
+                            type="button"
                             onClick={() => toggleReplyInput(review.id)}
                             className="flex items-center gap-1 bg-transparent rounded-full px-2.5 py-1.5"
                           >
@@ -2192,12 +2196,14 @@ const EditDirectory: React.FC = () => {
                                   </span>
                                 </div>
                                 <button
+                                  type="button"
                                   onClick={() => toggleReplyInput(review.id)}
                                   className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
                                 >
                                   Cancel
                                 </button>
                                 <button
+                                  type="button"
                                   onClick={() => handleSubmitReply(review.id)}
                                   disabled={submittingReply[review.id] || !replyTexts[review.id]?.trim()}
                                   className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-full px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -2286,6 +2292,7 @@ const EditDirectory: React.FC = () => {
                                                         </span>
                                                       </div>
                                                       <button
+                                                        type="button"
                                                         onClick={() => handleCancelEdit(childReview.id)}
                                                         className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
                                                         disabled={submittingEditReply[childReview.id]}
@@ -2293,6 +2300,7 @@ const EditDirectory: React.FC = () => {
                                                         Cancel
                                                       </button>
                                                       <button
+                                                        type="button"
                                                         onClick={() => handleUpdateReply(review.id, childReview.id)}
                                                         disabled={submittingEditReply[childReview.id] || !editReplyTexts[childReview.id]?.trim()}
                                                         className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-full px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -2316,6 +2324,7 @@ const EditDirectory: React.FC = () => {
                                         {childReview.is_my_reply && editingReplyId !== childReview.id && (
                                           <div className="flex items-center space-x-2 self-start">
                                             <button
+                                              type="button"
                                               onClick={() => handleEditReply(childReview.id, childReview.text || childReview.description)}
                                               className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
                                               disabled={deletingReply[childReview.id]}
@@ -2324,6 +2333,7 @@ const EditDirectory: React.FC = () => {
                                             </button>
                                             <span className="text-[#E0E0E0]">|</span>
                                             <button
+                                              type="button"
                                               onClick={() => handleDeleteReply(review.id, childReview.id)}
                                               className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
                                               disabled={deletingReply[childReview.id]}
@@ -2338,6 +2348,7 @@ const EditDirectory: React.FC = () => {
                                       {editingReplyId !== childReview.id && (
                                         <div className="flex items-center gap-2.5 p-2.5">
                                           <button
+                                            type="button"
                                             onClick={() => handleLikeReply(review.id, childReview.id)}
                                             className={`w-6 h-6 flex items-center justify-center ${childReview.is_liked ? "text-[#7077FE]" : "text-[#1E1E1E]"}`}
                                           >
@@ -2362,6 +2373,7 @@ const EditDirectory: React.FC = () => {
                                 {pagination[review.id]?.hasMore && !pagination[review.id]?.loadingMore && (
                                   <div className="text-center py-2">
                                     <button
+                                      type="button"
                                       onClick={() => loadMoreChildReviews(review.id)}
                                       className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
                                     >
@@ -2386,6 +2398,7 @@ const EditDirectory: React.FC = () => {
                 {reviewsPagination.hasMore && !reviewsPagination.loadingMore && (
                   <div className="text-center py-2">
                     <button
+                      type="button"
                       onClick={loadMoreReviews}
                       className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
                     >

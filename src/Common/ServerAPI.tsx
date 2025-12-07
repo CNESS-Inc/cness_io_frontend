@@ -1267,7 +1267,7 @@ export const UpdateBusinessHours = (formData: any): ApiResponse => {
 
 export const GetDirectoryProfileByUserId = (userId: string): ApiResponse => {
   const params: { [key: string]: any } = {
-    user_id: userId,
+    userId,
   };
   return executeAPI(
     ServerAPI.APIMethod.GET,

@@ -285,6 +285,10 @@ export const router = createBrowserRouter([
             path: "directory-profile",
             element: <DirectoryProfile />,
           },
+          {
+            path: "directory-profile/:id",
+            element: <DirectoryProfile />,
+          },
            {
             path: "edit-profile",
             element: <EditDirectory />,

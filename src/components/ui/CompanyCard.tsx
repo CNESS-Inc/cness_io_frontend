@@ -84,7 +84,7 @@ export default function CompanyCard({
     const Id = localStorage.getItem("Id");
     if (routeKey) {
       // Special case (dashboard route)
-      navigate(`/dashboard/userprofile/${id}`);
+      navigate(`/dashboard/directory-profile/${id}`);
     } else {
       if (Id && Id !== "undefined") {
         // User is logged in → proceed
