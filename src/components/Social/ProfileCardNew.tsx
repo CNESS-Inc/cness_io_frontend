@@ -231,10 +231,10 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
               </span>
 
               <span
-                className="font-jakarta font-normal text-[14px] text-purple-600"
+                className="text-sm text-purple-600 font-jakarta cursor-pointer mt-1"
                 style={{
                   lineHeight: "100%",
-                  letterSpacing: "0",
+                  letterSpacing: "0", 
                 }}
               >
                 {postCount} posts
