@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   GetComment,
   GetChildComments,
@@ -100,12 +100,6 @@ const PostPopup: React.FC<PopupProps> = ({
   const [loadingReplies, setLoadingReplies] = useState<Record<string, boolean>>(
     {}
   );
-
-  const [openMenu, setOpenMenu] = useState<{
-    postId: string | null;
-    type: "options" | "share" | null;
-    side: "left" | "right" | null;
-  }>({ postId: null, type: null, side: null });
 
   const myid = localStorage.getItem("Id");
   const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
@@ -315,30 +309,18 @@ const PostPopup: React.FC<PopupProps> = ({
     setExpandedComments((prev) => ({ ...prev, [commentId]: true }));
   };
 
-  const toggleMenu = (
-    postId: string,
-    type: "options" | "share",
-    side: "left" | "right"
-  ) => {
-    setOpenMenu((prev) => {
-      if (prev.postId === postId && prev.type === type && prev.side === side) {
-        return { postId: null, type: null, side: null }; // close
-      } else {
-        return { postId, type, side }; // open
-      }
-    });
-  };
 
   // Menu component to avoid duplication
   const MenuContent = ({ side }: { side: "left" | "right" }) => {
+    const [showSharePopup, setShowSharePopup] = useState(false);
+    const shareButtonRef = useRef<HTMLButtonElement>(null);
     const menuRef = useClickOutside(() => {
-      setOpenMenu({ postId: null, type: null, side: null });
       if (side === "left") setOpenLeftMenu(false);
       if (side === "right") setOpenRightMenu(false);
     });
     return (
       <div
-      ref={menuRef}
+        ref={menuRef}
         className={`absolute ${
           side === "left" ? "right-0" : "right-0"
         } top-10 mt-2 w-56 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden z-50`}
@@ -421,22 +403,36 @@ const PostPopup: React.FC<PopupProps> = ({
           >
             <FiLink2 className="text-red-500" /> Copy Link
           </button>
-          <button
-            className="relative flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50"
-            onClick={() => toggleMenu(post.id, "share", side)}
-          >
-            <FiSend className="text-blue-500" /> Share to..
-            {openMenu.postId === post.id &&
-              openMenu.type === "share" &&
-              openMenu.side === side && (
+          <div className="relative">
+            <button
+              ref={shareButtonRef}
+              className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 w-full text-left"
+              onClick={() => setShowSharePopup(!showSharePopup)}
+            >
+              <FiSend className="text-blue-500" /> Share to..
+            </button>
+
+            {showSharePopup && shareButtonRef.current && (
+              <div
+                style={{
+                  position: "fixed",
+                  top: `${
+                    shareButtonRef.current.getBoundingClientRect().bottom
+                  }px`,
+                  left: `${
+                    shareButtonRef.current.getBoundingClientRect().left
+                  }px`,
+                }}
+                className="z-50"
+              >
                 <SharePopup
                   isOpen={true}
-                  onClose={() => toggleMenu(post.id, "share", side)}
+                  onClose={() => setShowSharePopup(false)}
                   url={buildShareUrl(urldata)}
-                  position="top"
                 />
-              )}
-          </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
