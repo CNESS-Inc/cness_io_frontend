@@ -724,11 +724,11 @@ const EditDirectory: React.FC = () => {
         }
       }
     } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
+      // showToast({
+      //   message: error?.response?.data?.error?.message,
+      //   type: "error",
+      //   duration: 5000,
+      // });
     }
   };
 
