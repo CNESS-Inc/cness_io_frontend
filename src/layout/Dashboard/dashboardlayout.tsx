@@ -106,61 +106,63 @@ const DashboardLayout = () => {
             </button>
           )}
 
-          {/* Desktop Headers */}
-          <div
-            className={`md:block transition-all duration-300 ${isMobileNavOpen ? "md:ml-60" : "md:ml-0"
-              }`}
-          >
-            {isMarketplacePage ? (
-              <>
-                {/* Fixed Dashboard Header */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  <DashboardHeader
-                    toggleMobileNav={toggleMobileNav}
-                    isMobileNavOpen={isMobileNavOpen}
-                  />
-                </div>
-
-                {/* Market Header below */}
-                <div
-                  className={`fixed top-20 right-0 z-40 bg-white transition-all duration-300 ${isMobileNavOpen ? "left-64" : "left-0"
-                    }`}
-                >
-                  <MarketHeader
-                    toggleMobileNav={toggleMobileNav}
-                    isMobileNavOpen={isMobileNavOpen}
-                  />
-                </div>
-              </>
-            ) : isSellerPage ? (
-              <>
-                {/* Fixed Dashboard Header */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  <DashboardHeader
-                    toggleMobileNav={toggleMobileNav}
-                    isMobileNavOpen={isMobileNavOpen}
-                  />
-                </div>
-
-                {/* Seller Header below */}
-                <div
-                  className={`fixed top-20 right-0 z-40 bg-white transition-all duration-300 ${isMobileNavOpen ? "left-64" : "left-0"
-                    }`}
-                >
-                  <SellerHeader
-                    toggleMobileNav={toggleMobileNav}
-                  />
-                </div>
-              </>
-            ) : (
-              <div className="relative">
+         {/* Desktop Headers – only visible on md+ */}
+        <div
+          className={`hidden md:block transition-all duration-300 ${
+            isMobileNavOpen ? "md:ml-60" : "md:ml-0"
+          }`}
+        >
+          {isMarketplacePage ? (
+            <>
+              {/* Fixed Dashboard Header */}
+              <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
                 <DashboardHeader
                   toggleMobileNav={toggleMobileNav}
                   isMobileNavOpen={isMobileNavOpen}
                 />
               </div>
-            )}
-          </div>
+
+              {/* Market Header */}
+              <div
+                className={`fixed top-20 right-0 z-40 bg-white transition-all duration-300 ${
+                  isMobileNavOpen ? "left-64" : "left-0"
+                }`}
+              >
+                <MarketHeader
+                  toggleMobileNav={toggleMobileNav}
+                  isMobileNavOpen={isMobileNavOpen}
+                />
+              </div>
+            </>
+          ) : isSellerPage ? (
+            <>
+              {/* Fixed Dashboard Header */}
+              <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
+                <DashboardHeader
+                  toggleMobileNav={toggleMobileNav}
+                  isMobileNavOpen={isMobileNavOpen}
+                />
+              </div>
+
+              {/* Seller Header */}
+              <div
+                className={`fixed top-20 right-0 z-40 bg-white transition-all duration-300 ${
+                  isMobileNavOpen ? "left-64" : "left-0"
+                }`}
+              >
+                <SellerHeader toggleMobileNav={toggleMobileNav} />
+              </div>
+            </>
+          ) : (
+            <div className="relative">
+              <DashboardHeader
+                toggleMobileNav={toggleMobileNav}
+                isMobileNavOpen={isMobileNavOpen}
+              />
+            </div>
+          )}
+        </div>
+
 
           {/* Sidebar */}
           <DashboardNavbar

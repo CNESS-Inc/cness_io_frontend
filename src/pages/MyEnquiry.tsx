@@ -209,7 +209,7 @@ export default function MyEnquiry() {
 
         {/* Table for md+ screens */}
         <div className="hidden md:block">
-          <div className="overflow-x-auto px-4 rounded-lg">
+          <div className="overflow-x-auto px-4 mb-3 rounded-lg">
             <table className="min-w-full border rounded-lg border-[#DADADA] font-[poppins] text-sm">
               <thead className="bg-[#F3F2FF]">
                 <tr className="text-left font-[poppins] border border-[#DADADA] text-gray-600">

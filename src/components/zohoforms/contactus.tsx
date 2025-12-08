@@ -14,7 +14,7 @@ const FormPopup: React.FC<FormPopupProps> = ({ formType, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center  bg-opacity-50 z-50">
-      <div className="relative bg-white rounded-xl shadow-lg w-[1200px] h-[800px] p-6 overflow-hidden">
+      <div className="relative bg-white rounded-xl shadow-lg w-[1000px] h-[700px] p-6 overflow-hidden">
         {/* Close Button */}
         <button
           onClick={onClose}

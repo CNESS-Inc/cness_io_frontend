@@ -560,7 +560,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
         onClick={handleClose}
       >
         <div
-          className="bg-white rounded-[18px] w-full overflow-y-auto max-w-[729px] mx-4 shadow-lg relative"
+          className="bg-white rounded-[18px] w-full overflow-y-auto max-w-[729px] h-full mx-4 shadow-lg relative"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex ps-4 px-5 py-1.5 bg-[#897AFF1A] justify-between items-center">
