@@ -36,6 +36,40 @@ export const STATUS_OPTIONS = [
   EnquiryStatus.CANCELLED,
 ];
 
+const sampleData: Enquiry[] = Array.from({ length: 8 }).map((_, i) => ({
+  id: i + 1,
+  name: "James Anderson",
+  message:
+    "Hello, I would like to know more about this service. Please provide pricing, availability, and any additional information required to proceed.",
+  serviceType: "Dining",
+  date: "2024-12-12",
+  time: "12:00 AM",
+  phone: "+1 98388393",
+  email: "James@gmail.com",
+  status: i % 3 === 0 ? "Pending" : "New",
+}));
+
+function StatusBadge({ status }: { status: Enquiry["status"] }) {
+  const map: Record<string, string> = {
+    New: "bg-blue-100 text-blue-700",
+    Pending: "bg-yellow-100 text-yellow-700",
+    Contacted: "bg-indigo-100 text-indigo-700",
+    "In Progress": "bg-purple-100 text-purple-700",
+    "Not Interested": "bg-gray-100 text-gray-700",
+    Closed: "bg-green-100 text-green-700",
+    Cancelled: "bg-red-100 text-red-700",
+  };
+  return (
+    <span
+      className={`px-3 py-1 rounded-md text-sm font-semibold ${
+        map[status] || "bg-gray-100 text-gray-700"
+      }`}
+    >
+      {status}
+    </span>
+  );
+}
+
 export default function DetailViewDesigned() {
   const { id } = useParams<{ id: string }>();
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
@@ -198,7 +232,9 @@ export default function DetailViewDesigned() {
       {/* Body */}
       <div className="mt-6 bg-gray-50 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-sm font-[poppins] font-semibold mb-4">Basic Information</h3>
+          <h3 className="text-sm font-[poppins] font-semibold mb-4">
+            Basic Information
+          </h3>
 
           <div className="text-sm text-gray-700 space-y-4">
             <div>
@@ -226,11 +262,15 @@ export default function DetailViewDesigned() {
         </div>
 
         <div className="bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-sm font-[poppins] font-semibold mb-4">Service Details</h3>
+          <h3 className="text-sm font-[poppins] font-semibold mb-4">
+            Service Details
+          </h3>
 
           <div className="text-sm text-gray-700 space-y-4">
             <div>
-              <div className="text-gray-400 font-[poppins] text-xs">Customer Type</div>
+              <div className="text-gray-400 font-[poppins] text-xs">
+                Customer Type
+              </div>
               <div className="font-medium">Individual</div>
             </div>
 
@@ -243,8 +283,6 @@ export default function DetailViewDesigned() {
               <div className="text-gray-400 font-[poppins] text-xs">Urgency</div>
               <div className="font-medium font-[poppins]">This Week</div>
             </div>
-
-          
           </div>
         </div>
       </div>
