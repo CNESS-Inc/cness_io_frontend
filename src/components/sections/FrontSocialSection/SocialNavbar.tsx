@@ -35,7 +35,7 @@ const SocialNavbar: React.FC<LeftSocialProps> = () => {
           className="w-5 h-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
         />
       ),
-      label: "Login / Sing up",
+      label: "Login / Sign up",
       active: true,
       onClick: () => setOpenSignup(true),
     },
