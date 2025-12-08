@@ -720,7 +720,7 @@ export function StoryViewer({
                 isOpen={showSharePopup}
                 onClose={() => setShowSharePopup(false)}
                 url={buildStoryShareUrl()}
-                position="bottom"
+                position="top"
               />
             )}
           </div>
