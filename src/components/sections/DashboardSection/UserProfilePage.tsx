@@ -3281,7 +3281,7 @@ const UserProfilePage = () => {
           educationForm.trigger(`educations.${index}.end_date`);
           handleFormChange("education");
         }}
-        placeholder="Select Month & Year"
+       // placeholder="Select Month & Year"
       />
     )}
   />
@@ -3332,7 +3332,7 @@ const UserProfilePage = () => {
           educationForm.trigger(`educations.${index}.end_date`);
           handleFormChange("education");
         }}
-        placeholder="Select Month & Year"
+        //placeholder="Select Month & Year"
       />
     )}
   />
