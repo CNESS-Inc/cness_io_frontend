@@ -51,7 +51,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
     if (propUserInfo) return propUserInfo;
 
     // Fallback to localStorage if userInfo not provided
-    const storedName = localStorage.getItem("Name");
+    const storedName = localStorage.getItem("name");
     const storedId = localStorage.getItem("Id");
     const storedProfilePic = localStorage.getItem("profile_picture");
 
@@ -62,6 +62,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       profile_picture: storedProfilePic || undefined,
     };
   });
+  console.log("🚀 ~ EditPostModal ~ userInfo:", userInfo)
   const [post, setPost] = useState({ ...posts });
   const [postMessage, setPostMessage] = useState("");
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
@@ -1060,11 +1061,11 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       {/* Feeling Popup Modal - Modern Apple-Style Design */}
       {isFeelingPopupOpen && (
         <div
-          className="fixed inset-0 flex items-center justify-center z-[60] p-4 backdrop-blur-md bg-black/40"
+          className="fixed inset-0 flex items-center justify-center z-60 p-4 backdrop-blur-md bg-black/40"
           onClick={handleCloseFeelingPopup}
         >
           <div
-            className="bg-white rounded-[32px] w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
@@ -1119,7 +1120,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                             : "bg-white/60 hover:bg-white/90 hover:shadow-sm"
                         }`}
                       >
-                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                        <div className="shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
                           <span className="text-2xl">{feel.emoji}</span>
                         </div>
                       <div className="flex-1 text-left min-w-0">
@@ -1131,7 +1132,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 </div>
               ) : (
                 <div className="text-center py-16 px-6">
-                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -1158,11 +1159,11 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       {/* Location Popup Modal - Modern Apple-Style Design */}
       {isLocationPopupOpen && (
         <div
-          className="fixed inset-0 flex items-center justify-center z-[60] p-4 backdrop-blur-md bg-black/40"
+          className="fixed inset-0 flex items-center justify-center z-60 p-4 backdrop-blur-md bg-black/40"
           onClick={handleCloseLocationPopup}
         >
           <div
-            className="bg-white rounded-[32px] w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
@@ -1217,7 +1218,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                             : "bg-white/60 hover:bg-white/90 hover:shadow-sm"
                         }`}
                       >
-                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                      <div className="shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
                         <svg
                           className="w-6 h-6 text-gray-600"
                           fill="currentColor"
@@ -1240,7 +1241,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 </div>
               ) : (
                 <div className="text-center py-16 px-6">
-                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     <svg className="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                       <path
                         fillRule="evenodd"
@@ -1275,11 +1276,11 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       {/* Tag People Popup - Modern Apple-Style Design */}
       {isTagsPopupOpen && (
         <div
-          className="fixed inset-0 flex items-center justify-center z-[60] p-4 backdrop-blur-md bg-black/40"
+          className="fixed inset-0 flex items-center justify-center z-60 p-4 backdrop-blur-md bg-black/40"
           onClick={handleCloseTagPopup}
         >
           <div
-            className="bg-white rounded-[32px] w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
@@ -1366,7 +1367,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                             : "bg-white/60 hover:bg-white/90 hover:shadow-sm"
                         }`}
                       >
-                        <div className="relative flex-shrink-0">
+                        <div className="relative shrink-0">
                           <img
                             src={profilePic}
                             alt={`${firstName} ${lastName}`}
@@ -1394,7 +1395,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 </div>
               ) : (
                 <div className="text-center py-16 px-6">
-                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
@@ -1415,7 +1416,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       {/* Close Confirmation Modal */}
       {showCloseConfirm && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-60"
           onClick={() => setShowCloseConfirm(false)}
         >
           <div
