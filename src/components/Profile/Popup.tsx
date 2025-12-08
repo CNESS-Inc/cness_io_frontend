@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   GetComment,
   GetChildComments,
@@ -16,6 +16,7 @@ import { buildShareUrl, copyPostLink } from "../../lib/utils";
 import like from "../../assets/like.svg";
 import comment from "../../assets/comment.svg";
 import EditPostModal from "../../pages/EditPostModal";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 interface Media {
   type: "image" | "video" | "text";
@@ -87,7 +88,8 @@ const PostPopup: React.FC<PopupProps> = ({
   const isReel = post.is_reel;
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
-  const [open, setOpen] = useState(false);
+  const [openLeftMenu, setOpenLeftMenu] = useState(false);
+  const [openRightMenu, setOpenRightMenu] = useState(false);
   const [posting, setPosting] = useState(false);
   const [commentInput, setCommentInput] = useState("");
   const [replyInput, setReplyInput] = useState("");
@@ -98,11 +100,6 @@ const PostPopup: React.FC<PopupProps> = ({
   const [loadingReplies, setLoadingReplies] = useState<Record<string, boolean>>(
     {}
   );
-
-  const [openMenu, setOpenMenu] = useState<{
-    postId: string | null;
-    type: "options" | "share" | null;
-  }>({ postId: null, type: null });
 
   const myid = localStorage.getItem("Id");
   const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
@@ -312,38 +309,133 @@ const PostPopup: React.FC<PopupProps> = ({
     setExpandedComments((prev) => ({ ...prev, [commentId]: true }));
   };
 
-  // Use comments from props or fallback
-  /*const comments = post.comments || [
-    {
-      user: "Olivia Brown",
-      text: "Could you elaborate on your third point? I’m not sure I follow.",
-      time: "2 hours ago",
-    },
-    {
-      user: "Noah Williams",
-      text: "This is a game-changer. We should implement this immediately.",
-      time: "1 hour ago",
-    },
-    {
-      user: "Liam Smith",
-      text: "I totally agree! This was a fantastic read, very insightful.",
-      time: "4 hours ago",
-    },
-    {
-      user: "Sophia Rodriguez",
-      text: "I have a different perspective. Have you considered the potential drawbacks?",
-      time: "37 minutes ago",
-    },
-  ];*/
 
-  const toggleMenu = (postId: string, type: "options" | "share") => {
-    setOpenMenu((prev) => {
-      if (prev.postId === postId && prev.type === type) {
-        return { postId: null, type: null }; // close
-      } else {
-        return { postId, type }; // open
-      }
+  // Menu component to avoid duplication
+  const MenuContent = ({ side }: { side: "left" | "right" }) => {
+    const [showSharePopup, setShowSharePopup] = useState(false);
+    const shareButtonRef = useRef<HTMLButtonElement>(null);
+    const menuRef = useClickOutside(() => {
+      if (side === "left") setOpenLeftMenu(false);
+      if (side === "right") setOpenRightMenu(false);
     });
+    return (
+      <div
+        ref={menuRef}
+        className={`absolute ${
+          side === "left" ? "right-0" : "right-0"
+        } top-10 mt-2 w-56 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden z-50`}
+      >
+        {/* Header with close */}
+        <div className="flex items-center justify-between px-4 py-4 bg-[rgba(137,122,255,0.1)]">
+          <button
+            // className="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm shadow-gray-200/60 hover:shadow-xl hover:scale-[1.03] active:scale-100 transition"
+            onClick={() =>
+              side === "left" ? setOpenLeftMenu(false) : setOpenRightMenu(false)
+            }
+          >
+            {/* <BsThreeDots className="text-gray-800" /> */}
+          </button>
+          <button
+            onClick={() =>
+              side === "left" ? setOpenLeftMenu(false) : setOpenRightMenu(false)
+            }
+            className="text-pink-500"
+          >
+            <FiX size={18} />
+          </button>
+        </div>
+
+        {/* Menu items */}
+        <div className="px-3 py-3 flex flex-col">
+          {!collection && !isReel && (
+            <>
+              <button
+                className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0] transition-colors duration-200 w-full text-left"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeletePost?.();
+                  side === "left"
+                    ? setOpenLeftMenu(false)
+                    : setOpenRightMenu(false);
+                }}
+                aria-label="Delete post"
+              >
+                <FiTrash2 className="text-red-500" />
+                Delete
+              </button>
+              <button
+                className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0] transition-colors duration-200 w-full text-left"
+                onClick={() => {
+                  setIsEditModalOpen(true);
+                  side === "left"
+                    ? setOpenLeftMenu(false)
+                    : setOpenRightMenu(false);
+                }}
+                aria-label="Edit post"
+              >
+                <FiEdit2 className="text-green-500" />
+                Edit
+              </button>
+            </>
+          )}
+          <button
+            className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0]"
+            onClick={() => {
+              copyPostLink(
+                `${window.location.origin}/post/${post.id}`,
+                (msg) =>
+                  showToast({
+                    type: "success",
+                    message: msg,
+                    duration: 2000,
+                  }),
+                (msg) =>
+                  showToast({
+                    type: "error",
+                    message: msg,
+                    duration: 2000,
+                  })
+              );
+              side === "left"
+                ? setOpenLeftMenu(false)
+                : setOpenRightMenu(false);
+            }}
+          >
+            <FiLink2 className="text-red-500" /> Copy Link
+          </button>
+          <div className="relative">
+            <button
+              ref={shareButtonRef}
+              className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 w-full text-left"
+              onClick={() => setShowSharePopup(!showSharePopup)}
+            >
+              <FiSend className="text-blue-500" /> Share to..
+            </button>
+
+            {showSharePopup && shareButtonRef.current && (
+              <div
+                style={{
+                  position: "fixed",
+                  top: `${
+                    shareButtonRef.current.getBoundingClientRect().bottom
+                  }px`,
+                  left: `${
+                    shareButtonRef.current.getBoundingClientRect().left
+                  }px`,
+                }}
+                className="z-50"
+              >
+                <SharePopup
+                  isOpen={true}
+                  onClose={() => setShowSharePopup(false)}
+                  url={buildShareUrl(urldata)}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const shouldShowMediaSection =
@@ -351,13 +443,8 @@ const PostPopup: React.FC<PopupProps> = ({
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const handleEdit = () => {
-    setIsEditModalOpen(true);
-  };
   const handlePostUpdatedCallback = () => {
     setIsEditModalOpen(false);
-    setOpen(false);
-    // Call the parent refresh callback if provided
     if (onPostUpdated) {
       onPostUpdated();
     }
@@ -383,11 +470,11 @@ const PostPopup: React.FC<PopupProps> = ({
                     </p>
                   </div>
 
-                  {/* Dots button */}
+                  {/* Dots button - Left side */}
                   <div className="flex items-center gap-2">
                     <button
                       className="flex items-center justify-center w-9 h-9 rounded-xl bg-white shadow-sm shadow-gray-200/60 hover:shadow-xl hover:scale-[1.03] active:scale-100 transition"
-                      onClick={() => setOpen(!open)}
+                      onClick={() => setOpenLeftMenu(!openLeftMenu)}
                     >
                       <BsThreeDots className="text-gray-800" />
                     </button>
@@ -398,96 +485,9 @@ const PostPopup: React.FC<PopupProps> = ({
                       <span className="text-pink-500 text-lg font-bold">✕</span>
                     </button>
                   </div>
-                  {open && (
-                    <div className="absolute right-0 top-10 mt-2 w-56 rounded-2xl bg-white shadow-lg ring-1 ring-black/5 overflow-hidden z-50">
-                      {/* Header with close */}
-                      <div className="flex items-center justify-between px-4 py-4 bg-[rgba(137,122,255,0.1)]">
-                        <button
-                          className="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm shadow-gray-200/60 hover:shadow-xl hover:scale-[1.03] active:scale-100 transition"
-                          onClick={() => setOpen(!open)}
-                        >
-                          <BsThreeDots className="text-gray-800" />
-                        </button>
-                        <button
-                          onClick={() => setOpen(false)}
-                          className="text-pink-500"
-                        >
-                          <FiX size={18} />
-                        </button>
-                      </div>
 
-                      {/* Menu items */}
-                      <div className="px-3 py-3 flex flex-col">
-                        {!collection && !isReel && (
-                          <>
-                            <button
-                              className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0] transition-colors duration-200 w-full text-left"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onDeletePost?.();
-                                setOpen(false);
-                              }}
-                              aria-label="Delete post"
-                            >
-                              <FiTrash2 className="text-red-500" />
-                              Delete
-                            </button>
-                            <button
-                              className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0] transition-colors duration-200 w-full text-left"
-                              onClick={handleEdit}
-                              aria-label="Edit post"
-                            >
-                              <FiEdit2 className="text-green-500" />
-                              Edit
-                            </button>
-                            <EditPostModal
-                              isOpen={isEditModalOpen}
-                              onClose={() => setIsEditModalOpen(false)}
-                              posts={post}
-                              onPostUpdated={handlePostUpdatedCallback}
-                            />
-                          </>
-                        )}
-                        <button
-                          className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0]"
-                          onClick={() => {
-                            copyPostLink(
-                              `${window.location.origin}/post/${post.id}`,
-                              (msg) =>
-                                showToast({
-                                  type: "success",
-                                  message: msg,
-                                  duration: 2000,
-                                }),
-                              (msg) =>
-                                showToast({
-                                  type: "error",
-                                  message: msg,
-                                  duration: 2000,
-                                })
-                            );
-                          }}
-                        >
-                          <FiLink2 className="text-red-500" /> Copy Link
-                        </button>
-                        <button
-                          className="relative flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50"
-                          onClick={() => toggleMenu(post.id, "share")}
-                        >
-                          <FiSend className="text-blue-500" /> Share to..
-                          {openMenu.postId === post.id &&
-                            openMenu.type === "share" && (
-                              <SharePopup
-                                isOpen={true}
-                                onClose={() => toggleMenu(post.id, "share")}
-                                url={buildShareUrl(urldata)}
-                                position="top"
-                              />
-                            )}
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  {/* Left side menu */}
+                  {openLeftMenu && <MenuContent side="left" />}
                 </div>
 
                 {/* Media area */}
@@ -568,23 +568,43 @@ const PostPopup: React.FC<PopupProps> = ({
               : "lg:w-full rounded-2xl"
           } flex flex-col bg-white pb-6 overflow-y-auto border-t lg:border-l lg:border-t-0 border-[#E5E7EB] h-full`}
         >
-          {/* Close button */}
+          {/* Close button and three dots menu - Right side */}
           <div className="flex items-center justify-between border-b border-gray-200 px-4 py-4 mx-4 lg:mx-6">
             <h2 className="text-lg font-semibold text-gray-900">
               Reflection Threads
             </h2>
-            <button
-              onClick={onClose}
-              className="invisible lg:visible w-8 h-8 hidden lg:flex items-center justify-center rounded-lg hover:bg-gray-100 transition shadow-sm"
-            >
-              <span className="text-pink-500 text-lg font-bold">✕</span>
-            </button>
+            <div className="flex items-center gap-2">
+              {!shouldShowMediaSection ? (
+                <>
+                  <div className="relative">
+                    {/* Three dots button - Right side */}
+                    <button
+                      className="flex items-center justify-center w-9 h-9 rounded-xl bg-white shadow-sm shadow-gray-200/60 hover:shadow-xl hover:scale-[1.03] active:scale-100 transition"
+                      onClick={() => setOpenRightMenu(!openRightMenu)}
+                    >
+                      <BsThreeDots className="text-gray-800" />
+                    </button>
+
+                    {/* Right side menu */}
+                    {openRightMenu && <MenuContent side="right" />}
+                  </div>
+                </>
+              ) : (
+                ""
+              )}
+              <button
+                onClick={onClose}
+                className="invisible lg:visible w-8 h-8 hidden lg:flex items-center justify-center rounded-lg hover:bg-gray-100 transition shadow-sm"
+              >
+                <span className="text-pink-500 text-lg font-bold">✕</span>
+              </button>
+            </div>
           </div>
+
           <p className="p-6">{post?.body || "No media available"}</p>
 
-          {/* Rest of your comments section remains the same */}
+          {/* Comments section */}
           <div className="pt-4 lg:pt-8 flex-1 overflow-y-auto space-y-4 w-full px-4 lg:px-6">
-            {/* ... existing comments code ... */}
             {isCommentsLoading ? (
               <div className="flex items-center justify-center py-6">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500"></div>
@@ -596,7 +616,6 @@ const PostPopup: React.FC<PopupProps> = ({
             ) : (
               comments.map((comment) => (
                 <div key={comment.id} className="flex flex-col gap-3 w-full">
-                  {/* ... existing comment rendering ... */}
                   <div className="flex items-center justify-between">
                     <div className="flex justify-start items-center gap-2">
                       <img
@@ -772,6 +791,14 @@ const PostPopup: React.FC<PopupProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Edit Modal - placed outside to avoid z-index issues */}
+      <EditPostModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        posts={post}
+        onPostUpdated={handlePostUpdatedCallback}
+      />
     </div>
   );
 };
