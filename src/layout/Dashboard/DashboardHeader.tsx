@@ -60,8 +60,8 @@ const DashboardHeader = ({
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
- const notificationDropdownRef = useRef<HTMLDivElement>(null); 
-const supportDropdownRef = useRef<HTMLDivElement>(null);
+  const notificationDropdownRef = useRef<HTMLDivElement>(null);
+  const supportDropdownRef = useRef<HTMLDivElement>(null);
   // Add state for name values
   const [name, setName] = useState(localStorage.getItem("main_name") || "");
   const [notificationCount, setNotificationCount] = useState(
@@ -214,11 +214,11 @@ const supportDropdownRef = useRef<HTMLDivElement>(null);
       }
     };
 
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleProfile = () => {
     const personOrganization = localStorage.getItem("person_organization");
@@ -280,7 +280,7 @@ const supportDropdownRef = useRef<HTMLDivElement>(null);
 
   const handleViewAllNotifications = () => {
     navigate("/dashboard/notification");
-     setIsNotificationDropdownOpen(false);
+    setIsNotificationDropdownOpen(false);
   };
 
   // Handle notification click and redirect based on redirection type
@@ -732,12 +732,17 @@ const supportDropdownRef = useRef<HTMLDivElement>(null);
             </button>
 
             {isSupportDropdownOpen && (
-              <div className="absolute right-0 top-full mt-3 w-52 bg-white rounded-xl shadow-lg border border-gray-200 z-50 py-2 animate-fadeIn">
+              <div
+                className="absolute right-0 top-full mt-3 w-52 bg-white rounded-xl shadow-lg border border-gray-200 py-2 animate-fadeIn"
+                style={{
+                  zIndex: 99,
+                }}
+              >
                 <button
-                    onClick={() => {
-    navigate("/dashboard/support");
-    setIsSupportDropdownOpen(false);
-  }}
+                  onClick={() => {
+                    navigate("/dashboard/support");
+                    setIsSupportDropdownOpen(false);
+                  }}
                   className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 w-full transition"
                 >
                   <HelpCircleIcon className="w-4 h-4 text-[#897AFF]" /> Support
@@ -746,9 +751,9 @@ const supportDropdownRef = useRef<HTMLDivElement>(null);
                 <div className="sm:hidden flex justify-between items-center px-4 py-2.5 hover:bg-gray-100 w-full transition">
                   <button
                     onClick={() => {
-    handleNotificationClick();
-    setIsSupportDropdownOpen(false);
-  }}
+                      handleNotificationClick();
+                      setIsSupportDropdownOpen(false);
+                    }}
                     className="flex items-center gap-2 text-sm text-gray-700"
                   >
                     <BellIcon className="w-4 h-4 text-[#897AFF]" />{" "}
@@ -764,10 +769,10 @@ const supportDropdownRef = useRef<HTMLDivElement>(null);
                 </div>
 
                 <button
-                 onClick={() => {
-    navigate("/dashboard/setting");
-    setIsSupportDropdownOpen(false);
-  }}  
+                  onClick={() => {
+                    navigate("/dashboard/setting");
+                    setIsSupportDropdownOpen(false);
+                  }}
                   className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 w-full transition"
                 >
                   <SettingsIcon className="w-4 h-4 text-[#897AFF]" /> Settings

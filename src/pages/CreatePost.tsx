@@ -989,11 +989,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
       {/* Feeling Popup Modal - Modern Apple-Style Design */}
       {isFeelingPopupOpen && (
         <div
-          className="fixed inset-0 flex items-center justify-center z-[60] p-4 backdrop-blur-md bg-black/40"
+          className="fixed inset-0 flex items-center justify-center z-60 p-4 backdrop-blur-md bg-black/40"
           onClick={handleCloseFeelingPopup}
         >
           <div
-            className="bg-white rounded-[32px] w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
@@ -1043,7 +1043,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       className="flex items-center gap-3 px-4 py-4 rounded-3xl transition-all duration-200 bg-white/60 hover:bg-white/90 hover:shadow-sm"
                     >
                       {/* Circular emoji container */}
-                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                      <div className="shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
                         <span className="text-2xl">{feel.emoji}</span>
                       </div>
                       {/* Feeling label */}
@@ -1055,7 +1055,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </div>
               ) : (
                 <div className="text-center py-16 px-6">
-                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -1082,11 +1082,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
       {/* Location Popup Modal - Modern Apple-Style Design */}
       {isLocationPopupOpen && (
         <div
-          className="fixed inset-0 flex items-center justify-center z-[60] p-4 backdrop-blur-md bg-black/40"
+          className="fixed inset-0 flex items-center justify-center z-60 p-4 backdrop-blur-md bg-black/40"
           onClick={handleCloseLocationPopup}
         >
           <div
-            className="bg-white rounded-[32px] w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
@@ -1136,7 +1136,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       className="w-full flex items-center gap-4 px-4 py-4 rounded-3xl transition-all duration-200 bg-white/60 hover:bg-white/90 hover:shadow-sm"
                     >
                       {/* Circular icon container */}
-                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                      <div className="shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
                         <svg
                           className="w-6 h-6 text-gray-600"
                           fill="currentColor"
@@ -1159,7 +1159,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </div>
               ) : (
                 <div className="text-center py-16 px-6">
-                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     <svg className="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                       <path
                         fillRule="evenodd"
@@ -1194,11 +1194,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
       {/* Tag People Popup - Modern Apple-Style Design */}
       {isTagsPopupOpen && (
         <div
-          className="fixed inset-0 flex items-center justify-center z-[60] p-4 backdrop-blur-md bg-black/40"
+          className="fixed inset-0 flex items-center justify-center z-60 p-4 backdrop-blur-md bg-black/40"
           onClick={handleCloseTagPopup}
         >
           <div
-            className="bg-white rounded-[32px] w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
@@ -1279,7 +1279,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                             : "bg-white/60 hover:bg-white/90 hover:shadow-sm"
                         }`}
                       >
-                        <div className="relative flex-shrink-0">
+                        <div className="relative shrink-0">
                           <img
                             src={profilePic}
                             alt={`${firstName} ${lastName}`}
@@ -1310,7 +1310,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </div>
               ) : (
                 <div className="text-center py-16 px-6">
-                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
