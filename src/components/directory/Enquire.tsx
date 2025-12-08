@@ -159,8 +159,8 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ open, onClose, directory })
   return (
     <>
       {/* MAIN POPUP */}
-      <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-[999]">
-        <div className="bg-white w-[720px] rounded-2xl shadow-xl overflow-hidden relative">
+      <div className="fixed inset-0 p-5 h-full bg-black/40 flex justify-center items-center z-[999]">
+        <div className="bg-white w-[720px] h-full rounded-2xl shadow-xl overflow-y-auto no-scrollbar scrollbar-hide">
 
           {/* ===== HEADER ===== */}
           <div className="bg-[#F5F3FF] px-6 py-4 flex items-center justify-between shadow-sm">

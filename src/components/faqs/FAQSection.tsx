@@ -26,13 +26,14 @@ function splitIntoColumns<T>(array: T[], numCols: number): T[][] {
   return cols;
 }
 
-const buttonBgColors = [
-  "#E2F9FF", // 1st
-  "#E2F2FF", // 2nd
-  "#E7E5FF", // 3rd
-  "#EDE6FB", // 4th
-  "#F8EEEF", // 5th
+const buttonBgGradients = [
+  "linear-gradient(90deg, #E1F2FF 0%, #E5E9FF 100%)", // aqua gradient
+  "linear-gradient(90deg, #E1F2FF 0%, #D4D1FF 100%)", // lavender gradient
+  "linear-gradient(90deg, #E9E3FB 0%, #F8D8C7 100%)", // peach gradient
+  "linear-gradient(90deg, #FEEEE3 0%, #FFF2E9 100%)", // peach gradient
+
 ];
+
 
 export default function FAQSection({ faqs }: FAQSectionProps) {
   const [activeTabId, setActiveTabId] = useState(faqs[0]?.id || "");
@@ -112,32 +113,38 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
       </div>
       {/* Medium+ screens: separate buttons */}
       <div className="hidden md:flex gap-4 flex-wrap justify-center">
-        {faqs.map((category, index) => (
-          <button
-            key={category.id}
-            onClick={() => {
-              setActiveTabId(category.id);
-              setOpenInCol1(null);
-              setOpenInCol2(null);
-            }}
-            className={`px-6 lg:px-12 py-2 lg:py-3 text-sm md:text-base transition rounded-t-xl ${
-              activeTabId === category.id
-                ? "text-[#1A1A1A] font-semibold"
-                : "text-[#64748B] font-normal border-t border-l border-r border-[#CBD5E1]"
-            }`}
-            style={{
-              backgroundColor:
-                activeTabId === category.id
-                  ? buttonBgColors[index]
-                  : "transparent",
-            }}
-          >
-            {category.title}
-          </button>
-        ))}
-      </div>
+  {faqs.map((category, index) => (
+    <button
+      key={category.id}
+      type="button"
+      onClick={() => {
+        setActiveTabId(category.id);
+        setOpenInCol1(null);
+        setOpenInCol2(null);
+      }}
+      className={`px-6 lg:px-12 py-2 lg:py-3 text-sm md:text-base transition rounded-t-xl focus:outline-none ${
+        activeTabId === category.id
+          ? "text-[#1A1A1A] font-semibold"
+          : "text-[#64748B] font-normal border-t border-l border-r border-[#CBD5E1]"
+      }`}
+      style={{
+        // <-- IMPORTANT: use `background` for gradients, not backgroundColor
+        background:
+          activeTabId === category.id
+            ? buttonBgGradients[index % buttonBgGradients.length] // safe fallback if more than 3 tabs
+            : "transparent",
+        // small layout fixes to ensure gradient is visible
+        minHeight: 44,
+        paddingTop: 12,
+        paddingBottom: 12,
+      }}
+    >
+      {category.title}
+    </button>
+  ))}
+</div>
 
-      <div className="mt-10 md:mt-0 relative flex flex-col gap-10 pt-10 pb-20 justify-center items-center md:rounded-tr-3xl md:rounded-br-3xl md:rounded-bl-3xl overflow-hidden">
+<div className="mt-10 md:mt-0 relative flex flex-col gap-10 pt-10 pb-20 justify-center items-center md:rounded-3xl overflow-hidden">
         <img
           src={bg}
           alt="gradient"

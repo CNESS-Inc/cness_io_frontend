@@ -1016,7 +1016,7 @@ export default function BestPracticesHub() {
                 className="w-15 h-15"
               />
               <span 
-              onClick={openModal}
+              onClick={() => navigate("/dashboard/bestpractices")}
               className="text-gray-800 font-openSans font-semibold leading-tight">
                 Explore<br />Best Practice
               </span>
@@ -1028,7 +1028,9 @@ export default function BestPracticesHub() {
                 alt="Add Your Impact Story Icon" 
                 className="w-15 h-15"
               />
-              <span className="text-gray-800 font-openSans font-semibold leading-tight">
+              <span
+              onClick={openModal}
+              className="text-gray-800 font-openSans font-semibold leading-tight">
                 Add Your<br />Impact Story
               </span>
             </div>
