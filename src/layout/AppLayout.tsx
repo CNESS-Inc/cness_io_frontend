@@ -12,13 +12,16 @@ const AppLayout = () => {
     const checkAuth = () => {
       const token = localStorage.getItem("jwt");
       const completed_step = localStorage.getItem("completed_step");
+
+      // Only redirect if user is logged in and on landing page
       if (token && completed_step !== "0" && location.pathname === "/") {
         navigate("/dashboard", { replace: true });
       } 
       setIsCheckingAuth(false);
     };
     checkAuth();
-  }, [navigate, location.pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isCheckingAuth) {
     return (

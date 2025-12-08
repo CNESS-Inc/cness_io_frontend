@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,6 +11,7 @@ const MoodSelector: React.FC<Props> = ({
 }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -31,6 +32,15 @@ const MoodSelector: React.FC<Props> = ({
     setSearchQuery("");
   };
 
+  // Cleanup debounce timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, []);
+
   return (
     <section className="sm:px-2 sm:py-4 md:px-4 md:py-8 lg:py-8  lg:px-8">
       <div className="flex flex-col items-center space-y-10">
@@ -40,8 +50,10 @@ const MoodSelector: React.FC<Props> = ({
   onSubmit={handleSearchSubmit}
   className="flex items-center w-full max-w-xl sm:max-w-2xl md:max-w-4xl bg-white border border-gray-300 rounded-full px-3 sm:px-4 py-2 sm:py-3 space-x-2 sm:space-x-3"
 >
+          <label htmlFor="marketplace-search" className="sr-only">Search products</label>
           <div className="flex items-center space-x-2 flex-1">
             <input
+              id="marketplace-search"
               type="text"
               placeholder="Search products..."
               value={searchQuery}

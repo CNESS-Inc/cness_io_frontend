@@ -19,6 +19,10 @@ import { GetMarketPlaceBuyerCategories, GetMarketPlaceBuyerMoods, GetMarketPlace
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
+// Constants
+const FEATURED_PRODUCTS_LIMIT = 6;
+const SHOPS_DISPLAY_LIMIT = 8;
+
 const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -30,44 +34,47 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [shops, setShops] = useState<any[]>([]);
   const [isLoadingShops, setIsLoadingShops] = useState(false);
 
+  // Fetch moods, categories, and shops in parallel on mount
   useEffect(() => {
-    const fetchMoods = async () => {
+    const fetchInitialData = async () => {
       try {
-        const response = await GetMarketPlaceBuyerMoods();
-        setMoods(response?.data?.data);
-      } catch (error: any) {
-        showToast({
-          message: "Failed to load moods.",
-          type: "error",
-          duration: 3000,
-        });
-      }
-    };
+        const [moodsResponse, categoriesResponse, shopsResponse] = await Promise.all([
+          GetMarketPlaceBuyerMoods(),
+          GetMarketPlaceBuyerCategories(),
+          GetMarketPlaceShops({ limit: SHOPS_DISPLAY_LIMIT, page: 1 })
+        ]);
 
-    fetchMoods();
-  }, []);
+        // Set moods
+        if (moodsResponse?.data?.data) {
+          setMoods(moodsResponse.data.data);
+        }
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await GetMarketPlaceBuyerCategories();
-        if (response?.data?.data) {
-          const cats = response.data.data;
+        // Set categories
+        if (categoriesResponse?.data?.data) {
+          const cats = categoriesResponse.data.data;
           setCategories(cats);
           if (cats.length > 0) {
             setSelectedCategory(cats[0].slug);
           }
         }
+
+        // Set shops
+        if (shopsResponse?.data?.data?.shops) {
+          setShops(shopsResponse.data.data.shops);
+        }
       } catch (error: any) {
         showToast({
-          message: "Failed to load categories.",
+          message: "Failed to load marketplace data.",
           type: "error",
           duration: 3000,
         });
+      } finally {
+        setIsLoadingShops(false);
       }
     };
 
-    fetchCategories();
+    setIsLoadingShops(true);
+    fetchInitialData();
   }, []);
 
   useEffect(() => {
@@ -78,7 +85,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       try {
         const response = await GetMarketPlaceBuyerProducts({
           category_slug: selectedCategory,
-          limit: 6,
+          limit: FEATURED_PRODUCTS_LIMIT,
           page: 1,
         });
 
@@ -99,32 +106,6 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
     fetchFeaturedProducts();
   }, [selectedCategory]);
 
-  useEffect(() => {
-    const fetchShops = async () => {
-      setIsLoadingShops(true);
-      try {
-        const response = await GetMarketPlaceShops({
-          limit: 8,
-          page: 1,
-        });
-
-        const products = response?.data?.data?.shops || [];
-        setShops(products);
-      } catch (error: any) {
-        showToast({
-          message: "Failed to load products.",
-          type: "error",
-          duration: 3000,
-        });
-        setShops([]);
-      } finally {
-        setIsLoadingShops(false);
-      }
-    };
-
-    fetchShops();
-  }, []);
-
   const handleMoodClick = (moodSlug: string) => {
     navigate(`/dashboard/market-place/search?mood_slug=${moodSlug}`);
   };
@@ -141,53 +122,6 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
     }
   };
 
-  {/*const stores = [
-    {
-      id: 1,
-      image: 'https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png',
-      logo: 'https://static.codia.ai/image/2025-10-15/a2gTB6iqyb.png',
-      name: 'Red Tape',
-      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.',
-      products: 34,
-      ratings: 4.8,
-      reviews: "2.1k",
-      followers: "12.4k"
-    },
-    {
-      id: 2,
-      image: 'https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png',
-      logo: 'https://static.codia.ai/image/2025-10-15/Sy06hyDfRJ.png',
-      name: 'Red Tape',
-      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.',
-      products: 28,
-      ratings: 4.5,
-      reviews: "1.8k",
-      followers: "10.2k"
-    },
-    {
-      id: 3,
-      image: 'https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png',
-      logo: 'https://static.codia.ai/image/2025-10-15/i0zSrWRgtO.png',
-      name: 'Red Tape',
-      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.',
-      products: 45,
-      ratings: 4.9,
-      reviews: "3.2k",  
-    },
-    {
-      id: 4,
-      image: 'https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png',
-      logo: 'https://static.codia.ai/image/2025-10-15/9Foup8c9nu.png',
-      name: 'Red Tape',
-      description: 'Red Tape is a premium lifestyle and fashion brand known for its high-quality footwear, apparel, and accessories.',
-       products: 12,
-      ratings: "4K",
-      reviews: "3.2k", 
-        followers: "1K"
-    }
-  ]
-  */}
-
   return (
 
     <div
@@ -198,15 +132,17 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
       <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-auto">
         {/* HAPPY (left big one) */}
-        <div
-          className="col-span-1 row-span-1 relative overflow-hidden rounded-2xl group cursor-pointer 
+        <button
+          className="col-span-1 row-span-1 relative overflow-hidden rounded-2xl group cursor-pointer
                 sm:flex sm:items-start sm:justify-start sm:text-left
                 flex items-center justify-center text-center"
           onClick={() => handleMoodClick('happy')}
+          aria-label="Browse happy mood products"
         >
           <img
             src={"https://cdn.cness.io/happy.svg"}
             alt="HAPPY"
+            loading="lazy"
             className="sm:h-56 sm:w-56 md:h-full md:w-full lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
           <h2
@@ -217,19 +153,21 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       group-hover:text-black transition-colors">
             HAPPY
           </h2>
-        </div>
+        </button>
 
         {/* Column 2 (Motivated + Calm stacked) */}
         <div className="grid sm:grid-rows-1 md:grid-rows-1 lg:grid gap-4">
-          <div
-            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+          <button
+            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer
                 flex items-center justify-center text-center
                 sm:block sm:text-left sm:items-start sm:justify-start"
             onClick={() => handleMoodClick('motivated')}
+            aria-label="Browse motivated mood products"
           >
             <img
               src={"https://cdn.cness.io/2%20motivated.svg"}
               alt="Motivated"
+              loading="lazy"
               className="md:h-full md:w-full sm:h-44 sm:w-44 lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             <h2
@@ -240,16 +178,18 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       group-hover:text-black transition-colors">
               Motivated
             </h2>
-          </div>
-          <div
-            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+          </button>
+          <button
+            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer
                 flex items-center justify-center text-center
                 sm:block sm:text-left sm:items-start sm:justify-start"
             onClick={() => handleMoodClick('calm')}
+            aria-label="Browse calm mood products"
           >
             <img
               src={"https://cdn.cness.io/calm.svg"}
               alt="Calm"
+              loading="lazy"
               className="sm:h-44 sm:w-44 md:h-full md:w-full lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             <h2
@@ -260,20 +200,22 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       group-hover:text-black transition-colors">
               CALM
             </h2>
-          </div>
+          </button>
         </div>
 
         {/* Column 3 (Creative tall + Sad small bottom) */}
         <div className="grid sm:grid-rows-1 md:grid-rows-1 lg:grid gap-4">
-          <div
-            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+          <button
+            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer
                 flex items-center justify-center text-center
                 sm:block sm:text-left sm:items-start sm:justify-start"
             onClick={() => handleMoodClick('creative')}
+            aria-label="Browse creative mood products"
           >
             <img
               src={"https://cdn.cness.io/2%20creative.svg"}
               alt="Creative"
+              loading="lazy"
               className="sm:h-44 sm:w-44 md:h-full md:w-full lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             <h2
@@ -284,16 +226,18 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       group-hover:text-black transition-colors">
               CREATIVE
             </h2>
-          </div>
-          <div
-            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+          </button>
+          <button
+            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer
                 flex items-center justify-center text-center
                 sm:block sm:text-left sm:items-start sm:justify-start"
             onClick={() => handleMoodClick('sad')}
+            aria-label="Browse sad mood products"
           >
             <img
               src={"https://cdn.cness.io/sad.svg"}
               alt="Sad"
+              loading="lazy"
               className="sm:h-44 sm:w-44 md:h-full md:w-full lg:h-full lg:w-full lg:h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             <h2
@@ -304,20 +248,22 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       group-hover:text-black transition-colors">
               SAD
             </h2>
-          </div>
+          </button>
         </div>
 
         {/* Column 4 (Spiritual top + Energetic bottom) */}
         <div className="grid grid-rows-2 gap-4">
-          <div
-            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+          <button
+            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer
                 flex items-center justify-center text-center
                 sm:block sm:text-left sm:items-start sm:justify-start"
             onClick={() => handleMoodClick('spiritual')}
+            aria-label="Browse spiritual mood products"
           >
             <img
               src={"https://cdn.cness.io/Spitirtual.svg"}
               alt="Spiritual"
+              loading="lazy"
               className="sm:h-44 sm:w-44 md:h-full md:w-full lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             <h2
@@ -328,16 +274,18 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       group-hover:text-black transition-colors">
               SPIRITUAL
             </h2>
-          </div>
-          <div
-            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer 
+          </button>
+          <button
+            className="row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer
                 flex items-center justify-center text-center
                 sm:block sm:text-left sm:items-start sm:justify-start"
             onClick={() => handleMoodClick('energetic')}
+            aria-label="Browse energetic mood products"
           >
             <img
               src={"https://cdn.cness.io/energy.svg"}
               alt="Energetic"
+              loading="lazy"
               className="sm:h-44 sm:w-44 md:h-full md:w-full lg:h-full lg:w-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             <h2
@@ -348,7 +296,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       group-hover:text-black transition-colors">
               ENERGETIC
             </h2>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -363,6 +311,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           <img
             src="https://cdn.cness.io/Trendingp.svg"
             alt="Trending Products"
+            loading="lazy"
             className="sm:h-[200px] sm:w-[200px] md:h-full md:w-full lg:w-full lg:h-[521px] object-cover"
           />
           {/* Gradient overlay: absolutely positioned on lg+ screens, relative otherwise */}
@@ -389,6 +338,7 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
           <img
             src="https://cdn.cness.io/new%20arrivals.svg"
             alt="New Contents"
+            loading="lazy"
             className="sm:h-[160px] sm:w-[160px] md:h-full md:w-full lg:w-full lg:h-[521px] object-cover"
           />
           {/* Gradient - absolute as you want it overlay */}

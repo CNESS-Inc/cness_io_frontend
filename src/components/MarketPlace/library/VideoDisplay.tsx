@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { BsBookmarkFill } from "react-icons/bs";
+import { BsBookmarkFill, BsBookmark } from "react-icons/bs";
 import { LuGalleryVerticalEnd } from "react-icons/lu";
 import { FiCalendar } from "react-icons/fi";
 import {
@@ -47,6 +47,7 @@ interface ProductHeaderProps {
     product_type_details?: any;
     productId?: string;
     productProgress?: any;
+    isInCollections?: boolean;
     onVideoEnd?: () => void;
     onProgressUpdate?: () => void;
     onSaveToCollection?: () => void;
@@ -67,6 +68,7 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
     productId,
     productProgress,
     product_type_details,
+    isInCollections = false,
     onVideoEnd,
     onProgressUpdate,
     onSaveToCollection,
@@ -707,8 +709,12 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
                         className="text-400 text-[#000000] hover:text-[#000000] font-[Open_Sans] flex items-center gap-3"
                         onClick={onSaveToCollection}
                     >
-                        Save to Collections
-                        <BsBookmarkFill color="#7C3AED" size={16} />
+                        {isInCollections ? "Saved to Collections" : "Save to Collections"}
+                        {isInCollections ? (
+                            <BsBookmarkFill color="#7C3AED" size={16} />
+                        ) : (
+                            <BsBookmark color="#7C3AED" size={16} />
+                        )}
                     </button>
                 </div>
 
@@ -730,17 +736,19 @@ const VideoDisplay: React.FC<ProductHeaderProps> = ({
                         {content?.length} Chapters
                         <span className="mx-2">•</span>
                     </span>
-                    <span className="flex items-center font-[Poppins]">
-                        <FiCalendar className="w-4 h-4 text-[#7077fe] mr-1" />
-                        Purchased on
-                        <span className="font-semibold ml-1">
-                            {new Date(purchase).toLocaleDateString('en-IN', {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric'
-                            })}
+                    {purchase && (
+                        <span className="flex items-center font-[Poppins]">
+                            <FiCalendar className="w-4 h-4 text-[#7077fe] mr-1" />
+                            Purchased on
+                            <span className="font-semibold ml-1">
+                                {new Date(purchase).toLocaleDateString('en-IN', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric'
+                                })}
+                            </span>
                         </span>
-                    </span>
+                    )}
                 </div>
 
                 {/* Video Player */}
