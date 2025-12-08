@@ -136,7 +136,7 @@ if (item.id === "directory") {
       children: [
         { label: "Search Listing", path: "/dashboard/DashboardDirectory" },
         { label: "Edit Public Listing", path: "/dashboard/editpubliclisting" },
-         { label: "DirectoryProfile", path: "/dashboard/directory-profile" },
+        //  { label: "DirectoryProfile", path: "/dashboard/directory-profile" },
           { label: "EditDirectory", path: "/dashboard/edit-profile" },
           { label: "MyEnquiry", path: "/dashboard/my-enquiry" },
       ],
