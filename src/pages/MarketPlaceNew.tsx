@@ -15,7 +15,7 @@ import Button from '../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import ShopCard from '../components/MarketPlace/Shopcard';
 import { useEffect, useState } from "react";
-import { GetMarketPlaceBuyerCategories, GetMarketPlaceBuyerMoods, GetMarketPlaceBuyerProducts, GetMarketPlaceShops } from "../Common/ServerAPI";
+import { GetMarketPlaceBuyerCategories, GetMarketPlaceBuyerMoods, GetMarketPlaceBuyerProducts, GetMarketPlaceShops, GetTrendingProducts } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
@@ -33,6 +33,8 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [shops, setShops] = useState<any[]>([]);
   const [isLoadingShops, setIsLoadingShops] = useState(false);
+  const [trendingProducts, setTrendingProducts] = useState<any[]>([]);
+  const [isLoadingTrending, setIsLoadingTrending] = useState(false);
 
   // Fetch moods, categories, and shops in parallel on mount
   useEffect(() => {
@@ -106,6 +108,24 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
     fetchFeaturedProducts();
   }, [selectedCategory]);
 
+  useEffect(() => {
+    const fetchTrendingProducts = async () => {
+      setIsLoadingTrending(true);
+      try {
+        const response = await GetTrendingProducts("day");
+        const products = response?.data?.data?.products || [];
+        setTrendingProducts(products);
+      } catch (error: any) {
+        console.error('Failed to load trending products:', error);
+        setTrendingProducts([]);
+      } finally {
+        setIsLoadingTrending(false);
+      }
+    };
+
+    fetchTrendingProducts();
+  }, []);
+
   const handleMoodClick = (moodSlug: string) => {
     navigate(`/dashboard/market-place/search?mood_slug=${moodSlug}`);
   };
@@ -120,6 +140,14 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         state: { selectedCategory: selectedCategory }
       });
     }
+  };
+
+  const handleExploreTrending = () => {
+    navigate('/dashboard/market-place/trending-products');
+  };
+
+  const handleExploreNewContents = () => {
+    navigate('/dashboard/market-place/new-contents');
   };
 
   return (
@@ -327,7 +355,10 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
               </div>
               <div className="mt-1 sm:mt-2 text-lg sm:text-xl">Products</div>
             </h2>
-            <button className="bg-white text-black px-5 py-2.5 sm:px-6 sm:py-3 rounded font-medium hover:bg-gray-100 transition-colors text-sm sm:text-base">
+            <button
+              onClick={handleExploreTrending}
+              className="bg-white text-black px-5 py-2.5 sm:px-6 sm:py-3 rounded font-medium hover:bg-gray-100 transition-colors text-sm sm:text-base"
+            >
               Explore Now
             </button>
           </div>
@@ -351,7 +382,10 @@ const MarketPlaceNew = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
               </div>
               <div className="mt-1 sm:mt-2 text-lg sm:text-xl">Contents</div>
             </h2>
-            <button className="bg-white text-black px-5 py-2.5 sm:px-6 sm:py-3 rounded font-medium hover:bg-gray-100 transition-colors text-sm sm:text-base">
+            <button
+              onClick={handleExploreNewContents}
+              className="bg-white text-black px-5 py-2.5 sm:px-6 sm:py-3 rounded font-medium hover:bg-gray-100 transition-colors text-sm sm:text-base"
+            >
               Explore Now
             </button>
           </div>

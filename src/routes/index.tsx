@@ -75,6 +75,8 @@ import UserPublicProfile from "../pages/UserPublicProfile";
 import Affiliate from "../pages/Affiliate";
 import ProductDetail from "../pages/ProductDetail";
 import MPSearch from "../pages/MPsearch";
+import TrendingProducts from "../pages/TrendingProducts";
+import NewContents from "../pages/NewContents";
 import AssessmentCertification from "../pages/AssessmentCertifications";
 import AspiringAssessment from "../pages/AspiringAssessment";
 import InspiredAssessment from "../pages/InspiredAssessment";
@@ -342,6 +344,14 @@ export const router = createBrowserRouter([
           {
             path: "market-place/search",
             element: <MPSearch />, // ← new page
+          },
+          {
+            path: "market-place/trending-products",
+            element: <TrendingProducts />,
+          },
+          {
+            path: "market-place/new-contents",
+            element: <NewContents />,
           },
 
           {
