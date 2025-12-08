@@ -136,6 +136,9 @@ if (item.id === "directory") {
       children: [
         { label: "Search Listing", path: "/dashboard/DashboardDirectory" },
         { label: "Edit Public Listing", path: "/dashboard/editpubliclisting" },
+        //  { label: "DirectoryProfile", path: "/dashboard/directory-profile" },
+          { label: "EditDirectory", path: "/dashboard/edit-profile" },
+          { label: "MyEnquiry", path: "/dashboard/my-enquiry" },
       ],
     },
     {
@@ -162,10 +165,11 @@ if (item.id === "directory") {
       label: "Social",
       active: false,
       isSocialDropdown: true,
-      childPaths: ["/dashboard/Feed", "/dashboard/Profile", "/dashboard/MyConnection"],
+      childPaths: ["/dashboard/Feed", "/dashboard/Profile", "/dashboard/MyConnection", "/dashboard/Certification"],
       children: [
         { label: "Feed", path: "/dashboard/feed" },
         { label: "Profile", path: "/dashboard/Profile" },
+        { label: "Certification", path: "/dashboard/Certification" },
         { label: "Connections", path: "/dashboard/MyConnection" },
       ],
     },

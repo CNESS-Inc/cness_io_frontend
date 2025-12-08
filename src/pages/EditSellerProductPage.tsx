@@ -503,7 +503,7 @@ const EditSellerProductPage: React.FC = () => {
           if (category === "video") {
             commonData.video_url = productData.video_details?.video_files || "";
             commonData.thumbnail_url =
-              productData.video_details?.thumbnail_url || "";
+              productData.thumbnail_url || productData.video_details?.thumbnail_url || "";
             commonData.duration = productData.video_details?.duration || "";
             commonData.short_video_url =
               productData?.storytelling_video_url || "";
@@ -519,9 +519,9 @@ const EditSellerProductPage: React.FC = () => {
             setShortVideoPreview(productData?.storytelling_video_url || "");
 
             // ✅ FIX: Set thumbnail data for video category too
-            if (productData.video_details?.thumbnail_url) {
+            if (productData.thumbnail_url || productData.video_details?.thumbnail_url) {
               setThumbnailData({
-                thumbnail_url: productData.video_details.thumbnail_url,
+                thumbnail_url: productData.thumbnail_url || productData.video_details.thumbnail_url,
                 public_id: productData.public_id || "",
               });
             }
@@ -1814,21 +1814,29 @@ const EditSellerProductPage: React.FC = () => {
         chapters,
       };
     } else if (category === "art") {
-      const chapters = contentItems.map((item: any, index) => ({
-        chapter_id: item.chapter_id,
-        title: item.title,
-        description: item.description || "",
-        is_free: item.is_free || false,
-        order_number: index,
-        chapter_files: item.chapter_files
-          .filter((f: any) => f.url)
-          .map((file: any, fileIndex: number) => ({
-            file_id: file.file_id,
-            url: file.url,
-            title: file.title,
-            order_number: fileIndex,
-          })),
-      }));
+      const chapters = contentItems.map((item: any, index) => {
+        const chapter: any = {
+          title: item.title,
+          description: item.description || "",
+          is_free: item.is_free || false,
+          order_number: index,
+          chapter_files: item.chapter_files
+            .filter((f: any) => f.url)
+            .map((file: any, fileIndex: number) => ({
+              file_id: file.file_id,
+              url: file.url,
+              title: file.title,
+              order_number: fileIndex,
+            })),
+        };
+
+        // Only include chapter_id if it exists (for existing collections)
+        if (item.chapter_id) {
+          chapter.chapter_id = item.chapter_id;
+        }
+
+        return chapter;
+      });
 
       return {
         ...basePayload,

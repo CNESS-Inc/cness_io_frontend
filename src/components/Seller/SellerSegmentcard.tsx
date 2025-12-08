@@ -4225,7 +4225,7 @@ export function SocialStackCard({
                         ? "/profile.png"
                         : f.avatar
                     }
-                    className="h-9 w-9 rounded-full object-cover"
+                    className="h-9 w-9 rounded-full object-cover me-1"
                   />
                   <div className="min-w-0">
                     <div className="truncate text-sm font-semibold text-[#0F1728]">

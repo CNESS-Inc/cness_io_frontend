@@ -371,6 +371,7 @@ const AddVideoForm: React.FC = () => {
   } | null>(null);
 
   const [loadedThumbnail, setLoadedThumbnail] = useState<string>();
+  const [isMainVideoUploading, setIsMainVideoUploading] = useState(false);
 
   // Sample functions like in edit page
   const handleAddSample = (fileData: SampleFile) => {
@@ -868,6 +869,8 @@ const AddVideoForm: React.FC = () => {
       return;
     }
 
+    setIsMainVideoUploading(true);
+
     const formData = new FormData();
     formData.append("video", file);
 
@@ -899,6 +902,8 @@ const AddVideoForm: React.FC = () => {
         type: "error",
         duration: 3000,
       });
+    } finally {
+      setIsMainVideoUploading(false);
     }
 
     e.target.value = "";
@@ -1192,55 +1197,95 @@ const AddVideoForm: React.FC = () => {
                 Upload Videos <span className="text-red-500">*</span>
               </label>
 
-              <label className="relative block w-full h-40 bg-[#F9FAFB] hover:bg-[#EEF3FF] rounded-lg border-2 border-dashed border-gray-300 cursor-pointer p-4 text-center transition">
-                <input
-                  type="file"
-                  accept="video/*"
-                  className="hidden"
-                  onChange={handleMultipleMainVideos}
-                />
+              {isMainVideoUploading ? (
+                <div className="relative block w-full h-40 bg-[#F9FAFB] rounded-lg border-2 border-dashed border-gray-300 p-4 text-center">
+                  <svg className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none">
+                    <rect
+                      x="1"
+                      y="1"
+                      width="calc(100% - 2px)"
+                      height="calc(100% - 2px)"
+                      rx="12"
+                      ry="12"
+                      stroke="#CBD5E1"
+                      strokeWidth="2"
+                      strokeDasharray="6,6"
+                      fill="none"
+                      className="transition-colors duration-300"
+                    />
+                  </svg>
+                  <div className="flex flex-col items-center justify-center space-y-2 h-full">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7077FE]"></div>
+                    <p className="font-[poppins] text-[16px] text-[#7077FE]">
+                      Uploading video...
+                    </p>
+                  </div>
+                </div>
+              ) : !mainVideo ? (
+                <label className="relative block w-full h-40 bg-[#F9FAFB] hover:bg-[#EEF3FF] rounded-lg border-2 border-dashed border-gray-300 cursor-pointer p-4 text-center transition">
+                  <input
+                    type="file"
+                    accept="video/*"
+                    className="hidden"
+                    onChange={handleMultipleMainVideos}
+                    disabled={isMainVideoUploading}
+                  />
 
-                <img src={uploadimg} className="w-10 mx-auto mt-6" />
-                <p className="mt-2 text-sm text-gray-600">
-                  Click to upload main video
-                </p>
-              </label>
+                  <img src={uploadimg} className="w-10 mx-auto mt-6" />
+                  <p className="mt-2 text-sm text-gray-600">
+                    Click to upload main video
+                  </p>
+                </label>
+              ) : (
+                <div className="relative block w-full h-40 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden">
+                  <img
+                    src={loadedThumbnail}
+                    className="w-full h-full object-cover"
+                    alt="Video Thumbnail"
+                    onError={() => retryLoading(mainVideo.thumbnail)}
+                  />
+
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="bg-black bg-opacity-50 rounded-full p-4">
+                      <svg
+                        className="w-12 h-12 text-white"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <label
+                    htmlFor="video-replace"
+                    className="absolute top-2 right-12 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition cursor-pointer"
+                    title="Replace Video"
+                  >
+                    <SquarePen className="w-4 h-4" />
+                    <input
+                      id="video-replace"
+                      type="file"
+                      accept="video/*"
+                      className="hidden"
+                      onChange={handleMultipleMainVideos}
+                      disabled={isMainVideoUploading}
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={removeMainVideo}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition"
+                    title="Remove Video"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
 
               {!mainVideo && errors.video_url && (
                 <p className="text-red-500 text-sm mt-1">{errors.video_url}</p>
-              )}
-
-              {mainVideo && (
-                <div className="mt-4">
-                  <div className="relative rounded-lg border border-gray-200 overflow-hidden max-w-md">
-                    <img
-                      src={loadedThumbnail}
-                      className="w-full h-40 object-cover"
-                      alt="Thumbnail"
-                      onError={() => retryLoading(mainVideo.thumbnail)}
-                    />
-
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="bg-black bg-opacity-40 rounded-full p-3">
-                        <svg
-                          className="w-10 h-10 text-white"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={removeMainVideo}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
               )}
             </div>
           </div>

@@ -15,6 +15,7 @@ interface FilterProps {
     max_rating?: number;
     order_time?: string;
     sort_by?: string;
+    creator_search?: string;
   };
   onFilterChange: (filters: any) => void;
   customFilterOptions?: any; // Pass custom filter options from parent
@@ -154,6 +155,18 @@ const FilterSidebar: React.FC<FilterProps> = ({
     };
     setLocalFilters(newFilters);
     onFilterChange(newFilters);
+  };
+
+  const handleCreatorSearchChange = (value: string) => {
+    const newFilters = {
+      ...localFilters,
+      creator_search: value,
+    };
+    setLocalFilters(newFilters);
+  };
+
+  const handleCreatorSearchBlur = () => {
+    onFilterChange(localFilters);
   };
 
  /// const isDurationSelected = (durationRange: any) => {
@@ -378,17 +391,22 @@ const FilterSidebar: React.FC<FilterProps> = ({
         )}
 
         {/* 🧑‍🎨 Creator Search */}
-        <div className="mt-8 relative">
-          <h3 className="text-[16px] font-[poppins] font-semibold mb-3">
-            Creators / Publisher
-          </h3>
-          <input
-            type="text"
-            placeholder="Search"
-            className="w-full pl-10 py-2 font-[poppins] border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
-          />
-          <FiSearch className="absolute right-3 -mt-4 transform -translate-y-1/2 text-gray-400" />
-        </div>
+        {filterConfig.showCreatorSearch && (
+          <div className="mt-8 relative">
+            <h3 className="text-[16px] font-[poppins] font-semibold mb-3">
+              Creators / Publisher
+            </h3>
+            <input
+              type="text"
+              placeholder="Search"
+              value={localFilters.creator_search || ""}
+              onChange={(e) => handleCreatorSearchChange(e.target.value)}
+              onBlur={handleCreatorSearchBlur}
+              className="w-full pl-10 py-2 font-[poppins] border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#7077FE]"
+            />
+            <FiSearch className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-400" />
+          </div>
+        )}
       </aside >
     </>
   );

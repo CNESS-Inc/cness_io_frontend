@@ -18,6 +18,7 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
   //const [isEligible, setIsEligible] = useState(false);
   const [eligibilityCard, setEligibilityCard] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
+  const [isSeller, setIsSeller] = useState(localStorage.getItem("is_seller") === "true");
   const { cartCount, wishlistCount } = useCartWishlist();
   //const { showToast } = useToast();
   const navigate = useNavigate();
@@ -64,8 +65,21 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
    // }
   //};
   useEffect(() => {
-  loadShopData();
-}, []);
+    loadShopData();
+    // Watch for localStorage changes
+    const handleStorageChange = () => {
+      setIsSeller(localStorage.getItem("is_seller") === "true");
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    const interval = setInterval(handleStorageChange, 1000);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
   const loadShopData = async () => {
     try {
       const response = await GetSellerShop();
@@ -80,9 +94,17 @@ const MarketHeader: React.FC<MarketHeaderProps> = ({ }) => {
     }
   };
 const handleBecomeSeller = () => {
-  if (isApproved) {
-    navigate(`/dashboard/seller-dashboard`);
+  // Check is_seller from localStorage first
+  if (isSeller) {
+    // If user is a seller, check if shop is approved to go to seller dashboard
+    if (isApproved) {
+      navigate(`/dashboard/seller-dashboard`);
+    } else {
+      // Seller but shop not approved, go to create/manage shop
+      navigate(`/dashboard/createshop`);
+    }
   } else {
+    // Not a seller, go to become a seller flow
     navigate(`/dashboard/createshop`);
   }
 };
@@ -146,12 +168,11 @@ const handleBecomeSeller = () => {
               )}
             </button>
             <button
-              // onClick={() => navigate(`/dashboard/createshop`)}
               onClick={handleBecomeSeller}
               className="flex items-center gap-2 md:px-4 sm:px-2 py-2 text-[#9747FF] font-[Poppins] text-[14px] font-normal leading-[150%] tracking-[-0.019em] bg-white rounded-md hover:opacity-80 transition"
             >
               <img src={sellbag} alt="Sell" className="w-5 h-5" />
-              <span>{isApproved ? 'Vendor Dashboard' : 'Become a Seller'}</span>
+              <span>{isSeller ? 'Vendor Dashboard' : 'Become a Seller'}</span>
             </button>
             <button
               onClick={() => navigate(`/dashboard/wishlist`)}

@@ -96,7 +96,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
               className="text-[13px] text-[#6B7280] mt-1 line-clamp-2"
               title={description}
             >
-              
+              {description}
             </p>
           </div>
         </div>

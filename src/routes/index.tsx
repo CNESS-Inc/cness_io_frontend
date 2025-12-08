@@ -41,6 +41,7 @@ import Tracking from "../pages/Tracking";
 import CreatorGuideline from "../pages/CreatorGuideline";
 import Profile from "../pages/Profile";
 import MyConnection from "../pages/MyConnection";
+import Certification from "../pages/Certification";
 import ComingSoon from "../pages/ComingSoon";
 import DashboardLayout from "../layout/Dashboard/dashboardlayout";
 import DashboardSocial from "../pages/DashboardSocial";
@@ -114,6 +115,11 @@ import EditSellerProductPage from "../pages/EditSellerProductPage";
 import PaymentConfirmation from "../pages/PaymentConfirmation";
 import BestPracticeSearch from "../pages/BestPracticeSearch";
 import CollectionDetail from "../pages/CollectionDetail";
+import EditProfile from "../pages/EditProfile";
+import EditDirectory from "../pages/EditDirectory";
+import MyEnquiry from "../pages/MyEnquiry";
+import DetailView from "../pages/DetailView";
+import AllServices from "../pages/AllServices";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -280,6 +286,23 @@ export const router = createBrowserRouter([
             element: <DirectoryProfile />,
           },
           {
+            path: "directory-profile/:id",
+            element: <DirectoryProfile />,
+          },
+           {
+            path: "edit-profile",
+            element: <EditDirectory />,
+          },
+           {
+            path: "my-enquiry",
+            element: <MyEnquiry />,
+          },
+          
+          {
+            path: "detail-view/:id",
+            element: <DetailView />,
+          },
+          {
             path: "notification",
             element: <Notification />,
           },
@@ -303,6 +326,10 @@ export const router = createBrowserRouter([
           {
             path: "my-collections/:id",
             element: <CollectionDetail />,
+          },
+          {
+            path: "all-services",
+            element: <AllServices />,
           },
           {
             path: "library",
@@ -467,50 +494,6 @@ export const router = createBrowserRouter([
             path: "orderlist/:id",
             element: <SellerOrderDetail />,
           },
-          {
-            path: "shop-detail/:id",
-            element: <ShopDetail />,
-          },
-
-          {
-            path: "product-review/:id",
-            element: <ReviewAll />,
-          },
-          {
-            path: "cart",
-            element: <CartPage />,
-          },
-          {
-            path: "payment-success",
-            element: <PaymentSuccess />,
-          },
-
-          {
-            path: "payment-failed",
-            element: <PaymentFailed />,
-          },
-          {
-            path: "wishlist",
-            element: <Wishlist />,
-          },
-          {
-            path: "order-history",
-            element: <OrderHistory />,
-          },
-          {
-            path: "shops",
-            element: <ShopsList />,
-          },
-
-          {
-            path: "seller-dashboard",
-            element: <VendorDashboard />,
-          },
-
-          {
-            path: "createshop",
-            element: <CreateShopForm />,
-          },
           // {
           //   path: "search-listing",
           //   element:
@@ -624,14 +607,24 @@ export const router = createBrowserRouter([
             path: "CreatorGuideline",
             element: <CreatorGuideline />,
           },
+          
           {
             path: "Profile/:id?",
             element: <Profile />,
           },
+          
+  {
+  path: "Profile/editprofile",
+  element: <EditProfile />,
+},
 
           {
             path: "MyConnection",
             element: <MyConnection />,
+          },
+           {
+            path: "Certification",
+            element: <Certification />,
           },
           {
             path: "comingSoon",
