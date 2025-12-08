@@ -52,8 +52,12 @@ const DirectoryProfile = () => {
       try {
         setLoading(true);
         const response = await GetDirectoryProfileByUserId(userId);
-        if (response?.success?.status && response?.data?.data) {
-          setProfileData(response.data.data);
+        if (response?.success?.status) {
+          if(response?.data?.data){
+            setProfileData(response.data.data);
+          }else{
+            setProfileData({})
+          }
         } else {
           showToast({
             message: response?.error?.message || "Failed to load directory profile",
