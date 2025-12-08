@@ -86,9 +86,7 @@ export const ServerAPI = {
 export const API = {
   //  BaseUrl: "http://192.168.1.18:5025/api", //local
   // BaseUrl: "http://localhost:5025/api", //local
-  BaseUrl:
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
+  BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
   MarketplaceBaseUrl: "http://localhost:3000/",
 };
 
@@ -135,6 +133,14 @@ export const EndPoint = {
   valid_user_selected_profession: "/profession/user-selected",
   country: "/country",
   service: "/service",
+  basic_info_fetch: "/directory-basic-info",
+  basic_info_create_or_update: "/directory-basic-info",
+  basic_info_upload_logo: "/directory-basic-info/upload-logo",
+  basic_info_upload_photos: "/directory-basic-info/upload-photos",
+  basic_info_change_photos: "/directory-basic-info/change-photos",
+  basic_info_delete_photos: "/directory-basic-info/delete-photos",
+  basic_info_update_business_hour: "/directory-basic-info/update-bussiness-hour",
+  basic_info_get_by_user_id: "/directory-basic-info/get-by-user-id",
   state: "/state",
   company_profile: "/organization-profile/company-profile",
   user_profile: "/profile/user-profile",
@@ -336,6 +342,20 @@ upload_storytelling_video: "/marketplace-product/product/upload-storytelling-vid
   marketplace_buyer_continue_watching: "/marketplace-buyer/progress/continue-watching",
   marketplace_buyer_progress: "/marketplace-buyer/progress",
   upload_art_sample_image :"/marketplace-product/upload/art-sample-image",
+  
+  // directory enquiry endpoints
+  directory_enquiry_my_enquiries: "/directory-enquiry/my-enquiries",
+  directory_enquiry_by_id: "/directory-enquiry",
+  directory_enquiry_update_status: "/directory-enquiry/status",
+  directory_enquiry_count: "/directory-enquiry/count",
+  directory_enquiry_create: "/directory-enquiry",
+  directory_review_create_or_update: "/directory-review",
+  directory_review_get_all: "/directory-review",
+  directory_review_reply: "/directory-review/reply",
+  directory_review_get_replies: "/directory-review/reply",
+  directory_review_like: "/directory-review/like",
+  directory_review_reply_like: "/directory-review/reply/like",
+  directory_review_delete_reply: "/directory-review/delete/reply",
 };
 
 // Messaging endpoints
@@ -1190,6 +1210,73 @@ export const GetUserScoreResult = (): ApiResponse => {
   const data: Partial<any> = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.score_result);
 };
+
+export const GetBasicInfoDetails = (): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.basic_info_fetch);
+};
+
+export const CreateOrUpdateBasicInfo = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.basic_info_create_or_update
+  );
+};
+
+export const UploadDirectoryLogo = (formData: FormData): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.basic_info_upload_logo
+  );
+};
+
+export const UploadDirectoryPhotos = (formData: FormData): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.basic_info_upload_photos
+  );
+};
+
+export const ChangeDirectoryPhoto = (formData: FormData): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.basic_info_change_photos
+  );
+};
+
+export const DeleteDirectoryPhoto = (id: string): ApiResponse => {
+  const data = { id };
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.basic_info_delete_photos
+  );
+};
+
+export const UpdateBusinessHours = (formData: any): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    formData,
+    EndPoint.basic_info_update_business_hour
+  );
+};
+
+export const GetDirectoryProfileByUserId = (userId: string): ApiResponse => {
+  const params: { [key: string]: any } = {
+    userId,
+  };
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.basic_info_get_by_user_id,
+    params
+  );
+};
+
 export const GetUsersearchProfileDetails = (
   selectedDomain: any,
   searchQuery: any,
@@ -2600,14 +2687,162 @@ export const GetSellerDashboard = (): ApiResponse => {
 
 // Add this in your ServerAPI file
 export const GetSellerBestSellingProducts = (params: { limit?: number; sort_by?: string; }) => {
-  return executeAPI(
-    ServerAPI.APIMethod.GET,
-    {
-      limit: params.limit ?? 4,
-      sort_by: params.sort_by ?? "revenue"
-    },
-    EndPoint.seller_best_selling_products // <-- define key "/api/seller-sales/best-selling-products"
-  );
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {
+      limit: params.limit ?? 4,
+      sort_by: params.sort_by ?? "revenue"
+    },
+    EndPoint.seller_best_selling_products // <-- define key "/api/seller-sales/best-selling-products"
+  );
+};
+
+// Enquiry Status Enum
+export enum EnquiryStatus {
+  NEW = 'New',
+  PENDING = 'Pending',
+  CONTACTED = 'Contacted',
+  IN_PROGRESS = 'In Progress',
+  NOT_INTERESTED = 'Not Interested',
+  CLOSED = 'Closed',
+  CANCELLED = 'Cancelled'
+}
+
+// Directory Enquiry APIs
+export const GetAllMyEnquiries = (params: { page_no?: number; limit?: number } = {}) => {
+  const queryParams: Record<string, any> = {};
+  if (params.page_no !== undefined) queryParams.page_no = params.page_no;
+  if (params.limit !== undefined) queryParams.limit = params.limit;
+  
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.directory_enquiry_my_enquiries,
+    queryParams
+  );
+};
+
+export const GetEnquiryById = (id: string) => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.directory_enquiry_by_id}/${id}`
+  );
+};
+
+export const UpdateEnquiryStatus = (data: { id: string; status: string }) => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    data,
+    EndPoint.directory_enquiry_update_status
+  );
+};
+
+export const GetEnquiryCount = () => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    EndPoint.directory_enquiry_count
+  );
+};
+
+export const CreateDirectoryEnquiry = (data: {
+  directory_info_id: string;
+  name: string;
+  email: string;
+  phone_number: number;
+  message: string;
+  services: string[];
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_enquiry_create
+  );
+};
+
+export const CreateOrUpdateDirectoryReview = (data: {
+  directory_info_id: string;
+  description: string;
+  rating: number;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_review_create_or_update
+  );
+};
+
+export const GetAllDirectoryReviews = (userId: string, pageNo: number = 1, limit: number = 5): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.directory_review_get_all}/${userId}?page_no=${pageNo}&limit=${limit}`
+  );
+};
+
+export const CreateDirectoryReviewReply = (data: {
+  directory_info_id: string;
+  review_id: string;
+  text: string;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_review_reply
+  );
+};
+
+export const GetDirectoryReviewReplies = (reviewId: string, pageNo: number = 1, limit: number = 5): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    {},
+    `${EndPoint.directory_review_get_replies}/${reviewId}?page_no=${pageNo}&limit=${limit}`
+  );
+};
+
+export const LikeDirectoryReview = (data: {
+  directory_info_id: string;
+  review_id: string;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_review_like
+  );
+};
+
+export const LikeDirectoryReviewReply = (data: {
+  directory_info_id: string;
+  review_id: string;
+  reply_id: string;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_review_reply_like
+  );
+};
+
+export const UpdateDirectoryReviewReply = (data: {
+  id: string;
+  text: string;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.PUT,
+    data,
+    EndPoint.directory_review_reply
+  );
+};
+
+export const DeleteDirectoryReviewReply = (data: {
+  id: string;
+}): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    data,
+    EndPoint.directory_review_delete_reply
+  );
 };
 
 export const executeAPI = async <T = any,>(
