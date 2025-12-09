@@ -45,8 +45,8 @@ const Suggestions = ({ searchTerm, onSelect }: Props) => {
         id: item.id,
         name: `${item?.profile?.first_name} ${item?.profile?.last_name}`,
         username: item?.username,
-        image: item?.profile.profile_picture,
-        profileImage: item.profile.profile_picture,
+        image: item?.profile?.profile_picture,
+        profileImage: item?.profile?.profile_picture,
       }));
 
       setSuggestions((prev) => (append ? [...prev, ...formatted] : formatted));
