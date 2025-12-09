@@ -1,15 +1,15 @@
-'use client'
-import NavLinks from './NavLinks'
-import { useState } from 'react'
-import MobileMenu from './MobileMenu'
-import { Link } from 'react-router-dom'
-import Image from '../../components/ui/Image'
+"use client";
+import NavLinks from "./NavLinks";
+import { useState } from "react";
+import MobileMenu from "./MobileMenu";
+import { Link } from "react-router-dom";
+import Image from "../../components/ui/Image";
 
 export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <header 
+    <header
       className="bg-white sticky top-0 z-30 shadow-md"
       role="banner"
       aria-label="Main navigation"
@@ -28,7 +28,7 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation */}
-<NavLinks className="hidden min-[1000px]:flex" />
+        <NavLinks className="hidden min-[1000px]:flex" />
 
         {/* Mobile Menu Button */}
         <button
@@ -66,5 +66,5 @@ export default function Header() {
       {/* Mobile Menu */}
       <MobileMenu isOpen={isMobileMenuOpen} />
     </header>
-  )
+  );
 }
