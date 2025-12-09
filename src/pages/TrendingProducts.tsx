@@ -15,8 +15,8 @@ const TrendingProducts = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) =>
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [displayedProducts, setDisplayedProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [productsPerPage] = useState(12);
-  const [currentDisplayCount, setCurrentDisplayCount] = useState(12);
+  const [productsPerPage] = useState(9); // 3 rows × 3 cards = 9 products
+  const [currentDisplayCount, setCurrentDisplayCount] = useState(9);
   const [timeRange, setTimeRange] = useState<"day" | "week">(
     (searchParams.get("timeRange") as "day" | "week") || "day"
   );
@@ -60,6 +60,7 @@ const TrendingProducts = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) =>
 
         console.log('TrendingProducts - Total products:', productsData.length);
         console.log('TrendingProducts - Initial display count:', productsPerPage);
+        console.log('TrendingProducts - First product sample:', productsData[0]);
 
         setAllProducts(productsData);
       } catch (error: any) {
@@ -88,7 +89,11 @@ const TrendingProducts = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) =>
   };
 
   const hasMoreProducts = currentDisplayCount < allProducts.length;
-  console.log('TrendingProducts - Has more?', hasMoreProducts, `(${currentDisplayCount} < ${allProducts.length})`);
+
+  useEffect(() => {
+    console.log('TrendingProducts - Has more?', hasMoreProducts, `(${currentDisplayCount} < ${allProducts.length})`);
+    console.log('TrendingProducts - Button should appear:', hasMoreProducts);
+  }, [hasMoreProducts, currentDisplayCount, allProducts.length]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -236,27 +241,27 @@ const TrendingProducts = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) =>
 
                   {displayedProducts.length > 0 ? (
                     <>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {displayedProducts.map((product) => (
                         <ProductCard
                           key={product.id}
                           product={{
                             id: product.id,
-                            title: product.product_title,
-                            author: product.seller?.owner_full_name || "Unknown",
-                            rating: parseFloat(product?.average_rating || "0"),
-                            reviews: product?.total_reviews || 0,
-                            currentPrice: product?.final_price,
+                            title: product.product_name || product.product_title || product.title || "Untitled",
+                            author: product.author || product.seller?.shop?.shop_name || product.seller?.owner_full_name || "Unknown",
+                            rating: parseFloat(product?.rating?.average || product?.average_rating || "0"),
+                            reviews: product?.rating?.total_reviews || product?.total_reviews || 0,
+                            currentPrice: product?.discounted_price || product?.final_price,
                             originalPrice: product?.price,
-                            discount: product.discount_percentage,
-                            duration: "00:00:00",
-                            moods: product?.tags || [],
+                            discount: parseFloat(product.discount_percentage || "0"),
+                            duration: product.duration || "00:00:00",
+                            moods: product?.moods || product?.tags || [],
                             image:
                               product.thumbnail_url ||
                               "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
                             category: product.category?.name || "",
-                            isLike: product?.is_wishlisted,
-                            isCarted: false,
+                            isLike: product?.is_in_wishlist || product?.is_wishlisted || false,
+                            isCarted: product?.is_in_cart || false,
                           }}
                         />
                       ))}
