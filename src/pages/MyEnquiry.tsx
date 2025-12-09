@@ -546,7 +546,7 @@ function Card({
   const s = styles[variant] || styles.default;
 
   return (
-    <div className={`bg-white rounded-xl p-4 sm:p-5 lg:p-6 flex items-center justify-between ${s.ring} border border-transparent`}>
+    <div className={`bg-white rounded-xl p-4 sm:p-5 lg:p-6 flex items-center justify-center ${s.ring} border border-transparent`}>
       <div className="flex items-center gap-3 sm:gap-4">
         <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${s.bg} ${s.icon}`}>
           {icon}
