@@ -3245,8 +3245,8 @@ const UserProfilePage = () => {
   <label className="block text-sm font-medium text-gray-800 mb-2">Start Date</label>
 
   {!educationForm.watch(`educations.${index}.start_date`) && (
-    <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
-      Please select month & year
+    <span className="absolute left-4 top-[38px] text-gray-400 pointer-events-none text-sm">
+      Select month & year
     </span>
   )}
 
@@ -3294,8 +3294,8 @@ const UserProfilePage = () => {
   <label className="block text-sm font-medium text-gray-800 mb-2">End Date</label>
 
   {!educationForm.watch(`educations.${index}.end_date`) && (
-    <span className="absolute left-4 top-[42px] text-gray-400 pointer-events-none text-sm">
-      Please select month & year
+    <span className="absolute left-4 top-[38px] text-gray-400 pointer-events-none text-sm">
+      Select month & year
     </span>
   )}
 
