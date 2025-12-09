@@ -170,7 +170,7 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ open, onClose, directory, i
           {/* ===== HEADER ===== */}
           <div className="bg-[#F5F3FF] px-6 py-4 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-3">
-              <img src={directory.logo_url} className="w-12 h-12 rounded-full object-cover" />
+              <img src={directory.logo_url || "https://static.codia.ai/image/2025-12-04/DUvvvgriSA.png"} className="w-12 h-12 rounded-full object-cover" />
               <div>
                 <h2 className="text-[#081021] font-semibold text-lg">{directory.name}</h2>
                 <p className="text-[#64748B] text-sm">
