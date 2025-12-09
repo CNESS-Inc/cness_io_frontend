@@ -291,15 +291,15 @@ export const router = createBrowserRouter([
             path: "directory-profile/:id",
             element: <DirectoryProfile />,
           },
-           {
+          {
             path: "edit-profile",
             element: <EditDirectory />,
           },
-           {
+          {
             path: "my-enquiry",
             element: <MyEnquiry />,
           },
-          
+
           {
             path: "detail-view/:id",
             element: <DetailView />,
@@ -617,23 +617,23 @@ export const router = createBrowserRouter([
             path: "CreatorGuideline",
             element: <CreatorGuideline />,
           },
-          
+
           {
             path: "Profile/:id?",
             element: <Profile />,
           },
-          
-  {
-  path: "Profile/editprofile",
-  element: <EditProfile />,
-},
+
+          {
+            path: "Profile/editprofile",
+            element: <EditProfile />,
+          },
 
           {
             path: "MyConnection",
             element: <MyConnection />,
           },
-           {
-            path: "Certification",
+          {
+            path: "aspiring-assessment/payment",
             element: <Certification />,
           },
           {
