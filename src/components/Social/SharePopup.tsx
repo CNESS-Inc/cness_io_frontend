@@ -113,7 +113,7 @@ const SharePopup: React.FC<SharePopupProps> = ({
         <li>
           <button
             onClick={() => {
-              navigator.clipboard.writeText(urldata);
+              navigator.clipboard.writeText(shareUrl);
               setCopy(true);
               setTimeout(() => setCopy(false), 1500);
             }}
