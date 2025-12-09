@@ -67,18 +67,11 @@ const DirectoryProfile = () => {
     Record<string, boolean>
   >({});
   const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
-  const [editReplyTexts, setEditReplyTexts] = useState<Record<string, string>>(
-    {}
-  );
-  const [submittingEditReply, setSubmittingEditReply] = useState<
-    Record<string, boolean>
-  >({});
-  const [deletingReply, setDeletingReply] = useState<Record<string, boolean>>(
-    {}
-  );
-  const [pagination, setPagination] = useState<
-    Record<string, { pageNo: number; hasMore: boolean; loadingMore: boolean }>
-  >({});
+  const [editReplyTexts, setEditReplyTexts] = useState<Record<string, string>>({});
+  const [submittingEditReply, setSubmittingEditReply] = useState<Record<string, boolean>>({});
+  const [deletingReply, setDeletingReply] = useState<Record<string, boolean>>({});
+  const [pagination, setPagination] = useState<Record<string, { pageNo: number; hasMore: boolean; loadingMore: boolean }>>({});
+  const [infoId, setInfoId] = useState<string | null>(null);
   const { id } = useParams();
   const { showToast } = useToast();
   const userId = id ? id : localStorage.getItem("Id") || "";
@@ -104,9 +97,10 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
         const response = await GetDirectoryProfileByUserId(userId);
         if (response?.success?.status) {
           if (response?.data?.data) {
+            setInfoId(response.data.data.bussiness_profile?.id || null);
             setProfileData(response.data.data);
           } else {
-            setProfileData({});
+            setProfileData({})
           }
         } else {
           showToast({
@@ -1200,20 +1194,19 @@ const connectionButtonState = getConnectionButtonState();
                 {profileData.friend_profile_pics &&
                 profileData.friend_profile_pics.length > 0 ? (
                   <>
-                    {profileData.friend_profile_pics
-                      .slice(0, 3)
-                      .map((pic: string, i: number) => (
-                        <img
-                          key={i}
-                          src={pic ? pic : "/profile.png"}
-                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white object-cover"
-                          alt={`Friend ${i + 1}`}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/profile.png";
-                          }}
-                        />
-                      ))}
+                    {profileData.friend_profile_pics.slice(0, 3).map((pic: string, i: number) => (
+                      <img
+                        key={i}
+                        src={pic ? pic : "/profile.png"}
+                        className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                        alt={`Friend ${i + 1}`}
+                        onError={(e) => {
+                          const target =
+                            e.target as HTMLImageElement;
+                          target.src = "/profile.png"; // Clear broken images
+                        }}
+                      />
+                    ))}
                     {profileData.friend_count > 3 && (
                       <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#FFE4F5] rounded-full border-2 border-white flex items-center justify-center">
                         <span className="text-[#F07EFF] font-bold text-xs sm:text-sm">
@@ -2197,6 +2190,7 @@ const connectionButtonState = getConnectionButtonState();
         open={showEnquiry}
         onClose={() => setShowEnquiry(false)}
         directory={directoryData}
+        infoId={infoId}
       />
     </>
   );
