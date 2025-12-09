@@ -844,7 +844,7 @@ export default function BestPracticesHub() {
   return (
     <>
       <div className="px-2 sm:px-4 lg:px-6">
-        <section className="relative w-full h-[350px] sm:h-[300px] md:h-[400px] lg:h-[500px] mx-auto rounded-xl overflow-hidden mt-2">
+        <section className="relative w-full h-[350px] sm:h-[300px] md:h-[400px] lg:h-[500px] mx-auto rounded-xl overflow-hidden sm:overflow-visible mt-2">
           {/* Background Image */}
           <img
             src="https://cdn.cness.io/Best%20practice.svg"
@@ -865,7 +865,7 @@ export default function BestPracticesHub() {
             <div className="w-full max-w-xl items-center gap-3 mt-4 sm:mt-5 px-2">
               {/* Combined Search Input + Professions Pill */}
               <div className="relative w-full">
-                <div className="flex items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden min-h-11">
+                <div className="flex items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden sm:overflow-visible min-h-11">
                   {/* Left search icon + text input */}
                   <div className="flex items-center pl-3 shrink-0">
                     <CiSearch className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
