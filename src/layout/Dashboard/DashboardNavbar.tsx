@@ -137,8 +137,8 @@ if (item.id === "directory") {
         { label: "Search Listing", path: "/dashboard/DashboardDirectory" },
         { label: "Edit Public Listing", path: "/dashboard/editpubliclisting" },
         //  { label: "DirectoryProfile", path: "/dashboard/directory-profile" },
-          { label: "EditDirectory", path: "/dashboard/edit-profile" },
-          { label: "MyEnquiry", path: "/dashboard/my-enquiry" },
+          { label: "Edit Directory", path: "/dashboard/edit-profile" },
+          { label: "My Enquiry", path: "/dashboard/my-enquiry" },
       ],
     },
     {

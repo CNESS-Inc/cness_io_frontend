@@ -1,199 +1,209 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Search, X } from "lucide-react";
+import { Sparkles, X } from "lucide-react";
 import ProductCard from "../components/MarketPlace/ProductCard";
 import Filter from "../components/MarketPlace/Filter";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { GetMarketPlaceBuyerProducts } from "../Common/ServerAPI";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
-import Pagination from "../components/MarketPlace/Pagination";
 
-const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
+const NewContents = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
 
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
-  const [selectedMood, setSelectedMood] = useState(searchParams.get("mood_slug") || "");
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
 
   const [filters, setFilters] = useState({
     category_slug: searchParams.get("category_slug") || "",
     min_price: searchParams.get("min_price") || "",
     max_price: searchParams.get("max_price") || "",
     language: searchParams.get("language") || "",
-    sort_by: searchParams.get("sort_by") || "createdAt",
-    sort_order: searchParams.get("sort_order") || "desc",
-    creator_search: searchParams.get("creator_search") || "",
   });
 
+  // Initial load - reset everything when filters change
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchNewProducts = async () => {
       setIsLoading(true);
+      setCurrentPage(1);
       try {
         const params: any = {
-          page: currentPage,
+          page: 1,
           limit: 12,
+          sort_by: "createdAt", // Sort by creation date
+          sort_order: "desc", // Newest first
         };
 
-        // Combine searchQuery and creator_search into single 'search' param
-        const combinedSearch = [searchQuery, filters.creator_search].filter(Boolean).join(" ");
-        if (combinedSearch) params.search = combinedSearch;
-
-        if (selectedMood) params.mood_slug = selectedMood;
+        // Apply filters
         if (filters.category_slug) params.category_slug = filters.category_slug;
         if (filters.min_price) params.min_price = parseFloat(filters.min_price);
         if (filters.max_price) params.max_price = parseFloat(filters.max_price);
         if (filters.language) params.language = filters.language;
-        if (filters.sort_by) params.sort_by = filters.sort_by;
-        if (filters.sort_order) params.sort_order = filters.sort_order;
 
         const response = await GetMarketPlaceBuyerProducts(params);
         const productsData = response?.data?.data?.products || [];
         const pagination = response?.data?.data?.pagination || {};
 
+        console.log('NewContents - Pagination:', pagination);
+        console.log('NewContents - Products count:', productsData.length);
+        console.log('NewContents - Has more:', pagination.current_page < pagination.total_pages);
+
         setProducts(productsData);
         setTotalPages(pagination.total_pages || 1);
+        setHasMore(pagination.current_page < pagination.total_pages);
       } catch (error: any) {
         showToast({
-          message: "Failed to load products.",
+          message: "Failed to load new products.",
           type: "error",
           duration: 3000,
         });
         setProducts([]);
+        setHasMore(false);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchProducts();
-  }, [searchQuery, selectedMood, filters, currentPage]);
+    fetchNewProducts();
+  }, [filters]);
+
+  const handleShowMore = async () => {
+    if (!hasMore || isLoadingMore) return;
+
+    setIsLoadingMore(true);
+    const nextPage = currentPage + 1;
+
+    try {
+      const params: any = {
+        page: nextPage,
+        limit: 12,
+        sort_by: "createdAt",
+        sort_order: "desc",
+      };
+
+      // Apply filters
+      if (filters.category_slug) params.category_slug = filters.category_slug;
+      if (filters.min_price) params.min_price = parseFloat(filters.min_price);
+      if (filters.max_price) params.max_price = parseFloat(filters.max_price);
+      if (filters.language) params.language = filters.language;
+
+      const response = await GetMarketPlaceBuyerProducts(params);
+      const productsData = response?.data?.data?.products || [];
+      const pagination = response?.data?.data?.pagination || {};
+
+      setProducts((prev) => [...prev, ...productsData]);
+      setCurrentPage(nextPage);
+      setHasMore(pagination.current_page < pagination.total_pages);
+    } catch (error: any) {
+      showToast({
+        message: "Failed to load more products.",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   useEffect(() => {
     const params = new URLSearchParams();
-    if (searchQuery) params.set("search", searchQuery);
-    if (selectedMood) params.set("mood_slug", selectedMood);
     if (filters.category_slug) params.set("category_slug", filters.category_slug);
     if (filters.min_price) params.set("min_price", filters.min_price);
     if (filters.max_price) params.set("max_price", filters.max_price);
     if (filters.language) params.set("language", filters.language);
-    if (filters.creator_search) params.set("creator_search", filters.creator_search);
-    if (filters.sort_by) params.set("sort_by", filters.sort_by);
-    if (filters.sort_order) params.set("sort_order", filters.sort_order);
 
     setSearchParams(params);
-  }, [searchQuery, selectedMood, filters]);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCurrentPage(1);
-  };
-
-  const clearSearch = () => {
-    setSearchQuery("");
-    setCurrentPage(1);
-  };
-
-  const clearMood = () => {
-    setSelectedMood("");
-    setCurrentPage(1);
-  };
+  }, [filters]);
 
   const handleFilterChange = (newFilters: any) => {
     setFilters(newFilters);
-    setCurrentPage(1);
   };
 
   const clearAllFilters = () => {
-    setSearchQuery("");
-    setSelectedMood("");
     setFilters({
       category_slug: "",
       min_price: "",
       max_price: "",
       language: "",
-      creator_search: "",
-      sort_by: "createdAt",
-      sort_order: "desc",
     });
-    setCurrentPage(1);
-    navigate("/dashboard/market-place/search");
+    navigate("/dashboard/market-place/new-contents");
   };
 
   return (
     <div
-      className={`transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-        } pt-[20px] px-6`}
+      className={`transition-all duration-300 ${
+        isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+      } pt-[20px] px-6`}
     >
       <div
-        className={`transition-all duration-300 ${isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
-          } pt-[20px] px-6`}
+        className={`transition-all duration-300 ${
+          isMobileNavOpen ? "md:ml-[256px]" : "md:ml-0"
+        } pt-[20px] px-6`}
       >
-        {/* 🔍 Search + Sort Section */}
+        {/* ✨ Header Section */}
         <div className="max-w-[1800px] mx-auto">
-          {/* Search Bar */}
+          {/* Page Header */}
           <div className="mb-8">
-            <form
-              onSubmit={handleSearchSubmit}
-              className="flex items-center w-full bg-white border border-gray-300 rounded-full px-6 py-4 space-x-3"
-            >
-              <div className="flex items-center space-x-2 flex-1">
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 bg-transparent outline-none text-gray-700 text-base placeholder-gray-400"
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={clearSearch}
-                    className="flex-shrink-0"
-                  >
-                    <X className="w-5 h-5 text-gray-500 hover:text-gray-700" />
-                  </button>
-                )}
+            <div className="flex items-center justify-between bg-white border border-gray-300 rounded-2xl px-6 py-4">
+              <div className="flex items-center space-x-3">
+                <Sparkles className="w-6 h-6 text-blue-500" />
+                <h1 className="text-2xl font-bold text-gray-800">New Contents</h1>
               </div>
-              <button type="submit" className="flex-shrink-0">
-                <Search className="w-6 h-6 text-gray-500 hover:text-gray-700" />
-              </button>
-            </form>
+              <div className="bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm font-medium">
+                Latest Arrivals
+              </div>
+            </div>
           </div>
 
+          {/* Active Filters Display */}
           <div className="mb-6 flex flex-wrap gap-3 items-center">
-            {searchQuery && (
+            {filters.category_slug && (
               <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm">
-                <span>Search: "{searchQuery}"</span>
-                <button onClick={clearSearch}>
+                <span>Category: {filters.category_slug}</span>
+                <button
+                  onClick={() => {
+                    const newFilters = { ...filters, category_slug: "" };
+                    setFilters(newFilters);
+                  }}
+                >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             )}
-            {selectedMood && (
+            {filters.language && (
               <div className="flex items-center gap-2 bg-purple-50 text-purple-600 px-4 py-2 rounded-full text-sm">
-                <span>Mood: {selectedMood}</span>
-                <button onClick={clearMood}>
+                <span>Language: {filters.language}</span>
+                <button
+                  onClick={() => {
+                    const newFilters = { ...filters, language: "" };
+                    setFilters(newFilters);
+                  }}
+                >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             )}
-            {filters.creator_search && (
+            {(filters.min_price || filters.max_price) && (
               <div className="flex items-center gap-2 bg-green-50 text-green-600 px-4 py-2 rounded-full text-sm">
-                <span>Creator: "{filters.creator_search}"</span>
-                <button onClick={() => {
-                  const newFilters = { ...filters, creator_search: "" };
-                  setFilters(newFilters);
-                  setCurrentPage(1);
-                }}>
+                <span>
+                  Price: ${filters.min_price || "0"} - ${filters.max_price || "∞"}
+                </span>
+                <button
+                  onClick={() => {
+                    const newFilters = { ...filters, min_price: "", max_price: "" };
+                    setFilters(newFilters);
+                  }}
+                >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             )}
-            {(searchQuery || selectedMood || filters.category_slug || filters.min_price || filters.max_price || filters.language || filters.creator_search) && (
+            {(filters.category_slug || filters.min_price || filters.max_price || filters.language) && (
               <button
                 onClick={clearAllFilters}
                 className="text-red-500 hover:text-red-700 text-sm font-medium"
@@ -205,7 +215,6 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
           {/* 📦 Main Section */}
           <div className="flex gap-6">
-
             {/* Products Grid */}
             <div className="flex-1">
               {isLoading ? (
@@ -217,22 +226,17 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                   {/* Results Count */}
                   <div className="mb-6">
                     <h2 className="text-2xl font-semibold text-gray-800">
-                      {searchQuery
-                        ? `Search results for "${searchQuery}"`
-                        : selectedMood
-                          ? `${selectedMood.charAt(0).toUpperCase() + selectedMood.slice(1)} mood products`
-                          : "All products"}
+                      Latest Products
                     </h2>
                     <p className="text-gray-600 mt-1">
-                      {products.length} product{products.length !== 1 ? "s" : ""} found
+                      {products.length} product{products.length !== 1 ? "s" : ""} found • Sorted by newest first
                     </p>
                   </div>
 
                   {products.length > 0 ? (
                     <>
-<div className="grid gap-3
-    grid-cols-[repeat(auto-fill,minmax(250px,1fr))]">
-                              {products.map((product) => (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {products.map((product) => (
                           <ProductCard
                             key={product.id}
                             product={{
@@ -260,27 +264,29 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
                         ))}
                       </div>
 
-                      {/* Pagination */}
-                      {totalPages > 1 && (
+                      {/* Show More Button */}
+                      {hasMore && (
                         <div className="flex justify-center mt-10">
-                          <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            onPageChange={setCurrentPage}
-                          />
+                          <button
+                            onClick={handleShowMore}
+                            disabled={isLoadingMore}
+                            className="px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {isLoadingMore ? "Loading..." : "Show More Products"}
+                          </button>
                         </div>
                       )}
                     </>
                   ) : (
                     <div className="text-center py-20">
                       <div className="text-gray-400 mb-4">
-                        <Search className="w-20 h-20 mx-auto" />
+                        <Sparkles className="w-20 h-20 mx-auto" />
                       </div>
                       <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                        No products found
+                        No new products found
                       </h3>
                       <p className="text-gray-500 mb-6">
-                        Try adjusting your search or filters
+                        Try adjusting your filters or check back later for new arrivals
                       </p>
                       <button
                         onClick={clearAllFilters}
@@ -305,4 +311,4 @@ const MPSearch = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   );
 };
 
-export default MPSearch;
+export default NewContents;

@@ -313,6 +313,8 @@ upload_storytelling_video: "/marketplace-product/product/upload-storytelling-vid
   get_buyer_categories: "/marketplace-buyer/categories",
   get_buyer_product_list: "/marketplace-buyer/products",
   get_buyer_filters: "/marketplace-buyer/filters",
+  track_product_view: "/marketplace-buyer/products/track-view",
+  trending_products: "/marketplace-buyer/products/trending",
 
   marketplace_wishlist: "/marketplace-buyer/wishlist",
   marketplace_cart: "/marketplace-buyer/cart",
@@ -2274,6 +2276,22 @@ export const GetMarketPlaceBuyerProductById = (id: any) => {
 
 export const GetMarketPlaceBuyerFilters = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_buyer_filters);
+};
+
+export const TrackProductView = (productId: string): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    { product_id: productId },
+    EndPoint.track_product_view
+  );
+};
+
+export const GetTrendingProducts = (timeRange: "day" | "week" = "day"): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    { timeRange },
+    EndPoint.trending_products
+  );
 };
 
 export const AddProductToWishlist = (data: any): ApiResponse => {
