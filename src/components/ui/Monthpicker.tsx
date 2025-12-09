@@ -59,7 +59,7 @@ export default function Monthpicker({ value, onChange, onBlur, placeholder }: Mo
         {selectedYear !== null && selectedMonth !== null ? (
           <span>{months[selectedMonth]} {selectedYear}</span>
         ) : (
-          <span className="text-gray-400">{placeholder || "Select Month & Year"}</span>
+          <span className="text-gray-400">{placeholder}</span>
         )}
 
         <svg className={`w-4 h-4 text-gray-500 transition-transform ${open ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor">

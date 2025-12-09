@@ -295,7 +295,7 @@ export default function WhyCness() {
       </LazySection>*/}
 
       {/*new hersection*/}
-      <LazySection effect="fade-up" delay={0.2}>
+      <LazySection effect="fade-up" delay={0.1}>
         <section
           className="w-full bg-hero-gradient"
           style={{
