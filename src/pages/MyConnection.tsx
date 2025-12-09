@@ -120,7 +120,7 @@ const MyConnection = () => {
         selectedTopic={undefined}
       />
 
-      <div className="rounded-[12px] border border-gray-200 bg-white flex flex-col gap-4 sm:p-6 w-full">
+      <div className="rounded-xl border border-gray-200 bg-white flex flex-col gap-4 sm:p-6 w-full">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2
             className="text-[14px] font-medium capitalize leading-[100%]"

@@ -263,16 +263,12 @@ export default function SellerDashboard() {
   const fetchFriendSuggestions = async () => {
     try {
       const response = await GetFriendSuggestions();
-      const formattedRequests = response.data.data.rows.map((item: any) => ({
-        id: item.id,
-        name: `${item.profile.first_name} ${item.profile.last_name}`,
-        handle: `${item.username}`,
-        avatar: item.profile.profile_picture,
+      const formattedRequests = response?.data?.data?.rows.map((item: any) => ({
+        id: item?.id,
+        name: `${item?.profile?.first_name} ${item?.profile?.last_name}` || "",
+        handle: `${item?.username}` || "",
+        avatar: item?.profile?.profile_picture,
       }));
-      console.log(
-        "fetchFriendSuggestions ---------------->",
-        formattedRequests
-      );
       setFriendSuggestion(formattedRequests);
     } catch (error) {
       console.error("Error fetching friend requests:", error);

@@ -129,7 +129,7 @@ const InspiredAssessment = () => {
         let consciousReflection = "";
         let checkboxesData: any = null;
         let uploadQuestion: any = null;
-        let existingFiles: UploadedFile[] = [];
+        // let existingFiles: UploadedFile[] = [];
 
         subSections.forEach((subSection: any) => {
           subSection.questions.forEach((question: any) => {
@@ -147,30 +147,30 @@ const InspiredAssessment = () => {
               uploadQuestion = question;
 
               // Convert existing file answers to UploadedFile format
-              if (question.answer && Array.isArray(question.answer)) {
-                existingFiles = question.answer.map((fileAnswer: any) => {
-                  const fileName =
-                    fileAnswer.file.split("/").pop() || "Uploaded file";
-                  return {
-                    name: fileName,
-                    size: "Uploaded", // You might want to get actual file size from API
-                    status: "Uploaded",
-                    url: fileAnswer.file,
-                    id: fileAnswer.id,
-                  } as UploadedFile;
-                });
-              }
+              // if (question.answer && Array.isArray(question.answer)) {
+              //   existingFiles = question.answer.map((fileAnswer: any) => {
+              // const fileName =
+              //   fileAnswer.file.split("/").pop() || "Uploaded file";
+              //     return {
+              //       name: fileName,
+              //       size: "Uploaded", // You might want to get actual file size from API
+              //       status: "Uploaded",
+              //       url: fileAnswer.file,
+              //       id: fileAnswer.id,
+              //     } as UploadedFile;
+              //   });
+              // }
             }
           });
         });
 
         // Initialize uploads with existing files
-        if (existingFiles.length > 0) {
-          setUploads((prev) => ({
-            ...prev,
-            [section.id]: [...(prev[section.id] || []), ...existingFiles],
-          }));
-        }
+        // if (existingFiles.length > 0) {
+        //   setUploads((prev) => ({
+        //     ...prev,
+        //     [section.id]: [...(prev[section.id] || []), ...existingFiles],
+        //   }));
+        // }
 
         return {
           id: section.id,
@@ -477,12 +477,12 @@ const InspiredAssessment = () => {
         [sectionId]: prev[sectionId].map((f) =>
           f.name === fileName
             ? {
-                ...f,
-                status: "Uploaded",
-                uploadProgress: 100,
-                url: response.data?.url || f.url, // Use the URL from response
-                id: response.data?.id || f.id,
-              }
+              ...f,
+              status: "Uploaded",
+              uploadProgress: 100,
+              url: response.data?.url || f.url, // Use the URL from response
+              id: response.data?.id || f.id,
+            }
             : f
         ),
       }));
@@ -748,6 +748,13 @@ const InspiredAssessment = () => {
   const fetchQuestions = async () => {
     try {
       setLoading(true);
+
+      setSections([]);
+      setChecked({});
+      setUploads({});
+      setValidationErrors({});
+      setExpanded([]);
+
       const res = await QuestionDetails();
 
       if (res?.data?.data?.all_sections) {
@@ -755,13 +762,13 @@ const InspiredAssessment = () => {
         setSections(transformedSections);
 
         // Initialize checked state from API data
-        const initialChecked: Record<string, string[]> = {};
-        transformedSections.forEach((section) => {
-          if (section.checkboxAnswers && section.checkboxAnswers.length > 0) {
-            initialChecked[section.id] = section.checkboxAnswers;
-          }
-        });
-        setChecked(initialChecked);
+        // const initialChecked: Record<string, string[]> = {};
+        // transformedSections.forEach((section) => {
+        //   if (section.checkboxAnswers && section.checkboxAnswers.length > 0) {
+        //     initialChecked[section.id] = section.checkboxAnswers;
+        //   }
+        // });
+        // setChecked(initialChecked);
 
         // Expand the first section by default
         if (transformedSections.length > 0) {
@@ -1041,13 +1048,12 @@ const InspiredAssessment = () => {
                             <Loader2 className="w-4 h-4 text-[#7077FE] animate-spin" />
                           )}
                           <p
-                            className={`font-['Open_Sans'] text-[12px] ${
-                              file.status === "Uploaded"
+                            className={`font-['Open_Sans'] text-[12px] ${file.status === "Uploaded"
                                 ? "text-green-600"
                                 : file.status === "Upload Failed"
-                                ? "text-red-600"
-                                : "text-gray-500"
-                            }`}
+                                  ? "text-red-600"
+                                  : "text-gray-500"
+                              }`}
                           >
                             {file.status}
                           </p>

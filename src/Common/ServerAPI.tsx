@@ -133,6 +133,7 @@ export const EndPoint = {
   valid_user_selected_profession: "/profession/user-selected",
   country: "/country",
   service: "/service",
+  basic_info_service: "/directory-basic-info/get-bussiness-service",
   basic_info_fetch: "/directory-basic-info",
   basic_info_create_or_update: "/directory-basic-info",
   basic_info_upload_logo: "/directory-basic-info/upload-logo",
@@ -297,7 +298,7 @@ export const EndPoint = {
   upload_product_thumbnail: "/marketplace-product/product/upload-thumbnail",
   upload_product_document: "/marketplace-product/upload",
   update_video: "/marketplace-product",
-upload_storytelling_video: "/marketplace-product/product/upload-storytelling-video",
+  upload_storytelling_video: "/marketplace-product/product/upload-storytelling-video",
 
   create_music_product: "/marketplace-product/music",
   update_music_product: "/marketplace-product",
@@ -313,6 +314,8 @@ upload_storytelling_video: "/marketplace-product/product/upload-storytelling-vid
   get_buyer_categories: "/marketplace-buyer/categories",
   get_buyer_product_list: "/marketplace-buyer/products",
   get_buyer_filters: "/marketplace-buyer/filters",
+  track_product_view: "/marketplace-buyer/products/track-view",
+  trending_products: "/marketplace-buyer/products/trending",
 
   marketplace_wishlist: "/marketplace-buyer/wishlist",
   marketplace_cart: "/marketplace-buyer/cart",
@@ -341,8 +344,8 @@ upload_storytelling_video: "/marketplace-product/product/upload-storytelling-vid
   // progress apis
   marketplace_buyer_continue_watching: "/marketplace-buyer/progress/continue-watching",
   marketplace_buyer_progress: "/marketplace-buyer/progress",
-  upload_art_sample_image :"/marketplace-product/upload/art-sample-image",
-  
+  upload_art_sample_image: "/marketplace-product/upload/art-sample-image",
+
   // directory enquiry endpoints
   directory_enquiry_my_enquiries: "/directory-enquiry/my-enquiries",
   directory_enquiry_by_id: "/directory-enquiry",
@@ -650,7 +653,7 @@ export const submitAnswerDetails = (formData: any): ApiResponse => {
       }
     });
   }
-  
+
 
   // Return the formatted data
   return executeAPI(ServerAPI.APIMethod.POST, { data }, EndPoint.answer);
@@ -1211,6 +1214,11 @@ export const GetUserScoreResult = (): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.score_result);
 };
 
+export const GetBasicInfoServiceDetails = (infoId: string): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.basic_info_service}/${infoId}`);
+};
+
 export const GetBasicInfoDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.basic_info_fetch);
@@ -1452,7 +1460,7 @@ export const TrackPostView = (postId: string) => {
   );
 };
 
-export const GetComment = (id: any,page:any) => {
+export const GetComment = (id: any, page: any) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["post_id"] = id;
@@ -2276,6 +2284,22 @@ export const GetMarketPlaceBuyerFilters = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.get_buyer_filters);
 };
 
+export const TrackProductView = (productId: string): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    { product_id: productId },
+    EndPoint.track_product_view
+  );
+};
+
+export const GetTrendingProducts = (timeRange: "day" | "week" = "day"): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.POST,
+    { timeRange },
+    EndPoint.trending_products
+  );
+};
+
 export const AddProductToWishlist = (data: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -2345,8 +2369,8 @@ export const AddProductToCart = (data: any): ApiResponse => {
 export const GetProductCart = () => {
   return executeAPI(ServerAPI.APIMethod.GET, {}, EndPoint.marketplace_cart);
 };
-export const GetOrderDetailsByOrdId = (order_id:string,pid:string) => {
-  if(!pid){
+export const GetOrderDetailsByOrdId = (order_id: string, pid: string) => {
+  if (!pid) {
     return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}`);
   }
   return executeAPI(ServerAPI.APIMethod.GET, {}, `${EndPoint.marketplace_order_details}/${order_id}?product_id=${pid}`);
@@ -2495,8 +2519,8 @@ export const GetProductReviws = (
   return executeAPI(ServerAPI.APIMethod.GET, {}, endpoint);
 };
 
-export const CreateCheckoutSession = (appliedDonation:number) => {
-  return executeAPI(ServerAPI.APIMethod.POST, {donation_amount:appliedDonation}, EndPoint.marketplace_checkout);
+export const CreateCheckoutSession = (appliedDonation: number) => {
+  return executeAPI(ServerAPI.APIMethod.POST, { donation_amount: appliedDonation }, EndPoint.marketplace_checkout);
 };
 
 export const GetCheckoutDetails = (): ApiResponse => {
@@ -2713,7 +2737,7 @@ export const GetAllMyEnquiries = (params: { page_no?: number; limit?: number } =
   const queryParams: Record<string, any> = {};
   if (params.page_no !== undefined) queryParams.page_no = params.page_no;
   if (params.limit !== undefined) queryParams.limit = params.limit;
-  
+
   return executeAPI(
     ServerAPI.APIMethod.GET,
     {},

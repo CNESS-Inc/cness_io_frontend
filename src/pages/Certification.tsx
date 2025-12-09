@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { PaymentDetails } from "../Common/ServerAPI";
 
 const Certification: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { showToast } = useToast();
-  const [selectedPlan, setSelectedPlan] = useState<'yearly' | 'monthly'>('yearly');
-  const [plansData, setPlansData] = useState<any[]>([]); // Changed to array
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<"yearly" | "monthly">(
+    "yearly"
+  );
+  const [plansData, setPlansData] = useState<any[]>([]);
+  const [processingPlan, setProcessingPlan] = useState<
+    "yearly" | "monthly" | null
+  >(null); // Changed to track which plan is processing
 
   useEffect(() => {
     if (location.state?.plans) {
       setPlansData(location.state.plans || []);
-      
+
       if (location.state.assessmentSubmitted) {
         showToast({
           message: "Assessment submitted successfully!",
@@ -25,30 +30,49 @@ const Certification: React.FC = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    if (
+      !location.state?.plans ||
+      !location.state?.isAnnual === undefined ||
+      !location.state?.assessmentSubmitted
+    ) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [location, navigate]);
+
+  if (
+    !location.state?.plans ||
+    !location.state?.isAnnual === undefined ||
+    !location.state?.assessmentSubmitted
+  ) {
+    return null;
+  }
+
   // Handle plan selection for payment
-  const handlePlanSelection = async (planType: 'yearly' | 'monthly') => {
+  const handlePlanSelection = async (planType: "yearly" | "monthly") => {
     try {
-      setIsProcessing(true);
-      
+      setProcessingPlan(planType); // Set which plan is being processed
+
       // Find the selected plan data
-      const selectedPlanData = plansData.find(plan => 
-        planType === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice
+      const selectedPlanData = plansData.find((plan) =>
+        planType === "yearly" ? plan.yearlyPrice : plan.monthlyPrice
       );
-      
+
       if (!selectedPlanData) {
         showToast({
           message: "Plan data not found",
           type: "error",
           duration: 3000,
         });
+        setProcessingPlan(null);
         return;
       }
 
       // Determine which plan (monthly/yearly) to use
       let planToUse;
-      if (planType === 'yearly' && selectedPlanData.yearlyPlanData) {
+      if (planType === "yearly" && selectedPlanData.yearlyPlanData) {
         planToUse = selectedPlanData.yearlyPlanData;
-      } else if (planType === 'monthly' && selectedPlanData.monthlyPlanData) {
+      } else if (planType === "monthly" && selectedPlanData.monthlyPlanData) {
         planToUse = selectedPlanData.monthlyPlanData;
       } else {
         // Fallback to the plan data structure
@@ -57,13 +81,13 @@ const Certification: React.FC = () => {
 
       const payload = {
         plan_id: planToUse.id,
-        plan_type: planType === 'yearly' ? "Yearly" : "Monthly",
+        plan_type: planType === "yearly" ? "Yearly" : "Monthly",
       };
 
       console.log("Payment payload:", payload);
 
       const res = await PaymentDetails(payload);
-      
+
       if (res?.data?.data?.url) {
         const url = res.data.data.url;
         console.log("Redirecting to payment:", url);
@@ -75,26 +99,28 @@ const Certification: React.FC = () => {
           type: "error",
           duration: 4000,
         });
+        setProcessingPlan(null);
       }
     } catch (error: any) {
       console.error("Error in handlePlanSelection:", error);
       showToast({
-        message: error?.response?.data?.error?.message || "Payment processing failed. Please try again.",
+        message:
+          error?.response?.data?.error?.message ||
+          "Payment processing failed. Please try again.",
         type: "error",
         duration: 5000,
       });
-    } finally {
-      setIsProcessing(false);
+      setProcessingPlan(null);
     }
   };
 
   // Extract plan data
   const getYearlyPlanData = () => {
-    return plansData.find(plan => plan.yearlyPrice) || {};
+    return plansData.find((plan) => plan.yearlyPrice) || {};
   };
 
   const getMonthlyPlanData = () => {
-    return plansData.find(plan => plan.monthlyPrice) || {};
+    return plansData.find((plan) => plan.monthlyPrice) || {};
   };
 
   const yearlyPlan = getYearlyPlanData();
@@ -112,14 +138,15 @@ const Certification: React.FC = () => {
             Get Your Aspiring Certification Today
           </h1>
           <p className="text-sm md:text-[13px] text-[#777A8C] leading-relaxed font-[Poppins]">
-            Begin your conscious growth journey with a certification that acknowledges your intentions,
-            strengthens your practices, and guides you toward deeper personal development.
+            Begin your conscious growth journey with a certification that
+            acknowledges your intentions, strengthens your practices, and guides
+            you toward deeper personal development.
           </p>
 
           <button
             type="button"
             className="mt-6 inline-flex items-center justify-center rounded-full bg-linear-to-r from-[#7077FE] to-[#F07EFF] px-6 py-2 text-sm font-medium text-white shadow-md hover:brightness-105 transition-colors border-0 font-[Poppins]"
-            onClick={() => setSelectedPlan('yearly')}
+            onClick={() => setSelectedPlan("yearly")}
           >
             Start Your Conscious Journey
           </button>
@@ -127,27 +154,31 @@ const Certification: React.FC = () => {
 
         <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 md:gap-10 mb-16">
           {/* Yearly Plan Card */}
-          <div 
+          <div
             className="relative w-full max-w-sm cursor-pointer"
-            onClick={() => setSelectedPlan('yearly')}
+            onClick={() => setSelectedPlan("yearly")}
           >
-            <div className={`rounded-[22px] pt-1 pr-1 pl-1 pb-1 ${
-              selectedPlan === 'yearly' 
-                ? 'bg-linear-to-b from-[#F07EFF] to-[#6745FF]' 
-                : 'bg-transparent'
-            }`}>
-              {selectedPlan === 'yearly' && (
+            <div
+              className={`rounded-[22px] pt-1 pr-1 pl-1 pb-1 ${
+                selectedPlan === "yearly"
+                  ? "bg-linear-to-b from-[#F07EFF] to-[#6745FF]"
+                  : "bg-transparent"
+              }`}
+            >
+              {selectedPlan === "yearly" && (
                 <div className="flex justify-center">
                   <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-white tracking-[0.12em]">
                     YEARLY
                   </span>
                 </div>
               )}
-              
-              <div className={`relative bg-white rounded-[18px] shadow-[0_18px_45px_rgba(49,45,119,0.18)] px-8 pt-6 pb-6 ${
-                selectedPlan !== 'yearly' ? 'border-2 border-[#E5E7EB]' : ''
-              }`}>
-                {selectedPlan !== 'yearly' && (
+
+              <div
+                className={`relative bg-white rounded-[18px] shadow-[0_18px_45px_rgba(49,45,119,0.18)] px-8 pt-6 pb-6 ${
+                  selectedPlan !== "yearly" ? "border-2 border-[#E5E7EB]" : ""
+                }`}
+              >
+                {selectedPlan !== "yearly" && (
                   <div className="flex justify-center mb-4">
                     <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-[#1F2328] tracking-[0.08em]">
                       YEARLY
@@ -159,7 +190,8 @@ const Certification: React.FC = () => {
                   {yearlyPlan?.title || "Premium Membership"}
                 </h2>
                 <p className="mt-2 text-xs font-[Poppins] text-[#777A8C] text-center leading-relaxed">
-                  {yearlyPlan?.description || "This helps us support your experience and gives you access to all premium features."}
+                  {yearlyPlan?.description ||
+                    "This helps us support your experience and gives you access to all premium features."}
                 </p>
                 <div className="mt-6 text-center space-y-2">
                   <button
@@ -185,25 +217,29 @@ const Certification: React.FC = () => {
                 <button
                   type="button"
                   className={`mt-6 w-full font-[Poppins] rounded-lg py-2.5 text-sm font-medium shadow-md hover:brightness-105 transition ${
-                    selectedPlan === 'yearly'
-                      ? 'bg-[#6340FF] text-white'
-                      : 'bg-white border-2 border-[#CBD5E1] text-[#8157FF]'
+                    selectedPlan === "yearly"
+                      ? "bg-[#6340FF] text-white"
+                      : "bg-white border-2 border-[#CBD5E1] text-[#8157FF]"
                   }`}
-                  onClick={() => handlePlanSelection('yearly')}
-                  disabled={isProcessing}
+                  onClick={() => handlePlanSelection("yearly")}
+                  disabled={processingPlan !== null} // Disable both buttons when any is processing
                 >
-                  {isProcessing ? "Processing..." : (yearlyPlan?.buttonText || "Buy Now")}
+                  {processingPlan === "yearly"
+                    ? "Processing..."
+                    : yearlyPlan?.buttonText || "Buy Now"}
                 </button>
 
                 {/* Features */}
                 <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
-                  {(yearlyPlan?.features && yearlyPlan.features.length > 0) ? (
-                    yearlyPlan.features.map((feature: string, index: number) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))
+                  {yearlyPlan?.features && yearlyPlan.features.length > 0 ? (
+                    yearlyPlan.features.map(
+                      (feature: string, index: number) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                          <span>{feature}</span>
+                        </li>
+                      )
+                    )
                   ) : (
                     <>
                       <li className="flex items-start gap-2">
@@ -230,26 +266,30 @@ const Certification: React.FC = () => {
           </div>
 
           {/* Monthly Plan Card */}
-          <div 
+          <div
             className="relative w-full max-w-sm cursor-pointer"
-            onClick={() => setSelectedPlan('monthly')}
-          > 
-            <div className={`rounded-[22px] pt-1 pr-1 pl-1 pb-1 ${
-              selectedPlan === 'monthly' 
-                ? 'bg-linear-to-b from-[#F07EFF] to-[#6745FF]' 
-                : 'bg-transparent'
-            }`}>
-              {selectedPlan === 'monthly' && (
+            onClick={() => setSelectedPlan("monthly")}
+          >
+            <div
+              className={`rounded-[22px] pt-1 pr-1 pl-1 pb-1 ${
+                selectedPlan === "monthly"
+                  ? "bg-linear-to-b from-[#F07EFF] to-[#6745FF]"
+                  : "bg-transparent"
+              }`}
+            >
+              {selectedPlan === "monthly" && (
                 <div className="flex justify-center">
                   <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-white tracking-[0.12em]">
                     MONTHLY
                   </span>
                 </div>
               )}
-              <div className={`relative bg-white rounded-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] px-8 pt-6 pb-6 ${
-                selectedPlan !== 'monthly' ? 'border-2 border-[#E5E7EB]' : ''
-              }`}>
-                {selectedPlan !== 'monthly' && (
+              <div
+                className={`relative bg-white rounded-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] px-8 pt-6 pb-6 ${
+                  selectedPlan !== "monthly" ? "border-2 border-[#E5E7EB]" : ""
+                }`}
+              >
+                {selectedPlan !== "monthly" && (
                   <div className="flex justify-center mb-4">
                     <span className="px-4 py-1 font-[Poppins] text-[16px] font-medium text-[#1F2328] tracking-[0.08em]">
                       MONTHLY
@@ -260,7 +300,8 @@ const Certification: React.FC = () => {
                   {monthlyPlan?.title || "Premium Membership"}
                 </h2>
                 <p className="mt-2 text-xs text-[#777A8C] text-center leading-relaxed font-[Poppins]">
-                  {monthlyPlan?.description || "This helps us support your experience and gives you access to all premium features."}
+                  {monthlyPlan?.description ||
+                    "This helps us support your experience and gives you access to all premium features."}
                 </p>
 
                 {/* Price block */}
@@ -285,25 +326,29 @@ const Certification: React.FC = () => {
                 <button
                   type="button"
                   className={`mt-6 w-full font-[Poppins] rounded-lg py-2.5 text-sm font-medium shadow-md hover:brightness-105 transition ${
-                    selectedPlan === 'monthly'
-                      ? 'bg-[#6340FF] text-white'
-                      : 'bg-white border-2 border-[#CBD5E1] text-[#8157FF]'
+                    selectedPlan === "monthly"
+                      ? "bg-[#6340FF] text-white"
+                      : "bg-white border-2 border-[#CBD5E1] text-[#8157FF]"
                   }`}
-                  onClick={() => handlePlanSelection('monthly')}
-                  disabled={isProcessing}
+                  onClick={() => handlePlanSelection("monthly")}
+                  disabled={processingPlan !== null} // Disable both buttons when any is processing
                 >
-                  {isProcessing ? "Processing..." : (monthlyPlan?.buttonText || "Buy Now")}
+                  {processingPlan === "monthly"
+                    ? "Processing..."
+                    : monthlyPlan?.buttonText || "Buy Now"}
                 </button>
 
                 {/* Features */}
                 <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
-                  {(monthlyPlan?.features && monthlyPlan.features.length > 0) ? (
-                    monthlyPlan.features.map((feature: string, index: number) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))
+                  {monthlyPlan?.features && monthlyPlan.features.length > 0 ? (
+                    monthlyPlan.features.map(
+                      (feature: string, index: number) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <MdOutlineKeyboardArrowRight className="text-[#59636E] text-base shrink-0" />
+                          <span>{feature}</span>
+                        </li>
+                      )
+                    )
                   ) : (
                     <>
                       <li className="flex items-start gap-2">

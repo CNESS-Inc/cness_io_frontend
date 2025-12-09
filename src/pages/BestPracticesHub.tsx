@@ -7,13 +7,11 @@ import {
   CreateBestPractice,
   GetAllBestPracticesByProfession,
   GetAllBestPracticesByInterest,
-  //GetAllFormDetails,
   LikeBestpractices,
   SaveBestpractices,
   GetValidProfessionalDetails,
   GetInterestsDetails,
   SendBpFollowRequest,
-  // SendBpFollowRequest,
 } from "../Common/ServerAPI";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -132,16 +130,13 @@ export default function BestPracticesHub() {
     getSelectedDomainText()
   );
 
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isTablet = useMediaQuery("(max-width: 1024px)");
 
   // State for separate best practices lists
   const [bestPracticesProfession, setBestPracticesProfession] = useState<
     Company[]
   >([]);
-  console.log(
-    "🚀 ~ BestPracticesHub ~ bestPracticesProfession:",
-    bestPracticesProfession
-  );
   const [bestPracticesInterest, setBestPracticesInterest] = useState<Company[]>(
     []
   );
@@ -152,14 +147,14 @@ export default function BestPracticesHub() {
       currentPage: 1,
       totalPages: 1,
       totalItems: 0,
-      itemsPerPage: 9,
+      itemsPerPage: isMobile ? 4 : isTablet ? 6 : 9,
     });
 
   const [paginationInterest, setPaginationInterest] = useState<PaginationData>({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 9,
+    itemsPerPage: isMobile ? 4 : isTablet ? 6 : 9,
   });
 
   // Separate loading states
@@ -174,6 +169,19 @@ export default function BestPracticesHub() {
       setSelectedDomainText(getSelectedDomainText());
     }
   }, [profession, searchParams]);
+
+  // Update items per page when screen size changes
+  useEffect(() => {
+    const newItemsPerPage = isMobile ? 4 : isTablet ? 6 : 9;
+    setPaginationProfession((prev) => ({
+      ...prev,
+      itemsPerPage: newItemsPerPage,
+    }));
+    setPaginationInterest((prev) => ({
+      ...prev,
+      itemsPerPage: newItemsPerPage,
+    }));
+  }, [isMobile, isTablet]);
 
   const toggleSave = async (id: string, section: "profession" | "interest") => {
     if (saveLoading[id]) return;
@@ -309,7 +317,6 @@ export default function BestPracticesHub() {
         professionId,
         searchText
       );
-      console.log("Best practices by profession:", res.data.data.rows);
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map(
           (practice: any) => ({
@@ -368,7 +375,6 @@ export default function BestPracticesHub() {
         interestId,
         searchText
       );
-      console.log("Best practices by interest:", res.data.data.rows);
       if (res?.data?.data) {
         const transformedCompanies = res.data.data.rows.map(
           (practice: any) => ({
@@ -828,267 +834,266 @@ export default function BestPracticesHub() {
     }
   };
 
+  const handleExploreClick = () => {
+    const el = document.getElementById("explore");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <>
-      <div className="px-2 sm:px-2 lg:px-1">
-        <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2">
-
-          {/* Background Image (city illustration) */}
+      <div className="px-2 sm:px-4 lg:px-6">
+        <section className="relative w-full h-[350px] sm:h-[300px] md:h-[400px] lg:h-[500px] mx-auto rounded-xl overflow-hidden mt-2">
+          {/* Background Image */}
           <img
             src="https://cdn.cness.io/Best%20practice.svg"
             alt="City Skyline"
-            className="absolute left-0 w-full object-cover z-0 pointer-events-none"
+            className="absolute left-0 w-full h-full object-cover z-0 pointer-events-none"
           />
 
           {/* Foreground Content */}
           <div className="relative z-10 flex flex-col items-center justify-center max-w-4xl mx-auto h-full px-4 text-center -mt-5">
-   <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-2 sm:mb-3">
-    Best Practices Hub
-  </h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-2 sm:mb-3">
+              Best Practices Hub
+            </h1>
 
- <p className="text-base font-semibold sm:text-base text-[#242424] font-openSans -mt-1">
-  Empowering greater solutions for life and profession.
-</p>
+            <p className="text-sm font-semibold sm:text-base text-[#242424] font-openSans -mt-1 px-2">
+              Empowering greater solutions for life and profession.
+            </p>
 
-            <div className="w-full max-w-xl items-center gap-3 mt-5">
-            {/* Combined Search Input + Professions Pill */}
-            <div className="relative w-full">
-              <div
-                className="flex items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden"
-                style={{ minHeight: "44px" }} /* match screenshot height */
-              >
-                {/* Left search icon + text input */}
-                <div className="flex items-center px-3">
-                  <CiSearch className="w-5 h-5 text-gray-400" />
-                </div>
+            <div className="w-full max-w-xl items-center gap-3 mt-4 sm:mt-5 px-2">
+              {/* Combined Search Input + Professions Pill */}
+              <div className="relative w-full">
+                <div className="flex items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden min-h-11">
+                  {/* Left search icon + text input */}
+                  <div className="flex items-center pl-3 shrink-0">
+                    <CiSearch className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                  </div>
 
-                <input
-                  type="text"
-                  placeholder="Search Best Practice"
-                  className="flex-1 text-sm md:text-base font-openSans py-3 pr-4 pl-0 text-gray-700 placeholder:text-gray-400 outline-none"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  onKeyDown={handleKeyPress}
-                  aria-label="Search best practices"
-                />
+                  <input
+                    type="text"
+                    placeholder="Search Best Practice"
+                    className="flex-1 min-w-0 text-xs sm:text-sm md:text-base font-openSans py-2 sm:py-3 pr-2 sm:pr-4 pl-2 text-gray-700 placeholder:text-gray-400 outline-none bg-transparent"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    aria-label="Search best practices"
+                  />
 
-                {/* Right purple pill (dropdown trigger) */}
-              <div className="inline-block overflow-visible">
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 bg-[#7077FE] text-white font-semibold rounded-full px-4 py-4 mr-[-20px] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white"
-              aria-haspopup="listbox"
-              aria-expanded={isDropdownOpen}
-              type="button"
-            >
-              <span className="text-xs md:text-sm">Professions</span>
-              <ChevronDown
-                className={`w-4 h-4 transition-transform duration-200 ${
-                  isDropdownOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
+                  {/* Right purple pill (dropdown trigger) */}
+                  <div className="relative shrink-0">
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="flex items-center gap-1 sm:gap-2 bg-[#7077FE] text-white font-semibold rounded-full px-3 sm:px-4 py-2 h-full focus:outline-none whitespace-nowrap min-h-11"
+                      aria-haspopup="listbox"
+                      aria-expanded={isDropdownOpen}
+                      type="button"
+                    >
+                      <span className="text-xs">Professions</span>
+                      <ChevronDown
+                        className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""
+                          }`}
+                      />
+                    </button>
 
-            {isDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                      {/* Search inside dropdown */}
-                      <div className="p-2 border-b border-gray-100">
-                        <div className="ralative">
-                          <Search className="absolute left-3 top-3/2 mt-2 -translate-y-5/1 text-gray-400 w-4 h-4" />
-
-                          <input
-                            type="text"
-                            placeholder="Search professions & interests..."
-                            className="w-full pl-8 pr-8 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                          {searchQuery && (
-                            <button
-                              onClick={() => setSearchQuery("")}
-                              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="overflow-y-auto max-h-64">
-                        <div className="border-b border-gray-100">
+                    {isDropdownOpen && (
+                      <div className="fixed inset-x-0 top-0 bottom-0 sm:absolute sm:inset-auto sm:left-auto sm:right-0 sm:top-full sm:mt-2 w-full sm:w-80 bg-white border border-gray-200 rounded-lg sm:rounded-lg shadow-lg z-50 sm:max-h-96 max-h-full overflow-hidden">
+                        {/* Mobile header for dropdown */}
+                        <div className="flex items-center justify-between p-4 border-b border-gray-200 sm:hidden bg-[#7077FE] text-white">
+                          <h3 className="font-semibold">Filter by</h3>
                           <button
-                            className={`w-full text-left px-4 py-2 text-xs hover:bg-gray-50 ${
-                              !selectedFilter.id ? "bg-blue-50 text-[#7077FE]" : ""
-                            }`}
-                            onClick={() => clearFilter()}
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="p-1"
+                            aria-label="Close filter"
                           >
-                            All Profession & Interests
+                            <X className="w-5 h-5" />
                           </button>
                         </div>
 
-                        {filteredProfessions.length > 0 && (
-                          <div>
-                            <div className="px-2 py-2 text-left text-xs font-semibold text-black-500 bg-[#7077FE] uppercase tracking-wide">
-                              Professions
-                            </div>
-                            {filteredProfessions.map((prof) => (
+                        {/* Search inside dropdown */}
+                        <div className="p-3 border-b border-gray-100">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-4 sm:h-4" />
+                            <input
+                              type="text"
+                              placeholder="Search professions & interests..."
+                              className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent"
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            {searchQuery && (
                               <button
-                                key={`p-${prof.id}`}
-                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                                  selectedFilter.id === prof.id &&
-                                  selectedFilter.type === "profession"
+                                onClick={() => setSearchQuery("")}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                              >
+                                <X className="w-4 h-4 sm:w-4 sm:h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="overflow-y-auto h-full sm:max-h-64">
+                          <div className="border-b border-gray-100">
+                            <button
+                              className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${!selectedFilter.id
+                                ? "bg-blue-50 text-[#7077FE]"
+                                : ""
+                                }`}
+                              onClick={() => {
+                                clearFilter();
+                                setIsDropdownOpen(false);
+                              }}
+                            >
+                              All Profession & Interests
+                            </button>
+                          </div>
+
+                          {filteredProfessions.length > 0 && (
+                            <div>
+                              <div className="px-4 py-2 text-left text-xs font-semibold text-white bg-[#7077FE] uppercase tracking-wide">
+                                Professions
+                              </div>
+                              {filteredProfessions.map((prof) => (
+                                <button
+                                  key={`p-${prof.id}`}
+                                  className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${selectedFilter.id === prof.id &&
+                                    selectedFilter.type === "profession"
                                     ? "bg-blue-50 text-[#7077FE] font-medium"
                                     : ""
-                                }`}
-                                onClick={() =>
-                                  handleFilterSelect(prof.id, "profession", prof.title)
-                                }
-                              >
-                                {prof.title}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-
-                        {filteredInterests.length > 0 && (
-                          <div>
-                            <div className="px-4 py-2 text-xs font-semibold text-gray-500 bg-gray-50 uppercase tracking-wide">
-                              Interests
-                            </div>
-                            {filteredInterests.map((int) => (
-                              <button
-                                key={`i-${int.id}`}
-                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                                  selectedFilter.id === int.id &&
-                                  selectedFilter.type === "interest"
-                                    ? "bg-blue-50 text-[#7077FE] font-medium"
-                                    : ""
-                                }`}
-                                onClick={() =>
-                                  handleFilterSelect(int.id, "interest", int.name)
-                                }
-                              >
-                                {int.name}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-
-                        {filteredProfessions.length === 0 &&
-                          filteredInterests.length === 0 && (
-                            <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                              No results found for "{searchQuery}"
+                                    }`}
+                                  onClick={() => {
+                                    handleFilterSelect(
+                                      prof.id,
+                                      "profession",
+                                      prof.title
+                                    );
+                                    setIsDropdownOpen(false);
+                                  }}
+                                >
+                                  {prof.title}
+                                </button>
+                              ))}
                             </div>
                           )}
-                      </div>
-                    </div>
-                  )}
-                </div>
 
-                {/* Search submit button (optional click icon on the right of the pill) */}
-                <button
-                  onClick={handleSearch}
-                  className="ml-2 mr-3 focus:outline-none"
-                  aria-label="Search"
-                >
-                </button>
+                          {filteredInterests.length > 0 && (
+                            <div>
+                              <div className="px-4 py-2 text-xs font-semibold text-gray-500 bg-gray-50 uppercase tracking-wide">
+                                Interests
+                              </div>
+                              {filteredInterests.map((int) => (
+                                <button
+                                  key={`i-${int.id}`}
+                                  className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${selectedFilter.id === int.id &&
+                                    selectedFilter.type === "interest"
+                                    ? "bg-blue-50 text-[#7077FE] font-medium"
+                                    : ""
+                                    }`}
+                                  onClick={() => {
+                                    handleFilterSelect(
+                                      int.id,
+                                      "interest",
+                                      int.name
+                                    );
+                                    setIsDropdownOpen(false);
+                                  }}
+                                >
+                                  {int.name}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          {filteredProfessions.length === 0 &&
+                            filteredInterests.length === 0 && (
+                              <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                                No results found for "{searchQuery}"
+                              </div>
+                            )}
+                        </div>
+
+                        {/* Close button for mobile (full-width) */}
+                        <div className="sm:hidden p-4 border-t border-gray-200 bg-white">
+                          <button
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="w-full py-3 bg-[#7077FE] text-white rounded-lg font-medium"
+                          >
+                            Close
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
+            {/* CTA Cards */}
+            <div className="flex flex-col sm:flex-row mt-4 sm:mt-6 gap-3 sm:gap-4 p-2 sm:p-4">
+              <div
+                onClick={handleExploreClick}
+                className="flex items-center gap-2 sm:gap-3 bg-white shadow-md rounded-xl px-4 sm:px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] transition w-full sm:w-auto">
+                <img
+                  src="https://cdn.cness.io/toy-with-red-handle-green-plastic-handle%201.svg"
+                  alt="Explore Best Practice Icon"
+                  className="w-10 h-10 sm:w-12 sm:h-12 md:w-15 md:h-15"
+                />
+                <span
 
-           {/* <p className="text-gray-700  text-xs md:text-sm mt-2 sm:mt-4 md:mt-2 text-center px-2 sm:px-0">
-            <span
-              className="font-medium inline-block cursor-pointer text-[#7077FE] items-center gap-3"
-              onClick={openModal}
-            >
-            <CiCirclePlus className="mr-1 inline-block w-5 h-5" />
-              Add your best practice
-            </span>{" "}
-            and be an author of the best practices.
-          </p> */}
-            <div className="flex mt-6 gap-4 p-4">
-            <div className="flex items-center gap-3 bg-white shadow-md rounded-xl px-5 py-3 cursor-pointer shadow-lg hover:bg-[#F9FDFF] transition">
-              <img 
-                src="https://cdn.cness.io/toy-with-red-handle-green-plastic-handle%201.svg" 
-                alt="Explore Best Practice Icon" 
-                className="w-15 h-15"
-              />
-              <span 
-              onClick={openModal}
-              className="text-gray-800 font-openSans font-semibold leading-tight">
-                Explore<br />Best Practice
-              </span>
+                  className="text-gray-800 font-openSans font-semibold leading-tight text-sm sm:text-base"
+                >
+                  Explore
+                  <br />
+                  Best Practice
+                </span>
+              </div>
+
+              <div
+                onClick={openModal}
+                className="flex items-center gap-2 sm:gap-3 bg-white shadow-md rounded-xl px-4 sm:px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] transition w-full sm:w-auto">
+                <img
+                  src="https://cdn.cness.io/yellow-paper-clip-isolated-back-school-education-minimal-icon-3d-illustration%201.svg"
+                  alt="Add Your Impact Story Icon"
+                  className="w-10 h-10 sm:w-12 sm:h-12 md:w-15 md:h-15"
+                />
+                <span
+                  className="text-gray-800 font-openSans font-semibold leading-tight text-sm sm:text-base">
+                  Add Your
+                  <br />
+                  Impact Story
+                </span>
+              </div>
             </div>
-
-            <div className="flex items-center gap-3 bg-white shadow-md rounded-xl px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] shadow-lg transition">
-              <img 
-                src="https://cdn.cness.io/yellow-paper-clip-isolated-back-school-education-minimal-icon-3d-illustration%201.svg" 
-                alt="Add Your Impact Story Icon" 
-                className="w-15 h-15"
-              />
-              <span className="text-gray-800 font-openSans font-semibold leading-tight">
-                Add Your<br />Impact Story
-              </span>
-            </div>
-          </div>
-      
           </div>
         </section>
       </div>
 
       {/* Best Practices for Profession Section */}
-      <section className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">
-        <div className="w-full mx-auto ">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-            {(selectedFilter.id || searchText) && (
-              <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-                Professional Best practices
-                {/* {selectedFilter.id && (
-                  <span className="text-[#7077FE] ml-1 font-semibold">
-                    "
-                    {selectedFilter.type === "profession"
-                      ? profession.find((p) => p.id === selectedFilter.id)
-                          ?.title
-                      : interest.find((i: any) => i.id === selectedFilter.id)
-                          ?.name}
-                    "
-                  </span>
-                )}
-                {searchText?.trim() && (
-                  <>
-                    {selectedFilter.id ? " and " : " "}
-                    <span className="text-[#7077FE] font-semibold">
-                      "{searchText.trim()}"
-                    </span>
-                  </>
-                )} */}
-              </h4>
-            )}
-
-            {!selectedFilter.id && !searchText && (
-              <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-                Professional Best practices
-              </h4>
-            )}
-
-            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-              {/* Certification and Sort dropdowns commented out */}
-            </div>
+      <section
+        id="explore"
+        className="py-6 sm:py-8 px-2 sm:px-4 lg:px-6 bg-[#f9f9f9] border-t border-gray-100">
+        <div className="w-full mx-auto">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 sm:gap-4">
+            <h4 className="poppins font-medium text-sm sm:text-base md:text-lg leading-[150%] tracking-normal">
+              {selectedFilter.id || searchText
+                ? "Professional Best practices"
+                : "Professional Best practices"}
+            </h4>
           </div>
 
           {isLoading.profession ? (
-            <div className="flex justify-center py-10">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+            <div className="flex justify-center py-8 sm:py-10">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : bestPracticesProfession.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
               {bestPracticesProfession?.map((company, index) => {
                 return (
                   <div
                     key={company.id}
-                    className="relative bg-white w-full h-full flex flex-col cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
+                    className="relative bg-white w-full h-full flex flex-col cursor-pointer rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm sm:shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1px] sm:hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
                     onClick={() =>
                       navigate(
                         `/dashboard/bestpractices/${company.id}/${slugify(
@@ -1103,84 +1108,83 @@ export default function BestPracticesHub() {
                       )
                     }
                   >
-                    {/* Card content remains the same */}
-                    <CardHeader className="px-4 pt-4 pb-0 relative z-0">
-                      <div className="flex items-start gap-1 pr-12">
+                    <CardHeader className="px-3 sm:px-4 pt-3 sm:pt-4 pb-0 relative z-0">
+                      <div className="flex items-start gap-1 pr-8 sm:pr-12">
                         <img
                           src={
                             !company?.user?.profilePicture ||
-                            company?.user?.profilePicture === "null" ||
-                            company?.user?.profilePicture === "undefined" ||
-                            !company?.user?.profilePicture.startsWith("http") ||
-                            company?.user?.profilePicture ===
+                              company?.user?.profilePicture === "null" ||
+                              company?.user?.profilePicture === "undefined" ||
+                              !company?.user?.profilePicture.startsWith("http") ||
+                              company?.user?.profilePicture ===
                               "http://localhost:5026/file/"
                               ? "/profile.jpg"
                               : company?.user?.profilePicture
                           }
                           alt={company.user.username}
-                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
+                          className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full object-cover mr-2 sm:mr-3"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.src = "/profile.png";
                           }}
                         />
-                        <div>
-                          <CardTitle className="text-sm font-semibold">
+                        <div className="min-w-0">
+                          <CardTitle className="text-xs sm:text-sm font-semibold truncate">
                             {company.user.firstName} {company.user.lastName}
                           </CardTitle>
-                          <CardDescription className="text-xs text-gray-500">
+                          <CardDescription className="text-xs text-gray-500 truncate">
                             @{company.user.username}
                           </CardDescription>
                         </div>
                       </div>
                     </CardHeader>
-                    <div className="h-full flex flex-col justify-between items-scretch px-4 pt-4 pb-0 relative z-0">
+                    <div className="h-full flex flex-col justify-between items-stretch px-3 sm:px-4 pt-3 sm:pt-4 pb-0 relative z-0">
                       <div className="">
-                        <div className="relative rounded-xl overflow-hidden mb-3 ">
+                        <div className="relative rounded-lg sm:rounded-xl overflow-hidden mb-2 sm:mb-3">
                           {company.file && (
-                            <>
-                              <img
-                                src={
-                                  !company.file ||
+                            <img
+                              src={
+                                !company.file ||
                                   company.file === "null" ||
                                   company.file === "undefined" ||
                                   !company.file.startsWith("http") ||
                                   company.file === "http://localhost:5026/file/"
-                                    ? "/profile.jpg"
-                                    : company.file
-                                }
-                                alt={company.title}
-                                className="w-full h-40 sm:h-48 object-cover"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src =
-                                    iconMap["companycard1"];
-                                }}
-                              />
-                            </>
+                                  ? "/profile.jpg"
+                                  : company.file
+                              }
+                              alt={company.title}
+                              className="w-full h-32 sm:h-40 md:h-48 object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src =
+                                  iconMap["companycard1"];
+                              }}
+                            />
                           )}
                         </div>
-                        <div className="absolute top-6 left-6 flex gap-2 flex-wrap">
+                        <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex gap-1 sm:gap-2 flex-wrap">
                           {(Array.isArray(company.profession)
                             ? company.profession
                             : [company.profession]
                           ).map((item, i) => (
                             <span
                               key={i}
-                              className="text-[12px] inline-flex items-center justify-center rounded-full px-3 py-2 leading-none font-medium bg-[#F3F3F3] text-[#8A8A8A]"
+                              className="text-[10px] xs:text-[11px] sm:text-[12px] inline-flex items-center justify-center rounded-full px-2 sm:px-3 py-1 sm:py-1.5 leading-none font-medium bg-[#F3F3F3] text-[#8A8A8A]"
                               style={{ fontFamily: "Poppins, sans-serif" }}
                             >
-                              {item}
+                              {typeof item === "string" && item.length > 15
+                                ? item.substring(0, 15) + "..."
+                                : item}
                             </span>
                           ))}
                         </div>
-                        <div className="w-full flex justify-between items-center gap-3">
-                          <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
+                        <div className="w-full flex justify-between items-center gap-2 sm:gap-3">
+                          <h3 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2 flex-1 min-w-0">
                             {company.title}
                           </h3>
-                          <div>
+                          <div className="shrink-0">
                             {!company.is_bp_following ? (
                               <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-3 sm:px-4 md:px-5 py-1 sm:py-1.5 rounded-full text-white text-[10px] xs:text-[11px] sm:text-[12px] md:text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   toggleFollow(company.id, "profession");
@@ -1189,8 +1193,10 @@ export default function BestPracticesHub() {
                               >
                                 {followLoading[company.id] ? (
                                   <div className="flex items-center">
-                                    <div className="w-3 h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
-                                    Loading...
+                                    <div className="w-2 h-2 sm:w-3 sm:h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
+                                    <span className="hidden xs:inline">
+                                      Loading...
+                                    </span>
                                   </div>
                                 ) : (
                                   "+ Follow"
@@ -1198,7 +1204,7 @@ export default function BestPracticesHub() {
                               </button>
                             ) : (
                               <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-3 sm:px-4 md:px-5 py-1 sm:py-1.5 rounded-full text-white text-[10px] xs:text-[11px] sm:text-[12px] md:text-[13px] font-medium bg-[#F396FF] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   toggleFollow(company.id, "profession");
@@ -1207,8 +1213,10 @@ export default function BestPracticesHub() {
                               >
                                 {followLoading[company.id] ? (
                                   <div className="flex items-center">
-                                    <div className="w-3 h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
-                                    Loading...
+                                    <div className="w-2 h-2 sm:w-3 sm:h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
+                                    <span className="hidden xs:inline">
+                                      Loading...
+                                    </span>
                                   </div>
                                 ) : (
                                   "Following"
@@ -1217,31 +1225,35 @@ export default function BestPracticesHub() {
                             )}
                           </div>
                         </div>
-                        <p className="text-sm font-semibold text-gray-900">
+                        <p className="text-xs sm:text-sm font-semibold text-gray-900 mt-1 sm:mt-0">
                           Overview
                         </p>
 
-                        <p className="text-sm text-gray-600 leading-snug wrap-break-word whitespace-pre-line">
+                        <p className="text-xs sm:text-sm text-gray-600 leading-snug wrap-break-word whitespace-pre-line line-clamp-3 sm:line-clamp-4">
                           <span
                             dangerouslySetInnerHTML={{
                               __html: DOMPurify.sanitize(
                                 expandedDescriptions[company.id]
                                   ? company.description
-                                  : truncateText(company.description, 100)
+                                  : truncateText(
+                                    company.description,
+                                    isMobile ? 80 : 100
+                                  )
                               ),
                             }}
                           />
-                          {company.description.length > 100 && (
-                            <span className="text-purple-600 underline cursor-pointer ml-1">
-                              {expandedDescriptions[company.id]
-                                ? "Read Less"
-                                : "Read More"}
-                            </span>
-                          )}
+                          {company.description.length >
+                            (isMobile ? 80 : 100) && (
+                              <span className="text-purple-600 underline cursor-pointer ml-1 text-xs sm:text-sm">
+                                {expandedDescriptions[company.id]
+                                  ? "Read Less"
+                                  : "Read More"}
+                              </span>
+                            )}
                         </p>
                       </div>
-                      <div className="flex items-end justify-between px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600 ">
-                        <div className="flex items-center space-x-6 mb-2">
+                      <div className="flex items-end justify-between px-3 sm:px-4 py-2 mt-1 sm:mt-2 text-xs text-gray-600">
+                        <div className="flex items-center space-x-4 sm:space-x-6 mb-1 sm:mb-2">
                           <span
                             className="flex items-center gap-1 cursor-pointer"
                             onClick={(e) => {
@@ -1252,46 +1264,48 @@ export default function BestPracticesHub() {
                             <img
                               src={like}
                               alt="Like Icon"
-                              className="w-5 h-5"
+                              className="w-4 h-4 sm:w-5 sm:h-5"
                             />
-                            <span>{company.likesCount || 0}</span>
+                            <span className="text-xs sm:text-sm">
+                              {company.likesCount || 0}
+                            </span>
                           </span>
 
                           <span className="flex items-center gap-1">
                             <img
                               src={comment}
                               alt="Comment Icon"
-                              className="w-5 h-5"
+                              className="w-4 h-4 sm:w-5 sm:h-5"
                             />
-                            <span>{company.commentsCount || 0}</span>
+                            <span className="text-xs sm:text-sm">
+                              {company.commentsCount || 0}
+                            </span>
                           </span>
                         </div>
 
                         <div
-                          className="cursor-pointer mb-2"
+                          className="cursor-pointer mb-1 sm:mb-2"
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleSave(company.id, "profession");
                           }}
                         >
-                          <div className="flex items-center gap-2 cursor-pointer">
+                          <div className="flex items-center gap-1 sm:gap-2 cursor-pointer">
                             <Bookmark
-                              className={`w-5 h-5 transition-all duration-200 ${
-                                saveLoading[company.id] ? "opacity-50" : ""
-                              }`}
+                              className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200 ${saveLoading[company.id] ? "opacity-50" : ""
+                                }`}
                               fill={company.is_saved ? "#72DBF2" : "none"}
                               stroke={company.is_saved ? "#72DBF2" : "#4338CA"}
                             />
                             <span
-                              className={`text-sm font-normal text-gray-700 ${
-                                saveLoading[company.id] ? "opacity-50" : ""
-                              }`}
+                              className={`text-xs sm:text-sm font-normal text-gray-700 ${saveLoading[company.id] ? "opacity-50" : ""
+                                }`}
                             >
                               {saveLoading[company.id]
                                 ? "Saving..."
                                 : company.is_saved
-                                ? "Saved"
-                                : "Save"}
+                                  ? "Saved"
+                                  : "Save"}
                             </span>
                           </div>
                         </div>
@@ -1302,13 +1316,13 @@ export default function BestPracticesHub() {
               })}
             </div>
           ) : (
-            <p className="text-gray-500 py-10 text-center">
+            <p className="text-gray-500 py-8 sm:py-10 text-center text-sm sm:text-base">
               No Best Practices found for Profession.
             </p>
           )}
 
           {paginationProfession.totalPages > 1 && (
-            <div className="mt-6 sm:mt-8">
+            <div className="mt-4 sm:mt-6 md:mt-8">
               <div className="flex justify-center">
                 <nav className="inline-flex rounded-md shadow-sm -space-x-px text-xs sm:text-sm">
                   <button
@@ -1339,11 +1353,10 @@ export default function BestPracticesHub() {
                           )
                         }
                         disabled={isLoading.profession}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          1 === paginationProfession.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === paginationProfession.currentPage
+                          ? "bg-indigo-500 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         1
                       </button>
@@ -1376,11 +1389,10 @@ export default function BestPracticesHub() {
                           )
                         }
                         disabled={isLoading.profession}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          page === paginationProfession.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === paginationProfession.currentPage
+                          ? "bg-indigo-500 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         {page}
                       </button>
@@ -1390,10 +1402,10 @@ export default function BestPracticesHub() {
                     <>
                       {paginationProfession.currentPage <
                         paginationProfession.totalPages - 2 && (
-                        <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
-                          ...
-                        </span>
-                      )}
+                          <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
+                            ...
+                          </span>
+                        )}
 
                       {paginationProfession.totalPages > 1 && (
                         <button
@@ -1405,12 +1417,11 @@ export default function BestPracticesHub() {
                             )
                           }
                           disabled={isLoading.profession}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                            paginationProfession.totalPages ===
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${paginationProfession.totalPages ===
                             paginationProfession.currentPage
-                              ? "bg-indigo-500 text-white"
-                              : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                            }`}
                         >
                           {paginationProfession.totalPages}
                         </button>
@@ -1428,7 +1439,7 @@ export default function BestPracticesHub() {
                     }
                     disabled={
                       paginationProfession.currentPage ===
-                        paginationProfession.totalPages || isLoading.profession
+                      paginationProfession.totalPages || isLoading.profession
                     }
                     className="px-2 sm:px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                   >
@@ -1442,56 +1453,27 @@ export default function BestPracticesHub() {
       </section>
 
       {/* Best Practices for Interest Section */}
-      <section className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">
-        <div className="w-full mx-auto ">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-            {(selectedFilter.id || searchText) && (
-              <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-                Best Practices For Interest
-                {/* {selectedFilter.id && (
-                  <span className="text-[#7077FE] ml-1 font-semibold">
-                    "
-                    {selectedFilter.type === "profession"
-                      ? profession.find((p) => p.id === selectedFilter.id)
-                          ?.title
-                      : interest.find((i: any) => i.id === selectedFilter.id)
-                          ?.name}
-                    "
-                  </span>
-                )}
-                {searchText?.trim() && (
-                  <>
-                    {selectedFilter.id ? " and " : " "}
-                    <span className="text-[#7077FE] font-semibold">
-                      "{searchText.trim()}"
-                    </span>
-                  </>
-                )} */}
-              </h4>
-            )}
-
-            {!selectedFilter.id && !searchText && (
-              <h4 className="poppins font-medium text-base sm:text-lg leading-[150%] tracking-normal">
-                Best practices for Interest
-              </h4>
-            )}
-
-            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-              {/* Certification and Sort dropdowns commented out */}
-            </div>
+      <section className="py-6 sm:py-8 px-2 sm:px-4 lg:px-6 bg-[#f9f9f9] border-t border-gray-100">
+        <div className="w-full mx-auto">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 sm:gap-4">
+            <h4 className="poppins font-medium text-sm sm:text-base md:text-lg leading-[150%] tracking-normal">
+              {selectedFilter.id || searchText
+                ? "Best Practices For Interest"
+                : "Best practices for Interest"}
+            </h4>
           </div>
 
           {isLoading.interest ? (
-            <div className="flex justify-center py-10">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+            <div className="flex justify-center py-8 sm:py-10">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : bestPracticesInterest.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
               {bestPracticesInterest?.map((company, index) => {
                 return (
                   <div
                     key={company.id}
-                    className="relative bg-white w-full h-full flex flex-col cursor-pointer rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
+                    className="relative bg-white w-full h-full flex flex-col cursor-pointer rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm sm:shadow-md overflow-hidden transition-all duration-300 hover:shadow-sm hover:ring-[1px] sm:hover:ring-[1.5px] hover:ring-[#F07EFF]/40"
                     onClick={() =>
                       navigate(
                         `/dashboard/bestpractices/${company.id}/${slugify(
@@ -1506,84 +1488,83 @@ export default function BestPracticesHub() {
                       )
                     }
                   >
-                    {/* Card content remains the same */}
-                    <CardHeader className="px-4 pt-4 pb-0 relative z-0">
-                      <div className="flex items-start gap-1 pr-12">
+                    <CardHeader className="px-3 sm:px-4 pt-3 sm:pt-4 pb-0 relative z-0">
+                      <div className="flex items-start gap-1 pr-8 sm:pr-12">
                         <img
                           src={
                             !company?.user?.profilePicture ||
-                            company?.user?.profilePicture === "null" ||
-                            company?.user?.profilePicture === "undefined" ||
-                            !company?.user?.profilePicture.startsWith("http") ||
-                            company?.user?.profilePicture ===
+                              company?.user?.profilePicture === "null" ||
+                              company?.user?.profilePicture === "undefined" ||
+                              !company?.user?.profilePicture.startsWith("http") ||
+                              company?.user?.profilePicture ===
                               "http://localhost:5026/file/"
                               ? "/profile.jpg"
                               : company?.user?.profilePicture
                           }
                           alt={company.user.username}
-                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover mr-2 sm:mr-3"
+                          className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full object-cover mr-2 sm:mr-3"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.src = "/profile.png";
                           }}
                         />
-                        <div>
-                          <CardTitle className="text-sm font-semibold">
+                        <div className="min-w-0">
+                          <CardTitle className="text-xs sm:text-sm font-semibold truncate">
                             {company.user.firstName} {company.user.lastName}
                           </CardTitle>
-                          <CardDescription className="text-xs text-gray-500">
+                          <CardDescription className="text-xs text-gray-500 truncate">
                             @{company.user.username}
                           </CardDescription>
                         </div>
                       </div>
                     </CardHeader>
-                    <div className="h-full flex flex-col justify-between items-scretch px-4 pt-4 pb-0 relative z-0">
+                    <div className="h-full flex flex-col justify-between items-stretch px-3 sm:px-4 pt-3 sm:pt-4 pb-0 relative z-0">
                       <div className="">
-                        <div className="relative rounded-xl overflow-hidden mb-3 ">
+                        <div className="relative rounded-lg sm:rounded-xl overflow-hidden mb-2 sm:mb-3">
                           {company.file && (
-                            <>
-                              <img
-                                src={
-                                  !company.file ||
+                            <img
+                              src={
+                                !company.file ||
                                   company.file === "null" ||
                                   company.file === "undefined" ||
                                   !company.file.startsWith("http") ||
                                   company.file === "http://localhost:5026/file/"
-                                    ? "/profile.jpg"
-                                    : company.file
-                                }
-                                alt={company.title}
-                                className="w-full h-40 sm:h-48 object-cover"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src =
-                                    iconMap["companycard1"];
-                                }}
-                              />
-                            </>
+                                  ? "/profile.jpg"
+                                  : company.file
+                              }
+                              alt={company.title}
+                              className="w-full h-32 sm:h-40 md:h-48 object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src =
+                                  iconMap["companycard1"];
+                              }}
+                            />
                           )}
                         </div>
-                        <div className="absolute top-6 left-6 flex gap-2 flex-wrap">
+                        <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex gap-1 sm:gap-2 flex-wrap">
                           {(Array.isArray(company.interest)
                             ? company.interest
                             : [company.interest || company.profession]
                           ).map((item, i) => (
                             <span
                               key={i}
-                              className="text-[12px] inline-flex items-center justify-center rounded-full px-3 py-2 leading-none font-medium bg-[#F3F3F3] text-[#8A8A8A]"
+                              className="text-[10px] xs:text-[11px] sm:text-[12px] inline-flex items-center justify-center rounded-full px-2 sm:px-3 py-1 sm:py-1.5 leading-none font-medium bg-[#F3F3F3] text-[#8A8A8A]"
                               style={{ fontFamily: "Poppins, sans-serif" }}
                             >
-                              {item}
+                              {typeof item === "string" && item.length > 15
+                                ? item.substring(0, 15) + "..."
+                                : item}
                             </span>
                           ))}
                         </div>
-                        <div className="w-full flex justify-between items-center gap-3">
-                          <h3 className="text-base sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">
+                        <div className="w-full flex justify-between items-center gap-2 sm:gap-3">
+                          <h3 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2 flex-1 min-w-0">
                             {company.title}
                           </h3>
-                          <div>
+                          <div className="shrink-0">
                             {!company.is_bp_following ? (
                               <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-3 sm:px-4 md:px-5 py-1 sm:py-1.5 rounded-full text-white text-[10px] xs:text-[11px] sm:text-[12px] md:text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   toggleFollow(company.id, "interest");
@@ -1592,8 +1573,10 @@ export default function BestPracticesHub() {
                               >
                                 {followLoading[company.id] ? (
                                   <div className="flex items-center">
-                                    <div className="w-3 h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
-                                    Loading...
+                                    <div className="w-2 h-2 sm:w-3 sm:h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
+                                    <span className="hidden xs:inline">
+                                      Loading...
+                                    </span>
                                   </div>
                                 ) : (
                                   "+ Follow"
@@ -1601,7 +1584,7 @@ export default function BestPracticesHub() {
                               </button>
                             ) : (
                               <button
-                                className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-3 sm:px-4 md:px-5 py-1 sm:py-1.5 rounded-full text-white text-[10px] xs:text-[11px] sm:text-[12px] md:text-[13px] font-medium bg-[#F396FF] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   toggleFollow(company.id, "interest");
@@ -1610,8 +1593,10 @@ export default function BestPracticesHub() {
                               >
                                 {followLoading[company.id] ? (
                                   <div className="flex items-center">
-                                    <div className="w-3 h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
-                                    Loading...
+                                    <div className="w-2 h-2 sm:w-3 sm:h-3 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
+                                    <span className="hidden xs:inline">
+                                      Loading...
+                                    </span>
                                   </div>
                                 ) : (
                                   "Following"
@@ -1620,31 +1605,35 @@ export default function BestPracticesHub() {
                             )}
                           </div>
                         </div>
-                        <p className="text-sm font-semibold text-gray-900">
+                        <p className="text-xs sm:text-sm font-semibold text-gray-900 mt-1 sm:mt-0">
                           Overview
                         </p>
 
-                        <p className="text-sm text-gray-600 leading-snug wrap-break-word whitespace-pre-line">
+                        <p className="text-xs sm:text-sm text-gray-600 leading-snug wrap-break-word whitespace-pre-line line-clamp-3 sm:line-clamp-4">
                           <span
                             dangerouslySetInnerHTML={{
                               __html: DOMPurify.sanitize(
                                 expandedDescriptions[company.id]
                                   ? company.description
-                                  : truncateText(company.description, 100)
+                                  : truncateText(
+                                    company.description,
+                                    isMobile ? 80 : 100
+                                  )
                               ),
                             }}
                           />
-                          {company.description.length > 100 && (
-                            <span className="text-purple-600 underline cursor-pointer ml-1">
-                              {expandedDescriptions[company.id]
-                                ? "Read Less"
-                                : "Read More"}
-                            </span>
-                          )}
+                          {company.description.length >
+                            (isMobile ? 80 : 100) && (
+                              <span className="text-purple-600 underline cursor-pointer ml-1 text-xs sm:text-sm">
+                                {expandedDescriptions[company.id]
+                                  ? "Read Less"
+                                  : "Read More"}
+                              </span>
+                            )}
                         </p>
                       </div>
-                      <div className="flex items-end justify-between px-4 py-2 mt-2 text-xs sm:text-sm text-gray-600 ">
-                        <div className="flex items-center space-x-6 mb-2">
+                      <div className="flex items-end justify-between px-3 sm:px-4 py-2 mt-1 sm:mt-2 text-xs text-gray-600">
+                        <div className="flex items-center space-x-4 sm:space-x-6 mb-1 sm:mb-2">
                           <span
                             className="flex items-center gap-1 cursor-pointer"
                             onClick={(e) => {
@@ -1655,46 +1644,48 @@ export default function BestPracticesHub() {
                             <img
                               src={like}
                               alt="Like Icon"
-                              className="w-5 h-5"
+                              className="w-4 h-4 sm:w-5 sm:h-5"
                             />
-                            <span>{company.likesCount || 0}</span>
+                            <span className="text-xs sm:text-sm">
+                              {company.likesCount || 0}
+                            </span>
                           </span>
 
                           <span className="flex items-center gap-1">
                             <img
                               src={comment}
                               alt="Comment Icon"
-                              className="w-5 h-5"
+                              className="w-4 h-4 sm:w-5 sm:h-5"
                             />
-                            <span>{company.commentsCount || 0}</span>
+                            <span className="text-xs sm:text-sm">
+                              {company.commentsCount || 0}
+                            </span>
                           </span>
                         </div>
 
                         <div
-                          className="cursor-pointer mb-2"
+                          className="cursor-pointer mb-1 sm:mb-2"
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleSave(company.id, "interest");
                           }}
                         >
-                          <div className="flex items-center gap-2 cursor-pointer">
+                          <div className="flex items-center gap-1 sm:gap-2 cursor-pointer">
                             <Bookmark
-                              className={`w-5 h-5 transition-all duration-200 ${
-                                saveLoading[company.id] ? "opacity-50" : ""
-                              }`}
+                              className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200 ${saveLoading[company.id] ? "opacity-50" : ""
+                                }`}
                               fill={company.is_saved ? "#72DBF2" : "none"}
                               stroke={company.is_saved ? "#72DBF2" : "#4338CA"}
                             />
                             <span
-                              className={`text-sm font-normal text-gray-700 ${
-                                saveLoading[company.id] ? "opacity-50" : ""
-                              }`}
+                              className={`text-xs sm:text-sm font-normal text-gray-700 ${saveLoading[company.id] ? "opacity-50" : ""
+                                }`}
                             >
                               {saveLoading[company.id]
                                 ? "Saving..."
                                 : company.is_saved
-                                ? "Saved"
-                                : "Save"}
+                                  ? "Saved"
+                                  : "Save"}
                             </span>
                           </div>
                         </div>
@@ -1705,13 +1696,13 @@ export default function BestPracticesHub() {
               })}
             </div>
           ) : (
-            <p className="text-gray-500 py-10 text-center">
+            <p className="text-gray-500 py-8 sm:py-10 text-center text-sm sm:text-base">
               No Best Practices found for Interest.
             </p>
           )}
 
           {paginationInterest.totalPages > 1 && (
-            <div className="mt-6 sm:mt-8">
+            <div className="mt-4 sm:mt-6 md:mt-8">
               <div className="flex justify-center">
                 <nav className="inline-flex rounded-md shadow-sm -space-x-px text-xs sm:text-sm">
                   <button
@@ -1741,11 +1732,10 @@ export default function BestPracticesHub() {
                           )
                         }
                         disabled={isLoading.interest}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          1 === paginationInterest.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === paginationInterest.currentPage
+                          ? "bg-indigo-500 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         1
                       </button>
@@ -1777,11 +1767,10 @@ export default function BestPracticesHub() {
                           )
                         }
                         disabled={isLoading.interest}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                          page === paginationInterest.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === paginationInterest.currentPage
+                          ? "bg-indigo-500 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         {page}
                       </button>
@@ -1791,10 +1780,10 @@ export default function BestPracticesHub() {
                     <>
                       {paginationInterest.currentPage <
                         paginationInterest.totalPages - 2 && (
-                        <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
-                          ...
-                        </span>
-                      )}
+                          <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
+                            ...
+                          </span>
+                        )}
 
                       {paginationInterest.totalPages > 1 && (
                         <button
@@ -1806,12 +1795,11 @@ export default function BestPracticesHub() {
                             )
                           }
                           disabled={isLoading.interest}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
-                            paginationInterest.totalPages ===
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${paginationInterest.totalPages ===
                             paginationInterest.currentPage
-                              ? "bg-indigo-500 text-white"
-                              : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                            }`}
                         >
                           {paginationInterest.totalPages}
                         </button>
@@ -1829,7 +1817,7 @@ export default function BestPracticesHub() {
                     }
                     disabled={
                       paginationInterest.currentPage ===
-                        paginationInterest.totalPages || isLoading.interest
+                      paginationInterest.totalPages || isLoading.interest
                     }
                     className="px-2 sm:px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                   >

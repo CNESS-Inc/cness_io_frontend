@@ -75,6 +75,8 @@ import UserPublicProfile from "../pages/UserPublicProfile";
 import Affiliate from "../pages/Affiliate";
 import ProductDetail from "../pages/ProductDetail";
 import MPSearch from "../pages/MPsearch";
+import TrendingProducts from "../pages/TrendingProducts";
+import NewContents from "../pages/NewContents";
 import AssessmentCertification from "../pages/AssessmentCertifications";
 import AspiringAssessment from "../pages/AspiringAssessment";
 import InspiredAssessment from "../pages/InspiredAssessment";
@@ -289,15 +291,15 @@ export const router = createBrowserRouter([
             path: "directory-profile/:id",
             element: <DirectoryProfile />,
           },
-           {
+          {
             path: "edit-profile",
             element: <EditDirectory />,
           },
-           {
+          {
             path: "my-enquiry",
             element: <MyEnquiry />,
           },
-          
+
           {
             path: "detail-view/:id",
             element: <DetailView />,
@@ -342,6 +344,14 @@ export const router = createBrowserRouter([
           {
             path: "market-place/search",
             element: <MPSearch />, // ← new page
+          },
+          {
+            path: "market-place/trending-products",
+            element: <TrendingProducts />,
+          },
+          {
+            path: "market-place/new-contents",
+            element: <NewContents />,
           },
 
           {
@@ -607,23 +617,23 @@ export const router = createBrowserRouter([
             path: "CreatorGuideline",
             element: <CreatorGuideline />,
           },
-          
+
           {
             path: "Profile/:id?",
             element: <Profile />,
           },
-          
-  {
-  path: "Profile/editprofile",
-  element: <EditProfile />,
-},
+
+          {
+            path: "Profile/editprofile",
+            element: <EditProfile />,
+          },
 
           {
             path: "MyConnection",
             element: <MyConnection />,
           },
-           {
-            path: "Certification",
+          {
+            path: "aspiring-assessment/payment",
             element: <Certification />,
           },
           {
