@@ -1281,8 +1281,8 @@ export function GreetingBar({
                         value={organizationForm.organization_name}
                         onChange={handleOrganizationFormChange}
                         className={`w-full px-3 py-2 border ${organizationErrors.organization_name
-                            ? "border-red-500"
-                            : "border-gray-300"
+                          ? "border-red-500"
+                          : "border-gray-300"
                           } rounded-md`}
                         placeholder="Enter organization name"
                       />
@@ -1303,8 +1303,8 @@ export function GreetingBar({
                         value={organizationForm.domain}
                         onChange={handleOrganizationFormChange}
                         className={`w-full px-3 py-2 border ${organizationErrors.domain
-                            ? "border-red-500"
-                            : "border-gray-300"
+                          ? "border-red-500"
+                          : "border-gray-300"
                           } rounded-md`}
                       >
                         <option value="">Select domain</option>
@@ -1334,8 +1334,8 @@ export function GreetingBar({
                           value={organizationForm.custom_domain || ""}
                           onChange={handleOrganizationFormChange}
                           className={`w-full px-3 py-2 border ${organizationErrors.custom_domain
-                              ? "border-red-500"
-                              : "border-gray-300"
+                            ? "border-red-500"
+                            : "border-gray-300"
                             } rounded-md`}
                           placeholder="Enter your domain name"
                         />
@@ -1476,8 +1476,8 @@ export function GreetingBar({
                                 value={existingAnswer}
                                 onChange={handleOrganizationFormChange}
                                 className={`w-full px-3 py-2 border ${organizationErrors[`question_${question.id}`]
-                                    ? "border-red-500"
-                                    : "border-gray-300"
+                                  ? "border-red-500"
+                                  : "border-gray-300"
                                   } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
@@ -2065,8 +2065,8 @@ export function GreetingBar({
                                 value={existingAnswer}
                                 onChange={handlePersonFormChange}
                                 className={`w-full px-3 py-2 border ${personErrors[`question_${question.id}`]
-                                    ? "border-red-500"
-                                    : "border-gray-300"
+                                  ? "border-red-500"
+                                  : "border-gray-300"
                                   } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
@@ -2700,8 +2700,8 @@ export function CertificationCard({
             {/* Slide 1: Levels */}
             <div
               className={`absolute inset-0 transition-opacity duration-500 ${slide === 0
-                  ? "opacity-100 pointer-events-auto"
-                  : "opacity-0 pointer-events-none"
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
                 }`}
             >
               <div className="text-[16px] sm:text-[18px] font-['Open_Sans'] leading-[100%] text-[#222224] mt-1 sm:mt-2 mb-3 sm:mb-4 px-2 pt-2 sm:pt-5">
@@ -2712,8 +2712,8 @@ export function CertificationCard({
                 {/* Aspiring */}
                 <div
                   className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${activeLevel === "Aspiring" && progress === 0
-                      ? "bg-linear-to-r from-[#7077FE] to-[#F07EFF]"
-                      : "border border-[#E5E7EB] bg-white"
+                    ? "bg-linear-to-r from-[#7077FE] to-[#F07EFF]"
+                    : "border border-[#E5E7EB] bg-white"
                     }`}
                   onClick={() => {
                     if (
@@ -2745,9 +2745,9 @@ export function CertificationCard({
                 {/* Inspired */}
                 <div
                   className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${activeLevel === "Inspired" ||
-                      (activeLevel === "Aspiring" && progress > 0)
-                      ? "bg-linear-to-r from-[#7077FE] to-[#F07EFF]"
-                      : "border border-[#E5E7EB] bg-white"
+                    (activeLevel === "Aspiring" && progress > 0)
+                    ? "bg-linear-to-r from-[#7077FE] to-[#F07EFF]"
+                    : "border border-[#E5E7EB] bg-white"
                     }`}
                   onClick={() => {
                     if (
@@ -2782,8 +2782,8 @@ export function CertificationCard({
                 {/* Leader */}
                 <div
                   className={`w-full h-[120px] sm:h-[150px] rounded-[18px] p-0.5 cursor-pointer ${activeLevel === "Leader"
-                      ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-0.5 before:bg-linear-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
-                      : "border border-[#E5E7EB] bg-white"
+                    ? "border-2 border-transparent bg-clip-padding bg-white relative before:absolute before:inset-0 before:rounded-[18px] before:p-0.5 before:bg-linear-to-r before:from-[#7077FE] before:to-[#F07EFF] before:-z-10"
+                    : "border border-[#E5E7EB] bg-white"
                     }`}
                   onClick={() => {
                     if (activeLevel === "Leader") {
@@ -2810,8 +2810,8 @@ export function CertificationCard({
             {/* Slide 2: Upgrade callout */}
             <div
               className={`absolute inset-0 transition-opacity duration-500 ${slide === 1
-                  ? "opacity-100 pointer-events-auto"
-                  : "opacity-0 pointer-events-none"
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
                 }`}
             >
               <div className="h-full w-full flex items-start">
@@ -3842,16 +3842,17 @@ export function SocialStackCard({
   }>({});
 
   const handleConnect = async (userId: string) => {
+    const id = String(userId);
+
+    const status = getFriendStatus(id);
+
     try {
       setConnectingUsers((prev) => ({ ...prev, [userId]: true }));
 
       // Check if already connected
-      if (friendRequests[userId] === "connected") {
+      if (status === "connected") {
         // If connected, delete friend
-        const formattedData = {
-          friend_id: userId,
-        };
-
+        const formattedData = { friend_id: id };
         const response = await UnFriend(formattedData);
 
         if (response.success) {
@@ -3865,19 +3866,31 @@ export function SocialStackCard({
             duration: 3000,
           });
         }
-      } else {
+      } else if (status === "requested") {
         // If not connected, send friend request
-        const formattedData = {
-          friend_id: userId,
-        };
+        const formattedData = { friend_id: id };
+        const response = await RejectFriendRequest(formattedData);
 
+        if (response.success) {
+          setFriendRequests((prev) => ({
+            ...prev,
+            [id]: "connect",
+          }));
+          showToast({
+            message: "Friend request cancelled",
+            type: "success",
+            duration: 3000,
+          });
+        }
+      } else {
+        // status === "connect" (default) 👉 SEND FRIEND REQUEST
+        const formattedData = { friend_id: id };
         const response = await SendFriendRequest(formattedData);
 
         if (response.success) {
-          // Immediately update the button state to "requested"
           setFriendRequests((prev) => ({
             ...prev,
-            [userId]: "requested",
+            [id]: "requested",
           }));
           showToast({
             message:
@@ -3887,7 +3900,8 @@ export function SocialStackCard({
           });
         }
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error("Error handling connect:", error);
       showToast({
         message: "Something went wrong. Please try again.",
@@ -3899,8 +3913,8 @@ export function SocialStackCard({
     }
   };
 
-  const getFriendStatus = (userId: string) => {
-    return friendRequests[userId] || "connect";
+  const getFriendStatus = (userId: string | number) => {
+    return friendRequests[String(userId)] || "connect";
   };
 
   const handleAcceptRequest = async (userId: string) => {
@@ -4246,13 +4260,11 @@ export function SocialStackCard({
                 {tab === "Suggested" ? (
                   <button
                     onClick={() => handleConnect(f.id)}
-                    disabled={connectingUsers[f.id] || false}
+                    disabled={connectingUsers[f.id]}
                     className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px]
-                    ${getFriendStatus(f.id) === "connected"
+                      ${["connected", "requested"].includes(getFriendStatus(f.id))
                         ? "bg-gray-400 text-white cursor-not-allowed"
-                        : getFriendStatus(f.id) === "requested"
-                          ? "bg-gray-400 text-white cursor-not-allowed"
-                          : "bg-white text-black shadow-md"
+                        : "bg-white text-black shadow-md"
                       }`}
                   >
                     <span className="flex items-center gap-2 text-[#0B3449]">
@@ -4628,8 +4640,8 @@ export function MarketplaceCard({
         {/* Slide 1: Suggested Products */}
         <div
           className={`absolute inset-0 transition-opacity duration-500 ${slideIndex === 0
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
             }`}
         >
           {renderTopRatedProductSection(topRated, "Top Rated Products")}
@@ -4637,8 +4649,8 @@ export function MarketplaceCard({
 
         <div
           className={`absolute inset-0 transition-opacity duration-500 ${slideIndex === 1
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
             }`}
         >
           {renderCartProductSection(carted, "Your Cart")}
@@ -4646,8 +4658,8 @@ export function MarketplaceCard({
 
         <div
           className={`absolute inset-0 transition-opacity duration-500 ${slideIndex === 2
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
             }`}
         >
           {renderProductSection(suggested, "Featured Products")}

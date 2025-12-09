@@ -5,7 +5,7 @@ import socialmedia from "../../../assets/socialmedia.svg";
 import frame from "../../../assets/bg-frame.png";
 import cness from "../../../assets/cness.png";
 import Button from "../../ui/Button";
-import { getUserBadgeDetails } from "../../../Common/ServerAPI";
+import { AddPost, getUserBadgeDetails } from "../../../Common/ServerAPI";
 import indv_aspiring from "../../../assets/indv_aspiring.svg";
 import indv_inspired from "../../../assets/indv_inspired.svg";
 import indv_leader from "../../../assets/indv_leader.svg";
@@ -25,6 +25,8 @@ import {
   WhatsappShareButton,
   TwitterShareButton,
 } from "react-share";
+import { useToast } from "../../ui/Toast/ToastProvider";
+import { useNavigate } from "react-router-dom";
 
 export default function ShareModal({
   isOpen,
@@ -33,6 +35,10 @@ export default function ShareModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  const { showToast } = useToast();
+  const navigate = useNavigate();
+
+  const [isCnessPosting, setIsCnessPosting] = useState(false);
   const [activeTab, setActiveTab] = useState<"tab1" | "tab2" | "tab3">("tab1");
   const [activeButton, setActiveButton] = useState<"btn1" | "btn2" | "btn3">(
     "btn1"
@@ -44,6 +50,7 @@ export default function ShareModal({
   const [staticImageURL, setStaticImageURL] = useState<string>("");
   const [copied, setCopied] = useState(false);
 
+  const [certificationLevel, setCertificationLevel] = useState("");
   const [selectedFormat, setSelectedFormat] = useState("");
   const [selectedRatio, setSelectedRatio] = useState("");
   const [logoScale, setLogoScale] = useState(100);
@@ -57,6 +64,7 @@ export default function ShareModal({
     try {
       const res = await getUserBadgeDetails();
       const level = res.data.data.level;
+      setCertificationLevel(res.data.data.slug);
 
       // Set image based on user level
       switch (level.toLowerCase()) {
@@ -137,8 +145,8 @@ export default function ShareModal({
     activeButton === "btn1"
       ? embedCodes[0]
       : activeButton === "btn2"
-      ? embedCodes[1]
-      : embedCodes[2];
+        ? embedCodes[1]
+        : embedCodes[2];
 
   const handleCopy = async () => {
     try {
@@ -168,6 +176,126 @@ export default function ShareModal({
       icon: socialmedia,
     },
   ];
+
+  const generateBadgeFile = async (): Promise<File> => {
+    return new Promise<File>((resolve, reject) => {
+      // 1. Create a canvas (fixed 1080x1080 square for social)
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1080;
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        return reject(new Error("Failed to create canvas context"));
+      }
+
+      // White background so it looks clean
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 2. Load the badge image (your SVG or whatever staticImageURL points to)
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = staticImageURL;
+
+      img.onload = () => {
+        // Keep aspect ratio, fit into 80% of canvas
+        const maxSize = canvas.width * 0.8; // 80% of width/height
+        const scale = Math.min(maxSize / img.width, maxSize / img.height);
+
+        const drawWidth = img.width * scale;
+        const drawHeight = img.height * scale;
+
+        const x = (canvas.width - drawWidth) / 2;
+        const y = (canvas.height - drawHeight) / 2;
+
+        ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+        // 3. Export as PNG blob
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            return reject(new Error("Failed to create badge image blob"));
+          }
+
+          // 4. Wrap in a File so it behaves just like the upload in CreatePostModal
+          const file = new File([blob], "cness-badge.png", {
+            type: "image/png",
+          });
+          resolve(file);
+        }, "image/png");
+      };
+
+      img.onerror = () => {
+        reject(new Error("Failed to load badge image"));
+      };
+    });
+  };
+
+  const handleShareToCness = async () => {
+    if (!staticImageURL) {
+      showToast({
+        message: "Unable to find your badge image. Please try again.",
+        type: "error",
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      setIsCnessPosting(true);
+
+      const badgeFile = await generateBadgeFile();
+
+      const level =
+        certificationLevel === "aspiring"
+          ? "AspiredCertification"
+          : certificationLevel === "inspired"
+            ? "InspiredCertification"
+            : certificationLevel === "leader"
+              ? "LeaderCertification"
+              : "";
+
+      const formData = new FormData();
+      formData.append(
+        "content",
+        `I just earned my CNESS badge! 🎉 #CNESS #${level}`
+      );
+      formData.append("file", badgeFile);
+
+      const response = await AddPost(formData);
+
+      if (response?.data?.data) {
+        showToast({
+          message: "Shared your badge to CNESS successfully!",
+          type: "success",
+          duration: 3000,
+        });
+
+        // Close the share modal
+        onClose();
+
+        navigate("/dashboard/feed");
+      } else {
+        showToast({
+          message: "Something went wrong while sharing your badge.",
+          type: "error",
+          duration: 4000,
+        });
+      }
+    } catch (error: any) {
+      console.error("Failed to share badge to CNESS:", error);
+      showToast({
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to share your badge. Please try again.",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsCnessPosting(false);
+    }
+  };
+
 
   const buttons = [
     { id: "btn1", label: "Iframe Embed Code" },
@@ -359,12 +487,10 @@ export default function ShareModal({
             svgCtx.drawImage(logoImg, x, y, finalWidth, finalHeight);
 
             const svgContent = `
-              <svg xmlns="http://www.w3.org/2000/svg" width="${
-                ratio.width
+              <svg xmlns="http://www.w3.org/2000/svg" width="${ratio.width
               }" height="${ratio.height}">
-                <image href="${svgCanvas.toDataURL("image/png")}" width="${
-              ratio.width
-            }" height="${ratio.height}"/>
+                <image href="${svgCanvas.toDataURL("image/png")}" width="${ratio.width
+              }" height="${ratio.height}"/>
               </svg>
             `;
             const svgBlob = new Blob([svgContent], { type: "image/svg+xml" });
@@ -456,11 +582,10 @@ export default function ShareModal({
                     setActiveTab(tab.id as "tab1" | "tab2" | "tab3")
                   }
                   className={`flex items-center py-2 px-3 gap-3 rounded-xl transition-all duration-200 whitespace-nowrap
-                   ${
-                     activeTab === tab.id
-                       ? "bg-[#FAFAFA]"
-                       : "bg-white hover:bg-[#FAFAFA]"
-                   }`}
+                   ${activeTab === tab.id
+                      ? "bg-[#FAFAFA]"
+                      : "bg-white hover:bg-[#FAFAFA]"
+                    }`}
                 >
                   <img
                     src={tab.icon}
@@ -488,11 +613,10 @@ export default function ShareModal({
                         setActiveButton(btn.id as "btn1" | "btn2" | "btn3")
                       }
                       className={`relative flex items-center justify-center p-3 rounded-lg bg-[#FAFAFA4D] transition-all duration-200 whitespace-nowrap
-                   ${
-                     activeButton === btn.id
-                       ? "shadow-[0_0_10px_0_rgba(0,0,0,0.1)]"
-                       : "bg-white hover:bg-[#FAFAFA]"
-                   }`}
+                   ${activeButton === btn.id
+                          ? "shadow-[0_0_10px_0_rgba(0,0,0,0.1)]"
+                          : "bg-white hover:bg-[#FAFAFA]"
+                        }`}
                     >
                       <p className="text-sm font-medium text-[#0D0D12] font-['Poppins',Helvetica]">
                         {btn.label}
@@ -521,11 +645,10 @@ export default function ShareModal({
                     />
                     <span
                       className={`w-4 h-4 flex items-center justify-center border border-[#D0D5DD] rounded-sm transition-all
-          ${
-            checked
-              ? "border-[#E1056D] bg-[#E1056D]"
-              : "border-gray-300 bg-white"
-          } shadow-[0_0_2px_0_rgba(0,0,0,0.1)]`}
+          ${checked
+                          ? "border-[#E1056D] bg-[#E1056D]"
+                          : "border-gray-300 bg-white"
+                        } shadow-[0_0_2px_0_rgba(0,0,0,0.1)]`}
                     >
                       {checked && (
                         <svg
@@ -737,13 +860,19 @@ export default function ShareModal({
                     <li>
                       <button
                         key={"cness"}
-                        className="p-2.5 flex gap-3 items-center justify-center"
+                        onClick={handleShareToCness}
+                        disabled={isCnessPosting}
+                        className="p-2.5 flex gap-3 items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Share your badge on CNESS"
                       >
                         <img
                           src={cness}
                           alt={"cness"}
                           className="w-8 h-8 object-contain"
                         />
+                        {isCnessPosting && (
+                          <span className="ml-1 text-xs text-gray-500">Posting…</span>
+                        )}
                       </button>
                     </li>
                     {socialMedia.map((media) => {

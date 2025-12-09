@@ -102,7 +102,7 @@ const Certification: React.FC = () => {
 
   const yearlyPrice = yearlyPlan?.yearlyPrice || "";
   const originalYearlyPrice = yearlyPlan?.originalYearlyPrice || "";
-  const monthlyPrice = monthlyPlan?.monthlyPrice || "$9";
+  const monthlyPrice = monthlyPlan?.monthlyPrice || "";
 
   return (
     <div className="min-h-screen bg-[#F5F6FB] flex flex-col">
