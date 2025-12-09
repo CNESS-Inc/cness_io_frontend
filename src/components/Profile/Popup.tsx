@@ -428,7 +428,7 @@ const PostPopup: React.FC<PopupProps> = ({
                 <SharePopup
                   isOpen={true}
                   onClose={() => setShowSharePopup(false)}
-                  url={buildShareUrl(urldata)}
+                  url={`${window.location.origin}/post/${post.id}`}
                 />
               </div>
             )}
