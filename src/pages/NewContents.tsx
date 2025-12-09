@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Sparkles, X } from "lucide-react";
 import ProductCard from "../components/MarketPlace/ProductCard";
@@ -16,7 +16,6 @@ const NewContents = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [hasMore, setHasMore] = useState(false);
 
   const [filters, setFilters] = useState({
@@ -54,7 +53,6 @@ const NewContents = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         console.log('NewContents - Has more:', pagination.current_page < pagination.total_pages);
 
         setProducts(productsData);
-        setTotalPages(pagination.total_pages || 1);
         setHasMore(pagination.current_page < pagination.total_pages);
       } catch (error: any) {
         showToast({
