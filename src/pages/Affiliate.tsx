@@ -86,7 +86,6 @@ export default function Affiliate() {
   const [referreEarning, setReferreEarning] = useState<string>("0");
   const [pendingAmount, setPendingAmount] = useState<string>("0");
   const [referredUsers, setReferredUsers] = useState<ReferredUser[]>([]);
-  console.log('referredUsers', referredUsers)
   const [paymentMethodsList, setPaymentMethodsList] = useState<any[]>([]);
   const [editMethodId, setEditMethodId] = useState<string | null>(null);
   const [editInitialData, setEditInitialData] = useState<any | null>(null);
@@ -686,7 +685,6 @@ Share CNESS with others and enjoy a 10% reward
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {paymentMethodsList.map((method) => {
-                  console.log('method', method)
                   const isSelected = method.id === selectedId;
                   return (
                     <div
