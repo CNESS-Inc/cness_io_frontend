@@ -169,7 +169,7 @@ if (item.id === "directory") {
       children: [
         { label: "Feed", path: "/dashboard/feed" },
         { label: "Profile", path: "/dashboard/Profile" },
-        { label: "Certification", path: "/dashboard/Certification" },
+        // { label: "Certification", path: "/dashboard/Certification" },
         { label: "Connections", path: "/dashboard/MyConnection" },
       ],
     },

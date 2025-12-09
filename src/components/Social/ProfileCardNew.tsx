@@ -193,7 +193,7 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
           <div className="relative w-[120px] h-20 shrink-0 flex items-center">
             {/* Badge image (background) - you can update this with actual badge logic */}
 
-            <div className="absolute top-[50%] translate-y-[-50%] right-1.5 w-[70px] h-[70px] object-contain z-0 border-[1px] flex justify-center items-center border-gray-400 rounded-full">
+            <div className="absolute top-[50%] translate-y-[-50%] right-1.5 w-[70px] h-[70px] object-contain z-0 border flex justify-center items-center border-gray-400 rounded-full">
             <img
               src={badgeImg}
               alt="Badge"
@@ -205,7 +205,7 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
 
             {/* Profile image (front) */}
             <img
-              src={profileImage}
+              src={profileImage ? profileImage : "/profile.png"}
               alt="Profile"
               className="w-[75px] h-[75px] rounded-full object-cover border-2 border-white z-10"
             />

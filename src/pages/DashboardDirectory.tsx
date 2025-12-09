@@ -51,10 +51,13 @@ export default function DashboardDirectory() {
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [, setSelectedDomainText] = useState("");
   const [, setTextWidth] = useState(0);
-  const [Domain, setDomain] = useState<Array<{ id: string | number; title: string }>>([]);
+  const [Domain, setDomain] = useState<
+    Array<{ id: string | number; title: string }>
+  >([]);
   const [badge, setBadge] = useState<any>([]);
   const measureRef = useRef<HTMLSpanElement>(null);
   const hasFetched = useRef(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   type Filter = "" | "popular" | "aspiring" | "inspired";
   const [selected, setSelected] = useState<Filter>(""); // All
@@ -94,6 +97,18 @@ export default function DashboardDirectory() {
   console.log("🚀 ~ DashboardDirectory ~ popularCompanies:", popularCompanies);
   const [aspiringCompanies, setAspiringCompanies] = useState<Company[]>([]);
   const [inspiringCompanies, setInspiringCompanies] = useState<Company[]>([]);
+
+  // Check for mobile screen
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!measureRef.current) return;
@@ -401,85 +416,93 @@ export default function DashboardDirectory() {
 
   return (
     <>
-      <div className="px-2 sm:px-2 lg:px-1">
-<section className="relative h-auto max-w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 flex items-center justify-center">
+      <div className="px-4 sm:px-6 lg:px-1">
+        {/* Hero Section - Mobile Optimized */}
+        <section className="relative h-auto max-w-full sm:h-[350px] md:h-[400px] lg:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 sm:mt-4 flex items-center justify-center">
+          {/* Background Image Full Fit */}
+          <img
+            src="https://cdn.cness.io/Directory%20(1).svg"
+            alt="City Skyline"
+            className="absolute w-full h-full object-cover z-0 pointer-events-none"
+          />
 
-  {/* Background Image Full Fit */}
-  <img
-    src="https://cdn.cness.io/Directory%20(1).svg"
-    alt="City Skyline"
-    className="absolute w-full h-full object-cover z-0 pointer-events-none"
-  />
+          {/* CENTER CONTENT - Mobile Responsive */}
+          <div className="relative z-10 max-w-7xl pb-8 sm:pb-10 text-center flex-col items-center justify-center px-4 sm:px-6">
+            <h1
+              className="text-center font-[poppins] font-semibold mb-4 sm:mb-6
+                text-2xl sm:text-3xl md:text-[32px] leading-[1.3] sm:leading-[1.4]
+                bg-linear-to-b from-[#4E4E4E] to-[#232323] 
+                bg-clip-text text-transparent"
+            >
+              Connect with professionals and
+              {!isMobile && <br />}
+              like-minded individuals.
+            </h1>
 
-  {/* CENTER CONTENT - DO NOT TOUCH INSIDE */}
-  <div className="relative z-10 max-w-7xl pb-10 text-center flex-col items-center justify-center">
+            {/* Search Bar Wrapper - Mobile Responsive */}
+            <div className="w-full flex justify-center mb-4 sm:mb-6">
+              <div
+                className="w-full bg-white rounded-full sm:rounded-full shadow-[0_10px_30px_rgba(112,119,254,0.15)] 
+                  flex flex-col sm:flex-row items-stretch sm:items-center p-3 sm:p-0 sm:pl-5 h-auto sm:h-14 max-w-[650px]
+                  border sm:border-0 justify-between"
+              >
+                <div className="flex items-center py-3 sm:py-0">
+                  <span className="text-[#7077FE] mr-3 text-lg">
+                    <CiSearch />
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Search Best Practice"
+                    className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none
+                      w-full sm:w-auto"
+                    value={searchQuery || ""}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                  />
+                </div>
 
-    <h1 className="text-center font-[poppins] font-semibold mb-6 
-      text-[32px] leading-[1.3] bg-linear-to-b from-[#4E4E4E] to-[#232323] 
-      bg-clip-text text-transparent">
-      Connect with professionals and<br />
-      like-minded individuals.
-    </h1>
+                {/* Dropdown - Mobile Responsive */}
+                <div className="relative shrink-0 border-t sm:border-t-0 sm:border-l border-gray-200 sm:border-gray-300 rounded-full">
+                  <select
+                    className="bg-[#6340FF] text-white font-semibold rounded-full sm:rounded-full h-12 px-4 sm:px-6 pr-10 text-sm appearance-none 
+                      focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]
+                      w-full sm:w-auto roun"
+                    value={selectedDomain}
+                    onChange={(e) => {
+                      setSelectedDomain(e.target.value);
+                      const selectedText =
+                        e.target.options[e.target.selectedIndex].text;
+                      setSelectedDomainText(selectedText);
+                    }}
+                  >
+                    <option value="">Professions</option>
+                    {Domain.map((domain) => (
+                      <option key={domain.id} value={domain.id}>
+                        {isMobile && domain.title.length > 20 
+                          ? `${domain.title.substring(0, 20)}...` 
+                          : domain.title}
+                      </option>
+                    ))}
+                  </select>
 
-    {/* Search Bar Wrapper */}
-    <div className="w-full flex justify-center mb-4">
-      <div className="w-full bg-white rounded-full shadow-[0_10px_30px_rgba(112,119,254,0.15)] 
-        flex items-center pl-5 h-14 max-w-[650px]">
+                  <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white text-xs">
+                    ▼
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <span className="text-[#7077FE] mr-3 text-lg">
-          <CiSearch />
-        </span>
-
-        <input
-          type="text"
-          placeholder="Search Best Practice"
-          className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none"
-          value={searchQuery || ""}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={handleKeyPress}
-        />
-
-        {/* Dropdown */}
-        <div className="relative shrink-0">
-          <select
-            className="bg-[#6340FF] text-white font-semibold rounded-full h-12 px-6 pr-1 text-sm appearance-none 
-              focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]"
-            value={selectedDomain}
-            onChange={(e) => {
-              setSelectedDomain(e.target.value);
-              const selectedText = e.target.options[e.target.selectedIndex].text;
-              setSelectedDomainText(selectedText);
-            }}
-          >
-            <option value="">Professions</option>
-            {Domain.map((domain) => (
-              <option key={domain.id} value={domain.id}>
-                {domain.title}
-              </option>
-            ))}
-          </select>
-
-          <div className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-white text-xs">
-            ▼
+            <p className="text-xs sm:text-sm text-[#6340FF] font-semibold">
+              Connect with conscious audience
+            </p>
           </div>
-        </div>
-
-      </div>
-    </div>
-
-    <p className="text-xs text-[#6340FF] font-[600] md:text-sm ">
-      Connect with conscious audience
-    </p>
-
-  </div>
-</section>
-
-
+        </section>
       </div>
 
-      <section className="py-6 px-1 bg-[#f9f9f9] border-t border-gray-100 ">
-        <div className="w-full mx-auto flex items-center">
-          <h2 className="font-['Poppins'] text-xl font-semibold">
+      {/* Filter Section - Mobile Responsive */}
+      <section className="py-4 sm:py-6 px-4 sm:px-1 bg-[#f9f9f9] border-t border-gray-100">
+        <div className="w-full mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0">
+          <h2 className="font-['Poppins'] text-lg sm:text-xl font-semibold">
             {selected === "popular"
               ? "Leader Board"
               : selected === "aspiring"
@@ -488,33 +511,31 @@ export default function DashboardDirectory() {
               ? "Inspired People"
               : "All People"}
           </h2>
-          {/*<button className="p-2 rounded-lg hover:bg-gray-100 transition ml-335">
-      <Filter className="h-5 w-5 text-gray-300" />
-    </button>*/}
+          
           <CompanyFilters
             options={badge}
             selected={selected}
             setSelected={setSelected as any}
             order={order}
             setOrder={setOrder}
-            ClassName="ml-auto"
+            ClassName="sm:ml-auto w-full sm:w-auto"
             searchQuery={searchQuery}
             selectedDomain={selectedDomain}
           />
         </div>
       </section>
 
-      {/* Popular Companies Section */}
+      {/* Companies List - Mobile Responsive */}
       {activeList ? (
-        <section className="py-6 border-t border-gray-100">
+        <section className="py-4 sm:py-6 border-t border-gray-100 px-4 sm:px-1">
           <div className="w-full mx-auto">
             {activeList.loading ? (
-              <div className="flex justify-center py-10">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+              <div className="flex justify-center py-8 sm:py-10">
+                <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-t-2 border-b-2 border-indigo-500"></div>
               </div>
             ) : activeList.list.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                   {activeList.list.map((company) => {
                     return (
                       <CompanyCard
@@ -540,35 +561,31 @@ export default function DashboardDirectory() {
                   })}
                 </div>
 
-                <Pagination
-                  pagination={activeList.pagination}
-                  isLoading={activeList.loading}
-                  onPageChange={activeList.onPage}
-                  align="end"
-                />
+                <div className="mt-6 sm:mt-8">
+                  <Pagination
+                    pagination={activeList.pagination}
+                    isLoading={activeList.loading}
+                    onPageChange={activeList.onPage}
+                  />
+                </div>
               </>
             ) : (
-              <p className="text-gray-500">No results found.</p>
+              <p className="text-gray-500 text-center py-8 sm:py-10">No results found.</p>
             )}
           </div>
         </section>
       ) : (
         <>
-          <section className="py-12 px-1 bg-[#f9f9f9] border-t border-gray-100 pt-2">
+          <section className="py-8 sm:py-12 px-4 sm:px-1 bg-[#f9f9f9] border-t border-gray-100">
             <div className="w-full mx-auto">
-              {/* <h3 className="text-lg font-semibold mb-4">Popular People</h3> */}
               {isLoading.public ? (
-                <div className="flex justify-center py-10">
-                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500"></div>
+                <div className="flex justify-center py-8 sm:py-10">
+                  <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-t-2 border-b-2 border-indigo-500"></div>
                 </div>
               ) : popularCompanies.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                     {sortByName(popularCompanies).map((company) => {
-                      console.log(
-                        "🚀 ~ DashboardDirectory ~ company:",
-                        company
-                      );
                       return (
                         <CompanyCard
                           id={company.id}
@@ -592,15 +609,16 @@ export default function DashboardDirectory() {
                       );
                     })}
                   </div>
-                  <Pagination
-                    pagination={popularPagination}
-                    isLoading={isLoading.popular}
-                    onPageChange={fetchPopularCompany}
-                    align="end"
-                  />
+                  <div className="mt-6 sm:mt-8">
+                    <Pagination
+                      pagination={popularPagination}
+                      isLoading={isLoading.popular}
+                      onPageChange={fetchPopularCompany}
+                    />
+                  </div>
                 </>
               ) : (
-                <p className="text-gray-500">No popular people found.</p>
+                <p className="text-gray-500 text-center py-8 sm:py-10">No popular people found.</p>
               )}
             </div>
           </section>
