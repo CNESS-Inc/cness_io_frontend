@@ -1065,16 +1065,16 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           onClick={handleCloseFeelingPopup}
         >
           <div
-            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-2xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
-            <div className="flex items-center justify-between px-6 py-5 bg-[#897AFF1A]">
+            <div className="flex items-center justify-between px-4 py-3 bg-[#897AFF1A]">
               <button
                 onClick={handleCloseFeelingPopup}
-                className="w-10 h-10 rounded-full bg-gray-100/80 hover:bg-gray-200/80 flex items-center justify-center transition-all"
+                className="w-[21px] h-[21px] rounded-full bg-[#6D6D6D] flex items-center justify-center transition-all"
               >
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
@@ -1083,7 +1083,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
             </div>
 
             {/* Search Bar */}
-            <div className="px-6 pt-6 pb-4">
+            <div className="px-4 pt-4 pb-4">
               <div className="relative">
                 <svg
                   className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
@@ -1098,7 +1098,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                   placeholder="Search"
                   value={feelingSearchQuery}
                   onChange={(e) => setFeelingSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
+                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
                   autoFocus
                 />
               </div>
@@ -1107,20 +1107,20 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
             {/* Emoji Grid - Two Column Layout */}
             <div className="px-6 pb-6 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
               {filteredFeelings.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-1">
                   {filteredFeelings.map((feel) => {
                     const isSelected = feeling === feel.label;
                     return (
                       <button
                         key={feel.label}
                         onClick={() => handleSelectFeeling(feel.label, feel.emoji)}
-                        className={`flex items-center gap-3 px-4 py-4 rounded-3xl transition-all duration-200 ${
+                        className={`flex items-center gap-3 px-2 py-2 rounded-2xl transition-all duration-200 ${
                           isSelected
                             ? "bg-[#7077FE]/8 shadow-sm ring-2 ring-[#7077FE]/30"
                             : "bg-white/60 hover:bg-white/90 hover:shadow-sm"
                         }`}
                       >
-                        <div className="shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                        <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                           <span className="text-2xl">{feel.emoji}</span>
                         </div>
                       <div className="flex-1 text-left min-w-0">
@@ -1163,16 +1163,16 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           onClick={handleCloseLocationPopup}
         >
           <div
-            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-2xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
-            <div className="flex items-center justify-between px-6 py-5 bg-[#897AFF1A]">
+            <div className="flex items-center justify-between px-4 py-3 bg-[#897AFF1A]">
               <button
                 onClick={handleCloseLocationPopup}
-                className="w-10 h-10 rounded-full bg-gray-100/80 hover:bg-gray-200/80 flex items-center justify-center transition-all"
+                className="w-[21px] h-[21px] rounded-full bg-[#6D6D6D] flex items-center justify-center transition-all"
               >
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
@@ -1181,7 +1181,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
             </div>
 
             {/* Search Bar */}
-            <div className="px-6 pt-6 pb-4">
+            <div className="px-4 pt-4 pb-4">
               <div className="relative">
                 <svg
                   className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
@@ -1196,7 +1196,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                   placeholder="Search"
                   value={locationSearchQuery}
                   onChange={(e) => setLocationSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
+                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
                   autoFocus
                 />
               </div>
@@ -1212,7 +1212,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                       <button
                         key={country.id}
                         onClick={() => handleSelectLocation(country)}
-                        className={`w-full flex items-center gap-4 px-4 py-4 rounded-3xl transition-all duration-200 ${
+                        className={`w-full flex items-center gap-4 px-2 py-2 rounded-2xl transition-all duration-200 ${
                           isSelected
                             ? "bg-[#7077FE]/8 shadow-sm ring-2 ring-[#7077FE]/30"
                             : "bg-white/60 hover:bg-white/90 hover:shadow-sm"
@@ -1280,16 +1280,16 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           onClick={handleCloseTagPopup}
         >
           <div
-            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-2xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
-            <div className="flex items-center justify-between px-6 py-5 bg-[#897AFF1A]">
+            <div className="flex items-center justify-between px-4 py-3 bg-[#897AFF1A]">
               <button
                 onClick={handleCloseTagPopup}
-                className="w-10 h-10 rounded-full bg-gray-100/80 hover:bg-gray-200/80 flex items-center justify-center transition-all"
+                className="w-[21px] h-[21px] rounded-full bg-[#6D6D6D] flex items-center justify-center transition-all"
               >
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
@@ -1298,7 +1298,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
             </div>
 
             {/* Search Bar with Done Button */}
-            <div className="px-6 pt-6 pb-4">
+            <div className="px-4 pt-5 pb-4">
               <div className="flex items-center gap-3">
                 <div className="flex-1 relative">
                   <svg
@@ -1314,14 +1314,14 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                     placeholder="Search"
                     value={friendSearchQuery}
                     onChange={(e) => setFriendSearchQuery(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
+                    className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
                     autoFocus
                   />
                 </div>
                 <button
                   onClick={handleConfirmTags}
-                  disabled={selectedFriends.length === 0}
-                  className="px-6 py-3 bg-[#7077FE] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#7077FE]/25 hover:shadow-xl hover:shadow-[#7077FE]/30 hover:bg-[#5b63e6] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  // disabled={selectedFriends.length === 0}
+                  className="px-6 py-2.5 bg-[#7077FE] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#7077FE]/25 hover:shadow-xl hover:shadow-[#7077FE]/30 hover:bg-[#5b63e6] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Done
                 </button>
@@ -1361,7 +1361,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                       <button
                         key={friend.id}
                         onClick={() => handleToggleFriend(friend)}
-                        className={`w-full flex items-center gap-4 px-4 py-4 rounded-3xl transition-all duration-200 ${
+                        className={`w-full flex items-center gap-4 px-2 py-2 rounded-2xl transition-all duration-200 ${
                           isSelected
                             ? "bg-[#7077FE]/8 shadow-sm"
                             : "bg-white/60 hover:bg-white/90 hover:shadow-sm"

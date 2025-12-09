@@ -1,13 +1,32 @@
-import React, { useEffect } from 'react'
-import { useState, useRef } from 'react';
-import { CirclePlus, Trash2, Star, Pencil } from 'lucide-react';
+import React, { useEffect } from "react";
+import { useState, useRef } from "react";
+import { CirclePlus, Star, SquarePen } from "lucide-react";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
-import { CreateOrUpdateBasicInfo, GetBasicInfoDetails, GetServiceDetails, GetCountryDetails, UploadDirectoryLogo, UploadDirectoryPhotos, ChangeDirectoryPhoto, DeleteDirectoryPhoto, UpdateBusinessHours, GetAllDirectoryReviews, CreateDirectoryReviewReply, GetDirectoryReviewReplies, LikeDirectoryReview, LikeDirectoryReviewReply, UpdateDirectoryReviewReply, DeleteDirectoryReviewReply, CreateOrUpdateDirectoryReview } from '../Common/ServerAPI';
-import { useToast } from '../components/ui/Toast/ToastProvider';
-import { useForm, Controller } from 'react-hook-form';
+import {
+  CreateOrUpdateBasicInfo,
+  GetBasicInfoDetails,
+  GetServiceDetails,
+  GetCountryDetails,
+  UploadDirectoryLogo,
+  UploadDirectoryPhotos,
+  ChangeDirectoryPhoto,
+  // DeleteDirectoryPhoto,
+  UpdateBusinessHours,
+  GetAllDirectoryReviews,
+  CreateDirectoryReviewReply,
+  GetDirectoryReviewReplies,
+  LikeDirectoryReview,
+  LikeDirectoryReviewReply,
+  UpdateDirectoryReviewReply,
+  DeleteDirectoryReviewReply,
+  CreateOrUpdateDirectoryReview,
+} from "../Common/ServerAPI";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import CreatableSelect from "react-select/creatable";
 
 interface DayType {
   name: string;
@@ -39,94 +58,143 @@ interface DirectoryFormData {
   photos?: FileList | null;
 }
 
-
 const EditDirectory: React.FC = () => {
-
   const [serviceData, setServiceData] = useState<any>(null);
   const [countryData, setCountryData] = useState<any[]>([]);
-  const [serviceInput, setServiceInput] = useState("");
-  const [showCustomInput, setShowCustomInput] = useState(false);
   const [phoneDialCode, setPhoneDialCode] = useState<string>("");
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [logoPreview, setLogoPreview] = useState<string>("");
   const [isUploadingLogo, setIsUploadingLogo] = useState<boolean>(false);
-  const [photos, setPhotos] = useState<Array<{ id: string; file: string; file_type: string }>>([]);
+  const [photos, setPhotos] = useState<
+    Array<{ id: string; file: string; file_type: string }>
+  >([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState<boolean>(false);
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
-  const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
+  const [deletingPhotoId] = useState<string | null>(null);
   const [directoryInfoId, setDirectoryInfoId] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
 
   // Review states
   const [reviews, setReviews] = useState<any[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
-  const [reviewsPagination, setReviewsPagination] = useState({ pageNo: 1, hasMore: true, loadingMore: false });
-  const [openReplyInputs, setOpenReplyInputs] = useState<Set<string>>(new Set());
+  const [reviewsPagination, setReviewsPagination] = useState({
+    pageNo: 1,
+    hasMore: true,
+    loadingMore: false,
+  });
+  const [openReplyInputs, setOpenReplyInputs] = useState<Set<string>>(
+    new Set()
+  );
   const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
-  const [submittingReply, setSubmittingReply] = useState<Record<string, boolean>>({});
+  const [submittingReply, setSubmittingReply] = useState<
+    Record<string, boolean>
+  >({});
   const [childReviews, setChildReviews] = useState<Record<string, any[]>>({});
-  const [loadingChildReviews, setLoadingChildReviews] = useState<Record<string, boolean>>({});
+  const [loadingChildReviews, setLoadingChildReviews] = useState<
+    Record<string, boolean>
+  >({});
   const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
-  const [editReplyTexts, setEditReplyTexts] = useState<Record<string, string>>({});
-  const [submittingEditReply, setSubmittingEditReply] = useState<Record<string, boolean>>({});
-  const [deletingReply, setDeletingReply] = useState<Record<string, boolean>>({});
-  const [pagination, setPagination] = useState<Record<string, { pageNo: number; hasMore: boolean; loadingMore: boolean }>>({});
+  const [editReplyTexts, setEditReplyTexts] = useState<Record<string, string>>(
+    {}
+  );
+  const [submittingEditReply, setSubmittingEditReply] = useState<
+    Record<string, boolean>
+  >({});
+  const [deletingReply, setDeletingReply] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [pagination, setPagination] = useState<
+    Record<string, { pageNo: number; hasMore: boolean; loadingMore: boolean }>
+  >({});
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
-  const [editReviewText, setEditReviewText] = useState<Record<string, string>>({});
-  const [editReviewRating, setEditReviewRating] = useState<Record<string, number>>({});
-  const [submittingEditReview, setSubmittingEditReview] = useState<Record<string, boolean>>({});
+  const [editReviewText, setEditReviewText] = useState<Record<string, string>>(
+    {}
+  );
+  const [editReviewRating, setEditReviewRating] = useState<
+    Record<string, number>
+  >({});
+  const [submittingEditReview, setSubmittingEditReview] = useState<
+    Record<string, boolean>
+  >({});
 
   const { showToast } = useToast();
 
   // Validation schema
   const validationSchema = yup.object().shape({
-    bussiness_name: yup.string().required("Business name is required").min(2, "Business name must be at least 2 characters"),
-    services: yup.array().of(yup.string()).min(1, "At least one service is required"),
+    bussiness_name: yup
+      .string()
+      .required("Business name is required")
+      .min(2, "Business name must be at least 2 characters"),
+    services: yup
+      .array()
+      .of(yup.string())
+      .min(1, "At least one service is required"),
     country_id: yup.string().required("Country is required"),
     contact: yup.string().required("Contact number is required"),
-    website: yup.string().url("Please enter a valid website URL").nullable().optional(),
-    email: yup.string().required("Email is required").email("Please enter a valid email address"),
-    about: yup.string().required("About section is required").min(10, "About must be at least 10 characters"),
-    operationMode: yup.string().oneOf(["main", "temporary", "permanent"]).required(),
+    website: yup
+      .string()
+      .url("Please enter a valid website URL")
+      .nullable()
+      .optional(),
+    email: yup
+      .string()
+      .required("Email is required")
+      .email("Please enter a valid email address"),
+    about: yup
+      .string()
+      .required("About section is required")
+      .min(10, "About must be at least 10 characters"),
+    operationMode: yup
+      .string()
+      .oneOf(["main", "temporary", "permanent"])
+      .required(),
     days: yup.array().of(
       yup.object().shape({
         name: yup.string().required(),
         isOpen: yup.boolean().required(),
         openTime: yup.string().when("isOpen", {
           is: true,
-          then: (schema) => schema.required("Open time is required when day is open"),
+          then: (schema) =>
+            schema.required("Open time is required when day is open"),
           otherwise: (schema) => schema.nullable(),
         }),
         closeTime: yup.string().when("isOpen", {
           is: true,
-          then: (schema) => schema.required("Close time is required when day is open"),
+          then: (schema) =>
+            schema.required("Close time is required when day is open"),
           otherwise: (schema) => schema.nullable(),
         }),
       })
     ),
-    temporaryStartDate: yup.string().when("operationMode", {
-      is: "temporary",
-      then: (schema) => schema.required("Start date is required"),
-      otherwise: (schema) => schema.nullable().optional(),
-    }).optional(),
-    temporaryEndDate: yup.string().when("operationMode", {
-      is: "temporary",
-      then: (schema) => schema.required("End date is required"),
-      otherwise: (schema) => schema.nullable().optional(),
-    }).optional(),
+    temporaryStartDate: yup
+      .string()
+      .when("operationMode", {
+        is: "temporary",
+        then: (schema) => schema.required("Start date is required"),
+        otherwise: (schema) => schema.nullable().optional(),
+      })
+      .optional(),
+    temporaryEndDate: yup
+      .string()
+      .when("operationMode", {
+        is: "temporary",
+        then: (schema) => schema.required("End date is required"),
+        otherwise: (schema) => schema.nullable().optional(),
+      })
+      .optional(),
     logo: yup.mixed().nullable().optional(),
     photos: yup.mixed().nullable().optional(),
   });
 
   const defaultDays: DayType[] = [
-    { name: "Monday", isOpen: true, openTime: "10:30", closeTime: "22:30" },
-    { name: "Tuesday", isOpen: false, openTime: "10:30", closeTime: "22:30" },
-    { name: "Wednesday", isOpen: false, openTime: "10:30", closeTime: "22:30" },
-    { name: "Thursday", isOpen: false, openTime: "10:30", closeTime: "22:30" },
-    { name: "Friday", isOpen: false, openTime: "10:30", closeTime: "22:30" },
-    { name: "Saturday", isOpen: false, openTime: "10:30", closeTime: "22:30" },
-    { name: "Sunday", isOpen: false, openTime: "10:30", closeTime: "22:30" },
+    { name: "Monday", isOpen: true, openTime: "10:00", closeTime: "19:00" },
+    { name: "Tuesday", isOpen: false, openTime: "10:00", closeTime: "19:00" },
+    { name: "Wednesday", isOpen: false, openTime: "10:00", closeTime: "19:00" },
+    { name: "Thursday", isOpen: false, openTime: "10:00", closeTime: "19:00" },
+    { name: "Friday", isOpen: false, openTime: "10:00", closeTime: "19:00" },
+    { name: "Saturday", isOpen: false, openTime: "10:00", closeTime: "19:00" },
+    { name: "Sunday", isOpen: false, openTime: "10:00", closeTime: "19:00" },
   ];
 
   const publicProfileForm = useForm<DirectoryFormData>({
@@ -149,12 +217,91 @@ const EditDirectory: React.FC = () => {
     mode: "onChange",
   });
 
-  const { register, handleSubmit, control, watch, setValue, formState: { errors } } = publicProfileForm;
+  const customStyles = {
+  control: (base: any, state: any) => ({
+    ...base,
+    minHeight: "41px",
+    borderRadius: "12px",
+    color: "#6269FF",
+    fontSize: "14px",
+    fontWeight: 400,
+    borderWidth: "1px",
+    borderColor: state.isFocused ? "#CBD5E1" : "#CBD5E1",
+    backgroundColor: "white",
+    paddingLeft: "0", // Remove left padding
+    paddingRight: "0", // Remove right padding
+  }),
+  valueContainer: (base: any) => ({
+    ...base,
+    flexWrap: "wrap",
+    maxHeight: "auto",
+    padding: "0", // Reduce padding
+    margin: "0", // Remove margin
+  }),
+  multiValue: (base: any) => ({
+    ...base,
+    backgroundColor: "#ECEAF8",
+    color: "#6269FF",
+    borderRadius: "5px",
+    height: "36px",
+    minWidth: "fit-content",
+    width: "auto",
+    padding: "7px 10px",
+    gap: "6px",
+    opacity: 1,
+    margin: "4px 3px",
+    alignItems: "center",
+  }),
+  multiValueLabel: (base: any) => ({
+    ...base,
+    color: "#000000",
+    fontWeight: "500",
+    fontSize: "14px",
+    padding: 0,
+    lineHeight: "normal",
+  }),
+  multiValueRemove: (base: any) => ({
+    ...base,
+    color: "#000000",
+    backgroundColor: "transparent",
+    padding: 0,
+    width: "16px",
+    height: "16px",
+    marginLeft: "6px",
+    ":hover": {
+      backgroundColor: "transparent",
+      color: "#4A50D5",
+    },
+  }),
+  placeholder: (base: any) => ({
+    ...base,
+    fontSize: 14,
+    color: "#9CA3AF",
+    marginLeft: "0", // Remove left margin from placeholder
+  }),
+  indicatorsContainer: (base: any) => ({
+    ...base,
+    paddingRight: "8px", // Keep only minimal padding for indicators
+  }),
+  input: (base: any) => ({
+    ...base,
+    margin: "0", // Remove margin from input
+    padding: "0", // Remove padding from input
+  }),
+};
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = publicProfileForm;
 
   const mode = watch("operationMode");
   const services = watch("services") || [];
   const days = watch("days") || defaultDays;
-
 
   const toggleDay = (index: number) => {
     const currentDays = [...days];
@@ -162,7 +309,11 @@ const EditDirectory: React.FC = () => {
     setValue("days", currentDays, { shouldValidate: true });
   };
 
-  const updateTime = (index: number, key: "openTime" | "closeTime", value: string) => {
+  const updateTime = (
+    index: number,
+    key: "openTime" | "closeTime",
+    value: string
+  ) => {
     const currentDays = [...days];
     currentDays[index][key] = value;
     setValue("days", currentDays, { shouldValidate: true });
@@ -179,15 +330,17 @@ const EditDirectory: React.FC = () => {
     // If we have the dial code from PhoneInput, use it (most reliable)
     if (dialCode) {
       // Remove the + from dial code if present
-      const code = dialCode.replace(/^\+/, '');
+      const code = dialCode.replace(/^\+/, "");
       // Remove the dial code from the phone number
       // The phone number format is: +[dialCode][nationalNumber]
-      const numberWithoutCode = cleanNumber.replace(new RegExp(`^\\+?${code.replace(/\+/g, '\\+')}`), '').replace(/\D/g, '');
+      const numberWithoutCode = cleanNumber
+        .replace(new RegExp(`^\\+?${code.replace(/\+/g, "\\+")}`), "")
+        .replace(/\D/g, "");
 
       if (numberWithoutCode && code) {
         return {
           mobile_code: parseInt(code, 10),
-          mobile_no: parseInt(numberWithoutCode, 10)
+          mobile_no: parseInt(numberWithoutCode, 10),
         };
       }
     }
@@ -196,9 +349,9 @@ const EditDirectory: React.FC = () => {
     // Phone number format from react-international-phone: "+1234567890"
     // The format is always: +[country_code][national_number]
     // Country codes are 1-3 digits, so we need to be smart about parsing
-    if (cleanNumber.startsWith('+')) {
+    if (cleanNumber.startsWith("+")) {
       // Remove the + and get all digits
-      const digits = cleanNumber.substring(1).replace(/\D/g, '');
+      const digits = cleanNumber.substring(1).replace(/\D/g, "");
 
       if (digits.length >= 10) {
         // Common country code patterns:
@@ -212,7 +365,7 @@ const EditDirectory: React.FC = () => {
         let codeLength = 1;
         if (digits.length >= 12) {
           // Check if first digit is 1 (US/Canada) - single digit code
-          if (digits[0] === '1' && digits.length <= 12) {
+          if (digits[0] === "1" && digits.length <= 12) {
             codeLength = 1;
           } else {
             codeLength = 2;
@@ -222,7 +375,7 @@ const EditDirectory: React.FC = () => {
         } else if (digits.length === 11) {
           // Could be 1 or 2 digit code
           // If starts with 1, it's likely US/Canada (1 digit)
-          codeLength = digits[0] === '1' ? 1 : 2;
+          codeLength = digits[0] === "1" ? 1 : 2;
         }
 
         const code = digits.substring(0, codeLength);
@@ -231,20 +384,20 @@ const EditDirectory: React.FC = () => {
         if (code && number && number.length >= 7) {
           return {
             mobile_code: parseInt(code, 10),
-            mobile_no: parseInt(number, 10)
+            mobile_no: parseInt(number, 10),
           };
         }
       }
     }
 
     // Last resort: try to extract just digits
-    const allDigits = cleanNumber.replace(/\D/g, '');
+    const allDigits = cleanNumber.replace(/\D/g, "");
     if (allDigits.length >= 10) {
       // Assume first 1-2 digits are country code
       const codeLength = allDigits.length > 11 ? 2 : 1;
       return {
         mobile_code: parseInt(allDigits.substring(0, codeLength), 10),
-        mobile_no: parseInt(allDigits.substring(codeLength), 10)
+        mobile_no: parseInt(allDigits.substring(codeLength), 10),
       };
     }
 
@@ -254,7 +407,10 @@ const EditDirectory: React.FC = () => {
   const onSubmit = async (data: DirectoryFormData) => {
     try {
       // Parse phone number with dial code if available
-      const { mobile_code, mobile_no } = parsePhoneNumber(data.contact, phoneDialCode);
+      const { mobile_code, mobile_no } = parsePhoneNumber(
+        data.contact,
+        phoneDialCode
+      );
 
       // Validate that we got valid phone number parts
       if (!mobile_code || !mobile_no) {
@@ -286,7 +442,6 @@ const EditDirectory: React.FC = () => {
 
       console.log("response:", response);
 
-
       if (status) {
         showToast({
           message: response?.success?.message,
@@ -303,10 +458,11 @@ const EditDirectory: React.FC = () => {
 
       // Submit business hours separately
       await handleBusinessHoursSubmit(data);
-
     } catch (error: any) {
       showToast({
-        message: error?.response?.error?.message || "Failed to save directory information",
+        message:
+          error?.response?.error?.message ||
+          "Failed to save directory information",
         type: "error",
         duration: 5000,
       });
@@ -352,7 +508,10 @@ const EditDirectory: React.FC = () => {
           console.log("Business hours updated successfully");
         } else {
           showToast({
-            message: response?.error?.message || response?.data?.error?.message || "Failed to update business hours",
+            message:
+              response?.error?.message ||
+              response?.data?.error?.message ||
+              "Failed to update business hours",
             type: "error",
             duration: 5000,
           });
@@ -360,7 +519,8 @@ const EditDirectory: React.FC = () => {
       }
     } catch (error: any) {
       showToast({
-        message: error?.response?.error?.message || "Failed to update business hours",
+        message:
+          error?.response?.error?.message || "Failed to update business hours",
         type: "error",
         duration: 5000,
       });
@@ -368,7 +528,9 @@ const EditDirectory: React.FC = () => {
   };
 
   const photoInputRef = useRef<HTMLInputElement>(null);
-  const editPhotoInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const editPhotoInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>(
+    {}
+  );
 
   const handleAddPhotoClick = () => {
     photoInputRef.current?.click(); // opens file picker for photos
@@ -403,7 +565,8 @@ const EditDirectory: React.FC = () => {
             updatedPhotos[photoIndex] = {
               id: updatedPhoto.id,
               file: updatedPhoto.file,
-              file_type: updatedPhoto.file_type || updatedPhoto.file_type || "image/jpg"
+              file_type:
+                updatedPhoto.file_type || updatedPhoto.file_type || "image/jpg",
             };
             setPhotos(updatedPhotos);
 
@@ -419,7 +582,9 @@ const EditDirectory: React.FC = () => {
             const data = basicInfoResponse?.data?.data;
             if (data?.photos && Array.isArray(data.photos)) {
               setPhotos(data.photos);
-              setPhotoPreviews(data.photos.map((photo: any) => photo.file || ""));
+              setPhotoPreviews(
+                data.photos.map((photo: any) => photo.file || "")
+              );
             }
           } catch (error) {
             console.error("Error refetching photos:", error);
@@ -427,13 +592,19 @@ const EditDirectory: React.FC = () => {
         }
 
         showToast({
-          message: response?.success?.message || response?.data?.success?.message || "Photo updated successfully",
+          message:
+            response?.success?.message ||
+            response?.data?.success?.message ||
+            "Photo updated successfully",
           type: "success",
           duration: 5000,
         });
       } else {
         showToast({
-          message: response?.error?.message || response?.data?.error?.message || "Failed to update photo",
+          message:
+            response?.error?.message ||
+            response?.data?.error?.message ||
+            "Failed to update photo",
           type: "error",
           duration: 5000,
         });
@@ -450,44 +621,50 @@ const EditDirectory: React.FC = () => {
   };
 
   // Handle photo delete
-  const handlePhotoDelete = async (photoId: string) => {
-    if (!window.confirm("Are you sure you want to delete this photo?")) {
-      return;
-    }
+  // const handlePhotoDelete = async (photoId: string) => {
+  //   if (!window.confirm("Are you sure you want to delete this photo?")) {
+  //     return;
+  //   }
 
-    setDeletingPhotoId(photoId);
+  //   setDeletingPhotoId(photoId);
 
-    try {
-      const response = await DeleteDirectoryPhoto(photoId);
+  //   try {
+  //     const response = await DeleteDirectoryPhoto(photoId);
 
-      if (response?.success?.status || response?.data?.success?.status) {
-        // Remove photo from state
-        const updatedPhotos = photos.filter((photo) => photo.id !== photoId);
-        setPhotos(updatedPhotos);
-        setPhotoPreviews(updatedPhotos.map((photo) => photo.file || ""));
+  //     if (response?.success?.status || response?.data?.success?.status) {
+  //       // Remove photo from state
+  //       const updatedPhotos = photos.filter((photo) => photo.id !== photoId);
+  //       setPhotos(updatedPhotos);
+  //       setPhotoPreviews(updatedPhotos.map((photo) => photo.file || ""));
 
-        showToast({
-          message: response?.success?.message || response?.data?.success?.message || "Photo deleted successfully",
-          type: "success",
-          duration: 5000,
-        });
-      } else {
-        showToast({
-          message: response?.error?.message || response?.data?.error?.message || "Failed to delete photo",
-          type: "error",
-          duration: 5000,
-        });
-      }
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.error?.message || "Failed to delete photo",
-        type: "error",
-        duration: 5000,
-      });
-    } finally {
-      setDeletingPhotoId(null);
-    }
-  };
+  //       showToast({
+  //         message:
+  //           response?.success?.message ||
+  //           response?.data?.success?.message ||
+  //           "Photo deleted successfully",
+  //         type: "success",
+  //         duration: 5000,
+  //       });
+  //     } else {
+  //       showToast({
+  //         message:
+  //           response?.error?.message ||
+  //           response?.data?.error?.message ||
+  //           "Failed to delete photo",
+  //         type: "error",
+  //         duration: 5000,
+  //       });
+  //     }
+  //   } catch (error: any) {
+  //     showToast({
+  //       message: error?.response?.error?.message || "Failed to delete photo",
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   } finally {
+  //     setDeletingPhotoId(null);
+  //   }
+  // };
 
   // Convert image URL to blob/file
   const urlToFile = async (url: string, filename: string): Promise<File> => {
@@ -506,12 +683,12 @@ const EditDirectory: React.FC = () => {
       // Convert existing photo URLs to files if they exist
       const existingPhotoFiles: File[] = [];
       for (const photo of photos) {
-        if (photo.file && photo.file.startsWith('http')) {
+        if (photo.file && photo.file.startsWith("http")) {
           try {
             const file = await urlToFile(photo.file, `photo-${photo.id}.jpg`);
             existingPhotoFiles.push(file);
           } catch (error) {
-            console.error('Error converting photo URL to file:', error);
+            console.error("Error converting photo URL to file:", error);
           }
         }
       }
@@ -539,7 +716,9 @@ const EditDirectory: React.FC = () => {
           response?.data?.photos ||
           response?.data?.data?.photos ||
           response?.photos ||
-          (response?.data?.data && Array.isArray(response.data.data) ? response.data.data : null);
+          (response?.data?.data && Array.isArray(response.data.data)
+            ? response.data.data
+            : null);
 
         console.log("Photos data from response:", photosData);
 
@@ -554,7 +733,9 @@ const EditDirectory: React.FC = () => {
             const data = basicInfoResponse?.data?.data;
             if (data?.photos && Array.isArray(data.photos)) {
               setPhotos(data.photos);
-              setPhotoPreviews(data.photos.map((photo: any) => photo.file || ""));
+              setPhotoPreviews(
+                data.photos.map((photo: any) => photo.file || "")
+              );
             }
           } catch (error) {
             console.error("Error refetching photos:", error);
@@ -562,13 +743,19 @@ const EditDirectory: React.FC = () => {
         }
 
         showToast({
-          message: response?.success?.message || response?.data?.success?.message || "Photos uploaded successfully",
+          message:
+            response?.success?.message ||
+            response?.data?.success?.message ||
+            "Photos uploaded successfully",
           type: "success",
           duration: 5000,
         });
       } else {
         showToast({
-          message: response?.error?.message || response?.data?.error?.message || "Failed to upload photos",
+          message:
+            response?.error?.message ||
+            response?.data?.error?.message ||
+            "Failed to upload photos",
           type: "error",
           duration: 5000,
         });
@@ -640,7 +827,9 @@ const EditDirectory: React.FC = () => {
         setValue("about", data.about || "");
         // Extract service IDs from services array (array of objects with id and name)
         if (data.services && Array.isArray(data.services)) {
-          const serviceIds = data.services.map((service: any) => service.id || service);
+          const serviceIds = data.services.map(
+            (service: any) => service.id || service
+          );
           setValue("services", serviceIds);
         } else if (data.service_ids && Array.isArray(data.service_ids)) {
           // Fallback: if service_ids exists as array of strings
@@ -657,7 +846,10 @@ const EditDirectory: React.FC = () => {
           if (businessStatus === 1) {
             setValue("operationMode", "main");
             // Load weekly_hours
-            if (businessHours.weekly_hours && Array.isArray(businessHours.weekly_hours)) {
+            if (
+              businessHours.weekly_hours &&
+              Array.isArray(businessHours.weekly_hours)
+            ) {
               // Map weekly_hours to days format
               const mappedDays = defaultDays.map((defaultDay) => {
                 const dayName = defaultDay.name.toLowerCase();
@@ -667,8 +859,12 @@ const EditDirectory: React.FC = () => {
 
                 if (weeklyHour) {
                   // Convert time format from "09:00:00" to "09:00"
-                  const openTime = weeklyHour.open_time ? weeklyHour.open_time.substring(0, 5) : defaultDay.openTime;
-                  const closeTime = weeklyHour.close_time ? weeklyHour.close_time.substring(0, 5) : defaultDay.closeTime;
+                  const openTime = weeklyHour.open_time
+                    ? weeklyHour.open_time.substring(0, 5)
+                    : defaultDay.openTime;
+                  const closeTime = weeklyHour.close_time
+                    ? weeklyHour.close_time.substring(0, 5)
+                    : defaultDay.closeTime;
 
                   return {
                     name: defaultDay.name,
@@ -686,12 +882,18 @@ const EditDirectory: React.FC = () => {
             // Load temporary close dates
             if (businessHours.temporary_close_start_date) {
               // Convert ISO date to YYYY-MM-DD format
-              const startDate = new Date(businessHours.temporary_close_start_date).toISOString().split('T')[0];
+              const startDate = new Date(
+                businessHours.temporary_close_start_date
+              )
+                .toISOString()
+                .split("T")[0];
               setValue("temporaryStartDate", startDate);
             }
             if (businessHours.temporary_close_end_date) {
               // Convert ISO date to YYYY-MM-DD format
-              const endDate = new Date(businessHours.temporary_close_end_date).toISOString().split('T')[0];
+              const endDate = new Date(businessHours.temporary_close_end_date)
+                .toISOString()
+                .split("T")[0];
               setValue("temporaryEndDate", endDate);
             }
           } else if (businessStatus === 3) {
@@ -740,7 +942,7 @@ const EditDirectory: React.FC = () => {
 
     try {
       if (append) {
-        setReviewsPagination(prev => ({ ...prev, loadingMore: true }));
+        setReviewsPagination((prev) => ({ ...prev, loadingMore: true }));
       } else {
         setLoadingReviews(true);
       }
@@ -750,8 +952,10 @@ const EditDirectory: React.FC = () => {
         const reviewsData = response.data.data.rows || [];
         const totalCount = response.data.data.count || 0;
 
-        setReviews(prev => {
-          const updatedReviews = append ? [...prev, ...reviewsData] : reviewsData;
+        setReviews((prev) => {
+          const updatedReviews = append
+            ? [...prev, ...reviewsData]
+            : reviewsData;
           const currentLoaded = updatedReviews.length;
           const hasMore = currentLoaded < totalCount;
 
@@ -763,7 +967,7 @@ const EditDirectory: React.FC = () => {
       console.error("Error fetching reviews:", error);
     } finally {
       if (append) {
-        setReviewsPagination(prev => ({ ...prev, loadingMore: false }));
+        setReviewsPagination((prev) => ({ ...prev, loadingMore: false }));
       } else {
         setLoadingReviews(false);
       }
@@ -780,11 +984,11 @@ const EditDirectory: React.FC = () => {
 
   // Toggle reply input for a review
   const toggleReplyInput = (reviewId: string) => {
-    setOpenReplyInputs(prev => {
+    setOpenReplyInputs((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(reviewId)) {
         newSet.delete(reviewId);
-        setReplyTexts(prevTexts => {
+        setReplyTexts((prevTexts) => {
           const newTexts = { ...prevTexts };
           delete newTexts[reviewId];
           return newTexts;
@@ -798,50 +1002,56 @@ const EditDirectory: React.FC = () => {
   };
 
   // Fetch child reviews for a parent review with pagination
-  const fetchChildReviews = async (reviewId: string, pageNo: number = 1, append: boolean = false) => {
+  const fetchChildReviews = async (
+    reviewId: string,
+    pageNo: number = 1,
+    append: boolean = false
+  ) => {
     try {
       if (append) {
-        setPagination(prev => ({
+        setPagination((prev) => ({
           ...prev,
-          [reviewId]: { ...prev[reviewId], loadingMore: true }
+          [reviewId]: { ...prev[reviewId], loadingMore: true },
         }));
       } else {
-        setLoadingChildReviews(prev => ({ ...prev, [reviewId]: true }));
+        setLoadingChildReviews((prev) => ({ ...prev, [reviewId]: true }));
       }
 
       const response = await GetDirectoryReviewReplies(reviewId, pageNo, 5);
       if (response?.success?.status && response?.data?.data) {
         const replies = response.data.data.rows || [];
         const totalCount = response.data.data.count || 0;
-        const currentLoaded = append ? ((pagination[reviewId]?.pageNo || 0) * 5) + replies.length : replies.length;
+        const currentLoaded = append
+          ? (pagination[reviewId]?.pageNo || 0) * 5 + replies.length
+          : replies.length;
         const hasMore = currentLoaded < totalCount;
 
-        setChildReviews(prev => ({
+        setChildReviews((prev) => ({
           ...prev,
           [reviewId]: append
             ? [...(prev[reviewId] || []), ...replies]
-            : replies
+            : replies,
         }));
 
-        setPagination(prev => ({
+        setPagination((prev) => ({
           ...prev,
           [reviewId]: {
             pageNo: pageNo,
             hasMore: hasMore,
-            loadingMore: false
-          }
+            loadingMore: false,
+          },
         }));
       }
     } catch (error: any) {
       console.error("Error fetching child reviews:", error);
     } finally {
       if (append) {
-        setPagination(prev => ({
+        setPagination((prev) => ({
           ...prev,
-          [reviewId]: { ...prev[reviewId], loadingMore: false }
+          [reviewId]: { ...prev[reviewId], loadingMore: false },
         }));
       } else {
-        setLoadingChildReviews(prev => ({ ...prev, [reviewId]: false }));
+        setLoadingChildReviews((prev) => ({ ...prev, [reviewId]: false }));
       }
     }
   };
@@ -849,7 +1059,11 @@ const EditDirectory: React.FC = () => {
   // Load more child reviews on scroll
   const loadMoreChildReviews = async (reviewId: string) => {
     const paginationInfo = pagination[reviewId];
-    if (!paginationInfo || !paginationInfo.hasMore || paginationInfo.loadingMore) {
+    if (
+      !paginationInfo ||
+      !paginationInfo.hasMore ||
+      paginationInfo.loadingMore
+    ) {
       return;
     }
     await fetchChildReviews(reviewId, paginationInfo.pageNo + 1, true);
@@ -874,22 +1088,23 @@ const EditDirectory: React.FC = () => {
 
       await LikeDirectoryReview(payload);
 
-      setReviews(prevReviews =>
-        prevReviews.map(review =>
+      setReviews((prevReviews) =>
+        prevReviews.map((review) =>
           review.id === reviewId
             ? {
-              ...review,
-              is_liked: !review.is_liked,
-              likes_count: review.is_liked
-                ? Math.max(0, (review.likes_count || 0) - 1)
-                : (review.likes_count || 0) + 1
-            }
+                ...review,
+                is_liked: !review.is_liked,
+                likes_count: review.is_liked
+                  ? Math.max(0, (review.likes_count || 0) - 1)
+                  : (review.likes_count || 0) + 1,
+              }
             : review
         )
       );
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to like review",
+        message:
+          error?.response?.data?.error?.message || "Failed to like review",
         type: "error",
         duration: 3000,
       });
@@ -916,27 +1131,28 @@ const EditDirectory: React.FC = () => {
 
       await LikeDirectoryReviewReply(payload);
 
-      setChildReviews(prevChildReviews => {
+      setChildReviews((prevChildReviews) => {
         const currentReplies = prevChildReviews[reviewId] || [];
         const updatedReplies = currentReplies.map((reply: any) =>
           reply.id === replyId
             ? {
-              ...reply,
-              is_liked: !reply.is_liked,
-              likes_count: reply.is_liked
-                ? Math.max(0, (reply.likes_count || 0) - 1)
-                : (reply.likes_count || 0) + 1
-            }
+                ...reply,
+                is_liked: !reply.is_liked,
+                likes_count: reply.is_liked
+                  ? Math.max(0, (reply.likes_count || 0) - 1)
+                  : (reply.likes_count || 0) + 1,
+              }
             : reply
         );
         return {
           ...prevChildReviews,
-          [reviewId]: updatedReplies
+          [reviewId]: updatedReplies,
         };
       });
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to like reply",
+        message:
+          error?.response?.data?.error?.message || "Failed to like reply",
         type: "error",
         duration: 3000,
       });
@@ -944,21 +1160,25 @@ const EditDirectory: React.FC = () => {
   };
 
   // Handle edit parent review
-  const handleEditReview = (reviewId: string, currentText: string, currentRating: number) => {
+  const handleEditReview = (
+    reviewId: string,
+    currentText: string,
+    currentRating: number
+  ) => {
     setEditingReviewId(reviewId);
-    setEditReviewText(prev => ({ ...prev, [reviewId]: currentText }));
-    setEditReviewRating(prev => ({ ...prev, [reviewId]: currentRating }));
+    setEditReviewText((prev) => ({ ...prev, [reviewId]: currentText }));
+    setEditReviewRating((prev) => ({ ...prev, [reviewId]: currentRating }));
   };
 
   // Handle cancel edit review
   const handleCancelEditReview = (reviewId: string) => {
     setEditingReviewId(null);
-    setEditReviewText(prev => {
+    setEditReviewText((prev) => {
       const newTexts = { ...prev };
       delete newTexts[reviewId];
       return newTexts;
     });
-    setEditReviewRating(prev => {
+    setEditReviewRating((prev) => {
       const newRatings = { ...prev };
       delete newRatings[reviewId];
       return newRatings;
@@ -989,7 +1209,7 @@ const EditDirectory: React.FC = () => {
     }
 
     try {
-      setSubmittingEditReview(prev => ({ ...prev, [reviewId]: true }));
+      setSubmittingEditReview((prev) => ({ ...prev, [reviewId]: true }));
       const payload = {
         directory_info_id: directoryInfoId,
         description: editText,
@@ -1001,7 +1221,7 @@ const EditDirectory: React.FC = () => {
       if (response?.success?.status && response?.data?.data) {
         const updatedReview = response.data.data;
 
-        setReviews(prevReviews =>
+        setReviews((prevReviews) =>
           prevReviews.map((review: any) =>
             review.id === reviewId ? updatedReview : review
           )
@@ -1014,12 +1234,12 @@ const EditDirectory: React.FC = () => {
         });
 
         setEditingReviewId(null);
-        setEditReviewText(prev => {
+        setEditReviewText((prev) => {
           const newTexts = { ...prev };
           delete newTexts[reviewId];
           return newTexts;
         });
-        setEditReviewRating(prev => {
+        setEditReviewRating((prev) => {
           const newRatings = { ...prev };
           delete newRatings[reviewId];
           return newRatings;
@@ -1027,12 +1247,13 @@ const EditDirectory: React.FC = () => {
       }
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to update review",
+        message:
+          error?.response?.data?.error?.message || "Failed to update review",
         type: "error",
         duration: 3000,
       });
     } finally {
-      setSubmittingEditReview(prev => ({ ...prev, [reviewId]: false }));
+      setSubmittingEditReview((prev) => ({ ...prev, [reviewId]: false }));
     }
   };
 
@@ -1059,7 +1280,7 @@ const EditDirectory: React.FC = () => {
     }
 
     try {
-      setSubmittingReply(prev => ({ ...prev, [reviewId]: true }));
+      setSubmittingReply((prev) => ({ ...prev, [reviewId]: true }));
       const payload = {
         directory_info_id: directoryInfoId,
         review_id: reviewId,
@@ -1071,21 +1292,21 @@ const EditDirectory: React.FC = () => {
       if (response?.success?.status && response?.data?.data) {
         const newReply = response.data.data;
 
-        setChildReviews(prevChildReviews => {
+        setChildReviews((prevChildReviews) => {
           const currentReplies = prevChildReviews[reviewId] || [];
           return {
             ...prevChildReviews,
-            [reviewId]: [newReply, ...currentReplies]
+            [reviewId]: [newReply, ...currentReplies],
           };
         });
 
-        setReviews(prevReviews =>
-          prevReviews.map(review =>
+        setReviews((prevReviews) =>
+          prevReviews.map((review) =>
             review.id === reviewId
               ? {
-                ...review,
-                reply_count: (review.reply_count || 0) + 1
-              }
+                  ...review,
+                  reply_count: (review.reply_count || 0) + 1,
+                }
               : review
           )
         );
@@ -1097,32 +1318,33 @@ const EditDirectory: React.FC = () => {
         duration: 3000,
       });
 
-      setReplyTexts(prev => {
+      setReplyTexts((prev) => {
         const newTexts = { ...prev };
         delete newTexts[reviewId];
         return newTexts;
       });
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to submit reply",
+        message:
+          error?.response?.data?.error?.message || "Failed to submit reply",
         type: "error",
         duration: 3000,
       });
     } finally {
-      setSubmittingReply(prev => ({ ...prev, [reviewId]: false }));
+      setSubmittingReply((prev) => ({ ...prev, [reviewId]: false }));
     }
   };
 
   // Handle edit reply
   const handleEditReply = (replyId: string, currentText: string) => {
     setEditingReplyId(replyId);
-    setEditReplyTexts(prev => ({ ...prev, [replyId]: currentText }));
+    setEditReplyTexts((prev) => ({ ...prev, [replyId]: currentText }));
   };
 
   // Handle cancel edit
   const handleCancelEdit = (replyId: string) => {
     setEditingReplyId(null);
-    setEditReplyTexts(prev => {
+    setEditReplyTexts((prev) => {
       const newTexts = { ...prev };
       delete newTexts[replyId];
       return newTexts;
@@ -1143,7 +1365,7 @@ const EditDirectory: React.FC = () => {
     }
 
     try {
-      setSubmittingEditReply(prev => ({ ...prev, [replyId]: true }));
+      setSubmittingEditReply((prev) => ({ ...prev, [replyId]: true }));
       const payload = {
         id: replyId,
         text: editText,
@@ -1151,16 +1373,14 @@ const EditDirectory: React.FC = () => {
 
       await UpdateDirectoryReviewReply(payload);
 
-      setChildReviews(prevChildReviews => {
+      setChildReviews((prevChildReviews) => {
         const currentReplies = prevChildReviews[reviewId] || [];
         const updatedReplies = currentReplies.map((reply: any) =>
-          reply.id === replyId
-            ? { ...reply, text: editText }
-            : reply
+          reply.id === replyId ? { ...reply, text: editText } : reply
         );
         return {
           ...prevChildReviews,
-          [reviewId]: updatedReplies
+          [reviewId]: updatedReplies,
         };
       });
 
@@ -1171,19 +1391,20 @@ const EditDirectory: React.FC = () => {
       });
 
       setEditingReplyId(null);
-      setEditReplyTexts(prev => {
+      setEditReplyTexts((prev) => {
         const newTexts = { ...prev };
         delete newTexts[replyId];
         return newTexts;
       });
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to update reply",
+        message:
+          error?.response?.data?.error?.message || "Failed to update reply",
         type: "error",
         duration: 3000,
       });
     } finally {
-      setSubmittingEditReply(prev => ({ ...prev, [replyId]: false }));
+      setSubmittingEditReply((prev) => ({ ...prev, [replyId]: false }));
     }
   };
 
@@ -1194,29 +1415,31 @@ const EditDirectory: React.FC = () => {
     }
 
     try {
-      setDeletingReply(prev => ({ ...prev, [replyId]: true }));
+      setDeletingReply((prev) => ({ ...prev, [replyId]: true }));
       const payload = {
         id: replyId,
       };
 
       await DeleteDirectoryReviewReply(payload);
 
-      setChildReviews(prevChildReviews => {
+      setChildReviews((prevChildReviews) => {
         const currentReplies = prevChildReviews[reviewId] || [];
-        const updatedReplies = currentReplies.filter((reply: any) => reply.id !== replyId);
+        const updatedReplies = currentReplies.filter(
+          (reply: any) => reply.id !== replyId
+        );
         return {
           ...prevChildReviews,
-          [reviewId]: updatedReplies
+          [reviewId]: updatedReplies,
         };
       });
 
-      setReviews(prevReviews =>
-        prevReviews.map(review =>
+      setReviews((prevReviews) =>
+        prevReviews.map((review) =>
           review.id === reviewId
             ? {
-              ...review,
-              reply_count: Math.max(0, (review.reply_count || 0) - 1)
-            }
+                ...review,
+                reply_count: Math.max(0, (review.reply_count || 0) - 1),
+              }
             : review
         )
       );
@@ -1228,12 +1451,13 @@ const EditDirectory: React.FC = () => {
       });
     } catch (error: any) {
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to delete reply",
+        message:
+          error?.response?.data?.error?.message || "Failed to delete reply",
         type: "error",
         duration: 3000,
       });
     } finally {
-      setDeletingReply(prev => ({ ...prev, [replyId]: false }));
+      setDeletingReply((prev) => ({ ...prev, [replyId]: false }));
     }
   };
 
@@ -1255,213 +1479,123 @@ const EditDirectory: React.FC = () => {
     }
   }, []);
 
-
   return (
-    <main className="flex-1 p-4 flex flex-col items-end gap-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col gap-4">
-        <div className="w-full bg-white rounded-xl p-4 flex gap-[90px]">
+    <main className="flex-1 p-2 sm:p-4 flex flex-col items-end gap-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full flex flex-col gap-4"
+      >
+        {/* Basic Information Section */}
+        <div className="w-full bg-white rounded-xl p-4 sm:p-6 flex flex-col lg:flex-row gap-6 lg:gap-[90px]">
           <div className="flex-1 flex flex-col gap-4">
-
             {/* SECTION TITLE */}
-            <h2 className="text-[#081021] font-[Poppins] font-semibold text-lg">
+            <h2 className="text-[#081021] font-[Poppins] font-semibold text-lg sm:text-xl">
               Basic Information
             </h2>
 
-            <div className="flex flex-col gap-3">
-
+            <div className="flex flex-col gap-4 sm:gap-3">
               {/* ---------------- ROW 1 ---------------- */}
-              <div className="flex gap-8">
-
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
                 {/* Business Name */}
-                <div className="w-[530px] flex flex-col gap-1.5">
-                  <label className="text-[#64748B] font-[Poppins] font-medium">
+                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                  <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Business Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     {...register("bussiness_name")}
                     className={`h-[43px] border rounded-lg px-3 
-                       text-[#081021] font-semibold text-base outline-none ${errors.bussiness_name ? "border-red-500" : "border-[#CBD5E1]"
-                      }`}
+                       text-[#081021] font-semibold text-sm sm:text-base outline-none ${
+                         errors.bussiness_name
+                           ? "border-red-500"
+                           : "border-[#CBD5E1]"
+                       }`}
                   />
                   {errors.bussiness_name && (
-                    <span className="text-red-500 text-sm">{errors.bussiness_name.message}</span>
+                    <span className="text-red-500 text-xs sm:text-sm">
+                      {errors.bussiness_name.message}
+                    </span>
                   )}
                 </div>
 
-                {/* Services Select + Tags */}
-                <div className="w-[530px] flex flex-col gap-1.5">
-                  <label className="text-[#64748B] font-[Poppins] font-medium">
+                {/* Services */}
+                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                  <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Services <span className="text-red-500">*</span>
                   </label>
 
-                  <div className={`min-h-[43px] border rounded-lg flex items-center gap-2 px-3 py-2 flex-wrap ${errors.services ? "border-red-500" : "border-[#CBD5E1]"
-                    }`}>
-                    {/* Service Tags */}
-                    {services.length > 0 &&
-                      services.map((serviceId, index) => {
-                        // Find the corresponding service in serviceData
-                        const foundService = serviceData?.find(
-                          (svc: any) => svc.id === serviceId
-                        );
+                  <CreatableSelect
+                    isMulti
+                    options={
+                      serviceData?.map((service: any) => ({
+                        value: service.id,
+                        label: service.name,
+                      })) || []
+                    }
+                    value={services.map((serviceId: string) => {
+                      const foundService = serviceData?.find(
+                        (svc: any) => svc.id === serviceId
+                      );
 
-                        // If service is found in serviceData, use its name, otherwise use the ID
-                        const displayName = foundService?.name || serviceId;
+                      const displayName = foundService?.name || serviceId;
 
-                        return (
-                          <div
-                            key={index}
-                            className="bg-[#ECEAF8] rounded-md px-3 py-1 flex items-center gap-1.5"
-                          >
-                            <span className="text-[#081021] font-semibold text-base">
-                              {displayName}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newServices = services.filter((_, i) => i !== index);
-                                setValue("services", newServices, { shouldValidate: true });
-                              }}
-                              className="w-3 h-3 text-[#081021] flex items-center justify-center"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        );
-                      })}
+                      return {
+                        value: serviceId,
+                        label: displayName,
+                      };
+                    })}
+                    onChange={(selectedOptions) => {
+                      const normalizedServices = selectedOptions.map(
+                        (option: any) => option.value
+                      );
 
-                    {/* Dropdown */}
-                    <div className="relative ml-auto">
-                      <select
-                        className="appearance-none text-[#64748B] outline-none bg-transparent pr-6 cursor-pointer"
-                        value=""
-                        onChange={(e) => {
-                          const selectedOption = e.target.value;
+                      setValue("services", normalizedServices, {
+                        shouldValidate: true,
+                      });
+                    }}
+                    styles={customStyles}
+                    classNamePrefix="react-select"
+                    placeholder="Select services or type to add custom..."
+                    noOptionsMessage={({ inputValue }) =>
+                      inputValue
+                        ? `Press Enter to add "${inputValue}" as custom service`
+                        : "No options"
+                    }
+                    formatCreateLabel={(inputValue) =>
+                      `Add "${inputValue}" as custom service`
+                    }
+                    isValidNewOption={(inputValue) =>
+                      inputValue.trim().length > 0 &&
+                      inputValue.trim().length <= 50 &&
+                      !services.includes(inputValue.trim().toLowerCase())
+                    }
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                  />
 
-                          if (!selectedOption) return;
-
-                          if (selectedOption === "other") {
-                            setShowCustomInput(true);
-                            setServiceInput("");
-                          } else if (selectedOption !== "") {
-                            const trimmed = selectedOption.trim();
-                            if (
-                              trimmed &&
-                              !services.includes(trimmed) &&
-                              services.length < 20
-                            ) {
-                              const newServices = [...services, trimmed];
-                              setValue("services", newServices, { shouldValidate: true });
-                              setServiceInput("");
-                            }
-                            setShowCustomInput(false);
-                          }
-                        }}
-                        onBlur={() => publicProfileForm.trigger("services")}
-                      >
-                        <option value="" disabled>
-                          Add Service
-                        </option>
-                        {serviceData?.map((service: any) => (
-                          <option key={service.id} value={service.id}>
-                            {service.name}
-                          </option>
-                        ))}
-                        <option value="other">Other (Add Custom Service)</option>
-                      </select>
-
-                      {/* Custom arrow */}
-                      <svg
-                        width="10"
-                        height="6"
-                        viewBox="0 0 10 6"
-                        fill="black"
-                        className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none"
-                      >
-                        <path d="M0 0 L5 6 L10 0 Z" />
-                      </svg>
-                    </div>
-                  </div>
                   {errors.services && (
-                    <span className="text-red-500 text-sm">{errors.services.message}</span>
-                  )}
-
-                  {/* Custom Service Input */}
-                  {showCustomInput && (
-                    <div className="flex gap-2 mt-2">
-                      <input
-                        type="text"
-                        value={serviceInput}
-                        onChange={(e) => setServiceInput(e.target.value)}
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            const trimmed = serviceInput.trim();
-                            if (
-                              trimmed &&
-                              !services.includes(trimmed) &&
-                              services.length < 20
-                            ) {
-                              const newServices = [...services, trimmed];
-                              setValue("services", newServices, { shouldValidate: true });
-                              setServiceInput("");
-                              setShowCustomInput(false);
-                            }
-                          }
-                        }}
-                        placeholder="Enter custom service name"
-                        className="flex-1 h-[41px] border border-[#CBD5E1] rounded-lg px-3 outline-none focus:border-[#7C3AED] transition-colors"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const trimmed = serviceInput.trim();
-                          if (
-                            trimmed &&
-                            !services.includes(trimmed) &&
-                            services.length < 20
-                          ) {
-                            const newServices = [...services, trimmed];
-                            setValue("services", newServices, { shouldValidate: true });
-                            setServiceInput("");
-                            setShowCustomInput(false);
-                          }
-                        }}
-                        className="px-4 h-[41px] bg-[#7C3AED] text-white rounded-lg hover:bg-[#6D28D9] transition-colors font-medium"
-                      >
-                        Add
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowCustomInput(false);
-                          setServiceInput("");
-                        }}
-                        className="px-4 h-[41px] border border-[#CBD5E1] rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                      >
-                        Cancel
-                      </button>
-                    </div>
+                    <span className="text-red-500 text-xs sm:text-sm">
+                      {errors.services.message}
+                    </span>
                   )}
                 </div>
-
               </div>
 
               {/* ---------------- ROW 2 ---------------- */}
-              <div className="flex gap-8">
-
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
                 {/* Location */}
-                <div className="w-[530px] flex flex-col gap-1.5">
-                  <label className="text-[#64748B] font-[Poppins] font-medium">
+                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                  <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Location <span className="text-red-500">*</span>
                   </label>
-                  <div className="relative w-[530px]">
+                  <div className="relative w-full">
                     <select
                       {...register("country_id")}
                       className={`h-[43px] w-full border rounded-lg px-3
-      text-[#081021] font-semibold text-base
-      outline-none bg-white appearance-none ${errors.country_id ? "border-red-500" : "border-[#CBD5E1]"
-                        }`}
+      text-[#081021] font-semibold text-sm sm:text-base
+      outline-none bg-white appearance-none ${
+        errors.country_id ? "border-red-500" : "border-[#CBD5E1]"
+      }`}
                     >
                       <option value="">Select Location</option>
                       {countryData.map((country: any) => (
@@ -1483,13 +1617,15 @@ const EditDirectory: React.FC = () => {
                     </svg>
                   </div>
                   {errors.country_id && (
-                    <span className="text-red-500 text-sm">{errors.country_id.message}</span>
+                    <span className="text-red-500 text-xs sm:text-sm">
+                      {errors.country_id.message}
+                    </span>
                   )}
                 </div>
 
                 {/* Contact */}
-                <div className="w-[530px] flex flex-col gap-1.5">
-                  <label className="text-[#64748B] font-[Poppins] font-medium">
+                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                  <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Contact <span className="text-red-500">*</span>
                   </label>
 
@@ -1501,15 +1637,16 @@ const EditDirectory: React.FC = () => {
                         value={field.value || ""}
                         onChange={(value, countryInfo) => {
                           field.onChange(value);
-                          // Store the dial code for parsing
-                          // countryInfo can be either a string (value) or an object with country and inputValue
-                          if (countryInfo && typeof countryInfo === 'object' && countryInfo.country) {
+                          if (
+                            countryInfo &&
+                            typeof countryInfo === "object" &&
+                            countryInfo.country
+                          ) {
                             const dialCode = countryInfo.country.dialCode;
                             if (dialCode) {
                               setPhoneDialCode(`+${dialCode}`);
                             }
                           }
-                          // Extract dial code from the value if countryInfo doesn't have it
                           if (!phoneDialCode && value) {
                             const match = value.match(/^\+(\d{1,3})/);
                             if (match) {
@@ -1521,28 +1658,37 @@ const EditDirectory: React.FC = () => {
                         defaultCountry="us"
                         forceDialCode
                         placeholder="Enter contact number"
-                        className={`w-full border rounded-lg ${errors.contact ? "border-red-500" : "border-[#CBD5E1]"
-                          }`}
-                        inputClassName="w-full px-3 py-2 focus:outline-none"
+                        className={`w-full border rounded-lg ${
+                          errors.contact ? "border-red-500" : "border-[#CBD5E1]"
+                        }`}
+                        inputClassName="h-[43px]! w-full px-3 focus:outline-none text-sm sm:text-base border-none"
                         countrySelectorStyleProps={{
-                          buttonClassName: "border-r border-gray-300 px-3",
-                          dropdownStyleProps: { className: "z-50" }
+                          buttonClassName:
+                            "h-[43px] border-r border-gray-300 px-3 flex items-center",
+                          buttonStyle: {
+                            height: "43px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          },
+                          dropdownStyleProps: { className: "z-50" },
                         }}
                       />
                     )}
                   />
                   {errors.contact && (
-                    <span className="text-red-500 text-sm">{errors.contact.message}</span>
+                    <span className="text-red-500 text-xs sm:text-sm">
+                      {errors.contact.message}
+                    </span>
                   )}
                 </div>
               </div>
 
               {/* ---------------- ROW 3 ---------------- */}
-              <div className="flex gap-8">
-
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
                 {/* Website */}
-                <div className="w-[530px] flex flex-col gap-1.5">
-                  <label className="text-[#64748B] font-[Poppins] font-medium">
+                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                  <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Website
                   </label>
                   <input
@@ -1550,61 +1696,76 @@ const EditDirectory: React.FC = () => {
                     {...register("website")}
                     placeholder="https://www.example.com"
                     className={`h-[43px] border rounded-lg px-3 
-                       text-[#081021] font-semibold text-base outline-none ${errors.website ? "border-red-500" : "border-[#CBD5E1]"
-                      }`}
+                       text-[#081021] font-semibold text-sm sm:text-base outline-none ${
+                         errors.website ? "border-red-500" : "border-[#CBD5E1]"
+                       }`}
                   />
                   {errors.website && (
-                    <span className="text-red-500 text-sm">{errors.website.message}</span>
+                    <span className="text-red-500 text-xs sm:text-sm">
+                      {errors.website.message}
+                    </span>
                   )}
                 </div>
 
                 {/* Email */}
-                <div className="w-[530px] flex flex-col gap-1.5">
-                  <label className="text-[#64748B] font-[Poppins] font-medium">
+                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                  <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Email <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     {...register("email")}
                     className={`h-[43px] border rounded-lg px-3 
-                       text-[#081021] font-semibold text-base outline-none ${errors.email ? "border-red-500" : "border-[#CBD5E1]"
-                      }`}
+                       text-[#081021] font-semibold text-sm sm:text-base outline-none ${
+                         errors.email ? "border-red-500" : "border-[#CBD5E1]"
+                       }`}
                   />
                   {errors.email && (
-                    <span className="text-red-500 text-sm">{errors.email.message}</span>
+                    <span className="text-red-500 text-xs sm:text-sm">
+                      {errors.email.message}
+                    </span>
                   )}
                 </div>
-
               </div>
 
               {/* ---------------- ABOUT ---------------- */}
               <div className="w-full flex flex-col gap-1.5">
-                <label className="text-[#64748B] font-[Poppins] font-medium">
+                <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                   About <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   {...register("about")}
-                  className={`h-[94px] border rounded-lg p-3 text-[#081021] 
-                     font-semibold text-base leading-[26px] outline-none resize-none ${errors.about ? "border-red-500" : "border-[#CBD5E1]"
-                    }`}
+                  className={`min-h-[94px] border rounded-lg p-3 text-[#081021] 
+                     font-semibold text-sm sm:text-base leading-[26px] outline-none resize-none ${
+                       errors.about ? "border-red-500" : "border-[#CBD5E1]"
+                     }`}
                 />
                 {errors.about && (
-                  <span className="text-red-500 text-sm">{errors.about.message}</span>
+                  <span className="text-red-500 text-xs sm:text-sm">
+                    {errors.about.message}
+                  </span>
                 )}
               </div>
 
               {/* ---------------- LOGO UPLOAD ---------------- */}
               <div className="flex flex-col gap-2.5">
-                <label className="text-[#64748B] font-[Poppins] font-medium">Logo</label>
+                <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
+                  Logo
+                </label>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <Controller
                     name="logo"
                     control={control}
                     render={({ field: { onChange, value, ...field } }) => (
-                      <label className={`w-[82px] h-[82px] bg-white border-2 border-dashed border-[#D5D5D5] 
-                               rounded-full flex items-center justify-center overflow-hidden relative ${isUploadingLogo ? "cursor-wait" : "cursor-pointer"
-                        }`}>
+                      <label
+                        className={`w-[82px] h-[82px] bg-white border-2 border-dashed border-[#D5D5D5] 
+                               rounded-full flex items-center justify-center overflow-hidden relative ${
+                                 isUploadingLogo
+                                   ? "cursor-wait"
+                                   : "cursor-pointer"
+                               }`}
+                      >
                         {isUploadingLogo ? (
                           <div className="flex flex-col items-center justify-center gap-1">
                             <div className="w-6 h-6 border-3 border-[#7077FE] border-t-transparent rounded-full animate-spin"></div>
@@ -1621,48 +1782,49 @@ const EditDirectory: React.FC = () => {
                                 if (file) {
                                   setIsUploadingLogo(true);
 
-                                  // Create preview for selected file
                                   const reader = new FileReader();
                                   reader.onloadend = () => {
                                     setLogoPreview(reader.result as string);
                                   };
                                   reader.readAsDataURL(file);
 
-                                  // Create FormData with the file
                                   const formData = new FormData();
                                   formData.append("file", file);
 
                                   try {
-                                    // Call the upload API
-                                    const response = await UploadDirectoryLogo(formData);
+                                    const response = await UploadDirectoryLogo(
+                                      formData
+                                    );
 
                                     if (response?.success?.status) {
-                                      // Update logo URL from response if available
                                       if (response?.data?.logo_url) {
                                         setLogoUrl(response.data.logo_url);
                                         setLogoPreview(response.data.logo_url);
                                       }
                                       showToast({
-                                        message: response?.success?.message || "Logo uploaded successfully",
+                                        message:
+                                          response?.success?.message ||
+                                          "Logo uploaded successfully",
                                         type: "success",
                                         duration: 5000,
                                       });
-                                      // Update the form field with the file
                                       onChange(e.target.files);
                                     } else {
-                                      // Reset preview on error
                                       setLogoPreview(logoUrl);
                                       showToast({
-                                        message: response?.error?.message || "Failed to upload logo",
+                                        message:
+                                          response?.error?.message ||
+                                          "Failed to upload logo",
                                         type: "error",
                                         duration: 5000,
                                       });
                                     }
                                   } catch (error: any) {
-                                    // Reset preview on error
                                     setLogoPreview(logoUrl);
                                     showToast({
-                                      message: error?.response?.error?.message || "Failed to upload logo",
+                                      message:
+                                        error?.response?.error?.message ||
+                                        "Failed to upload logo",
                                       type: "error",
                                       duration: 5000,
                                     });
@@ -1688,28 +1850,28 @@ const EditDirectory: React.FC = () => {
                   />
 
                   <div className="flex flex-col gap-2">
-                    <span className="text-[#7077FE] font-semibold text-base cursor-pointer">
+                    <span className="text-[#7077FE] font-semibold text-sm sm:text-base cursor-pointer">
                       Upload your logo here
                     </span>
-                    <span className="text-[#64748B] text-sm">
+                    <span className="text-[#64748B] text-xs sm:text-sm">
                       Accepted file types: .jpg, .jpeg, .png
                     </span>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
 
-
-        { /* Photos Section */}
-        <div className="w-full bg-white border border-[#F7F7F7] rounded-xl p-4">
+        {/* Photos Section */}
+        <div className="w-full bg-white border border-[#F7F7F7] rounded-xl p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[#081021] font-[Poppins] font-semibold text-xl">Photos</h2>
+            <h2 className="text-[#081021] font-[Poppins] font-semibold text-lg sm:text-xl">
+              Photos
+            </h2>
           </div>
 
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex flex-wrap gap-3">
             {/* Display existing photos */}
             {photoPreviews.map((preview, index) => {
               const photo = photos[index];
@@ -1718,7 +1880,10 @@ const EditDirectory: React.FC = () => {
               const isDeleting = deletingPhotoId === photoId;
 
               return (
-                <div key={photoId || index} className="w-[267px] h-[184px] bg-[#F8F0F0] rounded-lg relative overflow-hidden">
+                <div
+                  key={photoId || index}
+                  className="w-full sm:w-[calc(50%-6px)] lg:w-[267px] h-[184px] bg-[#F8F0F0] rounded-lg relative overflow-hidden"
+                >
                   {isEditing || isDeleting ? (
                     <div className="w-full h-full flex items-center justify-center bg-black bg-opacity-50">
                       <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -1739,17 +1904,17 @@ const EditDirectory: React.FC = () => {
                       onClick={() => photoId && handleEditPhotoClick(photoId)}
                       title="Edit photo"
                     >
-                      <Pencil className="w-4 h-4" />
+                      <SquarePen className="w-4 h-4" />
                     </div>
 
                     {/* DELETE ICON */}
-                    <div
+                    {/* <div
                       className="w-9 h-9 flex items-center justify-center cursor-pointer bg-white rounded-full shadow-md hover:bg-red-50 transition-colors"
                       onClick={() => photoId && handlePhotoDelete(photoId)}
                       title="Delete photo"
                     >
                       <Trash2 className="w-4 h-4 text-red-500" />
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Hidden file input for editing this specific photo */}
@@ -1765,9 +1930,8 @@ const EditDirectory: React.FC = () => {
                         const file = e.target.files?.[0];
                         if (file && photoId) {
                           handlePhotoEdit(photoId, file);
-                          // Reset input
                           if (e.target) {
-                            e.target.value = '';
+                            e.target.value = "";
                           }
                         }
                       }}
@@ -1779,14 +1943,18 @@ const EditDirectory: React.FC = () => {
 
             {/* Add Photo / Loading State */}
             {isUploadingPhotos ? (
-              <div className="w-[267px] h-[184px] bg-white border-2 border-dashed border-[#D5D5D5] 
-               rounded-lg flex flex-col items-center justify-center gap-2">
+              <div
+                className="w-full sm:w-[calc(50%-6px)] lg:w-[267px] h-[184px] bg-white border-2 border-dashed border-[#D5D5D5] 
+               rounded-lg flex flex-col items-center justify-center gap-2"
+              >
                 <div className="w-8 h-8 border-4 border-[#7077FE] border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-[#7077FE] font-semibold text-xs">Uploading...</span>
+                <span className="text-[#7077FE] font-semibold text-xs">
+                  Uploading...
+                </span>
               </div>
             ) : (
               <div
-                className="w-[267px] h-[184px] bg-white border-2 border-dashed border-[#D5D5D5] 
+                className="w-full sm:w-[calc(50%-6px)] lg:w-[267px] h-[184px] bg-white border-2 border-dashed border-[#D5D5D5] 
                rounded-lg flex flex-col items-center justify-center gap-1 cursor-pointer"
                 onClick={handleAddPhotoClick}
               >
@@ -1795,7 +1963,9 @@ const EditDirectory: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col items-center">
-                  <span className="text-[#7077FE] font-semibold text-xs">Add image</span>
+                  <span className="text-[#7077FE] font-semibold text-xs">
+                    Add image
+                  </span>
                   <span className="text-[#64748B] text-xs">Maximum 3 mb</span>
                 </div>
               </div>
@@ -1811,59 +1981,96 @@ const EditDirectory: React.FC = () => {
               onChange={async (e) => {
                 const files = e.target.files;
                 if (files && files.length > 0) {
-                  // Upload photos (previews will be updated from API response)
                   await handlePhotoUpload(files);
-                  // Reset input to allow selecting the same file again
                   if (e.target) {
-                    e.target.value = '';
+                    e.target.value = "";
                   }
                 }
               }}
             />
           </div>
         </div>
-        { /* Operating Hours Section */}
-        <div className="w-full bg-white rounded-xl p-4">
-          <h2 className="text-[#081021] font-semibold text-lg mb-4">
+
+        {/* Operating Hours Section */}
+        <div className="w-full bg-white rounded-xl p-4 sm:p-6">
+          <h2 className="text-[#081021] font-semibold text-lg sm:text-xl mb-4">
             Operations Information
           </h2>
 
           {/* =================== RADIO BUTTONS =================== */}
           <div className="flex flex-col gap-3 mb-6">
-
             {/* Opens with main hours */}
-            <div className="flex items-center gap-2 cursor-pointer"
-              onClick={() => setValue("operationMode", "main", { shouldValidate: true })}>
-              <div className={`w-3 h-3 rounded-full border-2 
-          ${mode === "main" ? "bg-[#7077FE] border-[#7077FE]" : "border-gray-300"}`}
+            <div
+              className="flex items-start gap-2 cursor-pointer"
+              onClick={() =>
+                setValue("operationMode", "main", { shouldValidate: true })
+              }
+            >
+              <div
+                className={`w-3 h-3 rounded-full border-2 mt-1
+          ${
+            mode === "main"
+              ? "bg-[#7077FE] border-[#7077FE]"
+              : "border-gray-300"
+          }`}
               ></div>
               <div>
-                <div className="font-semibold text-[#081021]">Opens with main hours</div>
-                <div className="text-[#64748B] text-sm">Show when your business is open</div>
+                <div className="font-semibold text-[#081021] text-sm sm:text-base">
+                  Opens with main hours
+                </div>
+                <div className="text-[#64748B] text-xs sm:text-sm">
+                  Show when your business is open
+                </div>
               </div>
             </div>
 
             {/* Temporary closed */}
-            <div className="flex items-center gap-2 cursor-pointer"
-              onClick={() => setValue("operationMode", "temporary", { shouldValidate: true })}>
-              <div className={`w-3 h-3 rounded-full border-2 
-          ${mode === "temporary" ? "bg-[#7077FE] border-[#7077FE]" : "border-gray-300"}`}
+            <div
+              className="flex items-start gap-2 cursor-pointer"
+              onClick={() =>
+                setValue("operationMode", "temporary", { shouldValidate: true })
+              }
+            >
+              <div
+                className={`w-3 h-3 rounded-full border-2 mt-1
+          ${
+            mode === "temporary"
+              ? "bg-[#7077FE] border-[#7077FE]"
+              : "border-gray-300"
+          }`}
               ></div>
               <div>
-                <div className="font-semibold text-[#081021]">Temporary closed</div>
-                <div className="text-[#64748B] text-sm">Show your business will open again</div>
+                <div className="font-semibold text-[#081021] text-sm sm:text-base">
+                  Temporary closed
+                </div>
+                <div className="text-[#64748B] text-xs sm:text-sm">
+                  Show your business will open again
+                </div>
               </div>
             </div>
 
             {/* Permanently closed */}
-            <div className="flex items-center gap-2 cursor-pointer"
-              onClick={() => setValue("operationMode", "permanent", { shouldValidate: true })}>
-              <div className={`w-3 h-3 rounded-full border-2 
-          ${mode === "permanent" ? "bg-[#7077FE] border-[#7077FE]" : "border-gray-300"}`}
+            <div
+              className="flex items-start gap-2 cursor-pointer"
+              onClick={() =>
+                setValue("operationMode", "permanent", { shouldValidate: true })
+              }
+            >
+              <div
+                className={`w-3 h-3 rounded-full border-2 mt-1
+          ${
+            mode === "permanent"
+              ? "bg-[#7077FE] border-[#7077FE]"
+              : "border-gray-300"
+          }`}
               ></div>
               <div>
-                <div className="font-semibold text-[#081021]">Permanently closed</div>
-                <div className="text-[#64748B] text-sm">Your business no longer exists</div>
+                <div className="font-semibold text-[#081021] text-sm sm:text-base">
+                  Permanently closed
+                </div>
+                <div className="text-[#64748B] text-xs sm:text-sm">
+                  Your business no longer exists
+                </div>
               </div>
             </div>
           </div>
@@ -1871,29 +2078,29 @@ const EditDirectory: React.FC = () => {
           {/* =================== CONDITIONAL SECTION =================== */}
 
           {mode === "main" && (
-            <div className="grid grid-cols-3 gap-x-20 gap-y-12">
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 lg:gap-x-2 gap-y-6 sm:gap-y-8 lg:gap-y-12">
               {days.map((day, index) => (
                 <div key={index} className="flex flex-col gap-1">
-
                   {/* TOP ROW: Day Name + Labels */}
-                  <div className="flex items-center gap-10">
-
+                  <div className="flex items-center justify-between sm:justify-start">
                     {/* DAY NAME */}
-                    <span className="text-[14px] font-['open_sans'] font-semibold text-[#081021] w-24">
+                    <span className="text-sm sm:text-[14px] font-['open_sans'] font-semibold text-[#081021] w-24">
                       {day.name}
                     </span>
 
-                    {/* LABELS ROW */}
-                    <div className="flex items-center gap-10">
-                      <span className="text-[14px] font-['open_sans'] text-[#64748B] w-[120px]">Open at</span>
-                      <span className="text-[14px] font-['open_sans'] text-[#64748B] w-[120px]">Closes at</span>
+                    {/* LABELS ROW - Hidden on mobile */}
+                    <div className="hidden sm:flex items-center gap-2">
+                      <span className="text-sm sm:text-[14px] font-['open_sans'] text-[#64748B] w-[120px]">
+                        Open at
+                      </span>
+                      <span className="text-sm sm:text-[14px] font-['open_sans'] text-[#64748B] w-[120px]">
+                        Closes at
+                      </span>
                     </div>
                   </div>
 
                   {/* SECOND ROW: Checkbox + Inputs */}
-                  <div className="flex items-center gap-10">
-
+                  <div className="flex items-center justify-between sm:justify-start">
                     {/* CHECKBOX */}
                     <div className="flex items-center gap-2 w-24">
                       <input
@@ -1905,75 +2112,100 @@ const EditDirectory: React.FC = () => {
                       />
                       <label
                         htmlFor={`day-${index}`}
-                        className="text-[12px] font-['open_sans'] text-[#64748B] cursor-pointer"
+                        className="text-xs sm:text-[12px] font-['open_sans'] text-[#64748B] cursor-pointer"
                       >
                         {day.isOpen ? "Open" : "Closed"}
                       </label>
                     </div>
 
                     {/* TIME INPUTS ROW */}
-                    <div className="flex items-center gap-10">
-
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2">
                       {/* OPEN TIME INPUT */}
-                      <input
-                        type="time"
-                        value={day.openTime}
-                        disabled={!day.isOpen}
-                        onChange={(e) => updateTime(index, "openTime", e.target.value)}
-                        className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-[120px] ${!day.isOpen ? "bg-gray-200 opacity-60 cursor-not-allowed" : ""
+                      <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-10">
+                        <span className="sm:hidden text-xs text-[#64748B]">
+                          Open:
+                        </span>
+                        <input
+                          type="time"
+                          value={day.openTime}
+                          disabled={!day.isOpen}
+                          onChange={(e) =>
+                            updateTime(index, "openTime", e.target.value)
+                          }
+                          className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-full sm:w-[120px] text-sm ${
+                            !day.isOpen
+                              ? "bg-gray-200 opacity-60 cursor-not-allowed"
+                              : ""
                           }`}
-                      />
+                        />
+                      </div>
 
                       {/* CLOSE TIME INPUT */}
-                      <input
-                        type="time"
-                        value={day.closeTime}
-                        disabled={!day.isOpen}
-                        onChange={(e) => updateTime(index, "closeTime", e.target.value)}
-                        className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-[120px] ${!day.isOpen ? "bg-gray-200 opacity-60 cursor-not-allowed" : ""
+                      <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-10">
+                        <span className="sm:hidden text-xs text-[#64748B]">
+                          Close:
+                        </span>
+                        <input
+                          type="time"
+                          value={day.closeTime}
+                          disabled={!day.isOpen}
+                          onChange={(e) =>
+                            updateTime(index, "closeTime", e.target.value)
+                          }
+                          className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-full sm:w-[120px] text-sm ${
+                            !day.isOpen
+                              ? "bg-gray-200 opacity-60 cursor-not-allowed"
+                              : ""
                           }`}
-                      />
-
+                        />
+                      </div>
                     </div>
                   </div>
-
                 </div>
               ))}
-
             </div>
           )}
 
-
           {/* ----------- 2. TEMPORARY CLOSED ----------- */}
           {mode === "temporary" && (
-            <div className="mt-4 flex gap-4">
-              <div className="flex flex-col gap-1.5">
+            <div className="mt-4 flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col gap-1.5 flex-1">
                 <label className="text-sm text-[#64748B]">
                   Start Date <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
                   {...register("temporaryStartDate")}
-                  className={`border rounded-lg px-2 py-1 ${errors.temporaryStartDate ? "border-red-500" : "border-[#CBD5E1]"
-                    }`}
+                  className={`border rounded-lg px-2 py-2 sm:py-1 text-sm ${
+                    errors.temporaryStartDate
+                      ? "border-red-500"
+                      : "border-[#CBD5E1]"
+                  }`}
                 />
                 {errors.temporaryStartDate && (
-                  <span className="text-red-500 text-sm">{errors.temporaryStartDate.message}</span>
+                  <span className="text-red-500 text-xs sm:text-sm">
+                    {errors.temporaryStartDate.message}
+                  </span>
                 )}
               </div>
 
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1.5 flex-1">
                 <label className="text-sm text-[#64748B]">
                   End Date <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
                   {...register("temporaryEndDate")}
-                  className={`border rounded-lg px-2 py-1 ${errors.temporaryEndDate ? "border-red-500" : "border-[#CBD5E1]"
-                    }`}
+                  className={`border rounded-lg px-2 py-2 sm:py-1 text-sm ${
+                    errors.temporaryEndDate
+                      ? "border-red-500"
+                      : "border-[#CBD5E1]"
+                  }`}
                 />
                 {errors.temporaryEndDate && (
-                  <span className="text-red-500 text-sm">{errors.temporaryEndDate.message}</span>
+                  <span className="text-red-500 text-xs sm:text-sm">
+                    {errors.temporaryEndDate.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -1987,40 +2219,52 @@ const EditDirectory: React.FC = () => {
           )}
         </div>
 
-
-
-        { /* Reviews Section */}
-        <div className="w-full bg-white rounded-xl p-4">
-          <div className="bg-white p-4">
-            <h2 className="text-[#081021] font-[Poppins] font-semibold text-lg mb-4">All Reviews</h2>
+        {/* Reviews Section */}
+        <div className="w-full bg-white rounded-xl p-4 sm:p-6">
+          <div className="bg-white">
+            <h2 className="text-[#081021] font-[Poppins] font-semibold text-lg sm:text-xl mb-4">
+              All Reviews
+            </h2>
 
             {loadingReviews ? (
-              <div className="text-center py-8 text-[#64748B]">Loading reviews...</div>
+              <div className="text-center py-8 text-[#64748B]">
+                Loading reviews...
+              </div>
             ) : reviews.length > 0 ? (
               <div
                 className="space-y-5 max-h-[800px] overflow-y-auto"
                 onScroll={(e) => {
                   const target = e.target as HTMLElement;
-                  const scrollBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
-                  if (scrollBottom < 100 && reviewsPagination.hasMore && !reviewsPagination.loadingMore) {
+                  const scrollBottom =
+                    target.scrollHeight -
+                    target.scrollTop -
+                    target.clientHeight;
+                  if (
+                    scrollBottom < 100 &&
+                    reviewsPagination.hasMore &&
+                    !reviewsPagination.loadingMore
+                  ) {
                     loadMoreReviews();
                   }
                 }}
               >
                 {reviews.map((review: any) => {
                   const reviewDate = review.createdAt
-                    ? new Date(review.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })
+                    ? new Date(review.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })
                     : "";
 
                   return (
-                    <div key={review.id} className="bg-[#F9F9F9] rounded-lg p-4 space-y-3">
-                      <div className="flex justify-between items-stretch gap-2.5">
+                    <div
+                      key={review.id}
+                      className="bg-[#F9F9F9] rounded-lg p-4 space-y-3"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-stretch gap-2.5">
                         <div className="flex-1 flex flex-col justify-center gap-2">
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             {review.profile?.profile_picture && (
                               <img
                                 src={review.profile.profile_picture}
@@ -2028,15 +2272,21 @@ const EditDirectory: React.FC = () => {
                                 className="w-8 h-8 rounded-full object-cover"
                               />
                             )}
-                            <span className="text-black font-[Poppins] font-semibold text-base">
-                              {`${review.profile?.first_name || ""} ${review.profile?.last_name || ""}`.trim() || "Anonymous"}
+                            <span className="text-black font-[Poppins] font-semibold text-sm sm:text-base">
+                              {`${review.profile?.first_name || ""} ${
+                                review.profile?.last_name || ""
+                              }`.trim() || "Anonymous"}
                             </span>
-                            <div className="w-1.5 h-1.5 bg-[#A1A1A1] rounded-full"></div>
-                            <span className="text-[#A1A1A1] text-[12px] font-['open_sans']">{reviewDate}</span>
+                            <div className="hidden sm:block w-1.5 h-1.5 bg-[#A1A1A1] rounded-full"></div>
+                            <span className="text-[#A1A1A1] text-[12px] font-['open_sans']">
+                              {reviewDate}
+                            </span>
                             {review.is_my_review && (
                               <>
-                                <div className="w-1.5 h-1.5 bg-[#A1A1A1] rounded-full"></div>
-                                <span className="text-[#7077FE] text-[12px] font-['open_sans']">Your review</span>
+                                <div className="hidden sm:block w-1.5 h-1.5 bg-[#A1A1A1] rounded-full"></div>
+                                <span className="text-[#7077FE] text-[12px] font-['open_sans']">
+                                  Your review
+                                </span>
                               </>
                             )}
                           </div>
@@ -2047,10 +2297,11 @@ const EditDirectory: React.FC = () => {
                               {[1, 2, 3, 4, 5].map((star) => (
                                 <Star
                                   key={star}
-                                  className={`w-4 h-4 ${star <= review.rating
-                                    ? "text-[#FACC15] fill-[#FACC15]"
-                                    : "text-[#94A3B8]"
-                                    }`}
+                                  className={`w-4 h-4 ${
+                                    star <= review.rating
+                                      ? "text-[#FACC15] fill-[#FACC15]"
+                                      : "text-[#94A3B8]"
+                                  }`}
                                   strokeWidth={1.2}
                                 />
                               ))}
@@ -2061,14 +2312,22 @@ const EditDirectory: React.FC = () => {
                                 <button
                                   key={star}
                                   type="button"
-                                  onClick={() => setEditReviewRating(prev => ({ ...prev, [review.id]: star }))}
+                                  onClick={() =>
+                                    setEditReviewRating((prev) => ({
+                                      ...prev,
+                                      [review.id]: star,
+                                    }))
+                                  }
                                   className="focus:outline-none"
                                 >
                                   <Star
-                                    className={`w-4 h-4 ${star <= (editReviewRating[review.id] || review.rating)
-                                      ? "text-[#FACC15] fill-[#FACC15]"
-                                      : "text-[#94A3B8]"
-                                      }`}
+                                    className={`w-4 h-4 ${
+                                      star <=
+                                      (editReviewRating[review.id] ||
+                                        review.rating)
+                                        ? "text-[#FACC15] fill-[#FACC15]"
+                                        : "text-[#94A3B8]"
+                                    }`}
                                     strokeWidth={1.2}
                                   />
                                 </button>
@@ -2080,58 +2339,79 @@ const EditDirectory: React.FC = () => {
                           {editingReviewId === review.id ? (
                             <div className="space-y-2">
                               <textarea
-                                className="w-full outline-none resize-none font-['open_sans'] text-[#1E1E1E] bg-transparent border border-[#E0E0E0] rounded-lg p-3 text-[12px]"
+                                className="w-full outline-none resize-none font-['open_sans'] text-[#1E1E1E] bg-transparent border border-[#E0E0E0] rounded-lg p-3 text-xs sm:text-[12px]"
                                 placeholder="Edit your review..."
                                 value={editReviewText[review.id] || ""}
                                 onChange={(e) => {
                                   const value = e.target.value;
                                   if (value.length <= 2000) {
-                                    setEditReviewText(prev => ({
+                                    setEditReviewText((prev) => ({
                                       ...prev,
-                                      [review.id]: value
+                                      [review.id]: value,
                                     }));
                                   }
                                 }}
                                 rows={4}
                               />
-                              <div className="flex justify-end items-center space-x-3">
+                              <div className="flex flex-col sm:flex-row justify-end items-center space-y-2 sm:space-y-0 sm:space-x-3">
                                 <span className="font-['open_sans'] text-[#8A8A8A] text-xs">
-                                  {2000 - (editReviewText[review.id]?.length || 0)} Characters remaining
+                                  {2000 -
+                                    (editReviewText[review.id]?.length ||
+                                      0)}{" "}
+                                  Characters remaining
                                 </span>
-                                <button
-                                  type="button"
-                                  onClick={() => handleCancelEditReview(review.id)}
-                                  className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
-                                  disabled={submittingEditReview[review.id]}
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleUpdateReview(review.id)}
-                                  disabled={submittingEditReview[review.id] || !editReviewText[review.id]?.trim()}
-                                  className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-6 py-3 rounded-full font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  {submittingEditReview[review.id] ? "Updating..." : "Update"}
-                                </button>
+                                <div className="flex space-x-2">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleCancelEditReview(review.id)
+                                    }
+                                    className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
+                                    disabled={submittingEditReview[review.id]}
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleUpdateReview(review.id)
+                                    }
+                                    disabled={
+                                      submittingEditReview[review.id] ||
+                                      !editReviewText[review.id]?.trim()
+                                    }
+                                    className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-6 py-3 rounded-full font-semibold text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    {submittingEditReview[review.id]
+                                      ? "Updating..."
+                                      : "Update"}
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           ) : (
-                            <p className="text-[#1E1E1E] text-[12px] font-['open_sans'] leading-[20.4px]">
+                            <p className="text-[#1E1E1E] text-xs sm:text-[12px] font-['open_sans'] leading-[20.4px]">
                               {review.description}
                             </p>
                           )}
                         </div>
                         {/* Edit Button for Parent Review */}
-                        {review.is_my_review && editingReviewId !== review.id && (
-                          <button
-                            type="button"
-                            onClick={() => handleEditReview(review.id, review.description, review.rating)}
-                            className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs self-start"
-                          >
-                            Edit
-                          </button>
-                        )}
+                        {review.is_my_review &&
+                          editingReviewId !== review.id && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleEditReview(
+                                  review.id,
+                                  review.description,
+                                  review.rating
+                                )
+                              }
+                              className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs self-start sm:self-start"
+                            >
+                              Edit
+                            </button>
+                          )}
                       </div>
 
                       {/* Like / Reply Section */}
@@ -2141,15 +2421,29 @@ const EditDirectory: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleLikeReview(review.id)}
-                            className={`w-6 h-6 flex items-center justify-center ${review.is_liked ? "text-[#7077FE]" : "text-[#1E1E1E]"}`}
+                            className={`w-6 h-6 flex items-center justify-center ${
+                              review.is_liked
+                                ? "text-[#7077FE]"
+                                : "text-[#1E1E1E]"
+                            }`}
                           >
                             {review.is_liked ? (
-                              <img src="https://static.codia.ai/image/2025-12-04/e6MiVoWVJn.png" alt="Like" className="w-full h-full" />
+                              <img
+                                src="https://static.codia.ai/image/2025-12-04/e6MiVoWVJn.png"
+                                alt="Like"
+                                className="w-full h-full"
+                              />
                             ) : (
-                              <img src="https://static.codia.ai/image/2025-12-04/V3hCQqvhhk.png" alt="Like" className="w-full h-full" />
+                              <img
+                                src="https://static.codia.ai/image/2025-12-04/V3hCQqvhhk.png"
+                                alt="Like"
+                                className="w-full h-full"
+                              />
                             )}
                             {review.likes_count > 0 && (
-                              <span className="ml-1 text-[#1E1E1E] text-xs font-['open_sans']">{review.likes_count}</span>
+                              <span className="ml-1 text-[#1E1E1E] text-xs font-['open_sans']">
+                                {review.likes_count}
+                              </span>
                             )}
                           </button>
                           <div className="w-px h-5 bg-[#E0E0E0]"></div>
@@ -2160,10 +2454,16 @@ const EditDirectory: React.FC = () => {
                             className="flex items-center gap-1 bg-transparent rounded-full px-2.5 py-1.5"
                           >
                             <div className="w-6 h-6">
-                              <img src="https://static.codia.ai/image/2025-12-04/0jQyhLuXK4.png" alt="Reply" className="w-full h-full" />
+                              <img
+                                src="https://static.codia.ai/image/2025-12-04/0jQyhLuXK4.png"
+                                alt="Reply"
+                                className="w-full h-full"
+                              />
                             </div>
                             <span className="text-[#222224] text-xs leading-[26.4px]">
-                              Reply {review.reply_count > 0 && `(${review.reply_count})`}
+                              Reply{" "}
+                              {review.reply_count > 0 &&
+                                `(${review.reply_count})`}
                             </span>
                           </button>
                         </div>
@@ -2171,17 +2471,17 @@ const EditDirectory: React.FC = () => {
 
                       {/* Reply Input Section */}
                       {openReplyInputs.has(review.id) && (
-                        <div className="bg-white rounded-2xl border border-[#E0E0E0] p-5 space-y-2.5">
+                        <div className="bg-white rounded-2xl border border-[#E0E0E0] p-4 sm:p-5 max-w-[700px]">
                           <textarea
-                            className="w-full outline-none resize-none font-['open_sans'] text-[#8A8A8A] bg-transparent text-base leading-[35.2px]"
-                            placeholder="Replay a comment..."
+                            className="w-full outline-none resize-none font-['open_sans'] text-[#8A8A8A] bg-transparent text-sm sm:text-base leading-[35.2px]"
+                            placeholder="Reply a comment..."
                             value={replyTexts[review.id] || ""}
                             onChange={(e) => {
                               const value = e.target.value;
                               if (value.length <= 2000) {
-                                setReplyTexts(prev => ({
+                                setReplyTexts((prev) => ({
                                   ...prev,
-                                  [review.id]: value
+                                  [review.id]: value,
                                 }));
                               }
                             }}
@@ -2189,29 +2489,38 @@ const EditDirectory: React.FC = () => {
                           />
                           <div className="flex justify-end">
                             <div className="flex items-center">
-                              <div className="flex items-end gap-3 p-1">
+                              <div className="flex flex-col sm:flex-row items-end gap-3 p-1">
                                 <div className="bg-white rounded-full px-3 py-2">
                                   <span className="text-[#8A8A8A] text-xs text-center">
-                                    {2000 - (replyTexts[review.id]?.length || 0)} Characters remaining
+                                    {2000 -
+                                      (replyTexts[review.id]?.length || 0)}{" "}
+                                    Characters remaining
                                   </span>
                                 </div>
-                                <button
-                                  type="button"
-                                  onClick={() => toggleReplyInput(review.id)}
-                                  className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleSubmitReply(review.id)}
-                                  disabled={submittingReply[review.id] || !replyTexts[review.id]?.trim()}
-                                  className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-full px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  <span className="text-white font-semibold text-base text-center">
-                                    {submittingReply[review.id] ? "Submitting..." : "Submit"}
-                                  </span>
-                                </button>
+                                <div className="flex space-x-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleReplyInput(review.id)}
+                                    className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSubmitReply(review.id)}
+                                    disabled={
+                                      submittingReply[review.id] ||
+                                      !replyTexts[review.id]?.trim()
+                                    }
+                                    className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] rounded-full px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    <span className="text-white font-semibold text-sm sm:text-base text-center">
+                                      {submittingReply[review.id]
+                                        ? "Submitting..."
+                                        : "Submit"}
+                                    </span>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -2221,169 +2530,292 @@ const EditDirectory: React.FC = () => {
                       {/* Child Reviews (Replies) */}
                       {openReplyInputs.has(review.id) && (
                         <div className="space-y-3">
-
                           <div
                             className="space-y-3 max-h-[600px] overflow-y-auto"
                             onScroll={(e) => {
                               const target = e.target as HTMLElement;
-                              const scrollBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
-                              if (scrollBottom < 100 && pagination[review.id]?.hasMore && !pagination[review.id]?.loadingMore) {
+                              const scrollBottom =
+                                target.scrollHeight -
+                                target.scrollTop -
+                                target.clientHeight;
+                              if (
+                                scrollBottom < 100 &&
+                                pagination[review.id]?.hasMore &&
+                                !pagination[review.id]?.loadingMore
+                              ) {
                                 loadMoreChildReviews(review.id);
                               }
                             }}
                           >
                             {loadingChildReviews[review.id] ? (
-                              <div className="text-center py-4 text-[#64748B] text-xs">Loading replies...</div>
-                            ) : childReviews[review.id] && childReviews[review.id].length > 0 ? (
+                              <div className="text-center py-4 text-[#64748B] text-xs">
+                                Loading replies...
+                              </div>
+                            ) : childReviews[review.id] &&
+                              childReviews[review.id].length > 0 ? (
                               <>
-                                {childReviews[review.id].map((childReview: any) => {
-                                  const childReviewDate = childReview.createdAt
-                                    ? new Date(childReview.createdAt).toLocaleDateString('en-US', {
-                                      year: 'numeric',
-                                      month: 'short',
-                                      day: 'numeric'
-                                    })
-                                    : "";
+                                {childReviews[review.id].map(
+                                  (childReview: any) => {
+                                    const childReviewDate =
+                                      childReview.createdAt
+                                        ? new Date(
+                                            childReview.createdAt
+                                          ).toLocaleDateString("en-US", {
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                          })
+                                        : "";
 
-                                  return (
-                                    <div key={childReview.id} className="bg-[#F9F9F9] rounded-lg p-4 space-y-3">
-                                      <div className="flex justify-stretch items-stretch">
-                                        <div className="flex-1 flex flex-col justify-center gap-2">
-                                          <div className="flex items-center gap-2">
-                                            {childReview.profile?.profile_picture && (
-                                              <img
-                                                src={childReview.profile.profile_picture}
-                                                alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
-                                                className="w-6 h-6 rounded-full object-cover"
-                                              />
-                                            )}
-                                            <span className="text-black font-[Poppins] font-semibold text-base">
-                                              {`${childReview.profile?.first_name || ""} ${childReview.profile?.last_name || ""}`.trim() || "Anonymous"}
-                                            </span>
-                                            <div className="w-1.5 h-1.5 bg-[#A1A1A1] rounded-full"></div>
-                                            <span className="text-[#A1A1A1] text-[12px] font-['open_sans']">{childReviewDate}</span>
-                                          </div>
-
-                                          {/* Edit Mode or Display Mode */}
-                                          {editingReplyId === childReview.id ? (
-                                            <div className="space-y-2">
-                                              <div className="bg-white rounded-2xl border border-[#E0E0E0] p-5 space-y-2.5">
-                                                <textarea
-                                                  className="w-full outline-none resize-none font-['open_sans'] text-[#8A8A8A] bg-transparent text-base leading-[35.2px]"
-                                                  placeholder="Edit your reply..."
-                                                  value={editReplyTexts[childReview.id] || ""}
-                                                  onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    if (value.length <= 2000) {
-                                                      setEditReplyTexts(prev => ({
-                                                        ...prev,
-                                                        [childReview.id]: value
-                                                      }));
-                                                    }
-                                                  }}
-                                                  rows={3}
+                                    return (
+                                      <div
+                                        key={childReview.id}
+                                        className="bg-[#F9F9F9] rounded-lg p-4 space-y-3"
+                                      >
+                                        <div className="flex flex-col sm:flex-row sm:justify-stretch sm:items-stretch">
+                                          <div className="flex-1 flex flex-col justify-center gap-2">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                              {childReview.profile
+                                                ?.profile_picture && (
+                                                <img
+                                                  src={
+                                                    childReview.profile
+                                                      .profile_picture
+                                                  }
+                                                  alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
+                                                  className="w-6 h-6 rounded-full object-cover"
                                                 />
-                                                <div className="flex justify-end">
-                                                  <div className="flex items-center">
-                                                    <div className="flex items-end gap-3 p-1">
-                                                      <div className="bg-white rounded-full px-3 py-2">
-                                                        <span className="text-[#8A8A8A] text-xs text-center">
-                                                          {2000 - (editReplyTexts[childReview.id]?.length || 0)} Characters remaining
-                                                        </span>
+                                              )}
+                                              <span className="text-black font-[Poppins] font-semibold text-sm sm:text-base">
+                                                {`${
+                                                  childReview.profile
+                                                    ?.first_name || ""
+                                                } ${
+                                                  childReview.profile
+                                                    ?.last_name || ""
+                                                }`.trim() || "Anonymous"}
+                                              </span>
+                                              <div className="hidden sm:block w-1.5 h-1.5 bg-[#A1A1A1] rounded-full"></div>
+                                              <span className="text-[#A1A1A1] text-[12px] font-['open_sans']">
+                                                {childReviewDate}
+                                              </span>
+                                            </div>
+
+                                            {/* Edit Mode or Display Mode */}
+                                            {editingReplyId ===
+                                            childReview.id ? (
+                                              <div className="space-y-2">
+                                                <div className="bg-white rounded-2xl border border-[#E0E0E0] p-4 sm:p-5 space-y-2.5">
+                                                  <textarea
+                                                    className="w-full outline-none resize-none font-['open_sans'] text-[#8A8A8A] bg-transparent text-sm sm:text-base leading-[35.2px]"
+                                                    placeholder="Edit your reply..."
+                                                    value={
+                                                      editReplyTexts[
+                                                        childReview.id
+                                                      ] || ""
+                                                    }
+                                                    onChange={(e) => {
+                                                      const value =
+                                                        e.target.value;
+                                                      if (
+                                                        value.length <= 2000
+                                                      ) {
+                                                        setEditReplyTexts(
+                                                          (prev) => ({
+                                                            ...prev,
+                                                            [childReview.id]:
+                                                              value,
+                                                          })
+                                                        );
+                                                      }
+                                                    }}
+                                                    rows={3}
+                                                  />
+                                                  <div className="flex justify-end">
+                                                    <div className="flex items-center">
+                                                      <div className="flex flex-col sm:flex-row items-end gap-3 p-1">
+                                                        <div className="bg-white rounded-full px-3 py-2">
+                                                          <span className="text-[#8A8A8A] text-xs text-center">
+                                                            {2000 -
+                                                              (editReplyTexts[
+                                                                childReview.id
+                                                              ]?.length ||
+                                                                0)}{" "}
+                                                            Characters remaining
+                                                          </span>
+                                                        </div>
+                                                        <div className="flex space-x-2">
+                                                          <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                              handleCancelEdit(
+                                                                childReview.id
+                                                              )
+                                                            }
+                                                            className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
+                                                            disabled={
+                                                              submittingEditReply[
+                                                                childReview.id
+                                                              ]
+                                                            }
+                                                          >
+                                                            Cancel
+                                                          </button>
+                                                          <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                              handleUpdateReply(
+                                                                review.id,
+                                                                childReview.id
+                                                              )
+                                                            }
+                                                            disabled={
+                                                              submittingEditReply[
+                                                                childReview.id
+                                                              ] ||
+                                                              !editReplyTexts[
+                                                                childReview.id
+                                                              ]?.trim()
+                                                            }
+                                                            className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] rounded-full px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                          >
+                                                            <span className="text-white font-semibold text-sm sm:text-base text-center">
+                                                              {submittingEditReply[
+                                                                childReview.id
+                                                              ]
+                                                                ? "Updating..."
+                                                                : "Update"}
+                                                            </span>
+                                                          </button>
+                                                        </div>
                                                       </div>
-                                                      <button
-                                                        type="button"
-                                                        onClick={() => handleCancelEdit(childReview.id)}
-                                                        className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
-                                                        disabled={submittingEditReply[childReview.id]}
-                                                      >
-                                                        Cancel
-                                                      </button>
-                                                      <button
-                                                        type="button"
-                                                        onClick={() => handleUpdateReply(review.id, childReview.id)}
-                                                        disabled={submittingEditReply[childReview.id] || !editReplyTexts[childReview.id]?.trim()}
-                                                        className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] rounded-full px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                      >
-                                                        <span className="text-white font-semibold text-base text-center">
-                                                          {submittingEditReply[childReview.id] ? "Updating..." : "Update"}
-                                                        </span>
-                                                      </button>
                                                     </div>
                                                   </div>
                                                 </div>
                                               </div>
-                                            </div>
-                                          ) : (
-                                            <p className="text-[#1E1E1E] text-[12px] font-['open_sans'] leading-[20.4px]">
-                                              {childReview.text || childReview.description}
-                                            </p>
-                                          )}
+                                            ) : (
+                                              <p className="text-[#1E1E1E] text-xs sm:text-[12px] font-['open_sans'] leading-[20.4px]">
+                                                {childReview.text ||
+                                                  childReview.description}
+                                              </p>
+                                            )}
+                                          </div>
+                                          {/* Edit/Delete Buttons */}
+                                          {childReview.is_my_reply &&
+                                            editingReplyId !==
+                                              childReview.id && (
+                                              <div className="flex items-center space-x-2 self-start mt-2 sm:mt-0">
+                                                <button
+                                                  type="button"
+                                                  onClick={() =>
+                                                    handleEditReply(
+                                                      childReview.id,
+                                                      childReview.text ||
+                                                        childReview.description
+                                                    )
+                                                  }
+                                                  className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
+                                                  disabled={
+                                                    deletingReply[
+                                                      childReview.id
+                                                    ]
+                                                  }
+                                                >
+                                                  Edit
+                                                </button>
+                                                <span className="text-[#E0E0E0]">
+                                                  |
+                                                </span>
+                                                <button
+                                                  type="button"
+                                                  onClick={() =>
+                                                    handleDeleteReply(
+                                                      review.id,
+                                                      childReview.id
+                                                    )
+                                                  }
+                                                  className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
+                                                  disabled={
+                                                    deletingReply[
+                                                      childReview.id
+                                                    ]
+                                                  }
+                                                >
+                                                  {deletingReply[childReview.id]
+                                                    ? "Deleting..."
+                                                    : "Delete"}
+                                                </button>
+                                              </div>
+                                            )}
                                         </div>
-                                        {/* Edit/Delete Buttons */}
-                                        {childReview.is_my_reply && editingReplyId !== childReview.id && (
-                                          <div className="flex items-center space-x-2 self-start">
+
+                                        {/* Like Button for Child Review */}
+                                        {editingReplyId !== childReview.id && (
+                                          <div className="flex items-center gap-2.5 p-2.5">
                                             <button
                                               type="button"
-                                              onClick={() => handleEditReply(childReview.id, childReview.text || childReview.description)}
-                                              className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
-                                              disabled={deletingReply[childReview.id]}
+                                              onClick={() =>
+                                                handleLikeReply(
+                                                  review.id,
+                                                  childReview.id
+                                                )
+                                              }
+                                              className={`w-6 h-6 flex items-center justify-center ${
+                                                childReview.is_liked
+                                                  ? "text-[#7077FE]"
+                                                  : "text-[#1E1E1E]"
+                                              }`}
                                             >
-                                              Edit
-                                            </button>
-                                            <span className="text-[#E0E0E0]">|</span>
-                                            <button
-                                              type="button"
-                                              onClick={() => handleDeleteReply(review.id, childReview.id)}
-                                              className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
-                                              disabled={deletingReply[childReview.id]}
-                                            >
-                                              {deletingReply[childReview.id] ? "Deleting..." : "Delete"}
+                                              {childReview.is_liked ? (
+                                                <img
+                                                  src="https://static.codia.ai/image/2025-12-04/e6MiVoWVJn.png"
+                                                  alt="Like"
+                                                  className="w-full h-full"
+                                                />
+                                              ) : (
+                                                <img
+                                                  src="https://static.codia.ai/image/2025-12-04/V3hCQqvhhk.png"
+                                                  alt="Like"
+                                                  className="w-full h-full"
+                                                />
+                                              )}
+                                              {childReview.likes_count > 0 && (
+                                                <span className="ml-1 text-[#1E1E1E] text-xs font-['open_sans']">
+                                                  {childReview.likes_count}
+                                                </span>
+                                              )}
                                             </button>
                                           </div>
                                         )}
                                       </div>
-
-                                      {/* Like Button for Child Review */}
-                                      {editingReplyId !== childReview.id && (
-                                        <div className="flex items-center gap-2.5 p-2.5">
-                                          <button
-                                            type="button"
-                                            onClick={() => handleLikeReply(review.id, childReview.id)}
-                                            className={`w-6 h-6 flex items-center justify-center ${childReview.is_liked ? "text-[#7077FE]" : "text-[#1E1E1E]"}`}
-                                          >
-                                            {childReview.is_liked ? (
-                                              <img src="https://static.codia.ai/image/2025-12-04/e6MiVoWVJn.png" alt="Like" className="w-full h-full" />
-                                            ) : (
-                                              <img src="https://static.codia.ai/image/2025-12-04/V3hCQqvhhk.png" alt="Like" className="w-full h-full" />
-                                            )}
-                                            {childReview.likes_count > 0 && (
-                                              <span className="ml-1 text-[#1E1E1E] text-xs font-['open_sans']">{childReview.likes_count}</span>
-                                            )}
-                                          </button>
-                                        </div>
-                                      )}
-                                    </div>
-                                  );
-                                })}
+                                    );
+                                  }
+                                )}
                                 {/* Load More Indicator */}
                                 {pagination[review.id]?.loadingMore && (
-                                  <div className="text-center py-4 text-[#64748B] text-xs">Loading more replies...</div>
-                                )}
-                                {pagination[review.id]?.hasMore && !pagination[review.id]?.loadingMore && (
-                                  <div className="text-center py-2">
-                                    <button
-                                      type="button"
-                                      onClick={() => loadMoreChildReviews(review.id)}
-                                      className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
-                                    >
-                                      Load more replies
-                                    </button>
+                                  <div className="text-center py-4 text-[#64748B] text-xs">
+                                    Loading more replies...
                                   </div>
                                 )}
+                                {pagination[review.id]?.hasMore &&
+                                  !pagination[review.id]?.loadingMore && (
+                                    <div className="text-center py-2">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          loadMoreChildReviews(review.id)
+                                        }
+                                        className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
+                                      >
+                                        Load more replies
+                                      </button>
+                                    </div>
+                                  )}
                               </>
                             ) : (
-                              <div className="text-center py-2 text-[#64748B] text-xs">No replies yet</div>
+                              <div className="text-center py-2 text-[#64748B] text-xs">
+                                No replies yet
+                              </div>
                             )}
                           </div>
                         </div>
@@ -2393,33 +2825,40 @@ const EditDirectory: React.FC = () => {
                 })}
                 {/* Load More Indicator for Parent Reviews */}
                 {reviewsPagination.loadingMore && (
-                  <div className="text-center py-4 text-[#64748B] text-xs">Loading more reviews...</div>
-                )}
-                {reviewsPagination.hasMore && !reviewsPagination.loadingMore && (
-                  <div className="text-center py-2">
-                    <button
-                      type="button"
-                      onClick={loadMoreReviews}
-                      className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
-                    >
-                      Load more reviews
-                    </button>
+                  <div className="text-center py-4 text-[#64748B] text-xs">
+                    Loading more reviews...
                   </div>
                 )}
+                {reviewsPagination.hasMore &&
+                  !reviewsPagination.loadingMore && (
+                    <div className="text-center py-2">
+                      <button
+                        type="button"
+                        onClick={loadMoreReviews}
+                        className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
+                      >
+                        Load more reviews
+                      </button>
+                    </div>
+                  )}
               </div>
             ) : (
-              <div className="text-center py-8 text-[#64748B]">No reviews yet</div>
+              <div className="text-center py-8 text-[#64748B]">
+                No reviews yet
+              </div>
             )}
           </div>
         </div>
-        { /* Action Buttons */}
-        <div className="flex items-center gap-3 self-end">
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center gap-3 self-end w-full sm:w-auto">
           <button
             type="button"
             onClick={() => publicProfileForm.reset()}
-            className="bg-white shadow-sm rounded-full px-5 py-3 flex items-center justify-center gap-2"
+            className="bg-white shadow-sm rounded-full px-5 py-3 flex items-center justify-center gap-2 w-full sm:w-auto"
           >
-            <span className="text-[#081021] font-Rubik leading-[16.59px]">Cancel</span>
+            <span className="text-[#081021] font-Rubik leading-[16.59px] text-sm sm:text-base">
+              Cancel
+            </span>
           </button>
 
           <button
@@ -2429,25 +2868,28 @@ const EditDirectory: React.FC = () => {
                 if (isValid) {
                   const data = publicProfileForm.getValues();
                   console.log("Preview data:", data);
-                  // TODO: Add preview functionality
                 }
               });
             }}
-            className="bg-white shadow-sm rounded-full px-5 py-3 flex items-center justify-center gap-2"
+            className="bg-white shadow-sm rounded-full px-5 py-3 flex items-center justify-center gap-2 w-full sm:w-auto"
           >
-            <span className="text-[#081021] font-Rubik leading-[16.59px]">Preview</span>
+            <span className="text-[#081021] font-Rubik leading-[16.59px] text-sm sm:text-base">
+              Preview
+            </span>
           </button>
 
           <button
             type="submit"
-            className="bg-[#7077FE] shadow-sm rounded-full px-6 py-3 flex items-center justify-center gap-2"
+            className="bg-[#7077FE] shadow-sm rounded-full px-6 py-3 flex items-center justify-center gap-2 w-full sm:w-auto"
           >
-            <span className="text-white font-Rubik leading-[16.59px]">Save</span>
+            <span className="text-white font-Rubik leading-[16.59px] text-sm sm:text-base">
+              Save
+            </span>
           </button>
         </div>
       </form>
     </main>
-  )
-}
+  );
+};
 
-export default EditDirectory
+export default EditDirectory;

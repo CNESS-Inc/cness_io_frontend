@@ -87,14 +87,14 @@ const DashboardLayout = () => {
           className={`w-full flex flex-col relative ${pageBackground}`}
         >
           {/* Mobile Header */}
-          {!isMobileNavOpen && (
+          {/* {!isMobileNavOpen && (
             <div className="md:hidden">
               <DashboardHeader
                 toggleMobileNav={toggleMobileNav}
                 isMobileNavOpen={isMobileNavOpen}
               />
             </div>
-          )}
+          )} */}
 
           {/* Desktop Hamburger Button */}
           {!isMobileNavOpen && (

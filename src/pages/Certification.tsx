@@ -8,8 +8,8 @@ const Certification: React.FC = () => {
   const location = useLocation();
   const { showToast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<'yearly' | 'monthly'>('yearly');
-  const [plansData, setPlansData] = useState<any[]>([]); // Changed to array
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [plansData, setPlansData] = useState<any[]>([]);
+  const [processingPlan, setProcessingPlan] = useState<'yearly' | 'monthly' | null>(null); // Changed to track which plan is processing
 
   useEffect(() => {
     if (location.state?.plans) {
@@ -28,7 +28,7 @@ const Certification: React.FC = () => {
   // Handle plan selection for payment
   const handlePlanSelection = async (planType: 'yearly' | 'monthly') => {
     try {
-      setIsProcessing(true);
+      setProcessingPlan(planType); // Set which plan is being processed
       
       // Find the selected plan data
       const selectedPlanData = plansData.find(plan => 
@@ -41,6 +41,7 @@ const Certification: React.FC = () => {
           type: "error",
           duration: 3000,
         });
+        setProcessingPlan(null);
         return;
       }
 
@@ -75,6 +76,7 @@ const Certification: React.FC = () => {
           type: "error",
           duration: 4000,
         });
+        setProcessingPlan(null);
       }
     } catch (error: any) {
       console.error("Error in handlePlanSelection:", error);
@@ -83,8 +85,7 @@ const Certification: React.FC = () => {
         type: "error",
         duration: 5000,
       });
-    } finally {
-      setIsProcessing(false);
+      setProcessingPlan(null);
     }
   };
 
@@ -190,9 +191,9 @@ const Certification: React.FC = () => {
                       : 'bg-white border-2 border-[#CBD5E1] text-[#8157FF]'
                   }`}
                   onClick={() => handlePlanSelection('yearly')}
-                  disabled={isProcessing}
+                  disabled={processingPlan !== null} // Disable both buttons when any is processing
                 >
-                  {isProcessing ? "Processing..." : (yearlyPlan?.buttonText || "Buy Now")}
+                  {processingPlan === 'yearly' ? "Processing..." : (yearlyPlan?.buttonText || "Buy Now")}
                 </button>
 
                 {/* Features */}
@@ -290,9 +291,9 @@ const Certification: React.FC = () => {
                       : 'bg-white border-2 border-[#CBD5E1] text-[#8157FF]'
                   }`}
                   onClick={() => handlePlanSelection('monthly')}
-                  disabled={isProcessing}
+                  disabled={processingPlan !== null} // Disable both buttons when any is processing
                 >
-                  {isProcessing ? "Processing..." : (monthlyPlan?.buttonText || "Buy Now")}
+                  {processingPlan === 'monthly' ? "Processing..." : (monthlyPlan?.buttonText || "Buy Now")}
                 </button>
 
                 {/* Features */}

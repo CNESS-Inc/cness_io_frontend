@@ -65,7 +65,7 @@ export default function CompanyFilters({
           </Menu.Button>
         </div>
 
-        <Menu.Items className="absolute right-0 mt-2 w-44 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg focus:outline-none z-50">
+        <Menu.Items className="absolute right-0 left-1 mt-2 w-44 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg focus:outline-none z-50">
           <div className="py-2">
             {options.map((option) => (
               <Menu.Item key={option.slug}>

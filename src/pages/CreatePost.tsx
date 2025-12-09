@@ -2,11 +2,16 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 // import Image from "../components/ui/Image";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { AddPost, GetConnectionUser, GetCountryDetails } from "../Common/ServerAPI";
-import { CirclePlus, 
-    // Smile,
-    //  UserPlus 
-    } from "lucide-react";
+import {
+  AddPost,
+  GetConnectionUser,
+  GetCountryDetails,
+} from "../Common/ServerAPI";
+import {
+  CirclePlus,
+  // Smile,
+  //  UserPlus
+} from "lucide-react";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -90,7 +95,6 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     { emoji: "😴", label: "Tired" },
     { emoji: "😤", label: "Frustrated" },
   ];
-
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -201,26 +205,26 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     setSelectedImages((prev) => [...prev, ...files]);
   };
 
-//   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const file = e.target.files?.[0];
-//     if (file) {
-//       const allowedVideoTypes = ["video/mp4"];
+  //   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     const file = e.target.files?.[0];
+  //     if (file) {
+  //       const allowedVideoTypes = ["video/mp4"];
 
-//       if (!allowedVideoTypes.includes(file.type)) {
-//         showToast({
-//           message: "Only MP4 video files are allowed.",
-//           type: "error",
-//           duration: 3000,
-//         });
-//         e.target.value = "";
-//         return;
-//       }
+  //       if (!allowedVideoTypes.includes(file.type)) {
+  //         showToast({
+  //           message: "Only MP4 video files are allowed.",
+  //           type: "error",
+  //           duration: 3000,
+  //         });
+  //         e.target.value = "";
+  //         return;
+  //       }
 
-//       setSelectedVideo(file);
-//       const videoUrl = URL.createObjectURL(file);
-//       setPostVideoPreviewUrl(videoUrl);
-//     }
-//   };
+  //       setSelectedVideo(file);
+  //       const videoUrl = URL.createObjectURL(file);
+  //       setPostVideoPreviewUrl(videoUrl);
+  //     }
+  //   };
 
   const handleRemoveImage = (index: number) => {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
@@ -308,9 +312,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
   // Handle toggling friend selection
   const handleToggleFriend = (friend: any) => {
-    const isSelected = selectedFriends.find(f => f.id === friend.id);
+    const isSelected = selectedFriends.find((f) => f.id === friend.id);
     if (isSelected) {
-      setSelectedFriends(selectedFriends.filter(f => f.id !== friend.id));
+      setSelectedFriends(selectedFriends.filter((f) => f.id !== friend.id));
     } else {
       setSelectedFriends([...selectedFriends, friend]);
     }
@@ -318,10 +322,13 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
 
   // Handle confirming friend tags
   const handleConfirmTags = () => {
-    const friendNames = selectedFriends.map(f =>
-      `${f.friend_user?.profile?.first_name || f.first_name} ${f.friend_user?.profile?.last_name || f.last_name}`
+    const friendNames = selectedFriends.map(
+      (f) =>
+        `${f.friend_user?.profile?.first_name || f.first_name} ${
+          f.friend_user?.profile?.last_name || f.last_name
+        }`
     );
-    const friendIds = selectedFriends.map(f => {
+    const friendIds = selectedFriends.map((f) => {
       // Get the actual user ID from friend_user or fallback to friend id
       const userId = f.friend_user?.id || f.user_id || f.id;
       return userId.toString();
@@ -596,7 +603,10 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
             </Link>
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-1 text-sm md:text-base">
-                <Link to={`/dashboard/userprofile/${userInfo?.id}`} className="font-semibold text-black hover:underline">
+                <Link
+                  to={`/dashboard/userprofile/${userInfo?.id}`}
+                  className="font-semibold text-black hover:underline"
+                >
                   {userInfo?.name || "User"}
                 </Link>
                 {/* Formatted sentence: "is feeling Happy with John and 2 others at New York" */}
@@ -604,13 +614,17 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   <>
                     {feeling && (
                       <>
-                        <span className="text-gray-600 text-xs md:text-sm">is feeling</span>
+                        <span className="text-gray-600 text-xs md:text-sm">
+                          is feeling
+                        </span>
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F2BF97]/30 rounded-full font-medium text-gray-800 text-xs">
                           <button
                             onClick={() => setIsFeelingPopupOpen(true)}
                             className="hover:underline inline-flex items-center gap-1"
                           >
-                            {feelingEmoji && <span className="text-sm">{feelingEmoji}</span>}
+                            {feelingEmoji && (
+                              <span className="text-sm">{feelingEmoji}</span>
+                            )}
                             {feeling}
                           </button>
                           <button
@@ -628,17 +642,17 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     )}
                     {tags.length > 0 && (
                       <>
-                        <span className="text-gray-600 text-xs md:text-sm">with</span>
+                        <span className="text-gray-600 text-xs md:text-sm">
+                          with
+                        </span>
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F4A5FF]/30 rounded-full font-medium text-gray-800 text-xs">
                           <button
                             onClick={() => setIsTagsPopupOpen(true)}
                             className="hover:underline"
                           >
-                            {tags.length === 1 ? (
-                              tags[0]
-                            ) : (
-                              `${tags[0]} and ${tags.length - 1} More`
-                            )}
+                            {tags.length === 1
+                              ? tags[0]
+                              : `${tags[0]} and ${tags.length - 1} More`}
                           </button>
                           <button
                             onClick={() => {
@@ -656,7 +670,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     )}
                     {location && (
                       <>
-                        <span className="text-gray-600 text-xs md:text-sm">at</span>
+                        <span className="text-gray-600 text-xs md:text-sm">
+                          at
+                        </span>
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#FF6F61]/30 rounded-full font-medium text-gray-800 text-xs">
                           <button
                             onClick={() => setIsLocationPopupOpen(true)}
@@ -835,7 +851,6 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
               </div>
             </div>
 
-
             <div className="flex justify-between items-center mt-5.5">
               <div className="relative w-full " ref={topicDropdownRef}>
                 <button
@@ -993,25 +1008,37 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
           onClick={handleCloseFeelingPopup}
         >
           <div
-            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-2xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
-            <div className="flex items-center justify-between px-6 py-5 bg-[#897AFF1A]">
+            <div className="flex items-center justify-between px-4 py-3 bg-[#897AFF1A]">
               <button
                 onClick={handleCloseFeelingPopup}
-                className="w-10 h-10 rounded-full bg-gray-100/80 hover:bg-gray-200/80 flex items-center justify-center transition-all"
+                className="w-[21px] h-[21px] rounded-full bg-[#6D6D6D] flex items-center justify-center transition-all"
               >
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
-              <h3 className="text-xl font-bold text-[#0F1320] tracking-tight">How are you feeling?</h3>
+              <h3 className="text-xl font-bold text-[#0F1320] tracking-tight">
+                How are you feeling?
+              </h3>
               <div className="w-10"></div> {/* Spacer for centering */}
             </div>
 
             {/* Search Bar */}
-            <div className="px-6 pt-6 pb-4">
+            <div className="px-4 pt-4 pb-4">
               <div className="relative">
                 <svg
                   className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
@@ -1019,14 +1046,19 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
                 <input
                   type="text"
                   placeholder="Search"
                   value={feelingSearchQuery}
                   onChange={(e) => setFeelingSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
+                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
                   autoFocus
                 />
               </div>
@@ -1035,12 +1067,14 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
             {/* Emoji Grid - Two Column Layout */}
             <div className="px-6 pb-6 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
               {filteredFeelings.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-1">
                   {filteredFeelings.map((feel) => (
                     <button
                       key={feel.label}
-                      onClick={() => handleSelectFeeling(feel.label, feel.emoji)}
-                      className="flex items-center gap-3 px-4 py-4 rounded-3xl transition-all duration-200 bg-white/60 hover:bg-white/90 hover:shadow-sm"
+                      onClick={() =>
+                        handleSelectFeeling(feel.label, feel.emoji)
+                      }
+                      className="flex items-center gap-3 px-2 py-2 rounded-2xl transition-all duration-200 bg-white/60 hover:bg-white/90 hover:shadow-sm"
                     >
                       {/* Circular emoji container */}
                       <div className="shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
@@ -1048,7 +1082,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       </div>
                       {/* Feeling label */}
                       <div className="flex-1 text-left min-w-0">
-                        <p className="font-bold text-[#0F1320] text-base truncate">{feel.label}</p>
+                        <p className="font-bold text-[#0F1320] text-base truncate">
+                          {feel.label}
+                        </p>
                       </div>
                     </button>
                   ))}
@@ -1056,12 +1092,26 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
               ) : (
                 <div className="text-center py-16 px-6">
                   <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-10 h-10 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
-                  <p className="text-[#0F1320] font-semibold text-base mb-1">No matches found</p>
-                  <p className="text-gray-500 text-sm">Try searching with a different feeling</p>
+                  <p className="text-[#0F1320] font-semibold text-base mb-1">
+                    No matches found
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    Try searching with a different feeling
+                  </p>
                 </div>
               )}
             </div>
@@ -1086,25 +1136,37 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
           onClick={handleCloseLocationPopup}
         >
           <div
-            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-2xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
-            <div className="flex items-center justify-between px-6 py-5 bg-[#897AFF1A]">
+            <div className="flex items-center justify-between px-4 py-3 bg-[#897AFF1A]">
               <button
                 onClick={handleCloseLocationPopup}
-                className="w-10 h-10 rounded-full bg-gray-100/80 hover:bg-gray-200/80 flex items-center justify-center transition-all"
+                className="w-[21px] h-[21px] rounded-full bg-[#6D6D6D] flex items-center justify-center transition-all"
               >
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
-              <h3 className="text-xl font-bold text-gray-900 tracking-tight">Search for location</h3>
+              <h3 className="text-xl font-bold text-gray-900 tracking-tight">
+                Search for location
+              </h3>
               <div className="w-10"></div> {/* Spacer for centering */}
             </div>
 
             {/* Search Bar */}
-            <div className="px-6 pt-6 pb-4">
+            <div className="px-4 pt-4 pb-4">
               <div className="relative">
                 <svg
                   className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
@@ -1112,14 +1174,19 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
                 <input
                   type="text"
                   placeholder="Search"
                   value={locationSearchQuery}
                   onChange={(e) => setLocationSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
+                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
                   autoFocus
                 />
               </div>
@@ -1151,8 +1218,12 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       </div>
                       {/* Location text */}
                       <div className="flex-1 text-left min-w-0">
-                        <p className="font-bold text-gray-900 text-base truncate">{country.name}</p>
-                        <p className="text-sm text-gray-500 font-medium">{country.name}</p>
+                        <p className="font-bold text-gray-900 text-base truncate">
+                          {country.name}
+                        </p>
+                        <p className="text-sm text-gray-500 font-medium">
+                          {country.name}
+                        </p>
                       </div>
                     </button>
                   ))}
@@ -1160,7 +1231,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
               ) : (
                 <div className="text-center py-16 px-6">
                   <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <svg className="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-10 h-10 text-gray-400"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         fillRule="evenodd"
                         d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
@@ -1169,10 +1244,14 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     </svg>
                   </div>
                   <p className="text-gray-900 font-semibold text-base mb-1">
-                    {locationSearchQuery ? "No matches found" : "No locations available"}
+                    {locationSearchQuery
+                      ? "No matches found"
+                      : "No locations available"}
                   </p>
                   <p className="text-gray-500 text-sm">
-                    {locationSearchQuery ? "Try searching with a different name" : "No locations to display"}
+                    {locationSearchQuery
+                      ? "Try searching with a different name"
+                      : "No locations to display"}
                   </p>
                 </div>
               )}
@@ -1198,25 +1277,37 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
           onClick={handleCloseTagPopup}
         >
           <div
-            className="bg-white rounded-4xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
+            className="bg-white rounded-2xl w-full max-w-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header with background #897AFF1A */}
-            <div className="flex items-center justify-between px-6 py-5 bg-[#897AFF1A]">
+            <div className="flex items-center justify-between px-4 py-3 bg-[#897AFF1A]">
               <button
                 onClick={handleCloseTagPopup}
-                className="w-10 h-10 rounded-full bg-gray-100/80 hover:bg-gray-200/80 flex items-center justify-center transition-all"
+                className="w-[21px] h-[21px] rounded-full bg-[#6D6D6D] flex items-center justify-center transition-all"
               >
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
-              <h3 className="text-xl font-bold text-[#0F1320] tracking-tight">Tag people</h3>
+              <h3 className="text-xl font-bold text-[#0F1320] tracking-tight">
+                Tag people
+              </h3>
               <div className="w-10"></div> {/* Spacer for centering */}
             </div>
 
             {/* Search Bar with Done Button */}
-            <div className="px-6 pt-6 pb-4">
+            <div className="px-4 pt-5 pb-4">
               <div className="flex items-center gap-3">
                 <div className="flex-1 relative">
                   <svg
@@ -1225,21 +1316,26 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
                   <input
                     type="text"
                     placeholder="Search"
                     value={friendSearchQuery}
                     onChange={(e) => setFriendSearchQuery(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
+                    className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
                     autoFocus
                   />
                 </div>
                 <button
                   onClick={handleConfirmTags}
-                  disabled={selectedFriends.length === 0}
-                  className="px-6 py-3 bg-[#7077FE] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#7077FE]/25 hover:shadow-xl hover:shadow-[#7077FE]/30 hover:bg-[#5b63e6] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  // disabled={selectedFriends.length === 0}
+                  className="px-6 py-2.5 bg-[#7077FE] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#7077FE]/25 hover:shadow-xl hover:shadow-[#7077FE]/30 hover:bg-[#5b63e6] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Done
                 </button>
@@ -1252,7 +1348,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#7077FE]/10 rounded-full border border-[#7077FE]/20">
                   <div className="w-2 h-2 rounded-full bg-[#7077FE]"></div>
                   <span className="text-sm font-semibold text-[#0F1320]">
-                    {selectedFriends.length} {selectedFriends.length === 1 ? 'person' : 'people'} selected
+                    {selectedFriends.length}{" "}
+                    {selectedFriends.length === 1 ? "person" : "people"}{" "}
+                    selected
                   </span>
                 </div>
               </div>
@@ -1263,17 +1361,29 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
               {friends.length > 0 ? (
                 <div className="space-y-2">
                   {friends.map((friend) => {
-                    const isSelected = selectedFriends.find(f => f.id === friend.id);
-                    const firstName = friend.friend_user?.profile?.first_name || friend.first_name || 'User';
-                    const lastName = friend.friend_user?.profile?.last_name || friend.last_name || '';
-                    const profilePic = friend.friend_user?.profile?.profile_picture || friend.profile_picture || '/profile.png';
-                    const username = friend.friend_user?.username || friend.username || 'user';
+                    const isSelected = selectedFriends.find(
+                      (f) => f.id === friend.id
+                    );
+                    const firstName =
+                      friend.friend_user?.profile?.first_name ||
+                      friend.first_name ||
+                      "User";
+                    const lastName =
+                      friend.friend_user?.profile?.last_name ||
+                      friend.last_name ||
+                      "";
+                    const profilePic =
+                      friend.friend_user?.profile?.profile_picture ||
+                      friend.profile_picture ||
+                      "/profile.png";
+                    const username =
+                      friend.friend_user?.username || friend.username || "user";
 
                     return (
                       <button
                         key={friend.id}
                         onClick={() => handleToggleFriend(friend)}
-                        className={`w-full flex items-center gap-4 px-4 py-4 rounded-3xl transition-all duration-200 ${
+                        className={`w-full flex items-center gap-4 px-2 py-2 rounded-3xl transition-all duration-200 ${
                           isSelected
                             ? "bg-[#7077FE]/8 shadow-sm"
                             : "bg-white/60 hover:bg-white/90 hover:shadow-sm"
@@ -1291,17 +1401,27 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                           />
                           {isSelected && (
                             <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#7077FE] rounded-full flex items-center justify-center shadow-md border-2 border-white">
-                              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              <svg
+                                className="w-3 h-3 text-white"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
                               </svg>
                             </div>
                           )}
                         </div>
                         <div className="flex-1 text-left min-w-0">
-                          <p className="font-bold text-[#0F1320] text-base truncate">{firstName} {lastName}</p>
+                          <p className="font-bold text-[#0F1320] text-base truncate">
+                            {firstName} {lastName}
+                          </p>
                           <p className="text-sm text-gray-500 font-medium">
-                            {/* You can add friend count or other info here */}
-                            @{username}
+                            {/* You can add friend count or other info here */}@
+                            {username}
                           </p>
                         </div>
                       </button>
@@ -1311,15 +1431,29 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
               ) : (
                 <div className="text-center py-16 px-6">
                   <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    <svg
+                      className="w-10 h-10 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
                     </svg>
                   </div>
                   <p className="text-[#0F1320] font-semibold text-base mb-1">
-                    {friendSearchQuery ? "No matches found" : "No friends available"}
+                    {friendSearchQuery
+                      ? "No matches found"
+                      : "No friends available"}
                   </p>
                   <p className="text-gray-500 text-sm">
-                    {friendSearchQuery ? "Try searching with a different name" : "Connect with friends to tag them"}
+                    {friendSearchQuery
+                      ? "Try searching with a different name"
+                      : "Connect with friends to tag them"}
                   </p>
                 </div>
               )}
