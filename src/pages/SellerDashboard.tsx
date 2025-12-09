@@ -265,7 +265,7 @@ export default function SellerDashboard() {
       const response = await GetFriendSuggestions();
       const formattedRequests = response?.data?.data?.rows.map((item: any) => ({
         id: item?.id,
-        name: `${item?.profile?.first_name} ${item?.profile?.last_name}` || "",
+        name: `${item?.profile?.first_name} ${item?.profile?.last_name}` || item?.username,
         handle: `${item?.username}` || "",
         avatar: item?.profile?.profile_picture,
       }));
