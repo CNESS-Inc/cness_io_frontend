@@ -12,7 +12,7 @@ import { FiEdit2, FiLink2, FiSend, FiTrash2, FiX } from "react-icons/fi";
 import { useToast } from "../ui/Toast/ToastProvider";
 import { FaRegSmile } from "react-icons/fa";
 import SharePopup from "../Social/SharePopup";
-import { buildShareUrl, copyPostLink } from "../../lib/utils";
+import {copyPostLink } from "../../lib/utils";
 import like from "../../assets/like.svg";
 import comment from "../../assets/comment.svg";
 import EditPostModal from "../../pages/EditPostModal";
@@ -100,9 +100,6 @@ const PostPopup: React.FC<PopupProps> = ({
   const [loadingReplies, setLoadingReplies] = useState<Record<string, boolean>>(
     {}
   );
-
-  const myid = localStorage.getItem("Id");
-  const urldata = `${window.location.origin}/directory/user-profile/${myid}`;
 
   const { showToast } = useToast();
 
