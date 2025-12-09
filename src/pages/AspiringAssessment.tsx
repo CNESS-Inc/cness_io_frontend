@@ -176,7 +176,7 @@ const AspiringAssessment = () => {
         });
 
         // Redirect to Certification page with plans data
-        navigate("/dashboard/Certification", {
+        navigate("/dashboard/aspiring-assessment/payment", {
           state: {
             plans: updatedPlans,
             isAnnual: isAnnual,
