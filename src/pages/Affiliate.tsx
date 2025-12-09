@@ -86,6 +86,7 @@ export default function Affiliate() {
   const [referreEarning, setReferreEarning] = useState<string>("0");
   const [pendingAmount, setPendingAmount] = useState<string>("0");
   const [referredUsers, setReferredUsers] = useState<ReferredUser[]>([]);
+  console.log('referredUsers', referredUsers)
   const [paymentMethodsList, setPaymentMethodsList] = useState<any[]>([]);
   const [editMethodId, setEditMethodId] = useState<string | null>(null);
   const [editInitialData, setEditInitialData] = useState<any | null>(null);

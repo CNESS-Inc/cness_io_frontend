@@ -78,33 +78,35 @@ export default function AffiliateUsers({
     };
   }, [showFilter]);
 
-  const filteredUsers = currentUsers.filter(user => {
-    if (user.commission_status === "NO_COMMISSION") {
-      return false;
-    }
-
-    if (Number(user.commission_earned) === 0 && Number(user.pending_commission) === 0) {
-      return false;
-    }
+  const filteredUsers = currentUsers.filter((user) => {
+    const term = searchTerm.trim().toLowerCase();
 
     const matchesSearch =
-      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.last_name.toLowerCase().includes(searchTerm.toLowerCase());
+      !term ||
+      user.username?.toLowerCase().includes(term) ||
+      user.email?.toLowerCase().includes(term) ||
+      user.first_name?.toLowerCase().includes(term) ||
+      user.last_name?.toLowerCase().includes(term);
 
-    const hasActiveFilter = filterStatus.completed || filterStatus.pending || filterStatus.failed;
+    const hasActiveFilter =
+      filterStatus.completed || filterStatus.pending || filterStatus.failed;
 
     if (!hasActiveFilter) {
+      // Show all users when no filter toggles are active
       return matchesSearch;
     }
 
     const matchesStatus =
-      (filterStatus.completed && (user.commission_status === "APPROVED" || user.commission_status === "PAID")) ||
-      (filterStatus.pending && user.commission_status === "PENDING") ||
+      (filterStatus.completed &&
+        (user.commission_status === "APPROVED" ||
+          user.commission_status === "PAID" ||
+          user.payment_status === "Completed")) ||
+      (filterStatus.pending &&
+        (user.commission_status === "PENDING" ||
+          user.payment_status === "Pending")) ||
       (filterStatus.failed && user.payment_status === "Failed");
 
-    return matchesSearch && matchesStatus;
+    return matchesSearch && !!matchesStatus;
   });
 
   const handleFilterChange = (status: keyof typeof filterStatus) => {
@@ -222,14 +224,18 @@ export default function AffiliateUsers({
                     ? "bg-[#60C7501A] text-[#60C750]"
                     : user.commission_status === "PENDING"
                       ? "bg-[#F8BE261A] text-[#F8BE26]"
-                      : "bg-[#F871711A] text-[#F87171]";
+                      : user.commission_status === "NO_COMMISSION"
+                        ? "bg-[#CBD5E11A] text-[#64748B]"
+                        : "bg-[#F871711A] text-[#F87171]";
 
                 const statusText =
                   user.commission_status === "APPROVED" || user.commission_status === "PAID"
                     ? "Completed"
                     : user.commission_status === "PENDING"
                       ? "Pending"
-                      : "Failed";
+                      : user.commission_status === "NO_COMMISSION"
+                        ? "No Commission"
+                        : "Failed";
 
                 return (
                   <tr
