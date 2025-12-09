@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ProductCard from '../components/MarketPlace/ProductCard';
 import { ChevronDown, ChevronUp, Heart, PlayCircle, Star } from "lucide-react";
 import { useState, useEffect } from "react";
-import { AddProductToCart, AddProductToWishlist, BuyerCanReview, BuyerOwnReview, GetMarketPlaceBuyerProductById, GetMarketPlaceBuyerProducts, GetProductReviws, RemoveProductToCart, RemoveProductToWishlist } from '../Common/ServerAPI';
+import { AddProductToCart, AddProductToWishlist, BuyerCanReview, BuyerOwnReview, GetMarketPlaceBuyerProductById, GetMarketPlaceBuyerProducts, GetProductReviws, RemoveProductToCart, RemoveProductToWishlist, TrackProductView } from '../Common/ServerAPI';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { CiFacebook, CiInstagram, CiLinkedin, CiYoutube } from 'react-icons/ci';
 import { RiTwitterXFill } from 'react-icons/ri';
@@ -78,6 +78,11 @@ const ProductDetail = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 console.log("FULL PRODUCT → ", productData);
         setIsLiked(productData?.is_in_wishlist || false);
         setIsCarted(productData?.is_in_cart || false);
+
+        // Track product view
+        TrackProductView(id).catch((error) => {
+          console.error('Failed to track product view:', error);
+        });
       } catch (error: any) {
         showToast({
           message: "Failed to load product details",
