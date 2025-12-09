@@ -3,7 +3,7 @@ import SignupAnimation from "../components/ui/SignupAnimation"; // adjust path
 import { RegisterDetails, GoogleLoginDetails } from "../Common/ServerAPI";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiMail, FiEye, FiEyeOff } from "react-icons/fi";
 import { useGoogleLogin } from "@react-oauth/google";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -61,6 +61,19 @@ export default function Signingup() {
   const [referralCodeFocused, setreferralCodeFocused] = useState(false);
   const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const location = useLocation();
+useEffect(() => {
+  const searchParams = new URLSearchParams(location.search);
+  const referralParam = searchParams.get("referral_code");
+  
+  if (referralParam) {
+    // Navigate to home with referral code in state
+    navigate("/", { 
+      replace: true,
+      state: { referralCode: referralParam }
+    });
+  }
+}, [location, navigate]);
 
   // Add your site key (replace with your actual key)
   const RECAPTCHA_SITE_KEY = "6LcmM3YrAAAAAIoMONSmkAGazWwUXdCE6fzI473L";

@@ -54,6 +54,7 @@ type SignupModalProps = {
     referral?: string;
   }) => void;
   onGoogle?: () => void;
+  initialReferralCode?: any;
 };
 interface AccountFormData {
   person_organization_complete: 1 | 2;
@@ -119,8 +120,10 @@ interface ValidationRules {
 
 export default function SignupModal({
   open = true,
+  initialReferralCode,
   onClose = () => {},
 }: SignupModalProps) {
+  console.log("🚀 ~ SignupModal ~ initialReferralCode:", initialReferralCode);
   // const [email, setEmail] = useState("");
   // const [pwd, setPwd] = useState("");
   // const [pwd2, setPwd2] = useState("");
@@ -296,7 +299,7 @@ export default function SignupModal({
     email: "",
     password: "",
     confirmPassword: "",
-    referralCode: "",
+    referralCode: initialReferralCode || "",
     consent: false,
   });
   const [apiMessage, setApiMessage] = useState<string | null>(null);
@@ -327,6 +330,15 @@ export default function SignupModal({
     | "disqualify"
     | null
   >(null);
+
+  useEffect(() => {
+    if (initialReferralCode) {
+      setRegisterForm((prev) => ({
+        ...prev,
+        referralCode: initialReferralCode,
+      }));
+    }
+  }, [initialReferralCode]);
 
   const handleCaptchaChange = (value: string | null) => {
     setRecaptchaValue(value);
@@ -1205,14 +1217,13 @@ export default function SignupModal({
                     validateForms(registerForm);
                   }}
                   className="
-                      w-full h-[45px]
-                      rounded-sm border-2 border-gray-200
-                      px-2.5
-                      outline-none
-                      text-[14px] leading-5
-                      placeholder:text-gray-400
-                    
-                    "
+    w-full h-[45px]
+    rounded-sm border-2 border-gray-200
+    px-2.5
+    outline-none
+    text-[14px] leading-5
+    placeholder:text-gray-400
+  "
                 />
               </label>
               {(touched.referralCode || formssubmitted) &&

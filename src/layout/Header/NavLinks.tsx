@@ -1,7 +1,7 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import { cn } from "../../lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 //import Modal from "../../components/ui/Modal";
 //import SignupForm from "./SignupForm";
 //import LoginForm from "./LoginForm.tsx";
@@ -25,6 +25,7 @@ export default function NavLinks({ className }: { className?: string }) {
 
   //const navigate = useNavigate()
   const [openSignup, setOpenSignup] = useState(false);
+  console.log("🚀 ~ NavLinks ~ openSignup:", openSignup)
   const [openLogin, setOpenLogin] = useState(false);
   // const openSignupModal = () => navigate("/sign-up");
   //const openLoginModal = () => navigate("/log-in");
@@ -44,6 +45,18 @@ export default function NavLinks({ className }: { className?: string }) {
   //});
   const filteredLinks = links;
 
+  const location = useLocation();
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  
+  // Get referral code from location state
+  useEffect(() => {
+    if (location.state?.referralCode) {
+      setReferralCode(location.state.referralCode);
+      // Clear the state to prevent re-use
+      window.history.replaceState({}, document.title);
+      setOpenSignup(true);
+    }
+  }, [location]);
   return (
     <>
       <nav
@@ -119,7 +132,7 @@ export default function NavLinks({ className }: { className?: string }) {
         />
       </Modal>*/}
 
-      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} />
+      <SignupModel open={openSignup} onClose={() => setOpenSignup(false)} initialReferralCode={referralCode} />
       <LoginModel open={openLogin} onClose={() => setOpenLogin(false)} />
     </>
   );

@@ -417,7 +417,7 @@ const connectionButtonState = getConnectionButtonState();
       ];
 
       return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-x-8 gap-y-1 w-full">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-1 w-full">
           {displayNames.map((displayName, idx) => {
             const day = dayNames[idx];
             const dayHours = businessHours.weekly_hours.find(
@@ -445,11 +445,14 @@ const connectionButtonState = getConnectionButtonState();
             }
             return (
               <React.Fragment key={day}>
-                <div className="font-['open_sans'] text-[14px] text-[#64748B] mb-1">
-                  {displayName}
-                </div>
-                <div className="font-['open_sans'] text-[14px] text-[#64748B] mb-1">
-                  {timeContent}
+                <div className="flex">
+                  {/* Solution 1: Using fixed width for day column */}
+                  <div className="font-['open_sans'] text-[14px] text-[#64748B] mb-1 w-32">
+                    {displayName}
+                  </div>
+                  <div className="font-['open_sans'] text-[14px] text-[#64748B] mb-1">
+                    {timeContent}
+                  </div>
                 </div>
               </React.Fragment>
             );
