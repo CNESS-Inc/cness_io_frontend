@@ -29,6 +29,7 @@ const DirectoryProfile = () => {
   const [submittingEditReply, setSubmittingEditReply] = useState<Record<string, boolean>>({});
   const [deletingReply, setDeletingReply] = useState<Record<string, boolean>>({});
   const [pagination, setPagination] = useState<Record<string, { pageNo: number; hasMore: boolean; loadingMore: boolean }>>({});
+  const [infoId, setInfoId] = useState<string | null>(null);
   const { id } = useParams();
   // const [searchParams] = useSearchParams();
   const { showToast } = useToast();
@@ -53,9 +54,10 @@ const DirectoryProfile = () => {
         setLoading(true);
         const response = await GetDirectoryProfileByUserId(userId);
         if (response?.success?.status) {
-          if(response?.data?.data){
+          if (response?.data?.data) {
+            setInfoId(response.data.data.bussiness_profile?.id || null);
             setProfileData(response.data.data);
-          }else{
+          } else {
             setProfileData({})
           }
         } else {
@@ -845,10 +847,10 @@ const DirectoryProfile = () => {
                         className="w-10 h-10 rounded-full border-2 border-white object-cover"
                         alt={`Friend ${i + 1}`}
                         onError={(e) => {
-                                      const target =
-                                        e.target as HTMLImageElement;
-                                      target.src = "/profile.png"; // Clear broken images
-                                    }}
+                          const target =
+                            e.target as HTMLImageElement;
+                          target.src = "/profile.png"; // Clear broken images
+                        }}
                       />
                     ))}
                     {profileData.friend_count > 3 && (
@@ -1610,6 +1612,7 @@ const DirectoryProfile = () => {
         open={showEnquiry}
         onClose={() => setShowEnquiry(false)}
         directory={directoryData}
+        infoId={infoId}
       />
     </>
   )
