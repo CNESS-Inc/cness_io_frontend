@@ -103,10 +103,10 @@ export default function DashboardDirectory() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -418,16 +418,17 @@ export default function DashboardDirectory() {
     <>
       <div className="px-4 sm:px-6 lg:px-1">
         {/* Hero Section - Mobile Optimized */}
-        <section className="relative h-auto max-w-full sm:h-[350px] md:h-[400px] lg:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 sm:mt-4 flex items-center justify-center">
+        {/* <section className="relative h-auto max-w-full sm:h-[350px] md:h-[400px] lg:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 sm:mt-4 flex items-center justify-center"> */}
+        <section className="relative mx-auto mt-2 sm:mt-4 overflow-hidden rounded-xl">
           {/* Background Image Full Fit */}
           <img
             src="https://cdn.cness.io/Directory%20(1).svg"
             alt="City Skyline"
-            className="absolute w-full h-full object-cover z-0 pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover object-[center_bottom] sm:object-center pointer-events-none select-none"
           />
 
           {/* CENTER CONTENT - Mobile Responsive */}
-          <div className="relative z-10 max-w-7xl pb-8 sm:pb-10 text-center flex-col items-center justify-center px-4 sm:px-6">
+          <div className="relative z-10 flex flex-col items-center justify-center text-center pb-8 sm:pb-10 px-4 sm:px-6 sm:h-[350px] md:h-[400px] lg:h-[540px] 2xl:h-[650px]">
             <h1
               className="text-center font-[poppins] font-semibold mb-4 sm:mb-6
                 text-2xl sm:text-3xl md:text-[32px] leading-[1.3] sm:leading-[1.4]
@@ -440,21 +441,19 @@ export default function DashboardDirectory() {
             </h1>
 
             {/* Search Bar Wrapper - Mobile Responsive */}
-            <div className="w-full flex justify-center mb-4 sm:mb-6">
+            <div className="w-full flex flex-col gap-2 justify-center items-center mb-4 sm:mb-6">
               <div
-                className="w-full bg-white rounded-full sm:rounded-full shadow-[0_10px_30px_rgba(112,119,254,0.15)] 
-                  flex flex-col sm:flex-row items-stretch sm:items-center p-3 sm:p-0 sm:pl-5 h-auto sm:h-14 max-w-[650px]
-                  border sm:border-0 justify-between"
+                className="w-full bg-white rounded-full sm:rounded-full
+                  flex items-center p-3 sm:p-0 sm:pl-5 h-auto sm:h-14 max-w-[650px] 2xl:max-w-[720px] border border-1 border-[#C6C1C1] justify-between"
               >
-                <div className="flex items-center py-3 sm:py-0">
+                <div className="flex items-center flex-1">
                   <span className="text-[#7077FE] mr-3 text-lg">
                     <CiSearch />
                   </span>
                   <input
                     type="text"
                     placeholder="Search Best Practice"
-                    className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none
-                      w-full sm:w-auto"
+                    className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full sm:w-auto"
                     value={searchQuery || ""}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={handleKeyPress}
@@ -462,7 +461,7 @@ export default function DashboardDirectory() {
                 </div>
 
                 {/* Dropdown - Mobile Responsive */}
-                <div className="relative shrink-0 border-t sm:border-t-0 sm:border-l border-gray-200 sm:border-gray-300 rounded-full">
+                <div className="hidden sm:flex relative shrink-0 border-t sm:border-t-0 sm:border-l border-gray-200 sm:border-gray-300 rounded-full">
                   <select
                     className="bg-[#6340FF] text-white font-semibold rounded-full sm:rounded-full h-12 px-4 sm:px-6 pr-10 text-sm appearance-none 
                       focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]
@@ -478,8 +477,8 @@ export default function DashboardDirectory() {
                     <option value="">Professions</option>
                     {Domain.map((domain) => (
                       <option key={domain.id} value={domain.id}>
-                        {isMobile && domain.title.length > 20 
-                          ? `${domain.title.substring(0, 20)}...` 
+                        {isMobile && domain.title.length > 20
+                          ? `${domain.title.substring(0, 20)}...`
                           : domain.title}
                       </option>
                     ))}
@@ -488,6 +487,33 @@ export default function DashboardDirectory() {
                   <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white text-xs">
                     ▼
                   </div>
+                </div>
+              </div>
+              <div className="flex sm:hidden relative shrink-0 border-t sm:border-t-0 sm:border-l border-gray-200 sm:border-gray-300 rounded-full">
+                <select
+                  className="bg-[#6340FF] text-white font-semibold rounded-full sm:rounded-full h-12 px-4 sm:px-6 pr-10 text-sm appearance-none 
+                      focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]
+                      w-full sm:w-auto roun"
+                  value={selectedDomain}
+                  onChange={(e) => {
+                    setSelectedDomain(e.target.value);
+                    const selectedText =
+                      e.target.options[e.target.selectedIndex].text;
+                    setSelectedDomainText(selectedText);
+                  }}
+                >
+                  <option value="">Professions</option>
+                  {Domain.map((domain) => (
+                    <option key={domain.id} value={domain.id}>
+                      {isMobile && domain.title.length > 20
+                        ? `${domain.title.substring(0, 20)}...`
+                        : domain.title}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white text-xs">
+                  ▼
                 </div>
               </div>
             </div>
@@ -506,12 +532,12 @@ export default function DashboardDirectory() {
             {selected === "popular"
               ? "Leader Board"
               : selected === "aspiring"
-              ? "Aspiring People"
-              : selected === "inspired"
-              ? "Inspired People"
-              : "All People"}
+                ? "Aspiring People"
+                : selected === "inspired"
+                  ? "Inspired People"
+                  : "All People"}
           </h2>
-          
+
           <CompanyFilters
             options={badge}
             selected={selected}
