@@ -33,7 +33,7 @@ const NewContents = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       try {
         const params: any = {
           page: 1,
-          limit: 12,
+          limit: 9, // 3 rows × 3 cards = 9 products
           sort_by: "createdAt", // Sort by creation date
           sort_order: "desc", // Newest first
         };
@@ -48,12 +48,21 @@ const NewContents = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
         const productsData = response?.data?.data?.products || [];
         const pagination = response?.data?.data?.pagination || {};
 
+        console.log('NewContents - Full Response:', response?.data?.data);
         console.log('NewContents - Pagination:', pagination);
         console.log('NewContents - Products count:', productsData.length);
-        console.log('NewContents - Has more:', pagination.current_page < pagination.total_pages);
+        console.log('NewContents - First product sample:', productsData[0]);
+
+        // Check if we have more products
+        // If pagination object exists, use it. Otherwise, if we got exactly 9 products, assume there might be more
+        const hasMoreProducts = pagination.current_page && pagination.total_pages
+          ? pagination.current_page < pagination.total_pages
+          : productsData.length === 9; // If we got full page, there might be more
+
+        console.log('NewContents - Has more:', hasMoreProducts);
 
         setProducts(productsData);
-        setHasMore(pagination.current_page < pagination.total_pages);
+        setHasMore(hasMoreProducts);
       } catch (error: any) {
         showToast({
           message: "Failed to load new products.",
@@ -79,7 +88,7 @@ const NewContents = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
     try {
       const params: any = {
         page: nextPage,
-        limit: 12,
+        limit: 9, // 3 rows × 3 cards = 9 products
         sort_by: "createdAt",
         sort_order: "desc",
       };
@@ -94,9 +103,18 @@ const NewContents = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
       const productsData = response?.data?.data?.products || [];
       const pagination = response?.data?.data?.pagination || {};
 
+      console.log('NewContents - Load More - Got products:', productsData.length);
+      console.log('NewContents - Load More - Pagination:', pagination);
+
       setProducts((prev) => [...prev, ...productsData]);
       setCurrentPage(nextPage);
-      setHasMore(pagination.current_page < pagination.total_pages);
+
+      // Check if we have more products
+      const hasMoreProducts = pagination.current_page && pagination.total_pages
+        ? pagination.current_page < pagination.total_pages
+        : productsData.length === 9; // If we got full page, there might be more
+
+      setHasMore(hasMoreProducts);
     } catch (error: any) {
       showToast({
         message: "Failed to load more products.",
@@ -233,30 +251,27 @@ const NewContents = ({ isMobileNavOpen }: { isMobileNavOpen?: boolean }) => {
 
                   {products.length > 0 ? (
                     <>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {products.map((product) => (
                           <ProductCard
                             key={product.id}
                             product={{
                               id: product.id,
-                              title: product.product_title,
-                              author: product.seller?.shop_name || "Unknown",
-                              rating: product?.rating?.average,
-                              reviews: product?.rating?.total_reviews,
-                              currentPrice: product?.discounted_price,
+                              title: product.product_name || product.product_title || product.title || "Untitled",
+                              author: product.author || product.seller?.shop_name || product.seller?.shop?.shop_name || product.seller?.owner_full_name || "Unknown",
+                              rating: parseFloat(product?.rating?.average || product?.average_rating || "0"),
+                              reviews: product?.rating?.total_reviews || product?.total_reviews || 0,
+                              currentPrice: product?.discounted_price || product?.final_price,
                               originalPrice: product?.price,
-                              discount: product.discount_percentage,
-                              duration:
-                                product.video_details?.duration ||
-                                product.music_details?.total_duration ||
-                                "00:00:00",
-                              moods: product?.moods || [],
+                              discount: parseFloat(product.discount_percentage || "0"),
+                              duration: product.duration || product.video_details?.duration || product.music_details?.total_duration || "00:00:00",
+                              moods: product?.moods || product?.tags || [],
                               image:
                                 product.thumbnail_url ||
                                 "https://static.codia.ai/image/2025-10-15/6YgyckTjfo.png",
-                              category: product.product_category?.name || "",
-                              isLike: product?.is_in_wishlist,
-                              isCarted: product?.is_in_cart,
+                              category: product.category?.name || product.product_category?.name || "",
+                              isLike: product?.is_in_wishlist || product?.is_wishlisted || false,
+                              isCarted: product?.is_in_cart || false,
                             }}
                           />
                         ))}

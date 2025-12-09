@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SuccessModal from "../directory/SuccessPopup";
 import ExitWarningModal from "../directory/UnfinishedPopup";
-import { GetServiceDetails, CreateDirectoryEnquiry } from "../../Common/ServerAPI";
+import { CreateDirectoryEnquiry, GetBasicInfoServiceDetails } from "../../Common/ServerAPI";
 import { useToast } from "../ui/Toast/ToastProvider";
 
 interface Directory {
@@ -16,9 +16,10 @@ interface EnquiryModalProps {
   open: boolean;
   onClose: () => void;
   directory: Directory | null;
+  infoId: string | null;
 }
 
-const EnquiryModal: React.FC<EnquiryModalProps> = ({ open, onClose, directory }) => {
+const EnquiryModal: React.FC<EnquiryModalProps> = ({ open, onClose, directory, infoId = null }) => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showExitWarning, setShowExitWarning] = useState(false);
   const [services, setServices] = useState<any[]>([]);
@@ -40,9 +41,13 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ open, onClose, directory })
     const fetchServices = async () => {
       try {
         setLoading(true);
-        const response = await GetServiceDetails();
-        if (response?.data?.data) {
-          setServices(response.data.data);
+        if (infoId) {
+          const response = await GetBasicInfoServiceDetails(infoId);
+          if (response?.data?.data) {
+            setServices(response.data.data);
+          }
+        } else {
+          setServices([]);
         }
       } catch (error) {
         console.error("Error fetching services:", error);
@@ -165,7 +170,7 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ open, onClose, directory })
           {/* ===== HEADER ===== */}
           <div className="bg-[#F5F3FF] px-6 py-4 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-3">
-              <img src={directory.logo_url} className="w-12 h-12 rounded-full object-cover" />
+              <img src={directory.logo_url || "https://static.codia.ai/image/2025-12-04/DUvvvgriSA.png"} className="w-12 h-12 rounded-full object-cover" />
               <div>
                 <h2 className="text-[#081021] font-semibold text-lg">{directory.name}</h2>
                 <p className="text-[#64748B] text-sm">
@@ -257,7 +262,7 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ open, onClose, directory })
                     <path d="M2 3L6 7L10 3" stroke="#081021" strokeWidth="2" />
                   </svg>
                 </div>
-                
+
                 {/* Selected Services */}
                 {formData.services.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">

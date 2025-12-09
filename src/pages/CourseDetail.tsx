@@ -115,7 +115,7 @@ function SaveToCollectionsModal({
               {isCreating ? "Creating..." : "Create Collection"}
             </button>
           </div>
-        ) : collections.length > 0 && (
+        ) : (
           <button
             onClick={() => setShowCreateInput(true)}
             className="py-2 px-4 rounded-md bg-[#7077FE] text-white font-semibold hover:bg-[#6D28D9] mt-2 flex items-center justify-center gap-2 text-sm mx-auto font-[Poppins]"
@@ -123,7 +123,7 @@ function SaveToCollectionsModal({
             <span className="inline-flex items-center justify-center rounded-full bg-white text-[#7077FE] w-6 h-6">
               <AiOutlinePlus size={18} />
             </span>
-            Add new collection
+            {collections.length > 0 ? "Add new collection" : "Create your first collection"}
           </button>
         )}
       </div>

@@ -1,22 +1,19 @@
 // src/components/Footer.jsx
 import { useEffect, useState } from "react";
-
 import { Link } from "react-router-dom";
 import Image from "../../components/ui/Image";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import BackToTopButton from "./BackToTop";
 import vector from "../../assets/Vector.svg";
 import ContentModal from "../../components/ui/ContentModal";
-//import cnessicon from "../../assets/cnessi1.svg";
 
 const Footer = () => {
- const [showTermModal, setShowTermModal] = useState(false);
+  const [showTermModal, setShowTermModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [content, setContent] = useState("");
   const [privacyContent, privacySetContent] = useState("");
-const userId = localStorage.getItem("Id");
+  const userId = localStorage.getItem("Id");
 
-  
   useEffect(() => {
     fetch("/terms and conditions new.html")
       .then((res) => res.text())
@@ -29,197 +26,223 @@ const userId = localStorage.getItem("Id");
   }, []);
 
   return (
-
     <>
       <BackToTopButton />
 
       {/* Top Section */}
       <footer
-        className="bg-[#F7F7F7] text-black py-8 md:py-12 px-4 sm:px-6"
+        className="bg-[#F7F7F7] text-black py-6 md:py-12 px-4 sm:px-6 lg:px-8"
         style={{
           marginLeft: "var(--sidebar-w, 0px)",
           width: "calc(100% - var(--sidebar-w, 0px))",
         }}
       >
-        <div className="w-full max-w-7xl mx-auto flex flex-row flex-wrap justify-between gap-8">
-          {/* Logo + Description */}
-          <div className="md:w-2/5 space-y-4">
-            <Link to="/" className="flex items-center" aria-label="Home">
-              <Image
-                src="https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd"
-                alt="Company Logo"
-                width={144}
-                className="hidden md:block h-auto w-36"
-              />
-              <Image
-                src="/responsive-logo.png"
-                alt="Company Logo"
-                width={120}
-                className="block md:hidden h-auto max-w-[50px] w-auto"
-              />
-            </Link>
-            <p className="text-[16px] font-normal font-openSans leading-[160%] text-[#1E1E1E] hidden md:block">
-CNESS LIFE Conscious Social Media Super App.<br></br>
-            </p>
-          </div>
+        <div className="w-full max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row justify-between gap-8 lg:gap-12">
+            {/* Logo + Description */}
+            <div className="w-full lg:w-2/5 space-y-4">
+              <Link to="/" className="flex items-center" aria-label="Home">
+                <Image
+                  src="https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd"
+                  alt="Company Logo"
+                  width={144}
+                  className="hidden lg:block h-auto w-36"
+                />
+                <Image
+                  src="/responsive-logo.png"
+                  alt="Company Logo"
+                  width={80}
+                  height={45}
+                  className="block lg:hidden h-auto w-auto max-w-20"
+                />
+              </Link>
+              <p className="text-sm md:text-base font-normal font-openSans leading-relaxed text-[#1E1E1E] mt-2 md:mt-0">
+                CNESS LIFE Conscious Social Media Super App.
+              </p>
+            </div>
 
-          {/* Quick Links */}
-          <div className="md:w-1/5 space-y-3">
-            <h4 className="text-[14px] md:text-lg font-semibold text-[#6F74DD] poppins">
-              Quick Links
-            </h4>
-            <ul className="space-y-2">
-              {[
-                { to: `/dashboard/userprofile/${userId}`, label: "Profile"  },
-                { to: "/dashboard/assesmentcertification", label: "Certification" },
-                { to: "/dashboard/DashboardDirectory", label: "Directory" },
-                { to: "/dashboard/bestpractices", label: "Best Practices" },
-                { to: "/dashboard/feed", label: "Social" },
-              ].map((item) => (
-                <li key={item.to}>
-                  <Link
-                    to={item.to}
-                    className="text-[15px] font-openSans hover:underline"
-                    onClick={() =>
-                      window.scrollTo({ top: 0, behavior: "smooth" })
-                    }
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div className="flex flex-col sm:flex-row gap-8 sm:gap-12 lg:gap-16 w-full lg:w-3/5">
+              {/* Quick Links */}
+              <div className="w-full sm:w-1/2 lg:w-1/3 space-y-3">
+                <h4 className="text-sm md:text-base lg:text-lg font-semibold text-[#6F74DD] poppins">
+                  Quick Links
+                </h4>
+                <ul className="space-y-2">
+                  {[
+                    { to: `/dashboard/userprofile/${userId}`, label: "Profile" },
+                    {
+                      to: "/dashboard/assesmentcertification",
+                      label: "Certification",
+                    },
+                    { to: "/dashboard/DashboardDirectory", label: "Directory" },
+                    { to: "/dashboard/bestpractices", label: "Best Practices" },
+                    { to: "/dashboard/feed", label: "Social" },
+                  ].map((item) => (
+                    <li key={item.to}>
+                      <Link
+                        to={item.to}
+                        className="text-sm md:text-base font-openSans text-gray-700 hover:text-[#6F74DD] transition-colors duration-200"
+                        onClick={() =>
+                          window.scrollTo({ top: 0, behavior: "smooth" })
+                        }
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-          {/* Social Links */}
-          <div className="md:w-1/5 space-y-3">
-            <h4 className="text-[14px] md:text-lg font-semibold text-[#6F74DD] poppins">
-              Follow Us
-            </h4>
-            <ul className="space-y-2">
-
-               {/*<li>
+              {/* Social Links */}
+              <div className="w-full sm:w-1/2 lg:w-1/3 space-y-3">
+                <h4 className="text-sm md:text-base lg:text-lg font-semibold text-[#6F74DD] poppins">
+                  Follow Us
+                </h4>
+                <ul className="space-y-2">
+                  <li>
                     <a
-                      href=""
-                      className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
+                      href="https://www.facebook.com/share/1A8V21L6Qj"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center text-sm md:text-base font-openSans text-gray-700 hover:text-[#6F74DD] transition-colors duration-200"
                     >
-                      <img src={cnessicon} alt="cnessicon"className="me-1 md:me-1  sm:me-2 w-5 h-5 object-contain "></img>
-                      CNESS
+                      <FaFacebookF className="mr-2 w-4 h-4" /> Facebook
                     </a>
-                  </li> */}
-              <li>
-                <a
-                  href="https://www.facebook.com/share/1A8V21L6Qj"
-                  className="flex items-center text-[15px] font-openSans hover:underline"
-                >
-                  <FaFacebookF className="mr-2" /> Facebook
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://x.com/CnessInc"
-                  className="flex items-center text-[15px] font-openSans hover:underline"
-                >
-                  <img src={vector} alt="X" className="w-4 h-4 mr-2" /> X
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.instagram.com/cness.inc"
-                  className="flex items-center text-[15px] font-openSans hover:underline"
-                >
-                  <FaInstagram className="mr-2" /> Instagram
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.youtube.com/@CNESSinc"
-                  className="flex items-center text-[15px] font-openSans hover:underline"
-                >
-                  <FaYoutube className="mr-2" /> YouTube
-                </a>
-              </li>
-            </ul>
+                  </li>
+                  <li>
+                    <a
+                      href="https://x.com/CnessInc"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center text-sm md:text-base font-openSans text-gray-700 hover:text-[#6F74DD] transition-colors duration-200"
+                    >
+                      <img 
+                        src={vector} 
+                        alt="X" 
+                        className="w-4 h-4 mr-2" 
+                      /> 
+                      X
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.instagram.com/cness.inc"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center text-sm md:text-base font-openSans text-gray-700 hover:text-[#6F74DD] transition-colors duration-200"
+                    >
+                      <FaInstagram className="mr-2 w-4 h-4" /> Instagram
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.youtube.com/@CNESSinc"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center text-sm md:text-base font-openSans text-gray-700 hover:text-[#6F74DD] transition-colors duration-200"
+                    >
+                      <FaYoutube className="mr-2 w-4 h-4" /> YouTube
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
 
       {/* Bottom Bar */}
-            <div className="py-4 lg:bg-[#373578] md:bg-[#373578] bg-white px-4 sm:px-6">
-
-        <div className="max-w-7xl mx-auto lg:flex flex-col md:flex-row justify-between items-center gap-2 hidden">
-          {/* Left Side */}
-          <div
-            className="text-[15px] leading-[100%] font-medium font-[Plus Jakarta Sans] text-white"
-            style={{
-              letterSpacing: "-0.2px",
-              fontStyle: "normal",
-            }}
-          >
-            © {new Date().getFullYear()} Cness Inc. All rights reserved.
+      <div className="bg-[#373578] py-4 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Mobile layout - Stacked */}
+          <div className="flex flex-col gap-4 items-center lg:hidden">
+            <div className="text-white text-sm font-medium font-[Plus Jakarta Sans] text-center">
+              © {new Date().getFullYear()} Cness Inc. All rights reserved.
+            </div>
+            <div className="flex items-center gap-6 text-white font-semibold">
+              <button
+                onClick={() => setShowTermModal(true)}
+                className="text-sm hover:opacity-80 transition-opacity"
+              >
+                Terms & Conditions
+              </button>
+              <button
+                onClick={() => setShowPrivacyModal(true)}
+                className="text-sm hover:opacity-80 transition-opacity"
+              >
+                Privacy Policy
+              </button>
+            </div>
           </div>
-
-          {/* Right Side */}
-          <div className="flex items-center gap-6 text-white font-semibold text-[15px]">
-             <button
-              onClick={() => setShowTermModal(true)}
-              className="text-[15px] leading-[100%] font-semibold font-[Plus Jakarta Sans] text-white"
-            >
-              Terms & Conditions
-            </button>
-            <button
-              onClick={() => setShowPrivacyModal(true)}
-              className="text-[15px] leading-[100%] font-semibold font-[Plus Jakarta Sans] text-white"
-            >
-              Privacy Policy
-            </button>
+          
+          {/* Desktop layout - Side by side */}
+          <div className="hidden lg:flex justify-between items-center gap-4">
+            <div className="text-white text-base font-medium font-[Plus Jakarta Sans]">
+              © {new Date().getFullYear()} Cness Inc. All rights reserved.
+            </div>
+            <div className="flex items-center gap-8 text-white font-semibold">
+              <button
+                onClick={() => setShowTermModal(true)}
+                className="text-base hover:opacity-80 transition-opacity"
+              >
+                Terms & Conditions
+              </button>
+              <button
+                onClick={() => setShowPrivacyModal(true)}
+                className="text-base hover:opacity-80 transition-opacity"
+              >
+                Privacy Policy
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-       {/* Term & condition Modal */}
-            <ContentModal
-              isOpen={showTermModal}
-              onClose={() => setShowTermModal(false)}
-            >
-              <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
-                <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-medium text-black mb-4 text-center">
-                  CNESS TERMS AND CONDITIONS
-                </h3>
-                <div
-                  className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
-                  style={{
-                    fontFamily: "'Open Sans', 'Poppins', sans-serif",
-                    fontSize: "16px",
-                    textAlign: "justify",
-                    lineHeight: "1.6",
-                    color: "#333",
-                  }}
-                  dangerouslySetInnerHTML={{ __html: content }}
-                />
-              </div>
-            </ContentModal>
-            <ContentModal
-              isOpen={showPrivacyModal}
-              onClose={() => setShowPrivacyModal(false)}
-            >
-              <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
-                <h3 className="lg:text-[36px] md:text-[30] text-[24px] font-medium text-black mb-4 text-center">
-                  CNESS PRIVACY POLICY
-                </h3>
-                <div
-                  className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
-                  style={{
-                    fontFamily: "'Open Sans', 'Poppins', sans-serif",
-                    fontSize: "16px",
-                    textAlign: "justify",
-                    lineHeight: "1.6",
-                    color: "#333",
-                  }}
-                  dangerouslySetInnerHTML={{ __html: privacyContent }}
-                />
-              </div>
-            </ContentModal>
+      {/* Term & condition Modal */}
+      <ContentModal
+        isOpen={showTermModal}
+        onClose={() => setShowTermModal(false)}
+      >
+        <div className="p-0 w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw]">
+          <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium text-black mb-4 text-center px-4">
+            CNESS TERMS AND CONDITIONS
+          </h3>
+          <div
+            className="bg-white bg-opacity-90 backdrop-blur-lg p-4 sm:p-6 rounded-lg w-full max-h-[60vh] sm:max-h-[70vh] overflow-y-auto content-container"
+            style={{
+              fontFamily: "'Open Sans', 'Poppins', sans-serif",
+              fontSize: "14px sm:text-base",
+              textAlign: "justify",
+              lineHeight: "1.6",
+              color: "#333",
+            }}
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
+        </div>
+      </ContentModal>
+      
+      {/* Privacy Policy Modal */}
+      <ContentModal
+        isOpen={showPrivacyModal}
+        onClose={() => setShowPrivacyModal(false)}
+      >
+        <div className="p-0 w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw]">
+          <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium text-black mb-4 text-center px-4">
+            CNESS PRIVACY POLICY
+          </h3>
+          <div
+            className="bg-white bg-opacity-90 backdrop-blur-lg p-4 sm:p-6 rounded-lg w-full max-h-[60vh] sm:max-h-[70vh] overflow-y-auto content-container"
+            style={{
+              fontFamily: "'Open Sans', 'Poppins', sans-serif",
+              fontSize: "14px sm:text-base",
+              textAlign: "justify",
+              lineHeight: "1.6",
+              color: "#333",
+            }}
+            dangerouslySetInnerHTML={{ __html: privacyContent }}
+          />
+        </div>
+      </ContentModal>
     </>
   );
 };
