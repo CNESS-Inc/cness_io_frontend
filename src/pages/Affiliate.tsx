@@ -685,7 +685,6 @@ Share CNESS with others and enjoy a 10% reward
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {paymentMethodsList.map((method) => {
-                  console.log('method', method)
                   const isSelected = method.id === selectedId;
                   return (
                     <div
