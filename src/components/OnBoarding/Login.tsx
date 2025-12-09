@@ -2227,14 +2227,31 @@ export default function Login({ open = true, onClose = () => {} }: Props) {
                         )
                       }
                       menuPortalTarget={document.body}
+                      menuPosition="fixed"
+                      menuShouldScrollIntoView={true}
                       styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                        menuPortal: (base) => ({
+                          ...base,
+                          zIndex: 9999,
+                          position: "fixed",
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          position: "absolute",
+                          zIndex: 9999,
+                          maxHeight: "200px", 
+                          overflowY: "auto", 
+                        }),
                         control: (base) => ({
                           ...base,
                           border: "0.82px solid #D1D5DB",
                           borderRadius: "12px",
                           padding: "4px 8px",
                           minHeight: "41px",
+                        }),
+                        menuList: (base) => ({
+                          ...base,
+                          maxHeight: "180px", 
                         }),
                       }}
                     />

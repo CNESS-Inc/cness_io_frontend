@@ -155,6 +155,7 @@ const DirectoryProfile = () => {
   }
 
   const businessProfile = profileData.bussiness_profile || {};
+  console.log("🚀 ~ DirectoryProfile ~ businessProfile:", profileData)
   const userProfile = profileData.user_profile || {};
   const contactInfo = profileData.contact_information || {};
   const businessHours = contactInfo.business_hours || {};
@@ -681,7 +682,6 @@ const DirectoryProfile = () => {
           duration: 3000,
         });
 
-        // Reset form
         setReviewForm({
           rating: 0,
           description: "",
@@ -803,7 +803,7 @@ const DirectoryProfile = () => {
                     userProfile.interests.map((interest: any) => (
                       <span
                         key={interest.id}
-                        className="px-3 py-1.5 bg-[#F7F7F7] border border-[#ECEEF2] rounded-full text-xs text-[#64748B]"
+                        className="px-3 py-1.5 bg-[#FCFCFD] border-[0.6px] border-[#CBD5E1] rounded-full text-xs text-[#64748B]"
                       >
                         {interest.name}
                       </span>
@@ -822,7 +822,7 @@ const DirectoryProfile = () => {
                     userProfile.professions.map((profession: any) => (
                       <span
                         key={profession.id}
-                        className="px-5 py-1 bg-[#F7F7F7] border border-[#ECEEF2] rounded-full text-xs text-[#64748B]"
+                        className="px-3 py-1.5 bg-[#FCFCFD] border-[0.6px] border-[#CBD5E1] rounded-full text-xs text-[#64748B]"
                       >
                         {profession.title}
                       </span>
@@ -841,9 +841,14 @@ const DirectoryProfile = () => {
                     {profileData.friend_profile_pics.slice(0, 3).map((pic: string, i: number) => (
                       <img
                         key={i}
-                        src={pic}
+                        src={pic ? pic : "/profile.png"}
                         className="w-10 h-10 rounded-full border-2 border-white object-cover"
                         alt={`Friend ${i + 1}`}
+                        onError={(e) => {
+                                      const target =
+                                        e.target as HTMLImageElement;
+                                      target.src = "/profile.png"; // Clear broken images
+                                    }}
                       />
                     ))}
                     {profileData.friend_count > 3 && (
@@ -1087,7 +1092,7 @@ const DirectoryProfile = () => {
                   products.slice(0, 3).map((product: any, index: number) => (
                     <div
                       key={index}
-                      className="bg-gradient-to-b from-[#F1F3FF] to-white border border-[#ECEEF2] rounded-xl p-4 flex space-x-4"
+                      className="bg-linear-to-b from-[#F1F3FF] to-white border border-[#ECEEF2] rounded-xl p-4 flex space-x-4"
                     >
                       {/* IMAGE + HEART WRAPPER */}
                       <div className="relative">
@@ -1268,7 +1273,7 @@ const DirectoryProfile = () => {
                   <button
                     onClick={handleSubmitReview}
                     // disabled={submittingReview || !reviewForm.rating || !reviewForm.description.trim()}
-                    className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-5 py-3 rounded-full font-[Poppins] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-5 py-3 rounded-full font-[Poppins] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submittingReview ? "Submitting..." : "Submit"}
                   </button>
@@ -1419,7 +1424,7 @@ const DirectoryProfile = () => {
                                 <button
                                   onClick={() => handleSubmitReply(review.id)}
                                   disabled={submittingReply[review.id] || !replyTexts[review.id]?.trim()}
-                                  className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-5 py-2 rounded-full font-[Poppins] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                  className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-5 py-2 rounded-full font-[Poppins] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   {submittingReply[review.id] ? "Submitting..." : "Reply"}
                                 </button>
@@ -1523,7 +1528,7 @@ const DirectoryProfile = () => {
                                               <button
                                                 onClick={() => handleUpdateReply(review.id, childReview.id)}
                                                 disabled={submittingEditReply[childReview.id] || !editReplyTexts[childReview.id]?.trim()}
-                                                className="bg-gradient-to-r from-[#7077FE] to-[#F07EFF] text-white px-5 py-2 rounded-full font-[Poppins] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-5 py-2 rounded-full font-[Poppins] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                               >
                                                 {submittingEditReply[childReview.id] ? "Updating..." : "Update"}
                                               </button>
