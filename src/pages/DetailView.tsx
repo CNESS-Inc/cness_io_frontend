@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   GetEnquiryById,
-  UpdateEnquiryStatus,
+  // UpdateEnquiryStatus,
   EnquiryStatus,
 } from "../Common/ServerAPI";
-import { useToast } from "../components/ui/Toast/ToastProvider";
+// import { useToast } from "../components/ui/Toast/ToastProvider";
 
 export type Enquiry = {
   id: string;
@@ -75,9 +75,9 @@ export default function DetailViewDesigned() {
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [localStatus, setLocalStatus] = useState<string>("");
-  const [updating, setUpdating] = useState(false);
-  const { showToast } = useToast();
+  // const [localStatus, setLocalStatus] = useState<string>("");
+  // const [updating, setUpdating] = useState(false);
+  // const { showToast } = useToast();
 
   // Fetch enquiry info
   useEffect(() => {
@@ -96,7 +96,7 @@ export default function DetailViewDesigned() {
         const data = response?.data?.data || response?.data || response;
 
         setEnquiry(data);
-        setLocalStatus(data?.status || "");
+        // setLocalStatus(data?.status || "");
       } catch (err: any) {
         const errorMessage =
           err?.response?.data?.error?.message ||
@@ -113,40 +113,40 @@ export default function DetailViewDesigned() {
   }, [id]);
 
   // Update Status
-  const handleStatusUpdate = async () => {
-    if (!enquiry || !localStatus || localStatus === enquiry.status) return;
+  // const handleStatusUpdate = async () => {
+  //   if (!enquiry || !localStatus || localStatus === enquiry.status) return;
 
-    setUpdating(true);
+  //   setUpdating(true);
 
-    try {
-      await UpdateEnquiryStatus({
-        id: enquiry.id,
-        status: localStatus,
-      });
+  //   try {
+  //     await UpdateEnquiryStatus({
+  //       id: enquiry.id,
+  //       status: localStatus,
+  //     });
 
-      setEnquiry({ ...enquiry, status: localStatus });
+  //     setEnquiry({ ...enquiry, status: localStatus });
 
-      showToast({
-        message: `Status updated to '${localStatus}' successfully`,
-        type: "success",
-        duration: 5000,
-      });
+  //     showToast({
+  //       message: `Status updated to '${localStatus}' successfully`,
+  //       type: "success",
+  //       duration: 5000,
+  //     });
 
-      if (typeof (window as any).refreshEnquiryCounts === "function") {
-        (window as any).refreshEnquiryCounts();
-      }
+  //     if (typeof (window as any).refreshEnquiryCounts === "function") {
+  //       (window as any).refreshEnquiryCounts();
+  //     }
 
-      window.dispatchEvent(new CustomEvent("enquiryStatusUpdated"));
-    } catch (err: any) {
-      showToast({
-        message: err?.response?.data?.message || "Failed to update status",
-        type: "error",
-        duration: 5000,
-      });
-    } finally {
-      setUpdating(false);
-    }
-  };
+  //     window.dispatchEvent(new CustomEvent("enquiryStatusUpdated"));
+  //   } catch (err: any) {
+  //     showToast({
+  //       message: err?.response?.data?.message || "Failed to update status",
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   } finally {
+  //     setUpdating(false);
+  //   }
+  // };
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
@@ -171,7 +171,7 @@ export default function DetailViewDesigned() {
   // ===============================
   if (loading) {
     return (
-      <div className="bg-white max-w-5xl mx-auto p-4 md:p-6">
+      <div className="bg-white mx-auto p-4 md:p-6">
         <div className="text-center py-8">Loading enquiry details...</div>
       </div>
     );
@@ -179,7 +179,7 @@ export default function DetailViewDesigned() {
 
   if (error || !enquiry) {
     return (
-      <div className="bg-white max-w-5xl mx-auto p-4 md:p-6">
+      <div className="bg-white mx-auto p-4 md:p-6">
         <div className="text-center py-8 text-red-600">
           {error || "Enquiry not found"}
         </div>
@@ -191,12 +191,12 @@ export default function DetailViewDesigned() {
   //  MAIN UI
   // ===============================
   return (
-    <div className="bg-white max-w-5xl mx-auto p-4 md:p-6">
+    <div className="bg-white max-w-7xl mx-auto px-4 py-5">
       {/* Header */}
-      <h1 className="font-[poppins] text-xl md:text-2xl mb-3 font-semibold">Overview</h1>
+      <h1 className="font-[poppins] text-xl mb-3 font-semibold">Overview</h1>
 
       {/* Header Card - Mobile Responsive Layout */}
-      <div className="rounded-lg shadow-sm p-4 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="border-b border-b-[#E5E5E5] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         {/* Avatar + Info */}
         <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto">
           <img
@@ -231,9 +231,9 @@ export default function DetailViewDesigned() {
       </div>
 
       {/* Body - Mobile Responsive Grid */}
-      <div className="mt-4 md:mt-6 bg-gray-50 rounded-lg grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+      <div className="mt-5 bg-gray-50 rounded-lg grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Left box */}
-        <div className="bg-gray-50 p-4 md:p-6 rounded-lg">
+        <div className="bg-gray-50 p-5 rounded-lg">
           <h3 className="text-sm font-[poppins] font-semibold mb-3 md:mb-4">
             Basic Information
           </h3>
@@ -243,7 +243,7 @@ export default function DetailViewDesigned() {
               <div className="text-gray-400 font-[poppins] text-xs">
                 Service
               </div>
-              <div className="font-medium wrap-break-word">
+              <div className="text-[15px] font-medium wrap-break-word">
                 {enquiry.enquiry_services?.map((s) => s.name).join(", ") ||
                   enquiry.serviceType ||
                   enquiry.service_type ||
@@ -255,7 +255,7 @@ export default function DetailViewDesigned() {
               <div className="text-gray-400 font-[poppins] text-xs">
                 Contact
               </div>
-              <div className="font-medium">
+              <div className="text-[15px] font-medium">
                 {enquiry.phone || enquiry.phone_number || "N/A"}
               </div>
             </div>
@@ -264,14 +264,14 @@ export default function DetailViewDesigned() {
               <div className="text-gray-400 font-[poppins] text-xs">
                 Email
               </div>
-              <div className="font-medium break-all">{enquiry.email}</div>
+              <div className="text-[15px] font-medium break-all">{enquiry.email}</div>
             </div>
 
             <div>
               <div className="text-gray-400 font-[poppins] text-xs">
                 Message
               </div>
-              <div className="font-medium leading-relaxed wrap-break-word whitespace-pre-wrap">
+              <div className="text-[15px] font-medium leading-relaxed wrap-break-word whitespace-pre-wrap">
                 {enquiry.message}
               </div>
             </div>
@@ -279,8 +279,8 @@ export default function DetailViewDesigned() {
         </div>
 
         {/* Right box */}
-        <div className="bg-gray-50 p-4 md:p-6 rounded-lg">
-          <h3 className="text-sm font-[poppins] font-semibold mb-3 md:mb-4">
+        <div className="bg-gray-50 p-5 rounded-lg">
+          <h3 className="text-[16px] font-[poppins] font-semibold mb-3">
             Service Details
           </h3>
 
@@ -289,28 +289,28 @@ export default function DetailViewDesigned() {
               <div className="text-gray-400 font-[poppins] text-xs">
                 Customer Type
               </div>
-              <div className="font-medium">Individual</div>
+              <div className="text-[15px] font-medium">Individual</div>
             </div>
 
             <div>
               <div className="text-gray-400 font-[poppins] text-xs">
                 Location
               </div>
-              <div className="font-medium">New York</div>
+              <div className=" text-[15px]font-medium">New York</div>
             </div>
 
             <div>
               <div className="text-gray-400 font-[poppins] text-xs">
                 Urgency
               </div>
-              <div className="font-medium font-[poppins]">This Week</div>
+              <div className="text-[15px] font-medium font-[poppins]">This Week</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Footer actions - Mobile Responsive */}
-      <div className="mt-4 md:mt-6 flex flex-col items-start gap-4">
+      {/* <div className="mt-4 md:mt-6 flex flex-col items-start gap-4">
         <div className="w-full">
           <label className="text-sm font-medium text-gray-700 mb-2 block">
             Update Status:
@@ -338,7 +338,7 @@ export default function DetailViewDesigned() {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEllipsisH } from "react-icons/fa";
-import { PiClockCounterClockwise, PiFilesLight, PiCaretLeft, PiCaretRight } from "react-icons/pi";
+import { PiClockCounterClockwise, PiCaretLeft, PiCaretRight } from "react-icons/pi";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { GetAllMyEnquiries, GetEnquiryCount } from "../Common/ServerAPI";
+import { NotepadText } from "lucide-react";
 
 export type Enquiry = {
   id: string;
@@ -130,9 +131,9 @@ export default function MyEnquiry() {
     }
   };
 
-  const handleLimitChange = (newLimit: number) => {
-    fetchEnquiries(1, newLimit);
-  };
+  // const handleLimitChange = (newLimit: number) => {
+  //   fetchEnquiries(1, newLimit);
+  // };
 
   const refreshCounts = () => {
     fetchEnquiryCounts();
@@ -185,9 +186,9 @@ export default function MyEnquiry() {
     <div className="p-4 md:p-6 lg:p-3">
       {/* Header cards - Stack on mobile, grid on tablet+ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <Card title="Total Inquiry" value={counts.total} icon={<PiFilesLight size={20} />} />
-        <Card title="Pending" value={counts.pending} icon={<PiClockCounterClockwise size={20} />} variant="warning" />
-        <Card title="Completed" value={counts.completed} icon={<IoIosCheckmarkCircleOutline size={20} />} variant="success" />
+        <Card title="Total Inquiry" value={counts.total} icon={<NotepadText  size={22} />} />
+        <Card title="Pending" value={counts.pending} icon={<PiClockCounterClockwise size={22} />} variant="warning" />
+        <Card title="Completed" value={counts.completed} icon={<IoIosCheckmarkCircleOutline size={22} />} variant="success" />
       </div>
 
       {error && (
@@ -198,9 +199,9 @@ export default function MyEnquiry() {
 
       {/* Enquiries section */}
       <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-        <div className="px-3 py-3 md:px-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <h3 className="text-lg font-semibold font-[poppins]">Enquiries</h3>
-          <div className="flex items-center gap-2 self-end sm:self-auto">
+        <div className="px-3 py-3 md:px-4 md:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <h3 className="text-xl font-semibold font-[poppins]">Enquiries</h3>
+          {/* <div className="flex items-center gap-2 self-end sm:self-auto">
             <label className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">Items per page:</label>
             <select
               value={pagination.limit}
@@ -211,63 +212,63 @@ export default function MyEnquiry() {
               <option value={20}>20</option>
               <option value={50}>50</option>
             </select>
-          </div>
+          </div> */}
         </div>
 
         {/* Table for medium+ screens */}
-        <div className="hidden md:block">
-          <div className="overflow-x-auto px-4 rounded-lg">
-            <table className="min-w-full border rounded-lg border-[#DADADA] font-[poppins] text-sm">
-              <thead className="bg-[#F3F2FF]">
-                <tr className="text-left border border-[#DADADA] text-gray-600">
-                  <th className="px-4 py-3 font-normal">Sl No</th>
-                  <th className="px-4 py-3 font-normal">Name</th>
-                  <th className="px-4 py-3 font-normal">Message</th>
-                  <th className="px-4 py-3 font-normal">Service Type</th>
-                  <th className="px-4 py-3 font-normal">Date</th>
-                  <th className="px-4 py-3 font-normal">Time</th>
-                  <th className="px-4 py-3 font-normal">Phone</th>
-                  <th className="px-4 py-3 font-normal">Email</th>
-                  <th className="px-4 py-3 w-12 font-normal">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {enquiries.length === 0 ? (
-                  <tr>
-                    <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
-                      No enquiries found
-                    </td>
-                  </tr>
-                ) : (
-                  enquiries.map((e, index) => {
-                    const serviceNames = e.enquiry_services?.map(s => s.name).join(", ") || e.serviceType || e.service_type || "N/A";
-                    return (
-                      <tr key={e.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3">{(pagination.page_no - 1) * pagination.limit + index + 1}</td>
-                        <td className="px-4 py-3 font-medium whitespace-nowrap">{e.name || "N/A"}</td>
-                        <td className="px-4 py-3 text-gray-600 max-w-xs truncate">{e.message || "N/A"}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">{serviceNames}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">{formatDate(e.date || e.createdAt || e.created_at)}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">{formatTime(e.time || e.createdAt || e.created_at)}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">{e.phone || e.phone_number || "N/A"}</td>
-                        <td className="px-4 py-3 truncate max-w-[150px]">{e.email || "N/A"}</td>
-                        <td className="px-4 py-3 text-right">
-                          <button
-                            aria-label="actions"
-                            className="p-1 rounded hover:bg-gray-100"
-                            onClick={() => navigate(`/dashboard/detail-view/${e.id}`)}
-                          >
-                            <FaEllipsisH size={18} />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+<div className="hidden md:block">
+  <div className="overflow-x-auto px-4 pb-4">
+    <table className="min-w-full border-separate border-spacing-0 border rounded-lg border-[#DADADA] font-[poppins] text-sm overflow-hidden">
+      <thead className="bg-[#F3F2FF]">
+        <tr className="text-left text-gray-600">
+          <th className="px-4 py-3 font-normal border-b border-[#DADADA]">Sl No</th>
+          <th className="px-4 py-3 font-normal border-b border-[#DADADA]">Name</th>
+          <th className="px-4 py-3 font-normal border-b border-[#DADADA]">Message</th>
+          <th className="px-4 py-3 font-normal border-b border-[#DADADA]">Service Type</th>
+          <th className="px-4 py-3 font-normal border-b border-[#DADADA]">Date</th>
+          <th className="px-4 py-3 font-normal border-b border-[#DADADA]">Time</th>
+          <th className="px-4 py-3 font-normal border-b border-[#DADADA]">Phone</th>
+          <th className="px-4 py-3 font-normal border-b border-[#DADADA]">Email</th>
+          <th className="px-4 py-3 w-12 font-normal border-b border-[#DADADA]">Action</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y">
+        {enquiries.length === 0 ? (
+          <tr>
+            <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
+              No enquiries found
+            </td>
+          </tr>
+        ) : (
+          enquiries.map((e, index) => {
+            const serviceNames = e.enquiry_services?.map(s => s.name).join(", ") || e.serviceType || e.service_type || "N/A";
+            return (
+              <tr key={e.id} className="hover:bg-gray-50">
+                <td className="px-4 py-3 border-b border-[#DADADA]">{(pagination.page_no - 1) * pagination.limit + index + 1}</td>
+                <td className="px-4 py-3 font-medium whitespace-nowrap border-b border-[#DADADA]">{e.name || "N/A"}</td>
+                <td className="px-4 py-3 max-w-xs truncate border-b border-[#DADADA]">{e.message || "N/A"}</td>
+                <td className="px-4 py-3 whitespace-nowrap border-b border-[#DADADA]">{serviceNames}</td>
+                <td className="px-4 py-3 whitespace-nowrap border-b border-[#DADADA]">{formatDate(e.date || e.createdAt || e.created_at)}</td>
+                <td className="px-4 py-3 whitespace-nowrap border-b border-[#DADADA]">{formatTime(e.time || e.createdAt || e.created_at)}</td>
+                <td className="px-4 py-3 whitespace-nowrap border-b border-[#DADADA]">{e.phone || e.phone_number || "N/A"}</td>
+                <td className="px-4 py-3 truncate max-w-[150px] border-b border-[#DADADA]">{e.email || "N/A"}</td>
+                <td className="px-4 py-3 text-right border-b border-[#DADADA]">
+                  <button
+                    aria-label="actions"
+                    className="p-1 rounded hover:bg-gray-100"
+                    onClick={() => navigate(`/dashboard/detail-view/${e.id}`)}
+                  >
+                    <FaEllipsisH size={18} />
+                  </button>
+                </td>
+              </tr>
+            );
+          })
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
 
         {/* Tablet view (smaller table) */}
         <div className="hidden sm:block md:hidden">
@@ -539,21 +540,21 @@ function Card({
   variant?: "default" | "warning" | "success";
 }) {
   const styles: Record<string, { ring: string; bg: string; icon: string }> = {
-    default: { ring: "ring-1 ring-indigo-100", bg: "bg-indigo-50", icon: "text-indigo-600" },
-    warning: { ring: "ring-1 ring-red-100", bg: "bg-red-50", icon: "text-red-600" },
-    success: { ring: "ring-1 ring-green-100", bg: "bg-green-50", icon: "text-green-600" },
+    default: { ring: "ring-1 ring-indigo-100", bg: "bg-[#E8E9FF]", icon: "text-[#060FC1]" },
+    warning: { ring: "ring-1 ring-red-100", bg: "bg-[#FFEBF0]", icon: "text-[#AA0003]" },
+    success: { ring: "ring-1 ring-green-100", bg: "bg-[#F1FFEF]", icon: "text-[#60C750]" },
   };
   const s = styles[variant] || styles.default;
 
   return (
-    <div className={`bg-white rounded-xl p-4 sm:p-5 lg:p-6 flex items-center justify-center ${s.ring} border border-transparent`}>
+    <div className={`bg-white rounded-xl p-8 sm:p-10 lg:p-12 flex items-center justify-center ${s.ring} border border-transparent`}>
       <div className="flex items-center gap-3 sm:gap-4">
         <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${s.bg} ${s.icon}`}>
           {icon}
         </div>
         <div>
-          <div className="text-xs sm:text-sm text-gray-400">{title}</div>
-          <div className="text-xl sm:text-2xl font-semibold text-gray-800">{value}</div>
+          <div className="text-xs sm:text-[16px] text-[#64748B] mb-1.5">{title}</div>
+          <div className="text-xl sm:text-[24px] font-semibold text-gray-800">{value}</div>
         </div>
       </div>
     </div>
