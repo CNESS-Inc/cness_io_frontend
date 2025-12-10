@@ -1,7 +1,26 @@
+const BOT_UAS = [
+    "twitterbot",
+    "facebookexternalhit",
+    "linkedinbot",
+    "whatsapp",
+    "slackbot",
+    "discordbot",
+    "telegrambot",
+    "curl",
+];
+
+function isBot(ua = "") {
+    ua = ua.toLowerCase();
+    return BOT_UAS.some((b) => ua.includes(b));
+}
 export async function onRequest({ params, request, env }) {
     const userAgent = request.headers.get("user-agent") || "";
     const url = new URL(request.url);
     const origin = request.headers.get("origin") || "";
+
+     if (!isBot(userAgent)) {
+        return env.ASSETS.fetch(request);
+    }
     let profile = null;
 
     try {
