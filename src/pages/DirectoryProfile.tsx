@@ -1137,7 +1137,7 @@ const DirectoryProfile = () => {
                     )}
                   </p>
                 </div>
-                {services.length > 0 && (
+                {services.length > 0 && isLoggedIn !== id ? (
                   <div className="flex justify-center sm:justify-start">
                     <button
                       onClick={() => setShowEnquiry(true)}
@@ -1146,7 +1146,7 @@ const DirectoryProfile = () => {
                       Enquire now
                     </button>
                   </div>
-                )}
+                ) : ""}
               </div>
             </div>
           </section>

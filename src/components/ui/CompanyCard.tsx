@@ -67,7 +67,7 @@ export default function CompanyCard({
   logoUrl,
   bannerUrl,
   description,
-  tags,
+  // tags,
   // rating,
   level,
   routeKey,
@@ -238,7 +238,7 @@ export default function CompanyCard({
             </div>*/}
 
           {/* Tags only if available */}
-          {tags?.length > 0 && (
+          {/* {tags?.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {tags.map((tag, index) => (
                 <span
@@ -249,7 +249,7 @@ export default function CompanyCard({
                 </span>
               ))}
             </div>
-          )}
+          )} */}
         </CardContent>
 
         {/* <CardFooter className="flex justify-between items-center px-4 py-3">
