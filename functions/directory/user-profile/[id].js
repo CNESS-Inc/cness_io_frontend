@@ -1,59 +1,59 @@
 const BOT_UAS = [
-  "twitterbot",
-  "facebookexternalhit",
-  "linkedinbot",
-  "whatsapp",
-  "slackbot",
-  "discordbot",
-  "telegrambot",
-  "curl",
+    "twitterbot",
+    "facebookexternalhit",
+    "linkedinbot",
+    "whatsapp",
+    "slackbot",
+    "discordbot",
+    "telegrambot",
+    "curl",
 ];
 
 function isBot(ua = "") {
-  ua = ua.toLowerCase();
-  return BOT_UAS.some((b) => ua.includes(b));
+    ua = ua.toLowerCase();
+    return BOT_UAS.some((b) => ua.includes(b));
 }
 
 export async function onRequest({ params, request, env }) {
-  const userAgent = request.headers.get("user-agent") || "";
-  const url = new URL(request.url);
+    const userAgent = request.headers.get("user-agent") || "";
+    const url = new URL(request.url);
 
-  // 1) Normal browser → return the SPA normally
-  if (!isBot(userAgent)) {
-    return env.ASSETS.fetch(request); // <-- THIS FIXES YOUR ERROR
-  }
-
-  // 2) Bot → return preview HTML
-  let profile = null;
-
-  try {
-    const apiUrl = `${env.API_BASE_URL}/profile/public/${params.id}`;
-onsole.log("🔵 Fetching API:", apiUrl);
-    const res = await fetch(apiUrl);
-      console.log("🟢 API Status:", res.status);
-      console.log("🟢 API res.ok Status:", res.ok);
-
-    if (res.ok) {
-      const json = await res.json();
-        console.log("🟣 API Response JSON:", JSON.stringify(json));
-      profile = json?.data?.data?.data || null;
+    // 1) Normal browser → return the SPA normally
+    if (!isBot(userAgent)) {
+        return env.ASSETS.fetch(request); // <-- THIS FIXES YOUR ERROR
     }
-  } catch (e) {
-    // ignore
-     console.error("🔴 API Error:", e);
-  }
 
-  const name = profile
-    ? `${profile.first_name} ${profile.last_name}`
-    : "CNESS User";
+    // 2) Bot → return preview HTML
+    let profile = null;
 
-  const image =
-    profile?.profile_picture ??
-    "https://cdn.cness.io/default-avatar.svg";
+    try {
+        const apiUrl = `${env.API_BASE_URL}/profile/public/${params.id}`;
+        console.log("🔵 Fetching API:", apiUrl);
+        const res = await fetch(apiUrl);
+        console.log("🟢 API Status:", res.status);
+        console.log("🟢 API res.ok Status:", res.ok);
 
-  const description = `Check out ${name}'s profile on CNESS`;
+        if (res.ok) {
+            const json = await res.json();
+            console.log("🟣 API Response JSON:", JSON.stringify(json));
+            profile = json?.data?.data?.data || null;
+        }
+    } catch (e) {
+        // ignore
+        console.error("🔴 API Error:", e);
+    }
 
-  const html = `<!DOCTYPE html>
+    const name = profile
+        ? `${profile.first_name} ${profile.last_name}`
+        : "CNESS User";
+
+    const image =
+        profile?.profile_picture ??
+        "https://cdn.cness.io/default-avatar.svg";
+
+    const description = `Check out ${name}'s profile on CNESS`;
+
+    const html = `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -74,7 +74,7 @@ onsole.log("🔵 Fetching API:", apiUrl);
   <body>Preview for ${name}</body>
 </html>`;
 
-  return new Response(html, {
-    headers: { "Content-Type": "text/html; charset=utf-8" },
-  });
+    return new Response(html, {
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
 }
