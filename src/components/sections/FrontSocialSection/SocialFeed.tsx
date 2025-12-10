@@ -909,13 +909,13 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
 
   {/* LEFT ARROW */}
   <button
-    onClick={() =>
-      storyScrollRef.current?.scrollBy({ left: -300, behavior: "smooth" })
-    }
-    className="absolute -left-3 top-1/2 -translate-y-1/2 bg-white shadow-md w-[38px] h-[38px] rounded-full flex items-center justify-center z-20"
-  >
-    <ChevronLeft size={20} />
-  </button>
+  onClick={() => storyScrollRef.current?.scrollBy({ left: -300, behavior: "smooth" })}
+  className="absolute -left-3 top-1/2 -translate-y-1/2 bg-white shadow-md 
+             w-[38px] h-[38px] rounded-full flex items-center justify-center
+             z-50 pointer-events-auto"
+>
+  <ChevronLeft size={20} />
+</button>
 
   {/* SCROLL WRAPPER */}
   <div
@@ -953,14 +953,14 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
   </div>
 
   {/* RIGHT ARROW */}
-  <button
-    onClick={() =>
-      storyScrollRef.current?.scrollBy({ left: 300, behavior: "smooth" })
-    }
-    className="absolute -right-3 top-1/2 -translate-y-1/2 bg-white shadow-md w-[38px] h-[38px] rounded-full flex items-center justify-center z-20"
-  >
-    <ChevronRight size={20} />
-  </button>
+<button
+  onClick={() => storyScrollRef.current?.scrollBy({ left: 300, behavior: "smooth" })}
+  className="absolute -right-3 top-1/2 -translate-y-1/2 bg-white shadow-md 
+             w-[38px] h-[38px] rounded-full flex items-center justify-center
+             z-50 pointer-events-auto"
+>
+  <ChevronRight size={20} />
+</button>
 </div>
               <div className="w-full border-t border-[#C8C8C8] mt-4 md:mt-6"></div>
 
