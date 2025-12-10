@@ -7,7 +7,7 @@ import linkedin from "../assets/linkedin.svg";
 import twitter from "../assets/twitter.svg";
 import fluent from "../assets/fluent.svg";
 import work from "../assets/work.svg";
-import service from "../assets/service.svg";
+// import service from "../assets/service.svg";
 import bio from "../assets/bio.svg";
 import education from "../assets/education.svg";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
@@ -104,6 +104,7 @@ export const formatRange = (
 
 export default function UserProfileView() {
   const [userDetails, setUserDetails] = useState<any>();
+  console.log("🚀 ~ UserProfileView ~ userDetails:", userDetails)
   const [followBP, setFollowBP] = useState<any>([]);
   const [activeTab, setActiveTab] = useState("about");
   const { id } = useParams();
@@ -1013,9 +1014,9 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
               </p>
               <p className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px] text-[#64748B] max-w-full md:max-w-[500px] wrap-break-word">
                 {isAboutExpanded
-                  ? userDetails?.about_us
-                  : truncateAboutText(userDetails?.about_us || "", 150)}
-                {userDetails?.about_us && userDetails.about_us.length > 150 && (
+                  ? userDetails?.bio
+                  : truncateAboutText(userDetails?.bio || "", 150)}
+                {userDetails?.bio && userDetails.bio.length > 150 && (
                   <button
                     onClick={() => setIsAboutExpanded(!isAboutExpanded)}
                     className="ml-1 text-[#7077FE] font-semibold hover:underline focus:outline-none"
@@ -1597,7 +1598,7 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
                 </div>
 
                 {/* Service Offered */}
-                {userDetails?.person_services?.length > 0 ? (
+                {/* {userDetails?.person_services?.length > 0 ? (
                   <div className="py-6 border-b border-[#ECEEF2]">
                     <h3 className="flex items-center gap-2 font-['Poppins'] font-semibold text-[16px] leading-[100%] tracking-[0px] text-[#000000]">
                       <span className="flex items-center gap-2">
@@ -1609,7 +1610,6 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
                     <div className="mt-2 space-y-5">
                       {userDetails?.person_services?.map((service: any) => (
                         <div key={service.id}>
-                          {/* Position + Company */}
                           <p className="mt-2 font-['Open_Sans'] font-normal text-[14px] leading-[21px] tracking-[0px] text-[#64748B]">
                             {service.name}
                           </p>
@@ -1617,7 +1617,7 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
                       ))}
                     </div>
                   </div>
-                ) : null}
+                ) : null} */}
               </>
             )}
 

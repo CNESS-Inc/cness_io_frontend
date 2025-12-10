@@ -2925,7 +2925,7 @@ const EditDirectory: React.FC = () => {
             </span>
           </button>
 
-          <button
+          {/* <button
             type="button"
             onClick={() => {
               publicProfileForm.trigger().then((isValid) => {
@@ -2940,7 +2940,7 @@ const EditDirectory: React.FC = () => {
             <span className="text-[#081021] font-Rubik leading-[16.59px] text-sm sm:text-base">
               Preview
             </span>
-          </button>
+          </button> */}
 
           <button
             type="submit"
