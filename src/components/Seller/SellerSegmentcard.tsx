@@ -2696,7 +2696,7 @@ export function SocialStackCard({
       } else if (status === "requested") {
         // If not connected, send friend request
         const formattedData = { friend_id: id };
-        const response = await RejectFriendRequest(formattedData);
+        const response = await SendFriendRequest(formattedData);
 
         if (response.success) {
           setFriendRequests((prev) => ({

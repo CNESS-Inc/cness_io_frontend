@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useState, useRef } from "react";
-import { CirclePlus, Star, SquarePen } from "lucide-react";
+import { CirclePlus, SquarePen, Clock } from "lucide-react";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import {
@@ -218,7 +218,7 @@ const EditDirectory: React.FC = () => {
   });
 
   const customStyles = {
-  control: (base: any, state: any) => ({
+    control: (base: any, state: any) => ({
     ...base,
     minHeight: "41px",
     borderRadius: "12px",
@@ -228,67 +228,74 @@ const EditDirectory: React.FC = () => {
     borderWidth: "1px",
     borderColor: state.isFocused ? "#CBD5E1" : "#CBD5E1",
     backgroundColor: "white",
-    paddingLeft: "0", // Remove left padding
-    paddingRight: "0", // Remove right padding
+    paddingLeft: "0px",
+    paddingRight: "0",
+    boxShadow: "none", 
+    "&:hover": {
+      borderColor: "#CBD5E1",
+    },
   }),
-  valueContainer: (base: any) => ({
+    valueContainer: (base: any) => ({
     ...base,
     flexWrap: "wrap",
     maxHeight: "auto",
-    padding: "0", // Reduce padding
-    margin: "0", // Remove margin
-  }),
-  multiValue: (base: any) => ({
-    ...base,
-    backgroundColor: "#ECEAF8",
-    color: "#6269FF",
-    borderRadius: "5px",
-    height: "36px",
-    minWidth: "fit-content",
-    width: "auto",
-    padding: "7px 10px",
-    gap: "6px",
-    opacity: 1,
-    margin: "4px 3px",
-    alignItems: "center",
-  }),
-  multiValueLabel: (base: any) => ({
-    ...base,
-    color: "#000000",
-    fontWeight: "500",
-    fontSize: "14px",
-    padding: 0,
-    lineHeight: "normal",
-  }),
-  multiValueRemove: (base: any) => ({
-    ...base,
-    color: "#000000",
-    backgroundColor: "transparent",
-    padding: 0,
-    width: "16px",
-    height: "16px",
-    marginLeft: "6px",
-    ":hover": {
-      backgroundColor: "transparent",
-      color: "#4A50D5",
+    padding: "0",
+    margin: "0",
+    "&:has(.react-select__placeholder)": {
+      paddingLeft: "12px", 
     },
-  }),
-  placeholder: (base: any) => ({
-    ...base,
-    fontSize: 14,
-    color: "#9CA3AF",
-    marginLeft: "0", // Remove left margin from placeholder
-  }),
-  indicatorsContainer: (base: any) => ({
-    ...base,
-    paddingRight: "8px", // Keep only minimal padding for indicators
-  }),
-  input: (base: any) => ({
-    ...base,
-    margin: "0", // Remove margin from input
-    padding: "0", // Remove padding from input
-  }),
-};
+    }),
+    multiValue: (base: any) => ({
+      ...base,
+      backgroundColor: "#ECEAF8",
+      color: "#6269FF",
+      borderRadius: "5px",
+      height: "36px",
+      minWidth: "fit-content",
+      width: "auto",
+      padding: "7px 10px",
+      gap: "6px",
+      opacity: 1,
+      margin: "4px 3.5px",
+      alignItems: "center",
+    }),
+    multiValueLabel: (base: any) => ({
+      ...base,
+      color: "#000000",
+      fontWeight: "500",
+      fontSize: "14px",
+      padding: 0,
+      lineHeight: "normal",
+    }),
+    multiValueRemove: (base: any) => ({
+      ...base,
+      color: "#000000",
+      backgroundColor: "transparent",
+      padding: 0,
+      width: "16px",
+      height: "16px",
+      marginLeft: "6px",
+      ":hover": {
+        backgroundColor: "transparent",
+        color: "#4A50D5",
+      },
+    }),
+    placeholder: (base: any) => ({
+      ...base,
+      fontSize: 14,
+      color: "#9CA3AF",
+      marginLeft: "0", // Remove left margin from placeholder
+    }),
+    indicatorsContainer: (base: any) => ({
+      ...base,
+      paddingRight: "8px", // Keep only minimal padding for indicators
+    }),
+    input: (base: any) => ({
+      ...base,
+      margin: "0", // Remove margin from input
+      padding: "0", // Remove padding from input
+    }),
+  };
 
   const {
     register,
@@ -1486,7 +1493,7 @@ const EditDirectory: React.FC = () => {
         className="w-full flex flex-col gap-4"
       >
         {/* Basic Information Section */}
-        <div className="w-full bg-white rounded-xl p-4 sm:p-6 flex flex-col lg:flex-row gap-6 lg:gap-[90px]">
+        <div className="w-full bg-white rounded-xl p-4 sm:p-6 flex flex-col lg:flex-row gap-4 lg:gap-[90px]">
           <div className="flex-1 flex flex-col gap-4">
             {/* SECTION TITLE */}
             <h2 className="text-[#081021] font-[Poppins] font-semibold text-lg sm:text-xl">
@@ -1592,10 +1599,12 @@ const EditDirectory: React.FC = () => {
                     <select
                       {...register("country_id")}
                       className={`h-[43px] w-full border rounded-lg px-3
-      text-[#081021] font-semibold text-sm sm:text-base
-      outline-none bg-white appearance-none ${
-        errors.country_id ? "border-red-500" : "border-[#CBD5E1]"
-      }`}
+                      text-[#081021] font-semibold text-sm sm:text-base
+                      outline-none bg-white appearance-none ${
+                        errors.country_id
+                          ? "border-red-500"
+                          : "border-[#CBD5E1]"
+                      }`}
                     >
                       <option value="">Select Location</option>
                       {countryData.map((country: any) => (
@@ -1759,12 +1768,13 @@ const EditDirectory: React.FC = () => {
                     control={control}
                     render={({ field: { onChange, value, ...field } }) => (
                       <label
-                        className={`w-[82px] h-[82px] bg-white border-2 border-dashed border-[#D5D5D5] 
-                               rounded-full flex items-center justify-center overflow-hidden relative ${
-                                 isUploadingLogo
-                                   ? "cursor-wait"
-                                   : "cursor-pointer"
-                               }`}
+                        className={`w-[82px] h-[82px] bg-white rounded-full 
+               flex items-center justify-center overflow-hidden relative ${
+                 isUploadingLogo ? "cursor-wait" : "cursor-pointer"
+               }`}
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='61' ry='61' stroke='%23D5D5D5' stroke-width='1' stroke-dasharray='12%2c12' stroke-dashoffset='0' stroke-linecap='butt'/%3e%3c/svg%3e")`,
+                        }}
                       >
                         {isUploadingLogo ? (
                           <div className="flex flex-col items-center justify-center gap-1">
@@ -1841,7 +1851,12 @@ const EditDirectory: React.FC = () => {
                                 className="w-full h-full object-cover rounded-full"
                               />
                             ) : (
-                              <span className="text-[#7077FE] text-2xl">+</span>
+                              <span className="text-[#7077FE] text-2xl">
+                                <img
+                                  src="/image_upload.png"
+                                  className="h-[26px]"
+                                />
+                              </span>
                             )}
                           </>
                         )}
@@ -1850,10 +1865,10 @@ const EditDirectory: React.FC = () => {
                   />
 
                   <div className="flex flex-col gap-2">
-                    <span className="text-[#7077FE] font-semibold text-sm sm:text-base cursor-pointer">
+                    <span className="text-[#7077FE] font-semibold text-[16px] leading-[15px] tracking-normal font-['Open_Sans'] cursor-pointer">
                       Upload your logo here
                     </span>
-                    <span className="text-[#64748B] text-xs sm:text-sm">
+                    <span className="text-[#64748B] text-[14px] leading-[15px] tracking-normal font-normal font-['Open_Sans']">
                       Accepted file types: .jpg, .jpeg, .png
                     </span>
                   </div>
@@ -1954,8 +1969,12 @@ const EditDirectory: React.FC = () => {
               </div>
             ) : (
               <div
-                className="w-full sm:w-[calc(50%-6px)] lg:w-[267px] h-[184px] bg-white border-2 border-dashed border-[#D5D5D5] 
-               rounded-lg flex flex-col items-center justify-center gap-1 cursor-pointer"
+                className="w-full sm:w-[calc(50%-6px)] lg:w-[267px] h-[184px] bg-white 
+               rounded-lg flex flex-col items-center justify-center 
+               gap-1 cursor-pointer"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23D5D5D5' stroke-width='1' stroke-dasharray='6%2c6' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e")`,
+                }}
                 onClick={handleAddPhotoClick}
               >
                 <div className="w-5 h-5">
@@ -1997,6 +2016,21 @@ const EditDirectory: React.FC = () => {
             Operations Information
           </h2>
 
+          <div className="my-4">
+            <div className="flex items-center mb-2">
+              <Clock fill="#D9D9D9" className="h-4.5 w-4.5 text-white me-2" />
+              <div className="font-semibold text-[#081021] text-sm sm:text-base">
+                Opens with main hours
+              </div>
+            </div>
+            <div>
+              <div className="font-semibold text-[#081021] text-xs">Hours</div>
+              <div className="text-[#64748B] text-sm">
+                Set main business hours or mark your business as closed
+              </div>
+            </div>
+          </div>
+
           {/* =================== RADIO BUTTONS =================== */}
           <div className="flex flex-col gap-3 mb-6">
             {/* Opens with main hours */}
@@ -2007,15 +2041,15 @@ const EditDirectory: React.FC = () => {
               }
             >
               <div
-                className={`w-3 h-3 rounded-full border-2 mt-1
-          ${
-            mode === "main"
-              ? "bg-[#7077FE] border-[#7077FE]"
-              : "border-gray-300"
-          }`}
+                className={`w-4 h-4 rounded-full border-5 mt-1
+                 ${
+                   mode === "main"
+                     ? "border-[#7077FE] bg-white"
+                     : "border-gray-300 bg-white group-hover:border-gray-400"
+                 }`}
               ></div>
               <div>
-                <div className="font-semibold text-[#081021] text-sm sm:text-base">
+                <div className="font-semibold text-[#081021] text-sm">
                   Opens with main hours
                 </div>
                 <div className="text-[#64748B] text-xs sm:text-sm">
@@ -2032,12 +2066,12 @@ const EditDirectory: React.FC = () => {
               }
             >
               <div
-                className={`w-3 h-3 rounded-full border-2 mt-1
-          ${
-            mode === "temporary"
-              ? "bg-[#7077FE] border-[#7077FE]"
-              : "border-gray-300"
-          }`}
+                className={`w-4 h-4 rounded-full border-5 mt-1
+                ${
+                  mode === "temporary"
+                    ? "border-[#7077FE] bg-white"
+                    : "border-gray-300 bg-white group-hover:border-gray-400"
+                }`}
               ></div>
               <div>
                 <div className="font-semibold text-[#081021] text-sm sm:text-base">
@@ -2057,12 +2091,12 @@ const EditDirectory: React.FC = () => {
               }
             >
               <div
-                className={`w-3 h-3 rounded-full border-2 mt-1
-          ${
-            mode === "permanent"
-              ? "bg-[#7077FE] border-[#7077FE]"
-              : "border-gray-300"
-          }`}
+                className={`w-4 h-4 rounded-full border-5 mt-1
+                ${
+                  mode === "permanent"
+                    ? "border-[#7077FE] bg-white"
+                    : "border-gray-300 bg-white group-hover:border-gray-400"
+                }`}
               ></div>
               <div>
                 <div className="font-semibold text-[#081021] text-sm sm:text-base">
@@ -2079,90 +2113,120 @@ const EditDirectory: React.FC = () => {
 
           {mode === "main" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 lg:gap-x-2 gap-y-6 sm:gap-y-8 lg:gap-y-12">
-              {days.map((day, index) => (
-                <div key={index} className="flex flex-col gap-1">
-                  {/* TOP ROW: Day Name + Labels */}
-                  <div className="flex items-center justify-between sm:justify-start">
-                    {/* DAY NAME */}
-                    <span className="text-sm sm:text-[14px] font-['open_sans'] font-semibold text-[#081021] w-24">
-                      {day.name}
-                    </span>
+              {days.map((day, index) => {
+                // Determine alignment based on position in the row (0-based index)
+                const colPosition = index % 3; // 0 = left, 1 = center, 2 = right
 
-                    {/* LABELS ROW - Hidden on mobile */}
-                    <div className="hidden sm:flex items-center gap-2">
-                      <span className="text-sm sm:text-[14px] font-['open_sans'] text-[#64748B] w-[120px]">
-                        Open at
-                      </span>
-                      <span className="text-sm sm:text-[14px] font-['open_sans'] text-[#64748B] w-[120px]">
-                        Closes at
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* SECOND ROW: Checkbox + Inputs */}
-                  <div className="flex items-center justify-between sm:justify-start">
-                    {/* CHECKBOX */}
-                    <div className="flex items-center gap-2 w-24">
-                      <input
-                        id={`day-${index}`}
-                        type="checkbox"
-                        checked={day.isOpen}
-                        onChange={() => toggleDay(index)}
-                        className="w-4 h-4 accent-[#7077FE]"
-                      />
-                      <label
-                        htmlFor={`day-${index}`}
-                        className="text-xs sm:text-[12px] font-['open_sans'] text-[#64748B] cursor-pointer"
+                return (
+                  <div
+                    key={index}
+                    className={`
+        ${colPosition === 0 ? "lg:justify-self-start" : ""}
+        ${colPosition === 1 ? "lg:justify-self-center" : ""}
+        ${colPosition === 2 ? "lg:justify-self-end" : ""}
+      `}
+                  >
+                    <div className="flex flex-col gap-1">
+                      {/* TOP ROW: Day Name + Labels */}
+                      <div
+                        className={`flex ${
+                          colPosition === 0
+                            ? "justify-start"
+                            : colPosition === 1
+                            ? "justify-center"
+                            : "justify-end"
+                        }`}
                       >
-                        {day.isOpen ? "Open" : "Closed"}
-                      </label>
-                    </div>
-
-                    {/* TIME INPUTS ROW */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2">
-                      {/* OPEN TIME INPUT */}
-                      <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-10">
-                        <span className="sm:hidden text-xs text-[#64748B]">
-                          Open:
+                        {/* DAY NAME */}
+                        <span className="text-sm sm:text-[14px] font-['open_sans'] font-semibold text-[#081021] w-24">
+                          {day.name}
                         </span>
-                        <input
-                          type="time"
-                          value={day.openTime}
-                          disabled={!day.isOpen}
-                          onChange={(e) =>
-                            updateTime(index, "openTime", e.target.value)
-                          }
-                          className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-full sm:w-[120px] text-sm ${
-                            !day.isOpen
-                              ? "bg-gray-200 opacity-60 cursor-not-allowed"
-                              : ""
-                          }`}
-                        />
+
+                        {/* LABELS ROW - Hidden on mobile */}
+                        <div className="hidden sm:flex items-center gap-2">
+                          <span className="text-sm sm:text-[14px] font-['open_sans'] text-[#64748B] w-[120px]">
+                            Open at
+                          </span>
+                          <span className="text-sm sm:text-[14px] font-['open_sans'] text-[#64748B] w-[120px]">
+                            Closes at
+                          </span>
+                        </div>
                       </div>
 
-                      {/* CLOSE TIME INPUT */}
-                      <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-10">
-                        <span className="sm:hidden text-xs text-[#64748B]">
-                          Close:
-                        </span>
-                        <input
-                          type="time"
-                          value={day.closeTime}
-                          disabled={!day.isOpen}
-                          onChange={(e) =>
-                            updateTime(index, "closeTime", e.target.value)
-                          }
-                          className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-full sm:w-[120px] text-sm ${
-                            !day.isOpen
-                              ? "bg-gray-200 opacity-60 cursor-not-allowed"
-                              : ""
-                          }`}
-                        />
+                      {/* SECOND ROW: Checkbox + Inputs */}
+                      <div
+                        className={`flex ${
+                          colPosition === 0
+                            ? "justify-start"
+                            : colPosition === 1
+                            ? "justify-center"
+                            : "justify-end"
+                        }`}
+                      >
+                        {/* CHECKBOX */}
+                        <div className="flex items-center gap-2 w-24">
+                          <input
+                            id={`day-${index}`}
+                            type="checkbox"
+                            checked={day.isOpen}
+                            onChange={() => toggleDay(index)}
+                            className="w-4 h-4 accent-[#7077FE]"
+                          />
+                          <label
+                            htmlFor={`day-${index}`}
+                            className="text-xs sm:text-[12px] font-['open_sans'] text-[#64748B] cursor-pointer"
+                          >
+                            {day.isOpen ? "Open" : "Closed"}
+                          </label>
+                        </div>
+
+                        {/* TIME INPUTS ROW */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2">
+                          {/* OPEN TIME INPUT */}
+                          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-10">
+                            <span className="sm:hidden text-xs text-[#64748B]">
+                              Open:
+                            </span>
+                            <input
+                              type="time"
+                              value={day.openTime}
+                              disabled={!day.isOpen}
+                              onChange={(e) =>
+                                updateTime(index, "openTime", e.target.value)
+                              }
+                              className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-full sm:w-[120px] text-sm ${
+                                !day.isOpen
+                                  ? "bg-gray-200 opacity-60 cursor-not-allowed"
+                                  : ""
+                              }`}
+                            />
+                          </div>
+
+                          {/* CLOSE TIME INPUT */}
+                          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-10">
+                            <span className="sm:hidden text-xs text-[#64748B]">
+                              Close:
+                            </span>
+                            <input
+                              type="time"
+                              value={day.closeTime}
+                              disabled={!day.isOpen}
+                              onChange={(e) =>
+                                updateTime(index, "closeTime", e.target.value)
+                              }
+                              className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-full sm:w-[120px] text-sm ${
+                                !day.isOpen
+                                  ? "bg-gray-200 opacity-60 cursor-not-allowed"
+                                  : ""
+                              }`}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -2220,9 +2284,9 @@ const EditDirectory: React.FC = () => {
         </div>
 
         {/* Reviews Section */}
-        <div className="w-full bg-white rounded-xl p-4 sm:p-6">
+        <div className="w-full bg-white rounded-xl p-4">
           <div className="bg-white">
-            <h2 className="text-[#081021] font-[Poppins] font-semibold text-lg sm:text-xl mb-4">
+            <h2 className="text-[#081021] font-[Poppins] font-semibold text-lg sm:text-xl my-4">
               All Reviews
             </h2>
 
@@ -2265,13 +2329,13 @@ const EditDirectory: React.FC = () => {
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-stretch gap-2.5">
                         <div className="flex-1 flex flex-col justify-center gap-2">
                           <div className="flex flex-wrap items-center gap-2">
-                            {review.profile?.profile_picture && (
+                            {/* {review.profile?.profile_picture && (
                               <img
                                 src={review.profile.profile_picture}
                                 alt={`${review.profile.first_name} ${review.profile.last_name}`}
                                 className="w-8 h-8 rounded-full object-cover"
                               />
-                            )}
+                            )} */}
                             <span className="text-black font-[Poppins] font-semibold text-sm sm:text-base">
                               {`${review.profile?.first_name || ""} ${
                                 review.profile?.last_name || ""
@@ -2281,18 +2345,18 @@ const EditDirectory: React.FC = () => {
                             <span className="text-[#A1A1A1] text-[12px] font-['open_sans']">
                               {reviewDate}
                             </span>
-                            {review.is_my_review && (
+                            {/* {review.is_my_review && (
                               <>
                                 <div className="hidden sm:block w-1.5 h-1.5 bg-[#A1A1A1] rounded-full"></div>
                                 <span className="text-[#7077FE] text-[12px] font-['open_sans']">
                                   Your review
                                 </span>
                               </>
-                            )}
+                            )} */}
                           </div>
 
                           {/* Rating */}
-                          {editingReviewId !== review.id ? (
+                          {/* {editingReviewId !== review.id ? (
                             <div className="flex items-center space-x-1">
                               {[1, 2, 3, 4, 5].map((star) => (
                                 <Star
@@ -2333,7 +2397,7 @@ const EditDirectory: React.FC = () => {
                                 </button>
                               ))}
                             </div>
-                          )}
+                          )} */}
 
                           {/* Edit Mode or Display Mode */}
                           {editingReviewId === review.id ? (

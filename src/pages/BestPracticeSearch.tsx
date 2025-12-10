@@ -27,6 +27,7 @@ import {
 } from "../components/ui/DashboardCard";
 import DOMPurify from "dompurify";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 const truncateText = (text: string, maxLength: number): string => {
   if (!text) return "";
@@ -122,6 +123,9 @@ export default function BestPracticeSearch() {
     int.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const dropdownRef = useClickOutside(() => {
+    setIsDropdownOpen(false);
+  });
   // Initialize selected domain text from query params
   const getSelectedDomainText = () => {
     const professionTitle = searchParams.get("profession");
@@ -786,10 +790,17 @@ export default function BestPracticeSearch() {
   //   (userDetails?.user_id &&
   //     String(userDetails.user_id) === String(loggedInUserID));
 
+  const handleExploreClick = () => {
+    const el = document.getElementById("explore");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <>
       <div className="px-2 sm:px-4 lg:px-6">
-        <section className="relative w-full h-[350px] sm:h-[300px] md:h-[400px] lg:h-[500px] mx-auto rounded-xl overflow-hidden mt-2">
+        <section className="relative w-full h-[350px] sm:h-[300px] md:h-[400px] lg:h-[500px] mx-auto rounded-xl overflow-hidden sm:overflow-visible mt-2">
           {/* Background Image */}
           <img
             src="https://cdn.cness.io/Best%20practice.svg"
@@ -810,7 +821,7 @@ export default function BestPracticeSearch() {
             <div className="w-full max-w-xl items-center gap-3 mt-4 sm:mt-5 px-2">
               {/* Combined Search Input + Professions Pill */}
               <div className="relative w-full">
-                <div className="flex items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden min-h-11">
+                <div className="flex items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden sm:overflow-visible min-h-11">
                   {/* Left search icon + text input */}
                   <div className="flex items-center pl-3 shrink-0">
                     <CiSearch className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
@@ -827,7 +838,7 @@ export default function BestPracticeSearch() {
                   />
 
                   {/* Right purple pill (dropdown trigger) */}
-                  <div className="relative shrink-0">
+                  <div className="relative shrink-0" ref={dropdownRef}>
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                       className="flex items-center gap-1 sm:gap-2 bg-[#7077FE] text-white font-semibold rounded-full px-3 sm:px-4 py-2 h-full focus:outline-none whitespace-nowrap min-h-11"
@@ -835,7 +846,12 @@ export default function BestPracticeSearch() {
                       aria-expanded={isDropdownOpen}
                       type="button"
                     >
-                      <span className="text-xs">Professions</span>
+                      <span className="text-xs">
+                        {selectedDomainText !== "All Domains" &&
+                        selectedDomainText !== ""
+                          ? selectedDomainText
+                          : "Professions"}
+                      </span>
                       <ChevronDown
                         className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 ${
                           isDropdownOpen ? "rotate-180" : ""
@@ -981,23 +997,26 @@ export default function BestPracticeSearch() {
 
             {/* CTA Cards */}
             <div className="flex flex-col sm:flex-row mt-4 sm:mt-6 gap-3 sm:gap-4 p-2 sm:p-4">
-              <div className="flex items-center gap-2 sm:gap-3 bg-white shadow-md rounded-xl px-4 sm:px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] transition w-full sm:w-auto">
+              <div
+                onClick={handleExploreClick}
+                className="flex items-center gap-2 sm:gap-3 bg-white shadow-md rounded-xl px-4 sm:px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] transition w-full sm:w-auto"
+              >
                 <img
                   src="https://cdn.cness.io/toy-with-red-handle-green-plastic-handle%201.svg"
                   alt="Explore Best Practice Icon"
                   className="w-10 h-10 sm:w-12 sm:h-12 md:w-15 md:h-15"
                 />
-                <span
-                  onClick={openModal}
-                  className="text-gray-800 font-openSans font-semibold leading-tight text-sm sm:text-base"
-                >
+                <span className="text-gray-800 font-openSans font-semibold leading-tight text-sm sm:text-base">
                   Explore
                   <br />
                   Best Practice
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 sm:gap-3 bg-white shadow-md rounded-xl px-4 sm:px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] transition w-full sm:w-auto">
+              <div
+                onClick={openModal}
+                className="flex items-center gap-2 sm:gap-3 bg-white shadow-md rounded-xl px-4 sm:px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] transition w-full sm:w-auto"
+              >
                 <img
                   src="https://cdn.cness.io/yellow-paper-clip-isolated-back-school-education-minimal-icon-3d-illustration%201.svg"
                   alt="Add Your Impact Story Icon"
@@ -1015,7 +1034,10 @@ export default function BestPracticeSearch() {
       </div>
 
       {/* Rest of the component remains the same */}
-      <section className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100">
+      <section
+        className="py-8 px-1 sm:py-16 bg-[#f9f9f9] border-t border-gray-100"
+        id="explore"
+      >
         <div className="w-full mx-auto ">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
             {(selectedFilter.id || searchText) && (
