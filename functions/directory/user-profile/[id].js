@@ -6,25 +6,24 @@ const BOT_UAS = [
   "slackbot",
   "discordbot",
   "telegrambot",
-  "curl", // debuggers
+  "curl",
 ];
 
-function isBot(userAgent = "") {
-  const ua = userAgent.toLowerCase();
-  return BOT_UAS.some((bot) => ua.includes(bot));
+function isBot(ua = "") {
+  ua = ua.toLowerCase();
+  return BOT_UAS.some((b) => ua.includes(b));
 }
 
-export async function onRequest({ params, request }) {
-  const url = new URL(request.url);
+export async function onRequest({ params, request, env }) {
   const userAgent = request.headers.get("user-agent") || "";
+  const url = new URL(request.url);
 
-  // 1) If it's a normal browser → do NOT touch. Let React/Vite handle it.
+  // 1) Normal browser → return the SPA normally
   if (!isBot(userAgent)) {
-    // Returning null tells Cloudflare Pages to fall back to static assets.
-    return;
+    return env.ASSETS.fetch(request); // <-- THIS FIXES YOUR ERROR
   }
 
-  // 2) For bots (Twitter/WhatsApp/etc.) → build static OG HTML
+  // 2) Bot → return preview HTML
   let profile = null;
 
   try {
@@ -34,8 +33,8 @@ export async function onRequest({ params, request }) {
       const json = await res.json();
       profile = json?.data?.data || null;
     }
-  } catch (err) {
-    // swallow errors; we'll use fallbacks
+  } catch (e) {
+    // ignore
   }
 
   const name = profile
@@ -43,7 +42,7 @@ export async function onRequest({ params, request }) {
     : "CNESS User";
 
   const image =
-    profile?.profile_picture ||
+    profile?.profile_picture ??
     "https://cdn.cness.io/default-avatar.svg";
 
   const description = `Check out ${name}'s profile on CNESS`;
@@ -52,26 +51,21 @@ export async function onRequest({ params, request }) {
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
     <title>${name} - CNESS</title>
     <meta name="description" content="${description}" />
 
-    <!-- Open Graph -->
     <meta property="og:title" content="${name} - CNESS" />
     <meta property="og:description" content="${description}" />
     <meta property="og:image" content="${image}" />
     <meta property="og:url" content="${url.href}" />
     <meta property="og:site_name" content="CNESS" />
 
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${name} - CNESS" />
     <meta name="twitter:description" content="${description}" />
     <meta name="twitter:image" content="${image}" />
   </head>
-  <body>
-    <p>Preview for ${name}'s profile.</p>
-  </body>
+  <body>Preview for ${name}</body>
 </html>`;
 
   return new Response(html, {
