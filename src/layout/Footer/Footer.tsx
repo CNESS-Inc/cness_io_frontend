@@ -2,7 +2,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Image from "../../components/ui/Image";
-import { FaEnvelope, FaFacebookF, FaInstagram, FaMapMarkerAlt, FaPhoneAlt, FaYoutube } from "react-icons/fa";
+import {
+  FaEnvelope,
+  FaFacebookF,
+  FaInstagram,
+  FaMapMarkerAlt,
+  FaPhoneAlt,
+  FaYoutube,
+} from "react-icons/fa";
 import BackToTopButton from "./BackToTop";
 import vector from "../../assets/Vector.svg";
 import ContentModal from "../../components/ui/ContentModal";
@@ -46,12 +53,14 @@ const Footer = () => {
               />
             </Link>
             <p className="text-[16px] font-normal font-openSans leading-[160%] text-[#1E1E1E] lg:block md:block hidden">
-CNESS is a consciousness-based certification and <br/> growth platform designed to empower purpose-<br/>driven individuals and organizations.
+              CNESS is a consciousness-based certification and <br /> growth
+              platform designed to empower purpose-
+              <br />
+              driven individuals and organizations.
             </p>
           </div>
           <div className="col-span-8  sm:col-span-3 md:col-span-8 space-y-4">
             <div className="grid grid-cols-3">
-
               {/* Quick Links section */}
               <div className="w-fit space-y-3 md:space-y-4 ">
                 <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] font-[poppins]">
@@ -133,8 +142,7 @@ CNESS is a consciousness-based certification and <br/> growth platform designed 
                   Follow Us
                 </h4>
                 <ul className="space-y-1 md:space-y-2">
-
-                       {/* <li>
+                  {/* <li>
                     <a
                       href=""
                       className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
@@ -147,7 +155,7 @@ CNESS is a consciousness-based certification and <br/> growth platform designed 
                   <li>
                     <a
                       href="https://www.facebook.com/share/1A8V21L6Qj"
-                       target="_blank"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaFacebookF className="me-2 md:me-3" />
@@ -157,7 +165,7 @@ CNESS is a consciousness-based certification and <br/> growth platform designed 
                   <li>
                     <a
                       href="https://x.com/CnessInc"
-                       target="_blank"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <img
@@ -171,7 +179,7 @@ CNESS is a consciousness-based certification and <br/> growth platform designed 
                   <li>
                     <a
                       href="https://www.instagram.com/cness.inc"
-                       target="_blank"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaInstagram className="me-2 md:me-3" />
@@ -181,7 +189,7 @@ CNESS is a consciousness-based certification and <br/> growth platform designed 
                   <li>
                     <a
                       href="https://www.youtube.com/@CNESSinc"
-                       target="_blank"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaYoutube className="me-2 md:me-3" />
@@ -193,23 +201,24 @@ CNESS is a consciousness-based certification and <br/> growth platform designed 
 
               {/* Contact section  */}
               <div className="w-fit space-y-3 md:space-y-4">
-                <h4 className="lg:text-base md:text-lg text-[14px] font-semibold text-[#6F74DD] font-[poppins]">Contact Us</h4>
-                 <ul className="space-y-1 md:space-y-2">
+                <h4 className="lg:text-base md:text-lg text-[14px] font-semibold text-[#6F74DD] font-[poppins]">
+                  Contact Us
+                </h4>
+                <ul className="space-y-1 md:space-y-2">
                   <li>
                     <a
-                      href="https://www.facebook.com/share/1A8V21L6Qj"
-                       target="_blank"
+                      href="https://maps.google.com/?q=825+Wilshire+Blvd+#333,+Santa+Monica,+CA+90401,+USA"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaMapMarkerAlt className="me-2 md:me-3" />
-                      825 Wilshire Blvd #333, 
-Santa Monica, CA 90401, USA. 
+                      825 Wilshire Blvd #333, Santa Monica, CA 90401, USA.
                     </a>
                   </li>
                   <li>
                     <a
-                      href="https://x.com/CnessInc"
-                       target="_blank"
+                      href="mailto:Support@cness.io"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaEnvelope className="me-2 md:me-3" />
@@ -218,8 +227,8 @@ Santa Monica, CA 90401, USA. 
                   </li>
                   <li>
                     <a
-                      href="https://www.instagram.com/cness.inc"
-                       target="_blank"
+                      href="tel:+1456334445"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaPhoneAlt className="me-2 md:me-3" />
