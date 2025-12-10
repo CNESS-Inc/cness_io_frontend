@@ -27,7 +27,7 @@ export async function onRequest({ params, request, env }) {
     let profile = null;
 
     try {
-        const apiUrl = `${env.API_BASE_URL}/profile/public/${params.id}`;
+        const apiUrl = `${env.VITE_API_BASE_URL}/profile/public/${params.id}`;
         console.log("🔵 Fetching API:", apiUrl);
         const res = await fetch(apiUrl);
         console.log("🟢 API Status:", res.status);
