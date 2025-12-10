@@ -927,7 +927,7 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
     updateMetaTag('description', userDescription, false);
 
     // Update Open Graph tags (Facebook/WhatsApp)
-    updateMetaTag('og:type', 'profile');
+    updateMetaTag('og:type', 'website');
     updateMetaTag('og:url', pageUrl);
     updateMetaTag('og:title', `${userName} - CNESS`);
     updateMetaTag('og:description', userDescription);
@@ -939,11 +939,11 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
     updateMetaTag('og:site_name', 'CNESS');
 
     // Update Twitter tags
-    updateMetaTag('twitter:card', 'summary_large_image');
-    updateMetaTag('twitter:url', pageUrl);
-    updateMetaTag('twitter:title', `${userName} - CNESS`);
-    updateMetaTag('twitter:description', userDescription);
-    updateMetaTag('twitter:image', profileImage);
+    updateMetaTag('twitter:card', 'summary_large_image',false);
+    updateMetaTag('twitter:url', pageUrl,false);
+    updateMetaTag('twitter:title', `${userName} - CNESS`,false);
+    updateMetaTag('twitter:description', userDescription,false);
+    updateMetaTag('twitter:image', profileImage,false);
 
     // Cleanup function (optional - restores default meta tags on unmount)
     return () => {
