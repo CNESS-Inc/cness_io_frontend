@@ -424,14 +424,14 @@ export default function DashboardDirectory() {
           <img
             src="https://cdn.cness.io/Directory%20(1).svg"
             alt="City Skyline"
-            className="absolute inset-0 w-full h-full object-cover object-[center_bottom] sm:object-center pointer-events-none select-none"
+           className="w-full lg:w-screen h-[300px] lg:h-auto rounded-xl pointer-events-none select-none object-cover"
           />
 
           {/* CENTER CONTENT - Mobile Responsive */}
-          <div className="relative z-10 flex flex-col items-center justify-center text-center pb-8 sm:pb-10 px-4 sm:px-6 sm:h-[350px] md:h-[470px] 2xl:h-[570px]">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 pb-8 sm:pb-10">
             <h1
               className="text-center font-[poppins] font-semibold mb-4 sm:mb-6
-                text-2xl sm:text-3xl lg:text-[32px] leading-[1.3] sm:leading-[1.4]
+                text-xl sm:text-2xl lg:text-[32px] leading-[1.3] sm:leading-[1.4]
                 bg-linear-to-b from-[#4E4E4E] to-[#232323] 
                 bg-clip-text text-transparent"
             >
@@ -444,7 +444,7 @@ export default function DashboardDirectory() {
             <div className="w-full flex flex-col gap-2 justify-center items-center mb-4 sm:mb-6">
               <div
                 className="w-full bg-white rounded-full sm:rounded-full
-                  flex items-center p-3 sm:p-0 sm:pl-5 sm:pr-1 h-auto sm:h-14 max-w-[650px] 2xl:max-w-[720px] border border-1 border-[#C6C1C1] justify-between"
+                  flex items-center p-3 sm:p-0 sm:pl-5 sm:pr-1 h-11 lg:h-14 max-w-[650px] 2xl:max-w-[720px] border border-1 border-[#C6C1C1] justify-between"
               >
                 <div className="flex items-center flex-1">
                   <span className="text-[#7077FE] mr-3 text-lg">
@@ -463,7 +463,7 @@ export default function DashboardDirectory() {
                 {/* Dropdown - Mobile Responsive */}
                 <div className="hidden sm:flex relative shrink-0 border-t sm:border-t-0 sm:border-l border-gray-200 sm:border-gray-300 rounded-full">
                   <select
-                    className="bg-[#6340FF] text-white font-semibold rounded-full sm:rounded-full h-12 px-4 sm:px-6 pr-10 text-sm appearance-none 
+                    className="bg-[#6340FF] text-white font-semibold rounded-full sm:rounded-full h-9 lg:h-12 px-4 sm:px-6 pr-10 text-sm appearance-none 
                       focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]
                       w-full sm:w-auto roun"
                     value={selectedDomain}
