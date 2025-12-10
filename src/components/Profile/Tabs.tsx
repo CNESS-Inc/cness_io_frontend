@@ -11,10 +11,10 @@ type ConnectionsCardProps = {
   hashtags?: string[];
   onSearch?: (value: string) => void;
   onTabChange?: (tab: string) => void;
-  activeTab:any,
-  setActiveTab:any
-  getUserPosts:any
-  selectedTopic:any
+  activeTab: any,
+  setActiveTab: any
+  getUserPosts: any
+  selectedTopic: any
   onTopicChange?: (topic: string) => void;
 };
 
@@ -43,10 +43,10 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
     onTabChange?.(tab);
-    getUserPosts("AI",tab)
+    getUserPosts("AI", tab)
   };
 
-   // Add this function to handle hashtag clicks
+  // Add this function to handle hashtag clicks
   /*const handleHashtagClick = (tag: string) => {
     setSearchValue(tag);
     onSearch?.(tag);
@@ -57,15 +57,14 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
     setSearchValue(selectedTopic)
   }, [selectedTopic])
   */
-  
+
   return (
-    <div className="rounded-[12px] rounded-bl-none border border-gray-200 bg-white flex flex-col gap-4 sm:pt-6 w-full">
-      {/* Top Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:px-6">
+    <div className="rounded-[12px] rounded-bl-none border border-gray-200 bg-white flex flex-col gap-4 p-4 sm:pt-6 sm:px-6 w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
-            <p className="text-sm text-gray-500 pt-2">{subtitle}</p>
+            <h2 className="text-base sm:text-lg font-semibold text-gray-800">{title}</h2>
+            {subtitle && <p className="text-xs sm:text-sm text-gray-500 pt-2">{subtitle}</p>}
           </div>
         </div>
         {label && (
@@ -112,12 +111,12 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
       </div>
       */}
       {/* Tabs */}
-      <div className="flex flex-wrap border-t border-gray-200 pt-3 gap-3">
+      <div className="flex flex-wrap border-t border-gray-200 pt-3 gap-2 sm:gap-3">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => handleTabClick(tab)}
-            className={`relative transition-colors px-10 py-5 rounded-t-lg text-sm font-medium
+            className={`relative transition-colors px-4 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-t-lg text-xs sm:text-sm font-medium
               ${activeTab === tab ? "text-purple-600" : "text-gray-700"}`}
           >
             {activeTab === tab && (

@@ -74,9 +74,8 @@ const MyConnection = () => {
       params.delete("t");
     }
     const newSearch = params.toString();
-    const newUrl = `${location.pathname}${newSearch ? `?${newSearch}` : ""}${
-      location.hash || ""
-    }`;
+    const newUrl = `${location.pathname}${newSearch ? `?${newSearch}` : ""}${location.hash || ""
+      }`;
     window.history.pushState(null, "", newUrl);
   };
 
@@ -97,14 +96,13 @@ const MyConnection = () => {
       params.delete("s");
     }
     const newSearch = params.toString();
-    const newUrl = `${location.pathname}${newSearch ? `?${newSearch}` : ""}${
-      location.hash || ""
-    }`;
+    const newUrl = `${location.pathname}${newSearch ? `?${newSearch}` : ""}${location.hash || ""
+      }`;
     window.history.pushState(null, "", newUrl);
   };
 
   return (
-    <div className="flex flex-col gap-4 mt-2 px-1">
+    <div className="flex flex-col gap-4 mt-2 px-2 sm:px-4 md:px-6">
       <ConnectionsCard
         title="My Connections"
         subtitle="Explore the trending posts and discussions among your connections at this moment."
@@ -120,8 +118,8 @@ const MyConnection = () => {
         selectedTopic={undefined}
       />
 
-      <div className="rounded-xl border border-gray-200 bg-white flex flex-col gap-4 sm:p-6 w-full">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="rounded-xl border border-gray-200 bg-white flex flex-col gap-4 p-4 sm:p-6 w-full">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
           <h2
             className="text-[14px] font-medium capitalize leading-[100%]"
             style={{
@@ -132,12 +130,12 @@ const MyConnection = () => {
             {activeTab === "All Friends"
               ? "All Connections"
               : activeTab === "Friend Requests"
-              ? "Friend Requests"
-              : "Suggestions"}
+                ? "Friend Requests"
+                : "Suggestions"}
           </h2>
 
           <div className="flex w-full sm:w-auto items-center gap-2">
-            <div className="relative flex-1 sm:w-64">
+            <div className="relative flex-1 lg:w-64">
               <input
                 type="text"
                 placeholder="Search..."
@@ -161,7 +159,7 @@ const MyConnection = () => {
               </svg>
             </div>
             <button
-              className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full text-sm transition"
+              className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full text-sm transition whitespace-nowrap"
               onClick={handleSearch}
             >
               Search Connections
@@ -178,8 +176,8 @@ const MyConnection = () => {
         )}
         {activeTab === "Friend Requests" && (
           <FriendRequests searchTerm={searchTerm}
-                 onSelect={(user) => setSelectedFriend(user)}  />
-    
+            onSelect={(user) => setSelectedFriend(user)} />
+
         )}
         {activeTab === "Suggestions" && (
           <Suggestions
