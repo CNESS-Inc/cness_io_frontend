@@ -43,7 +43,7 @@ console.log("🟠 Incoming Origin:", origin);
         if (res.ok) {
             const json = await res.json();
             console.log("🟣 API Response JSON:", JSON.stringify(json));
-            profile = json?.data?.data?.data || null;
+            profile = json?.data?.data || null;
         }
     } catch (e) {
         // ignore
