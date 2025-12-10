@@ -524,18 +524,30 @@ export default function Affiliate() {
                   <p className="text-base font-semibold text-white font-['Open_Sans',Helvetica]">
                     Available Balance
                   </p>
-                  <button
-                    onClick={withdrawalRequest}
-                    className="bg-white py-3 px-2 sm:px-[18px] flex gap-1 sm:gap-2 border border-[#ECEEF2] rounded-full shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)] cursor-pointer">
-                    <img
-                      src={fund}
-                      alt="fund icon"
-                      className="w-[18px] h-[18px]"
-                    />
-                    <span className="font-normal text-sm text-[#222224] font-['Open_Sans',Helvetica]">
-                      Withdraw Funds
-                    </span>
-                  </button>
+                <button
+  onClick={withdrawalRequest}
+  className="
+    bg-white 
+    flex items-center justify-center
+    gap-1.5
+    px-3 py-1.5 
+    sm:px-5 sm:py-2.5
+    border border-[#ECEEF2]
+    rounded-full 
+    shadow-[0px_3px_6px_rgba(0,0,0,0.1)]
+    cursor-pointer
+  "
+>
+  <img
+    src={fund}
+    alt='fund icon'
+    className="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px]"
+  />
+
+  <span className="text-[11px] sm:text-sm text-[#222224] font-['Open_Sans',Helvetica] font-medium">
+    Withdraw Funds
+  </span>
+</button>
                 </div>
                 <h3 className="text-2xl sm:text-[42px] font-bold font-['Open_Sans',Helvetica] text-white">
                   ${referreEarning}

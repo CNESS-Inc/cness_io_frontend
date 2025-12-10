@@ -81,13 +81,8 @@ export default function HeroSection() {
       </div>
 
       {/* bottom image */}
-<<<<<<< HEAD
 <div className="w-full px-4 sm:px-6 lg:px-8 pb-6 sm:pb-10 pt-6 sm:pt-12">
 <div className="relative mx-auto w-full max-w-[1900px] rounded-[16px] sm:rounded-[32px] overflow-hidden">
-=======
-      <div className="w-full px-4 sm:px-6 lg:px-8 pb-10 sm:pb-12 pt-12 sm:pt-16">
-        <div className="relative mx-auto w-full max-w-[1900px] rounded-3xl sm:rounded-4xl overflow-hidden aspect-video sm:aspect-auto">
->>>>>>> 6ade9c702ebb70553f43135c2279764ce5bb98c2
           {/* responsive height using aspect-ratio; keeps the face framed via object-position */}
           <div className="hero-img w-full rounded-4xl aspect-auto object-cover object-center overflow-hidden">
             {/* <img
@@ -121,11 +116,7 @@ export default function HeroSection() {
               height={374}
               loading="eager"
               fetchPriority="high"
-<<<<<<< HEAD
 className="w-full h-auto object-cover object-center"
-=======
-              className="w-full h-auto sm:h-full object-cover object-center"
->>>>>>> 6ade9c702ebb70553f43135c2279764ce5bb98c2
             />
           </div>
 

@@ -69,12 +69,17 @@ export default function MobileMenu({ isOpen }: { isOpen: boolean }) {
                 <li>
                   <Button
                     variant="white-outline"
-                    className="w-[104px] h-[39px] rounded-[100px] px-6 py-3 gap-3 border 
-    font-['Plus Jakarta Sans'] font-medium text-[12px] leading-[12px]"
+                    className="w-[104px] 
+    h-[39px] 
+    rounded-[100px] 
+    flex items-center justify-center
+    font-['Plus Jakarta Sans'] 
+    font-medium 
+    text-[12px]"
                  
                     onClick={() => setOpenSignup(true)}
                   >
-                    Sign Up
+                    Sign up
                   </Button>
                 </li>
                 <li>
