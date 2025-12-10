@@ -17,7 +17,8 @@ function isBot(ua = "") {
 export async function onRequest({ params, request, env }) {
     const userAgent = request.headers.get("user-agent") || "";
     const url = new URL(request.url);
-
+const origin = request.headers.get("origin") || "";
+console.log("🟠 Incoming Origin:", origin);
     // 1) Normal browser → return the SPA normally
     if (!isBot(userAgent)) {
         return env.ASSETS.fetch(request); // <-- THIS FIXES YOUR ERROR
@@ -29,7 +30,13 @@ export async function onRequest({ params, request, env }) {
     try {
         const apiUrl = `${env.VITE_API_BASE_URL}/profile/public/${params.id}`;
         console.log("🔵 Fetching API:", apiUrl);
-        const res = await fetch(apiUrl);
+        const res = await fetch(apiUrl, {
+        headers: {
+            "Origin": origin,
+            "User-Agent": userAgent,
+            "Accept": "application/json"
+        }
+    });
         console.log("🟢 API Status:", res.status);
         console.log("🟢 API res.ok Status:", res.ok);
 
