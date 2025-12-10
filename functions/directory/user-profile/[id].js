@@ -1,48 +1,20 @@
-// const BOT_UAS = [
-//     "twitterbot",
-//     "facebookexternalhit",
-//     "linkedinbot",
-//     "whatsapp",
-//     "slackbot",
-//     "discordbot",
-//     "telegrambot",
-//     "curl",
-// ];
-
-// function isBot(ua = "") {
-//     ua = ua.toLowerCase();
-//     return BOT_UAS.some((b) => ua.includes(b));
-// }
-
 export async function onRequest({ params, request, env }) {
     const userAgent = request.headers.get("user-agent") || "";
     const url = new URL(request.url);
-const origin = request.headers.get("origin") || "";
-console.log("🟠 Incoming Origin:", origin);
-    // 1) Normal browser → return the SPA normally
-    // if (!isBot(userAgent)) {
-    //     return env.ASSETS.fetch(request); // <-- THIS FIXES YOUR ERROR
-    // }
-
-    // 2) Bot → return preview HTML
+    const origin = request.headers.get("origin") || "";
     let profile = null;
 
     try {
         const apiUrl = `${env.VITE_API_BASE_URL}/profile/public/${params.id}`;
-        console.log("🔵 Fetching API:", apiUrl);
         const res = await fetch(apiUrl, {
-        headers: {
-            "Origin": origin,
-            "User-Agent": userAgent,
-            "Accept": "application/json"
-        }
-    });
-        console.log("🟢 API Status:", res.status);
-        console.log("🟢 API res.ok Status:", res.ok);
-
+            headers: {
+                "Origin": origin,
+                "User-Agent": userAgent,
+                "Accept": "application/json"
+            }
+        });
         if (res.ok) {
             const json = await res.json();
-            console.log("🟣 API Response JSON:", JSON.stringify(json));
             profile = json?.data?.data || null;
         }
     } catch (e) {
