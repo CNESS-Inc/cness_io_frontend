@@ -3263,7 +3263,7 @@ const UserProfilePage = () => {
   const start = parseMonthYear(startVal);
   const end   = parseMonthYear(endVal);
 
-  if (!start || !end) return "Invalid date";
+  if (!start || !end) return "";
 
   if (start >= end)
     return "Start date must be earlier than end date";
@@ -3312,7 +3312,7 @@ const UserProfilePage = () => {
   const start = parseMonthYear(startVal);
   const end   = parseMonthYear(endVal);
 
-  if (!start || !end) return "Invalid date";
+  if (!start || !end) return "";
 
   const minEnd = new Date(start);
   minEnd.setMonth(minEnd.getMonth() + 1);

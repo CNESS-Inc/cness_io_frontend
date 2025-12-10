@@ -33,6 +33,25 @@ import {
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Modal from "../components/ui/Modal";
 
+
+const levels = [
+  {
+    key: "Aspiring",
+    label: "ASPIRED",
+    img: "https://cdn.cness.io/aspiringlogo.svg",
+  },
+  {
+    key: "Inspired",
+    label: "INSPIRED",
+    img: "https://cdn.cness.io/inspired1.svg",
+  },
+  {
+    key: "Leader",
+    label: "LEADER",
+    img: "https://cdn.cness.io/leader1.webp",
+  },
+];
+
 const DirectoryProfile = () => {
   const [expanded, setExpanded] = useState(false);
   const [showEnquiry, setShowEnquiry] = useState(false);
@@ -97,6 +116,8 @@ const DirectoryProfile = () => {
     reviewId: null,
     replyId: null,
   });
+
+  const badgeImg = profileData?.badge?.level ? levels.find((el) => el.key === profileData.badge?.level)?.img : '';
 
   useEffect(() => {
     const fetchDirectoryProfile = async () => {
@@ -1154,7 +1175,7 @@ const DirectoryProfile = () => {
           {/* User Information Section */}
           <section className="bg-white rounded-xl p-4 md:p-6 space-y-4">
             <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white">
+              {/* <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white">
                 <img
                   src={
                     userProfile.profile_picture ||
@@ -1170,7 +1191,29 @@ const DirectoryProfile = () => {
                       "https://static.codia.ai/image/2025-12-04/s7mmhLwgmO.png";
                   }}
                 />
-              </div>
+              </div> */}
+               <div className="relative w-[120px] h-20 shrink-0 flex items-center">
+            {/* Badge image (background) - you can update this with actual badge logic */}
+            <div className="absolute top-[50%] translate-y-[-50%] right-1.5 w-[70px] h-[70px] object-contain z-0 border flex justify-center items-center border-gray-400 rounded-full">
+            <img
+              src={badgeImg}
+              alt="Badge"
+              className="w-[35px] h-[35px] object-contain z-0"
+            />
+
+            </div>
+            
+
+            {/* Profile image (front) */}
+            <img
+             src={
+                    userProfile.profile_picture ||
+                    "https://static.codia.ai/image/2025-12-04/s7mmhLwgmO.png"
+                  }
+              alt="Profile"
+              className="w-[75px] h-[75px] rounded-full object-cover border-2 border-white z-10"
+            />
+          </div>
 
               <div className="flex-1 text-center sm:text-left">
                 <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">

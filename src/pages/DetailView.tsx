@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   GetEnquiryById,
-  // UpdateEnquiryStatus,
+  UpdateEnquiryStatus,
   EnquiryStatus,
 } from "../Common/ServerAPI";
-// import { useToast } from "../components/ui/Toast/ToastProvider";
+import { useToast } from "../components/ui/Toast/ToastProvider";
 
 export type Enquiry = {
   id: string;
@@ -44,26 +44,102 @@ export const STATUS_OPTIONS = [
 // ===============================
 //  STATUS BADGE COMPONENT
 // ===============================
-function StatusBadge({ status }: { status: Enquiry["status"] }) {
+function StatusBadgeDropdown({
+  status,
+  onStatusChange,
+  updating = false,
+}: {
+  status: Enquiry["status"];
+  onStatusChange: (newStatus: string) => void;
+  updating?: boolean;
+}) {
   const map: Record<string, string> = {
-    [EnquiryStatus.NEW]: "bg-blue-100 text-blue-700",
-    [EnquiryStatus.PENDING]: "bg-yellow-100 text-yellow-700",
-    [EnquiryStatus.CONTACTED]: "bg-indigo-100 text-indigo-700",
-    [EnquiryStatus.IN_PROGRESS]: "bg-purple-100 text-purple-700",
-    [EnquiryStatus.NOT_INTERESTED]: "bg-gray-100 text-gray-700",
-    [EnquiryStatus.CLOSED]: "bg-green-100 text-green-700",
-    [EnquiryStatus.CANCELLED]: "bg-red-100 text-red-700",
+    [EnquiryStatus.NEW]: "bg-blue-100 text-blue-700 border-blue-300",
+    [EnquiryStatus.PENDING]: "bg-yellow-100 text-yellow-700 border-yellow-300",
+    [EnquiryStatus.CONTACTED]:
+      "bg-indigo-100 text-indigo-700 border-indigo-300",
+    [EnquiryStatus.IN_PROGRESS]:
+      "bg-purple-100 text-purple-700 border-purple-300",
+    [EnquiryStatus.NOT_INTERESTED]: "bg-gray-100 text-gray-700 border-gray-300",
+    [EnquiryStatus.CLOSED]: "bg-green-100 text-green-700 border-green-300",
+    [EnquiryStatus.CANCELLED]: "bg-red-100 text-red-700 border-red-300",
   };
 
   const normalized = String(status || "").trim();
-  const classes = map[normalized] ?? "bg-gray-100 text-gray-700";
+  const classes =
+    map[normalized] ?? "bg-gray-100 text-gray-700 border-gray-300";
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (!updating) {
+      onStatusChange(e.target.value);
+    }
+  };
 
   return (
-    <span
-      className={`px-3 py-1 rounded-md text-sm font-semibold ${classes}`}
-    >
-      {normalized || "N/A"}
-    </span>
+    <div className="relative inline-block">
+      <select
+        value={normalized}
+        onChange={handleChange}
+        disabled={updating}
+        className={`
+          appearance-none px-3 py-1.5 rounded-md text-sm font-semibold 
+          border pr-8 cursor-pointer transition-all duration-200
+          hover:opacity-90 focus:outline-none focus:ring-0
+          ${classes}
+          ${updating ? "opacity-70 cursor-not-allowed" : "hover:shadow-sm"}
+        `}
+      >
+        {STATUS_OPTIONS.map((option) => (
+          <option
+            key={option}
+            value={option}
+            className="bg-white text-gray-900"
+          >
+            {option}
+          </option>
+        ))}
+      </select>
+
+      {/* Custom dropdown arrow */}
+      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        {updating ? (
+          <svg
+            className="animate-spin h-4 w-4 text-current"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        ) : (
+          <svg
+            className="h-4 w-4 text-current"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -75,9 +151,9 @@ export default function DetailViewDesigned() {
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // const [localStatus, setLocalStatus] = useState<string>("");
-  // const [updating, setUpdating] = useState(false);
-  // const { showToast } = useToast();
+  const [localStatus, setLocalStatus] = useState<string>("");
+  const [updating, setUpdating] = useState(false);
+  const { showToast } = useToast();
 
   // Fetch enquiry info
   useEffect(() => {
@@ -96,7 +172,7 @@ export default function DetailViewDesigned() {
         const data = response?.data?.data || response?.data || response;
 
         setEnquiry(data);
-        // setLocalStatus(data?.status || "");
+        setLocalStatus(data?.status || "");
       } catch (err: any) {
         const errorMessage =
           err?.response?.data?.error?.message ||
@@ -113,40 +189,54 @@ export default function DetailViewDesigned() {
   }, [id]);
 
   // Update Status
-  // const handleStatusUpdate = async () => {
-  //   if (!enquiry || !localStatus || localStatus === enquiry.status) return;
+  const handleStatusUpdate = async (newStatus: string) => {
+    if (!enquiry || !newStatus || newStatus === enquiry.status) return;
 
-  //   setUpdating(true);
+    setUpdating(true);
 
-  //   try {
-  //     await UpdateEnquiryStatus({
-  //       id: enquiry.id,
-  //       status: localStatus,
-  //     });
+    try {
+      await UpdateEnquiryStatus({
+        id: enquiry.id,
+        status: newStatus,
+      });
 
-  //     setEnquiry({ ...enquiry, status: localStatus });
+      // Update local state
+      setEnquiry({ ...enquiry, status: newStatus });
+      setLocalStatus(newStatus);
 
-  //     showToast({
-  //       message: `Status updated to '${localStatus}' successfully`,
-  //       type: "success",
-  //       duration: 5000,
-  //     });
+      showToast({
+        message: `Status updated to '${newStatus}' successfully`,
+        type: "success",
+        duration: 5000,
+      });
 
-  //     if (typeof (window as any).refreshEnquiryCounts === "function") {
-  //       (window as any).refreshEnquiryCounts();
-  //     }
+      // Refresh counts if function exists
+      if (typeof (window as any).refreshEnquiryCounts === "function") {
+        (window as any).refreshEnquiryCounts();
+      }
 
-  //     window.dispatchEvent(new CustomEvent("enquiryStatusUpdated"));
-  //   } catch (err: any) {
-  //     showToast({
-  //       message: err?.response?.data?.message || "Failed to update status",
-  //       type: "error",
-  //       duration: 5000,
-  //     });
-  //   } finally {
-  //     setUpdating(false);
-  //   }
-  // };
+      // Dispatch custom event for other components
+      window.dispatchEvent(new CustomEvent("enquiryStatusUpdated"));
+    } catch (err: any) {
+      // Revert to previous status on error
+      setLocalStatus(enquiry.status);
+
+      showToast({
+        message: err?.response?.data?.message || "Failed to update status",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  // Handle status change from dropdown
+  const handleStatusChange = (newStatus: string) => {
+    if (newStatus !== enquiry?.status) {
+      handleStatusUpdate(newStatus);
+    }
+  };
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
@@ -205,35 +295,43 @@ export default function DetailViewDesigned() {
             className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-white shadow"
           />
           <div className="flex-1 min-w-0">
-            <h2 className="text-lg md:text-xl font-semibold truncate">{enquiry.name || "N/A"}</h2>
+            <h2 className="text-lg md:text-xl font-semibold truncate">
+              {enquiry.name || "N/A"}
+            </h2>
             <div className="text-xs md:text-sm text-gray-400 truncate">
               Received on{" "}
               {formatDate(
-                enquiry.date ||
-                enquiry.created_at ||
-                enquiry.createdAt
+                enquiry.date || enquiry.created_at || enquiry.createdAt
               )}{" "}
               {formatTime(
-                enquiry.time ||
-                enquiry.created_at ||
-                enquiry.createdAt
+                enquiry.time || enquiry.created_at || enquiry.createdAt
               ) && (
-                  <>at {formatTime(enquiry.time || enquiry.created_at || enquiry.createdAt)}</>
-                )}
+                <>
+                  at{" "}
+                  {formatTime(
+                    enquiry.time || enquiry.created_at || enquiry.createdAt
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Status Badge */}
-        <div className="w-full sm:w-auto mt-2 sm:mt-0">
-          <StatusBadge status={enquiry.status} />
+        {/* Status Badge Dropdown */}
+        <div className="w-full sm:w-auto mt-2 sm:mt-0 flex items-center gap-2">
+          {/* <span className="text-sm text-gray-600 font-medium hidden sm:inline">Status:</span> */}
+          <StatusBadgeDropdown
+            status={localStatus}
+            onStatusChange={handleStatusChange}
+            updating={updating}
+          />
         </div>
       </div>
 
       {/* Body - Mobile Responsive Grid */}
-      <div className="mt-5 bg-gray-50 rounded-lg grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+      <div className="mt-5 bg-[#F9F9F9] rounded-lg grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Left box */}
-        <div className="bg-gray-50 p-5 rounded-lg">
+        <div className="bg-[#F9F9F9] p-5 rounded-lg">
           <h3 className="text-sm font-[poppins] font-semibold mb-3 md:mb-4">
             Basic Information
           </h3>
@@ -261,10 +359,10 @@ export default function DetailViewDesigned() {
             </div>
 
             <div>
-              <div className="text-gray-400 font-[poppins] text-xs">
-                Email
+              <div className="text-gray-400 font-[poppins] text-xs">Email</div>
+              <div className="text-[15px] font-medium break-all">
+                {enquiry.email}
               </div>
-              <div className="text-[15px] font-medium break-all">{enquiry.email}</div>
             </div>
 
             <div>
@@ -279,7 +377,7 @@ export default function DetailViewDesigned() {
         </div>
 
         {/* Right box */}
-        <div className="bg-gray-50 p-5 rounded-lg">
+        <div className="bg-[#F9F9F9] p-5 rounded-lg">
           <h3 className="text-[16px] font-[poppins] font-semibold mb-3">
             Service Details
           </h3>
@@ -303,42 +401,13 @@ export default function DetailViewDesigned() {
               <div className="text-gray-400 font-[poppins] text-xs">
                 Urgency
               </div>
-              <div className="text-[15px] font-medium font-[poppins]">This Week</div>
+              <div className="text-[15px] font-medium font-[poppins]">
+                This Week
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Footer actions - Mobile Responsive */}
-      {/* <div className="mt-4 md:mt-6 flex flex-col items-start gap-4">
-        <div className="w-full">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">
-            Update Status:
-          </label>
-          
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <select
-              value={localStatus}
-              onChange={(e) => setLocalStatus(e.target.value)}
-              className="border rounded px-3 py-2 text-sm w-full sm:w-auto flex-1"
-            >
-              {STATUS_OPTIONS.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={handleStatusUpdate}
-              disabled={updating || localStatus === enquiry.status}
-              className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm w-full sm:w-auto"
-            >
-              {updating ? "Updating..." : "Update Status"}
-            </button>
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 }
