@@ -28,10 +28,10 @@ function splitIntoColumns<T>(array: T[], numCols: number): T[][] {
 
 const buttonBgColors = [
   "#E2F9FF", // 1st
-  "#E2F2FF", // 2nd
+ 
   "#E7E5FF", // 3rd
   "#EDE6FB", // 4th
-  "#F8EEEF", // 5th
+  "#FCEDE3", // 5th
 ];
 
 export default function FAQSection({ faqs }: FAQSectionProps) {
@@ -137,8 +137,17 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
         ))}
       </div>
 
-      <div className="mt-10 md:mt-0 relative flex flex-col gap-10 pt-10 pb-20 justify-center items-center md:rounded-tr-3xl md:rounded-br-3xl md:rounded-bl-3xl overflow-hidden">
-        <img
+<div className="
+  mt-10 md:mt-0 
+  relative flex flex-col gap-10 
+  pt-10 pb-20 
+  justify-center items-center 
+  md:rounded-tl-3xl 
+  md:rounded-tr-3xl 
+  md:rounded-br-3xl 
+  md:rounded-bl-3xl 
+  overflow-hidden
+">        <img
           src={bg}
           alt="gradient"
           className="absolute top-0 left-0 w-full h-full object-cover -z-10"

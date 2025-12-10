@@ -336,6 +336,7 @@ export default function Faqs() {
           </div>
         </div>
       </LazySection>
+      
       <FAQSection faqs={filteredFaqCategories} />
       <div className="flex flex-col items-center text-center z-10 pb-10 px-4">
         <h1

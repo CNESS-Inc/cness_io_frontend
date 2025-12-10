@@ -93,8 +93,16 @@ export default function Benefit() {
           {benefits.map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-2 rounded-full border border-[#CBD5E1] bg-white px-5 py-2 transition"
-            >
+className="
+    flex items-center 
+    gap-2 
+    rounded-full 
+    border border-[#CBD5E1] 
+    bg-white 
+    px-5 py-2 
+    transition
+    whitespace-nowrap 
+  "            >
               <img src={item.icon} alt={item.label} className="w-6 h-6" />
               <span className="font-light text-base text-[#242424] font-['Open Sans'] openSans">
                 {item.label}
@@ -106,7 +114,19 @@ export default function Benefit() {
           {features.map((item, idx) => (
             <div
               key={idx}
-              className="px-5 py-10 flex flex-col sm:flex-row items-start text-left gap-4 rounded-[20px] border border-[#DFDFDF] bg-white hover:shadow-md transition"
+              className="px-5 py-10
+    flex flex-col sm:flex-row 
+    items-start text-left 
+    gap-4 
+    rounded-[20px] 
+    border border-[#DFDFDF] 
+    bg-white 
+    hover:shadow-md 
+    transition 
+    w-full 
+    max-w-full 
+    break-words 
+    overflow-hidden"
             >
               <div className="flex-shrink-0 w-14 h-14 flex items-center justify-center rounded-lg bg-[#6340FF]/10">
                 <img src={item.icon} alt={item.title} className="w-8 h-8" />
