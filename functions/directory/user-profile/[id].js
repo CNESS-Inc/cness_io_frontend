@@ -27,7 +27,8 @@ export async function onRequest({ params, request, env }) {
   let profile = null;
 
   try {
-    const apiUrl = `https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api/profile/public/${params.id}`;
+    const apiUrl = `${env.API_BASE_URL}/profile/public/${params.id}`;
+
     const res = await fetch(apiUrl);
     if (res.ok) {
       const json = await res.json();
