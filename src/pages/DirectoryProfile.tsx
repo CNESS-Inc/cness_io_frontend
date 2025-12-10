@@ -67,10 +67,18 @@ const DirectoryProfile = () => {
     Record<string, boolean>
   >({});
   const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
-  const [editReplyTexts, setEditReplyTexts] = useState<Record<string, string>>({});
-  const [submittingEditReply, setSubmittingEditReply] = useState<Record<string, boolean>>({});
-  const [deletingReply, setDeletingReply] = useState<Record<string, boolean>>({});
-  const [pagination, setPagination] = useState<Record<string, { pageNo: number; hasMore: boolean; loadingMore: boolean }>>({});
+  const [editReplyTexts, setEditReplyTexts] = useState<Record<string, string>>(
+    {}
+  );
+  const [submittingEditReply, setSubmittingEditReply] = useState<
+    Record<string, boolean>
+  >({});
+  const [deletingReply, setDeletingReply] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [pagination, setPagination] = useState<
+    Record<string, { pageNo: number; hasMore: boolean; loadingMore: boolean }>
+  >({});
   const [infoId, setInfoId] = useState<string | null>(null);
   const { id } = useParams();
   const { showToast } = useToast();
@@ -78,7 +86,7 @@ const DirectoryProfile = () => {
   const isLoggedIn = localStorage.getItem("Id");
   const [connecting, setConnecting] = useState(false);
   const [acceptingRequest, setAcceptingRequest] = useState(false);
-const [rejectingRequest, setRejectingRequest] = useState(false);
+  const [rejectingRequest, setRejectingRequest] = useState(false);
 
   useEffect(() => {
     const fetchDirectoryProfile = async () => {
@@ -100,7 +108,7 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
             setInfoId(response.data.data.bussiness_profile?.id || null);
             setProfileData(response.data.data);
           } else {
-            setProfileData({})
+            setProfileData({});
           }
         } else {
           showToast({
@@ -206,8 +214,9 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
     try {
       setConnecting(true);
 
-      // Check current friend status
+      // Get current friend status
       const isCurrentlyFriend = profileData?.is_friend || false;
+      const requestStatus = profileData?.friend_request_status;
       const friendId = userId;
 
       if (isCurrentlyFriend) {
@@ -224,7 +233,27 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
             duration: 2000,
           });
 
-          // Update the profile data to reflect unfriending
+          // Update the profile data
+          setProfileData((prev: any) => ({
+            ...prev,
+            is_friend: false,
+            friend_request_status: null,
+          }));
+        }
+      } else if (requestStatus === "PENDING") {
+        const formattedData = {
+          friend_id: friendId,
+        };
+
+        const res = await SendFriendRequest(formattedData);
+
+        if (res?.success?.message) {
+          showToast({
+            message: res.success.message || "Friend request cancelled",
+            type: "success",
+            duration: 2000,
+          });
+
           setProfileData((prev: any) => ({
             ...prev,
             is_friend: false,
@@ -245,7 +274,7 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
             duration: 2000,
           });
 
-          // Update the profile data to reflect pending request
+          // Update the profile data
           setProfileData((prev: any) => ({
             ...prev,
             is_friend: false,
@@ -268,122 +297,122 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
   };
 
   const handleAcceptRequest = async () => {
-  if (!userId) return;
-  
-  try {
-    setAcceptingRequest(true);
-    const formattedData = { friend_id: userId };
-    
-    // You need to import AcceptFriendRequest from your ServerAPI
-    const res = await AcceptFriendRequest(formattedData);
-    
-    if (res?.success?.message) {
-      showToast({
-        message: res.success.message || "Friend request accepted!",
-        type: "success",
-        duration: 2000,
-      });
-      
-      // Update the profile data
-      setProfileData((prev: any) => ({
-        ...prev,
-        is_friend: true,
-        friend_request_status: "ACCEPT",
-        reciver_request_status: null,
-      }));
-    }
-  } catch (error: any) {
-    console.error("Error accepting friend request:", error);
-    showToast({
-      message:
-        error?.response?.data?.error?.message ||
-        "Failed to accept friend request",
-      type: "error",
-      duration: 3000,
-    });
-  } finally {
-    setAcceptingRequest(false);
-  }
-};
+    if (!userId) return;
 
-const handleRejectRequest = async () => {
-  if (!userId) return;
-  
-  try {
-    setRejectingRequest(true);
-    const formattedData = { friend_id: userId };
-    
-    // You need to import RejectFriendRequest from your ServerAPI
-    const res = await RejectFriendRequest(formattedData);
-    
-    if (res?.success?.message) {
+    try {
+      setAcceptingRequest(true);
+      const formattedData = { friend_id: userId };
+
+      // You need to import AcceptFriendRequest from your ServerAPI
+      const res = await AcceptFriendRequest(formattedData);
+
+      if (res?.success?.message) {
+        showToast({
+          message: res.success.message || "Friend request accepted!",
+          type: "success",
+          duration: 2000,
+        });
+
+        // Update the profile data
+        setProfileData((prev: any) => ({
+          ...prev,
+          is_friend: true,
+          friend_request_status: "ACCEPT",
+          reciver_request_status: null,
+        }));
+      }
+    } catch (error: any) {
+      console.error("Error accepting friend request:", error);
       showToast({
-        message: res.success.message || "Friend request rejected",
-        type: "success",
-        duration: 2000,
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to accept friend request",
+        type: "error",
+        duration: 3000,
       });
-      
-      // Update the profile data
-      setProfileData((prev: any) => ({
-        ...prev,
-        is_friend: false,
-        friend_request_status: null,
-        reciver_request_status: null,
-      }));
+    } finally {
+      setAcceptingRequest(false);
     }
-  } catch (error: any) {
-    console.error("Error rejecting friend request:", error);
-    showToast({
-      message:
-        error?.response?.data?.error?.message ||
-        "Failed to reject friend request",
-      type: "error",
-      duration: 3000,
-    });
-  } finally {
-    setRejectingRequest(false);
-  }
-};
+  };
+
+  const handleRejectRequest = async () => {
+    if (!userId) return;
+
+    try {
+      setRejectingRequest(true);
+      const formattedData = { friend_id: userId };
+
+      // You need to import RejectFriendRequest from your ServerAPI
+      const res = await RejectFriendRequest(formattedData);
+
+      if (res?.success?.message) {
+        showToast({
+          message: res.success.message || "Friend request rejected",
+          type: "success",
+          duration: 2000,
+        });
+
+        // Update the profile data
+        setProfileData((prev: any) => ({
+          ...prev,
+          is_friend: false,
+          friend_request_status: null,
+          reciver_request_status: null,
+        }));
+      }
+    } catch (error: any) {
+      console.error("Error rejecting friend request:", error);
+      showToast({
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to reject friend request",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setRejectingRequest(false);
+    }
+  };
 
   // Add this function to get the button text and style
- const getConnectionButtonState = () => {
-  const requestStatus = profileData?.friend_request_status;
-  const receiverStatus = profileData?.reciver_request_status;
-  
-  // Check if user has received a pending request
-  if (receiverStatus === "PENDING") {
-    return {
-      showAcceptReject: true,
-      text: "Respond to Request",
-      className: "bg-white text-gray-700 border border-gray-300",
-    };
-  }
-  
-  if (requestStatus === "ACCEPT") {
+  const getConnectionButtonState = () => {
+    const requestStatus = profileData?.friend_request_status;
+    const receiverStatus = profileData?.reciver_request_status;
+
+    // Check if user has received a pending request
+    if (receiverStatus === "PENDING") {
+      return {
+        showAcceptReject: true,
+        text: "Respond to Request",
+        className: "bg-white text-gray-700 border border-gray-300",
+      };
+    }
+
+    if (requestStatus === "ACCEPT") {
+      return {
+        showAcceptReject: false,
+        text: "Connected",
+        className:
+          "bg-green-100 text-green-700 border border-green-300 hover:bg-green-200",
+      };
+    }
+
+    if (requestStatus === "PENDING") {
+      return {
+        showAcceptReject: false,
+        text: "Requested",
+        className:
+          "bg-yellow-100 text-yellow-700 border border-yellow-300 hover:bg-yellow-200",
+      };
+    }
+
     return {
       showAcceptReject: false,
-      text: "Connected",
-      className:
-        "bg-green-100 text-green-700 border border-green-300 hover:bg-green-200",
+      text: "Connect now",
+      className: "bg-[#7077FE] text-white hover:bg-[#5b63e6]",
     };
-  }
-
-  if (requestStatus === "PENDING") {
-    return {
-      showAcceptReject: false,
-      text: "Requested",
-      className:
-        "bg-yellow-100 text-yellow-700 border border-yellow-300 hover:bg-yellow-200",
-    };
-  }
-
-  return {
-    showAcceptReject: false,
-    text: "Connect now",
-    className: "bg-[#7077FE] text-white hover:bg-[#5b63e6]",
   };
-};
-const connectionButtonState = getConnectionButtonState();
+  const connectionButtonState = getConnectionButtonState();
 
   const businessProfile = profileData.bussiness_profile || {};
   const userProfile = profileData.user_profile || {};
@@ -392,7 +421,6 @@ const connectionButtonState = getConnectionButtonState();
   const photos = profileData.photos || [];
   const services = profileData.service_offered || [];
   const bestPractices = profileData.best_practies || [];
-  console.log("🚀 ~ DirectoryProfile ~ bestPractices:", bestPractices);
   const products = profileData.products || [];
 
   const formatBusinessHours = () => {
@@ -1197,19 +1225,20 @@ const connectionButtonState = getConnectionButtonState();
                 {profileData.friend_profile_pics &&
                 profileData.friend_profile_pics.length > 0 ? (
                   <>
-                    {profileData.friend_profile_pics.slice(0, 3).map((pic: string, i: number) => (
-                      <img
-                        key={i}
-                        src={pic ? pic : "/profile.png"}
-                        className="w-10 h-10 rounded-full border-2 border-white object-cover"
-                        alt={`Friend ${i + 1}`}
-                        onError={(e) => {
-                          const target =
-                            e.target as HTMLImageElement;
-                          target.src = "/profile.png"; // Clear broken images
-                        }}
-                      />
-                    ))}
+                    {profileData.friend_profile_pics
+                      .slice(0, 3)
+                      .map((pic: string, i: number) => (
+                        <img
+                          key={i}
+                          src={pic ? pic : "/profile.png"}
+                          className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                          alt={`Friend ${i + 1}`}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/profile.png"; // Clear broken images
+                          }}
+                        />
+                      ))}
                     {profileData.friend_count > 3 && (
                       <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#FFE4F5] rounded-full border-2 border-white flex items-center justify-center">
                         <span className="text-[#F07EFF] font-bold text-xs sm:text-sm">
@@ -1227,51 +1256,53 @@ const connectionButtonState = getConnectionButtonState();
                 )}
               </div>
               {isLoggedIn !== id && (
-  <div className="w-full sm:w-auto">
-    {connectionButtonState.showAcceptReject ? (
-      // Show Accept/Reject buttons when user has received a pending request
-      <div className="flex flex-col sm:flex-row gap-2">
-        <button
-          onClick={handleAcceptRequest}
-          disabled={acceptingRequest}
-          className={`px-4 py-2 rounded-full font-semibold text-xs sm:text-sm w-full flex items-center justify-center gap-2 bg-green-100 text-green-700 border border-green-300 hover:bg-green-200 disabled:opacity-50`}
-        >
-          {acceptingRequest ? (
-            "Accepting..."
-          ) : (
-            <>
-              <UserRoundPlus className="w-4 h-4" />
-              Accept
-            </>
-          )}
-        </button>
-        <button
-          onClick={handleRejectRequest}
-          disabled={rejectingRequest}
-          className={`px-4 py-2 rounded-full font-semibold text-xs sm:text-sm w-full flex items-center justify-center gap-2 bg-red-100 text-red-700 border border-red-300 hover:bg-red-200 disabled:opacity-50`}
-        >
-          {rejectingRequest ? (
-            "Rejecting..."
-          ) : (
-            <>
-              <UserRoundMinus className="w-4 h-4" />
-              Reject
-            </>
-          )}
-        </button>
-      </div>
-    ) : (
-      // Show regular Connect/Requested/Connected button
-      <button
-        onClick={handleConnection}
-        disabled={connecting}
-        className={`px-4 py-2 sm:px-5 sm:py-2 rounded-full font-semibold text-xs sm:text-sm w-full sm:w-auto transition-colors duration-300 ${connectionButtonState.className}`}
-      >
-        {connecting ? "Connecting..." : connectionButtonState.text}
-      </button>
-    )}
-  </div>
-)}
+                <div className="w-full sm:w-auto">
+                  {connectionButtonState.showAcceptReject ? (
+                    // Show Accept/Reject buttons when user has received a pending request
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <button
+                        onClick={handleAcceptRequest}
+                        disabled={acceptingRequest}
+                        className={`px-4 py-2 rounded-full font-semibold text-xs sm:text-sm w-full flex items-center justify-center gap-2 bg-green-100 text-green-700 border border-green-300 hover:bg-green-200 disabled:opacity-50`}
+                      >
+                        {acceptingRequest ? (
+                          "Accepting..."
+                        ) : (
+                          <>
+                            <UserRoundPlus className="w-4 h-4" />
+                            Accept
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={handleRejectRequest}
+                        disabled={rejectingRequest}
+                        className={`px-4 py-2 rounded-full font-semibold text-xs sm:text-sm w-full flex items-center justify-center gap-2 bg-red-100 text-red-700 border border-red-300 hover:bg-red-200 disabled:opacity-50`}
+                      >
+                        {rejectingRequest ? (
+                          "Rejecting..."
+                        ) : (
+                          <>
+                            <UserRoundMinus className="w-4 h-4" />
+                            Reject
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  ) : (
+                    // Show regular Connect/Requested/Connected button
+                    <button
+                      onClick={handleConnection}
+                      disabled={connecting}
+                      className={`px-4 py-2 sm:px-5 sm:py-2 rounded-full font-semibold text-xs sm:text-sm w-full sm:w-auto transition-colors duration-300 ${connectionButtonState.className}`}
+                    >
+                      {connecting
+                        ? "Connecting..."
+                        : connectionButtonState.text}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </section>
         </div>
