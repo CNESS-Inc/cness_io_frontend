@@ -319,10 +319,8 @@ export default function AddBestPracticeModal({
     });
 
     if (validateForm()) {
-      alert(1)
       handleSubmit(e);
     } else {
-      alert(2)
       // Scroll to first error
       const firstErrorElement = document.querySelector('[data-error="true"]');
       if (firstErrorElement) {

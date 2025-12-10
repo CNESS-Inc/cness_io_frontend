@@ -15,7 +15,6 @@ import {
   GetAllFormDetails,
   GoogleLoginDetails,
   MeDetails,
-  PaymentDetails,
   ResendVerificationMail,
   submitPersonDetails,
 } from "../../Common/ServerAPI";
@@ -59,20 +58,6 @@ type SignupModalProps = {
 interface AccountFormData {
   person_organization_complete: 1 | 2;
 }
-type PersPricingPlan = {
-  id: any;
-  title: any;
-  description: string;
-  monthlyPrice?: string;
-  yearlyPrice?: string;
-  period: string;
-  billingNote?: string;
-  features: string[]; // Instead of never[]
-  buttonText: string;
-  buttonClass: string;
-  borderClass: string;
-  popular: boolean;
-};
 interface QuestionAnswer {
   question_id: string;
   answer: string;
@@ -313,8 +298,6 @@ export default function SignupModal({
     question: [],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAnnual, setIsAnnual] = useState(true);
-  const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
   const [personFormStep, setPersonFormStep] = useState(1);
   const closeByKey = (key: typeof activeModal) =>
     setActiveModal((curr) => (curr === key ? null : curr));
@@ -753,37 +736,6 @@ export default function SignupModal({
           "margaret_name",
           response?.data?.data?.user.margaret_name
         );
-
-        // Create combined plan objects with both monthly and yearly data
-        const updatedPlans = Object.values(plansByRange)?.map(
-          (planGroup: any) => {
-            const monthlyPlan = planGroup.monthly;
-            const yearlyPlan = planGroup.yearly;
-
-            return {
-              id: monthlyPlan?.id || yearlyPlan?.id,
-              title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              description: "Customized pricing based on your selection",
-              monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-              yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-              period: isAnnual ? "/year" : "/month",
-              billingNote: yearlyPlan
-                ? isAnnual
-                  ? `billed annually ($${yearlyPlan.amount})`
-                  : `or $${monthlyPlan?.amount}/month`
-                : undefined,
-              features: [], // Add any features you need here
-              buttonText: "Get Started",
-              buttonClass: yearlyPlan
-                ? ""
-                : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-              borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-              popular: !!yearlyPlan,
-            };
-          }
-        );
-
-        setPersonPricing(updatedPlans);
         setActiveModal("personPricing");
       } else if (res.success.statusCode === 201) {
         setActiveModal("disqualify");
@@ -905,47 +857,12 @@ export default function SignupModal({
     }
   };
 
-  const handlePlanSelection = async (plan: any) => {
-    try {
-      const payload = {
-        plan_id: plan.id,
-        plan_type: isAnnual ? "Yearly" : "Monthly",
-      };
-
-      const res = await PaymentDetails(payload);
-      if (res?.data?.data?.url) {
-        const url = res.data.data.url;
-        console.log("Redirecting to:", url); // Log the actual URL
-        window.location.href = url; // Redirect in the same tab
-      } else {
-        console.error("URL not found in response");
-      }
-    } catch (error: any) {
-      console.error("Error in handlePlanSelection:", error);
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
   const handleNextPersonClick = () => {
     // Only validate step 1 fields when clicking next
     const isValid = validateForm(personForm, "person", 1, true);
 
     if (isValid) {
       setPersonFormStep(2);
-    }
-  };
-
-  const getBillingNote = (plan: any) => {
-    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
-
-    if (isAnnual) {
-      // For annual billing: show "billed annually (yearly price)"
-      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
-    } else {
-      return `or ${plan.monthlyPrice}/month`;
     }
   };
 
@@ -1373,41 +1290,6 @@ export default function SignupModal({
       <Loginmodule open={openLogin} onClose={() => setOpenLogin(false)} />
 
       <Modal
-        isOpen={activeModal === "type"}
-        onClose={closeModal}
-        modalKey="type"
-      >
-        <div className=" p-6 rounded-lg relative">
-          <h2 className="text-2xl font-bold text-gray-800 mb-3">
-            Select Account Type
-          </h2>
-          <p className="text-base text-gray-600 mb-6">
-            Please choose whether you're signing up as an individual or an
-            organization.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Button
-              type="submit"
-              onClick={() => handleTypeSelection(1)}
-              className="bg-[#7077FE] py-4 px-6 rounded-full transition-colors duration-500 ease-in-out"
-              variant="primary"
-              withGradientOverlay
-            >
-              Person
-            </Button>
-            <Button
-              onClick={() => handleTypeSelection(2)}
-              className="bg-[#7077FE] py-4 px-6 rounded-full transition-colors duration-500 ease-in-out"
-              variant="primary"
-              withGradientOverlay
-            >
-              Organization
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
         isOpen={activeModal === "person"}
         onClose={() => closeByKey("person")}
         modalKey="person"
@@ -1767,124 +1649,6 @@ export default function SignupModal({
                   )}
                 </div>
               </form>
-            </div>
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
-        isOpen={activeModal === "personPricing"}
-        onClose={() => closeByKey("personPricing")}
-        modalKey="personPricing"
-      >
-        <div className="fixed inset-0 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
-          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
-            {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
-              <div>
-                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-15 h-15 text-gray-700"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                </div>
-
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Let's Get to <br></br>
-                  Know You Better
-                </h2>
-                <p className="text-gray-700 text-sm">
-                  This information helps us understand your conscious impact
-                  better.
-                </p>
-              </div>
-            </div>
-
-            {/* Right Form Panel */}
-            <div className=" p-6 rounded-lg w-full mx-auto my-auto z-10 relative">
-              <h2 className="text-xl poppins font-bold mb-4 text-center">
-                Person Pricing Plan
-              </h2>
-
-              <div className="flex justify-center">
-                {personPricing?.map((plan) => (
-                  <div
-                    key={plan.id}
-                    className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
-                  >
-                    {plan.popular && (
-                      <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
-                        Popular
-                      </div>
-                    )}
-                    <h3 className="font-semibold text-lg mb-2 mt-2">
-                      {plan.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-4">
-                      {plan.description}
-                    </p>
-                    <div className="mb-4">
-                      <span className="text-3xl font-bold">
-                        {isAnnual
-                          ? plan.yearlyPrice || plan.monthlyPrice
-                          : plan.monthlyPrice}
-                      </span>
-                      <span className="text-gray-500">/month</span>
-                      {getBillingNote(plan) && (
-                        <p className="text-sm text-gray-500 mt-1">
-                          {getBillingNote(plan)}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      variant="gradient-primary"
-                      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                      onClick={() => handlePlanSelection(plan)}
-                    >
-                      {plan.buttonText}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 text-center">
-                <label className="inline-flex items-center cursor-pointer">
-                  <span className="mr-3 text-sm font-medium text-gray-700">
-                    Monthly billing
-                  </span>
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={isAnnual}
-                      onChange={() => setIsAnnual(!isAnnual)}
-                    />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
-                  </div>
-                  <span className="ml-3 text-sm font-medium text-gray-700">
-                    Annual billing
-                  </span>
-                </label>
-              </div>
-
-              <div className="mt-6 text-center">
-                <button
-                  onClick={() => navigate("/dashboard")}
-                  className="text-gray-500 hover:text-gray-700 font-medium text-sm underline focus:outline-none"
-                >
-                  Skip for now, go to Dashboard
-                </button>
-              </div>
             </div>
           </div>
         </div>

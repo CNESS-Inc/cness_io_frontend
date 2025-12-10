@@ -20,8 +20,6 @@ import {
   GetAllFormDetails,
   GetAllPlanDetails,
   MeDetails,
-  PaymentDetails,
-  submitOrganizationDetails,
   submitPersonDetails,
 } from "../../../Common/ServerAPI";
 import { useNavigate } from "react-router-dom";
@@ -32,37 +30,6 @@ import badgecness from "../../../assets/Badgecness.svg";
 import indv_aspiring from "../../../assets/indv_aspiring.svg";
 import indv_inspried from "../../../assets/indv_inspired.svg";
 import indv_leader from "../../../assets/indv_leader.svg";
-
-type PersPricingPlan = {
-  id: any;
-  title: any;
-  description: string;
-  monthlyPrice?: string;
-  yearlyPrice?: string;
-  period: string;
-  billingNote?: string;
-  features: string[]; // Instead of never[]
-  buttonText: string;
-  buttonClass: string;
-  borderClass: string;
-  popular: boolean;
-};
-interface OrganizationForm {
-  domain_id: string;
-  sub_domain_id: string;
-  organization_type_id: string;
-  revenue_range_id: string;
-  organization_name: string;
-  domain: string;
-  custom_domain?: string;
-  sub_domain: string;
-  employee_size: string;
-  revenue: string;
-  question: Array<{
-    question_id: string;
-    answer: string;
-  }>;
-}
 
 interface QuestionAnswer {
   question_id: string;
@@ -90,10 +57,7 @@ interface PersonForm {
 
 export default function DashboardSection() {
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  const [isAnnual, setIsAnnual] = useState(true);
-  const [personPricing, setPersonPricing] = useState<PersPricingPlan[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -110,18 +74,6 @@ export default function DashboardSection() {
     question: [],
   });
   const [user, setUser] = useState<any | null>(null);
-  const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
-    domain_id: "",
-    sub_domain_id: "",
-    organization_type_id: "",
-    revenue_range_id: "",
-    organization_name: "",
-    domain: "",
-    sub_domain: "",
-    employee_size: "",
-    revenue: "",
-    question: [],
-  });
   const fetchDashboard = async () => {
     try {
       const response: any = await DashboardDetails();
@@ -205,34 +157,6 @@ export default function DashboardSection() {
         }
         plansByRange[plan.plan_range][plan.plan_type] = plan;
       });
-      // Create combined plan objects with both monthly and yearly data
-      const updatedPlans = Object.values(plansByRange).map((planGroup: any) => {
-        const monthlyPlan = planGroup.monthly;
-        const yearlyPlan = planGroup.yearly;
-
-        return {
-          id: monthlyPlan?.id || yearlyPlan?.id,
-          title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-          description: "Customized pricing based on your selection",
-          monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-          yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-          period: isAnnual ? "/year" : "/month",
-          billingNote: yearlyPlan
-            ? isAnnual
-              ? `billed annually ($${yearlyPlan.amount})`
-              : `or $${monthlyPlan?.amount}/month`
-            : undefined,
-          features: [], // Add any features you need here
-          buttonText: "Get Started",
-          buttonClass: yearlyPlan
-            ? ""
-            : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-          borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-          popular: !!yearlyPlan,
-        };
-      });
-
-      setPersonPricing(updatedPlans);
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -264,29 +188,6 @@ export default function DashboardSection() {
     setActiveModal(null);
     await fetchDashboard();
   };
-  const handlePlanSelection = async (plan: any) => {
-    try {
-      const payload = {
-        plan_id: plan.id,
-        plan_type: isAnnual ? "Yearly" : "Monthly",
-      };
-
-      const res = await PaymentDetails(payload);
-
-      if (res?.data?.data?.url) {
-        const url = res.data.data.url;
-        window.location.href = url; // Redirect in the same tab
-      } else {
-        console.error("URL not found in response");
-      }
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
 
   const completedStep = localStorage.getItem("completed_step");
   const is_disqualify = localStorage.getItem("is_disqualify");
@@ -298,26 +199,6 @@ export default function DashboardSection() {
   ): boolean => {
     let isValid = true;
     const newErrors: FormErrors = {};
-
-    if (formType === "organization") {
-      // Only validate questions for organization form
-      readlineQuestion.forEach((question: any) => {
-        const answer =
-          formData.question?.find(
-            (q: QuestionAnswer) => q.question_id === question.id
-          )?.answer || "";
-
-        if (!answer || answer.trim() === "") {
-          newErrors[`question_${question.id}`] = "This field is required";
-          isValid = false;
-        }
-      });
-
-      if (setErrors) {
-        setOrganizationErrors(newErrors);
-      }
-      return isValid;
-    }
 
     if (formType === "person") {
       // Validate questions
@@ -376,38 +257,6 @@ export default function DashboardSection() {
           "margaret_name",
           response?.data?.data?.user.margaret_name
         );
-
-        // Create combined plan objects with both monthly and yearly data
-        const updatedPlans = Object.values(plansByRange)?.map(
-          (planGroup: any) => {
-            const monthlyPlan = planGroup.monthly;
-            const yearlyPlan = planGroup.yearly;
-
-            return {
-              id: monthlyPlan?.id || yearlyPlan?.id,
-              title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              description: "Customized pricing based on your selection",
-              monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-              yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-              period: isAnnual ? "/year" : "/month",
-              billingNote: yearlyPlan
-                ? isAnnual
-                  ? `billed annually ($${yearlyPlan.amount})`
-                  : `or $${monthlyPlan?.amount}/month`
-                : undefined,
-              features: [], // Add any features you need here
-              buttonText: "Get Started",
-              buttonClass: yearlyPlan
-                ? ""
-                : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-              borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-              popular: !!yearlyPlan,
-            };
-          }
-        );
-
-        setPersonPricing(updatedPlans);
-        setActiveModal("PricingModal");
         localStorage.setItem("is_disqualify", "fasle");
       } else if (res.success.statusCode === 201) {
         closeModal();
@@ -458,121 +307,6 @@ export default function DashboardSection() {
     }
   };
 
-  const handleOrganizationSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    // Validate only the questions
-    const isValid = validateForm(organizationForm, "organization", true);
-
-    if (!isValid) {
-      setIsSubmitting(false);
-      return;
-    }
-
-    try {
-      const res = await submitOrganizationDetails(organizationForm);
-      localStorage.setItem("person_organization", "2");
-      localStorage.setItem("completed_step", "1");
-
-      if (res.success.statusCode === 200) {
-        const plansByRange: Record<string, any> = {};
-        res?.data?.data?.plan.forEach((plan: any) => {
-          if (!plansByRange[plan.plan_range]) {
-            plansByRange[plan.plan_range] = {};
-          }
-          plansByRange[plan.plan_range][plan.plan_type] = plan;
-        });
-
-        const response = await MeDetails();
-        localStorage.setItem(
-          "profile_picture",
-          response?.data?.data?.user.profile_picture
-        );
-        localStorage.setItem("name", response?.data?.data?.user.name);
-        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
-        localStorage.setItem(
-          "margaret_name",
-          response?.data?.data?.user.margaret_name
-        );
-
-        const updatedPlans = Object.values(plansByRange)?.map(
-          (planGroup: any) => {
-            const monthlyPlan = planGroup.monthly;
-            const yearlyPlan = planGroup.yearly;
-
-            return {
-              id: monthlyPlan?.id || yearlyPlan?.id,
-              title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              description: "Customized pricing based on your selection",
-              monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-              yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-              period: isAnnual ? "/year" : "/month",
-              billingNote: yearlyPlan
-                ? isAnnual
-                  ? `billed annually ($${yearlyPlan.amount})`
-                  : `or $${monthlyPlan?.amount}/month`
-                : undefined,
-              features: [],
-              buttonText: "Get Started",
-              buttonClass: yearlyPlan
-                ? ""
-                : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-              borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-              popular: !!yearlyPlan,
-            };
-          }
-        );
-
-        setPersonPricing(updatedPlans);
-        setActiveModal("PricingModal");
-        localStorage.setItem("is_disqualify", "fasle");
-      } else if (res.success.statusCode === 201) {
-        closeModal();
-      }
-    } catch (error) {
-      console.error("Error submitting organization form:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleOrganizationFormChange = async (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-
-    // We only need to handle questions now
-    if (name.startsWith("question_")) {
-      const questionId = name.replace("question_", "");
-      setOrganizationForm((prev) => {
-        const existingQuestionIndex = prev.question.findIndex(
-          (q) => q.question_id === questionId
-        );
-
-        if (existingQuestionIndex >= 0) {
-          // Update existing answer
-          const updatedQuestions = [...prev.question];
-          updatedQuestions[existingQuestionIndex] = {
-            question_id: questionId,
-            answer: value,
-          };
-          return { ...prev, question: updatedQuestions };
-        } else {
-          // Add new question answer
-          return {
-            ...prev,
-            question: [
-              ...prev.question,
-              { question_id: questionId, answer: value },
-            ],
-          };
-        }
-      });
-    }
-  };
 
   const getBadgeImage = (level: string) => {
     if (!level) return null;
@@ -586,17 +320,6 @@ export default function DashboardSection() {
         return indv_leader;
       default:
         return null;
-    }
-  };
-
-    const getBillingNote = (plan: any) => {
-    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
-
-    if (isAnnual) {
-      // For annual billing: show "billed annually (yearly price)"
-      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
-    } else {
-      return `or ${plan.monthlyPrice}/month`;
     }
   };
 
@@ -780,7 +503,7 @@ export default function DashboardSection() {
             <Card
               className="
      flex flex-col  gap-6 flex-1
-    rounded-[12px] 
+    rounded-xl 
     bg-[linear-gradient(97deg,rgba(223,214,255,0.30)_-0.01%,rgba(184,166,248,0.30)_49.8%,rgba(196,132,205,0.30)_99.99%)]
     border-[#B8A6F8]
   "
@@ -841,7 +564,7 @@ export default function DashboardSection() {
 
           <div className="flex flex-col lg:flex-row gap-3 w-full">
             {/* Assessment Card */}
-            <div className="w-full lg:flex-[2] relative">
+            <div className="w-full lg:flex-2 relative">
               <Card className="w-full h-full border-[#eceef2]">
                 <CardHeader className="flex-row items-center justify-between border-b border-[#0000001a] pb-2 md:pb-3">
                   <div className="flex items-center gap-2 md:gap-3.5">
@@ -878,12 +601,12 @@ export default function DashboardSection() {
                     {[...Array(6)].map((_, index) => (
                       <div
                         key={index}
-                        className={`flex-1 h-5 md:h-[24px] rounded ${
+                        className={`flex-1 h-5 md:h-6 rounded ${
                           index <
                           Math.floor(
                             (user?.assesment_progress || 0) / (100 / 6)
                           )
-                            ? "bg-gradient-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
+                            ? "bg-linear-to-b from-[rgba(79,70,229,1)] to-[rgba(151,71,255,1)]"
                             : "bg-[#EDEAFF]"
                         }`}
                       />
@@ -1003,14 +726,14 @@ export default function DashboardSection() {
                     </CardHeader>
                     <CardContent className="py-3 md:py-[17px]">
                       <div className="flex flex-col md:flex-row items-center justify-around gap-2">
-                        <div className="flex flex-col md:flex-column items-center gap-2 md:gap-[20px]">
+                        <div className="flex flex-col md:flex-column items-center gap-2 md:gap-5">
                           <img
                             className="w-[136.22px] h-[74.58px]"
                             alt={`${user?.level} Badge`}
                             src={getBadgeImage(user?.level) || badgecness}
                           />
                           <div className="w-full md:w-[118.96px]">
-                            <p className="w-full py-1 bg-[#9747ff1a] rounded-[8px] text-center text-[#9747FF] font-medium text-sm">
+                            <p className="w-full py-1 bg-[#9747ff1a] rounded-lg text-center text-[#9747FF] font-medium text-sm">
                               {user?.level}
                             </p>
                           </div>
@@ -1140,7 +863,7 @@ export default function DashboardSection() {
                           </h3>
                           {!module.locked && (
                             <Button
-                              className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-1 px-2 sm:py-2 sm:px-4 md:py-[8px] md:px-[20.5px] w-fit rounded-full text-xs md:text-base"
+                              className="bg-linear-to-r from-indigo-500 to-purple-500 text-white py-1 px-2 sm:py-2 sm:px-4 md:py-2 md:px-[20.5px] w-fit rounded-full text-xs md:text-base"
                               variant="primary"
                               withGradientOverlay
                             >
@@ -1157,80 +880,11 @@ export default function DashboardSection() {
           </Card>
         </section>
 
-        <Modal isOpen={activeModal === "PricingModal"} onClose={closeModal}>
-          <div className="p-6 rounded-lg w-full mx-auto z-10 relative">
-            <h2 className="text-xl poppins font-bold mb-4 text-center">
-              Pricing Plan
-            </h2>
-
-            <div className="flex justify-center">
-              {personPricing.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
-                >
-                  {plan.popular && (
-                    <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
-                      Popular
-                    </div>
-                  )}
-                  <h3 className="font-semibold text-lg mb-2 mt-2">
-                    {plan.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    {plan.description}
-                  </p>
-                  <div className="mb-4">
-                    <span className="text-3xl font-bold">
-                      {isAnnual
-                        ? plan.yearlyPrice || plan.monthlyPrice
-                        : plan.monthlyPrice}
-                    </span>
-                    <span className="text-gray-500">/month</span>
-                    {getBillingNote(plan) && (
-                        <p className="text-sm text-gray-500 mt-1">
-                          {getBillingNote(plan)}
-                        </p>
-                      )}
-                  </div>
-                  <Button
-                    variant="gradient-primary"
-                    className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                    onClick={() => handlePlanSelection(plan)}
-                  >
-                    {plan.buttonText}
-                  </Button>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 text-center">
-              <label className="inline-flex items-center cursor-pointer">
-                <span className="mr-3 text-sm font-medium text-gray-700">
-                  Monthly billing
-                </span>
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={isAnnual}
-                    onChange={() => setIsAnnual(!isAnnual)}
-                  />
-                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
-                </div>
-                <span className="ml-3 text-sm font-medium text-gray-700">
-                  Annual billing
-                </span>
-              </label>
-            </div>
-          </div>
-        </Modal>
-
         <Modal isOpen={activeModal === "person"} onClose={closeModal}>
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
             <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
               {/* LEFT PANEL */}
-              <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
+              <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
                 <div>
                   <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
                     <svg
@@ -1293,7 +947,7 @@ export default function DashboardSection() {
                                     value={option.option}
                                     checked={existingAnswer === option.option}
                                     onChange={handlePersonFormChange}
-                                    className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
+                                    className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 shrink-0 peer-checked:border-transparent peer-checked:bg-linear-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
                                   />
                                   <label
                                     htmlFor={`question_${question.id}_${option.id}`}
@@ -1322,196 +976,6 @@ export default function DashboardSection() {
                           {personErrors[`question_${question.id}`] && (
                             <p className="mt-1 text-sm text-red-600">
                               {personErrors[`question_${question.id}`]}
-                            </p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Form Footer Actions */}
-                  <div className="flex justify-end mt-6 gap-3 flex-wrap">
-                    <Button
-                      type="button"
-                      onClick={closeModal}
-                      variant="white-outline"
-                    >
-                      Cancel
-                    </Button>
-
-                    <Button
-                      type="submit"
-                      variant="gradient-primary"
-                      className="rounded-full py-3 px-8 transition-all"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Submitting..." : "Submit"}
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </Modal>
-
-        <Modal isOpen={activeModal === "organization"} onClose={closeModal}>
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
-            <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
-              {/* LEFT PANEL */}
-              <div className="hidden lg:flex bg-gradient-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
-                <div>
-                  <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-15 h-15 text-gray-700"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="3"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <circle
-                        cx="4.5"
-                        cy="4.5"
-                        r="2"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <circle
-                        cx="19.5"
-                        cy="4.5"
-                        r="2"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <circle
-                        cx="4.5"
-                        cy="19.5"
-                        r="2"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <circle
-                        cx="19.5"
-                        cy="19.5"
-                        r="2"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <line
-                        x1="12"
-                        y1="12"
-                        x2="4.5"
-                        y2="4.5"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <line
-                        x1="12"
-                        y1="12"
-                        x2="19.5"
-                        y2="4.5"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <line
-                        x1="12"
-                        y1="12"
-                        x2="4.5"
-                        y2="19.5"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <line
-                        x1="12"
-                        y1="12"
-                        x2="19.5"
-                        y2="19.5"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                    </svg>
-                  </div>
-
-                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                    Let's Get to Know Your Organization
-                  </h2>
-                  <p className="text-gray-900 text-sm">
-                    This information helps us understand your conscious impact
-                    better.
-                  </p>
-                </div>
-              </div>
-
-              {/* Right Form Panel */}
-              <div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
-                <h2 className="text-xl font-bold text-gray-800 mb-6">
-                  Tell Us About Your Organization
-                </h2>
-
-                <form onSubmit={handleOrganizationSubmit} className="space-y-6">
-                  {/* Questions Section */}
-                  <div className="space-y-4">
-                    {readlineQuestion?.map((question: any) => {
-                      const existingAnswer =
-                        organizationForm.question.find(
-                          (q: QuestionAnswer) => q.question_id === question.id
-                        )?.answer || "";
-
-                      return (
-                        <div key={question.id} className="mb-4">
-                          <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                            {question.question}
-                          </label>
-
-                          {question.options && question.options.length > 0 ? (
-                            <div className="space-y-2">
-                              {question?.options?.map((option: any) => (
-                                <div
-                                  key={option.id}
-                                  className="flex items-center"
-                                >
-                                  <input
-                                    type="radio"
-                                    id={`question_${question.id}_${option.id}`}
-                                    name={`question_${question.id}`}
-                                    value={option.option}
-                                    checked={existingAnswer === option.option}
-                                    onChange={handleOrganizationFormChange}
-                                    className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0 peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
-                                  />
-                                  <label
-                                    htmlFor={`question_${question.id}_${option.id}`}
-                                    className="ml-3 block openSans text-base text-gray-700"
-                                  >
-                                    {option.option}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <textarea
-                              name={`question_${question.id}`}
-                              value={existingAnswer}
-                              onChange={handleOrganizationFormChange}
-                              className={`w-full px-3 py-2 border ${
-                                organizationErrors[`question_${question.id}`]
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                              } rounded-md`}
-                              placeholder={`Enter your answer`}
-                              rows={3}
-                            />
-                          )}
-
-                          {organizationErrors[`question_${question.id}`] && (
-                            <p className="mt-1 text-sm text-red-600">
-                              {organizationErrors[`question_${question.id}`]}
                             </p>
                           )}
                         </div>
