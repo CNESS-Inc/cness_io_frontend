@@ -576,7 +576,7 @@ const UserProfileForm: React.FC = () => {
           </div>
 
           {/* ROW 1 */}
-          <div className="flex gap-[26px] w-full">
+          <div className="flex flex-col md:flex-row gap-[26px] w-full">
             <InputField
               label="First name"
               value={firstName}
@@ -590,7 +590,7 @@ const UserProfileForm: React.FC = () => {
           </div>
 
           {/* ROW 2 */}
-          <div className="flex gap-[26px] mt-4">
+          <div className="flex flex-col md:flex-row gap-[26px] mt-4">
             <InputField label="User ID" value={userId} onChange={setUserId} />
             <SelectField
               label="Country"  // Changed from "Location" to "Country"
@@ -605,7 +605,7 @@ const UserProfileForm: React.FC = () => {
             <TextAreaField label="About" value={about} onChange={setAbout} />
           </div>
 
-          <div className="flex gap-[26px] w-full">
+          <div className="flex flex-col md:flex-row gap-[26px] w-full">
             {/* Interests */}
             <div className="mt-4 w-full">
               <label className="text-[#64748B] font-medium text-sm font-[poppins] capitalize block mb-2">

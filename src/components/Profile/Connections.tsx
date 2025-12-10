@@ -31,7 +31,7 @@ const Connections: React.FC<ConnectionsListProps> = ({
   const renderConnection = (conn: Connection) => (
     <div
       key={conn.id}
-      className="flex items-center justify-between  h-[76px] border border-gray-200 rounded-xl p-3 bg-white"
+      className="flex items-center justify-between h-[76px] border border-gray-200 rounded-xl p-3 bg-white"
     >
       <div className="flex items-center gap-3">
         <img
@@ -72,19 +72,15 @@ const Connections: React.FC<ConnectionsListProps> = ({
     <div className="bg-white rounded-lg border border-gray-200 p-5">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">{title}</h3>
-        <button 
-        onClick={() => navigate('/dashboard/MyConnection')}
-        className="inline-flex items-center gap-2 rounded-full border bg-white border-gray-200 px-3 py-1.5 text-sm text-black hover:bg-gray-50 bg-color-white">
+        <button
+          onClick={() => navigate('/dashboard/MyConnection')}
+          className="inline-flex items-center gap-2 rounded-full border bg-white border-gray-200 px-3 py-1.5 text-sm text-black hover:bg-gray-50 bg-color-white">
           View all
         </button>
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-4">
-          {leftCol.map(renderConnection)}
-        </div>
-        <div className="flex flex-col gap-4">
-          {rightCol.map(renderConnection)}
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+        <div className="flex flex-col gap-3 lg:gap-4">{leftCol.map(renderConnection)}</div>
+        <div className="flex flex-col gap-3 lg:gap-4">{rightCol.map(renderConnection)}</div>
       </div>
     </div>
   );
