@@ -2,7 +2,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Image from "../../components/ui/Image";
-import { FaEnvelope, FaFacebookF, FaInstagram, FaMapMarkerAlt, FaPhoneAlt, FaYoutube } from "react-icons/fa";
+import {
+  FaEnvelope,
+  FaFacebookF,
+  FaInstagram,
+  FaMapMarkerAlt,
+  FaPhoneAlt,
+  FaYoutube,
+} from "react-icons/fa";
 import BackToTopButton from "./BackToTop";
 import vector from "../../assets/Vector.svg";
 import ContentModal from "../../components/ui/ContentModal";
@@ -133,8 +140,7 @@ CNESS LIFE Conscious Social Media Super App.
                   Follow Us
                 </h4>
                 <ul className="space-y-1 md:space-y-2">
-
-                       {/* <li>
+                  {/* <li>
                     <a
                       href=""
                       className="flex items-center text-[16px] leading-[160%] font-[400] font-openSans text-[#1E1E1E] hover:underline"
@@ -147,7 +153,7 @@ CNESS LIFE Conscious Social Media Super App.
                   <li>
                     <a
                       href="https://www.facebook.com/share/1A8V21L6Qj"
-                       target="_blank"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaFacebookF className="me-2 md:me-3" />
@@ -157,7 +163,7 @@ CNESS LIFE Conscious Social Media Super App.
                   <li>
                     <a
                       href="https://x.com/CnessInc"
-                       target="_blank"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <img
@@ -171,7 +177,7 @@ CNESS LIFE Conscious Social Media Super App.
                   <li>
                     <a
                       href="https://www.instagram.com/cness.inc"
-                       target="_blank"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaInstagram className="me-2 md:me-3" />
@@ -181,7 +187,7 @@ CNESS LIFE Conscious Social Media Super App.
                   <li>
                     <a
                       href="https://www.youtube.com/@CNESSinc"
-                       target="_blank"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaYoutube className="me-2 md:me-3" />
@@ -207,8 +213,8 @@ CNESS LIFE Conscious Social Media Super App.
                   </li>
                   <li>
                     <a
-                      href="https://x.com/CnessInc"
-                       target="_blank"
+                      href="mailto:Support@cness.io"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaEnvelope className="me-2 md:me-3" />
@@ -217,8 +223,8 @@ CNESS LIFE Conscious Social Media Super App.
                   </li>
                   <li>
                     <a
-                      href="https://www.instagram.com/cness.inc"
-                       target="_blank"
+                      href="tel:+1456334445"
+                      target="_blank"
                       className="flex items-center text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline"
                     >
                       <FaPhoneAlt className="me-2 md:me-3" />

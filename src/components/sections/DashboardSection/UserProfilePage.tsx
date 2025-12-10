@@ -45,7 +45,7 @@ const tabNames = [
   "Social Links",
   "Education",
   "Work",
-  "Public Profile Fields",
+  // "Public Profile Fields",
 ];
 
 const genderOptions = [

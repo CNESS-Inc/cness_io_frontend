@@ -146,64 +146,64 @@ const BecomePartner = () => {
     boolean | null
   >(null);
 
-const getFieldError = (fieldName: string, value: string): string | null => {
-  const validations: { [key: string]: (val: string) => string | null } = {
-    organization_name: (val) => {
-      if (!val.trim()) return "Organization name is required.";
-      if (val.trim().length < 2)
-        return "Organization name must be at least 2 characters.";
-      if (!/^[A-Za-z0-9&.,'()\- ]+$/.test(val.trim()))
-        return "Only letters, numbers, and basic punctuation are allowed.";
-      return null;
-    },
+  const getFieldError = (fieldName: string, value: string): string | null => {
+    const validations: { [key: string]: (val: string) => string | null } = {
+      organization_name: (val) => {
+        if (!val.trim()) return "Organization name is required.";
+        if (val.trim().length < 2)
+          return "Organization name must be at least 2 characters.";
+        if (!/^[A-Za-z0-9&.,'()\- ]+$/.test(val.trim()))
+          return "Only letters, numbers, and basic punctuation are allowed.";
+        return null;
+      },
 
-    contact_person_name: (val) => {
-      if (!val.trim()) return "Contact person name is required.";
-      if (val.trim().length < 2)
-        return "Contact person name must be at least 2 characters.";
-      if (!/^[A-Za-z\s.'-]+$/.test(val.trim()))
-        return "Only letters, spaces, and basic punctuation are allowed.";
-      return null;
-    },
+      contact_person_name: (val) => {
+        if (!val.trim()) return "Contact person name is required.";
+        if (val.trim().length < 2)
+          return "Contact person name must be at least 2 characters.";
+        if (!/^[A-Za-z\s.'-]+$/.test(val.trim()))
+          return "Only letters, spaces, and basic punctuation are allowed.";
+        return null;
+      },
 
-    email: (val) =>
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? "Invalid email format" : null,
+      email: (val) =>
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? "Invalid email format" : null,
 
-    phone_number: (val) =>
-      val.replace(/\D/g, "").length < 7 ? "At least 7 digits required" : null,
+      phone_number: (val) =>
+        val.replace(/\D/g, "").length < 7 ? "At least 7 digits required" : null,
 
-    industry_sector: (val) =>
-      val.trim().length < 2 ? "Must be at least 2 characters" : null,
+      industry_sector: (val) =>
+        val.trim().length < 2 ? "Must be at least 2 characters" : null,
 
-    website_link: (val) => {
-      if (val.trim() === "") return null; // Optional
-      return !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$/.test(
-        val.trim()
-      )
-        ? "Please enter a valid website URL"
-        : null;
-    },
+      website_link: (val) => {
+        if (val.trim() === "") return null; // Optional
+        return !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$/.test(
+          val.trim()
+        )
+          ? "Please enter a valid website URL"
+          : null;
+      },
 
-    about: (val) => {
-      if (val.trim().length < 50) return "At least 50 characters required.";
-      if (val.trim().length > 2000) return "Maximum 2000 characters allowed.";
-      return null;
-    },
+      about: (val) => {
+        if (val.trim().length < 50) return "At least 50 characters required.";
+        if (val.trim().length > 2000) return "Maximum 2000 characters allowed.";
+        return null;
+      },
 
-    reason_to_partner: (val) =>
-      val.trim().length < 20 ? "At least 20 characters required." : null,
-    
-    organization_size: (val) => {
-      if (!val.trim()) return "Please specify your organization size.";
-      return null;
-    },
+      reason_to_partner: (val) =>
+        val.trim().length < 20 ? "At least 20 characters required." : null,
 
-    areas_of_collabration: (val) =>
-      val.trim().length < 2 ? "Please specify areas of collaboration." : null,
+      organization_size: (val) => {
+        if (!val.trim()) return "Please specify your organization size.";
+        return null;
+      },
+
+      areas_of_collabration: (val) =>
+        val.trim().length < 2 ? "Please specify areas of collaboration." : null,
+    };
+
+    return validations[fieldName]?.(value) || null;
   };
-
-  return validations[fieldName]?.(value) || null;
-};
 
   const handleSelectChange: React.ChangeEventHandler<HTMLSelectElement> = (
     e
@@ -367,7 +367,7 @@ const getFieldError = (fieldName: string, value: string): string | null => {
           areas_of_collabration: "",
           status: "pending",
         });
-        await fetchSubmit()
+        await fetchSubmit();
         setFieldErrors({});
         setCurrentStep(2);
       } else {
@@ -456,13 +456,13 @@ const getFieldError = (fieldName: string, value: string): string | null => {
           >
             <div className="flex flex-col lg:flex-row justify-between items-stretch gap-5">
               <div className="w-full lg:w-1/3 py-[30px] px-[26px] gap-6 bg-white rounded-[40px]">
-                <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[42px] lg:text-3xl xl:text-[42px] md:leading-[54px] lg:leading-[40px] xl:leading-[54px] text-wrap">
+                <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[42px] lg:text-3xl xl:text-[42px] md:leading-[54px] lg:leading-10 xl:leading-[54px] text-wrap">
                   <span className="text-[#1A1A1A]">Grow With Purpose. </span>
-                  <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent block">
+                  <span className="bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent block">
                     Partner With CNESS.
                   </span>
                 </h1>
-                <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-light text-[#242424] leading-[24px]">
+                <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-light text-[#242424] leading-6">
                   Join hands with us to embed conscious practices in
                   organizations and communities. As a CNESS Partner, you gain
                   visibility, credibility, and the chance to co-create global
@@ -470,7 +470,7 @@ const getFieldError = (fieldName: string, value: string): string | null => {
                 </h5>
                 <div className="pt-6">
                   <button
-                    className="py-4 px-5 font-['Open_Sans',Helvetica] text-black font-medium text-sm text-white rounded-full"
+                    className="py-4 px-5 font-['Open_Sans',Helvetica] text-black font-medium text-sm rounded-full"
                     onClick={() => {
                       const element = document.getElementById("apply_partner");
                       if (element) {
@@ -500,11 +500,11 @@ const getFieldError = (fieldName: string, value: string): string | null => {
           <div className="py-12 flex flex-col justify-center items-center mx-auto bg-white">
             <h1 className="text-center font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px]">
               <span className="text-black">Why Become a </span>
-              <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              <span className="bg-linear-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 CNESS Partner
               </span>
             </h1>
-            <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#242424] leading-[24px]">
+            <h5 className="py-3 px-5 sm:px-10 md:px-20 font-['Open_Sans',Helvetica] font-light text-base text-center text-[#242424] leading-6">
               CNESS Partners are consultancies, agencies, and specialists who
               extend the power of the CNESS framework into organizations. From
               HR and DEI firms to ESG consultants and leadership coaches,
@@ -519,12 +519,12 @@ const getFieldError = (fieldName: string, value: string): string | null => {
           <div className="w-full flex mx-auto flex-col justify-center items-center bg-[#F5F7F9] pt-10 pb-[86px] px-5 sm:px-14">
             <h1 className="font-['Poppins',Helvetica] text-center font-medium text-2xl md:text-[32px] sm:leading-[54px]">
               <span className="text-black">What does a </span>
-              <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              <span className="bg-linear-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 Partner do?
               </span>
             </h1>
             <div className="w-full pt-10">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[40px]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
                 {features.map((item) => (
                   <div
                     key={item.id}
@@ -559,10 +559,10 @@ const getFieldError = (fieldName: string, value: string): string | null => {
           </div>
 
           <div className="flex justify-center items-center mx-auto w-full bg-white">
-            <div className="mx-auto w-full px-[20px] md:px-[60px] pb-[60px] pt-[50px] sm:py-[86px]">
+            <div className="mx-auto w-full px-5 md:px-[60px] pb-[60px] pt-[50px] sm:py-[86px]">
               <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
                 <span className="text-black">Why It Pays to </span>
-                <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                   Partner
                 </span>
               </h1>
@@ -581,12 +581,12 @@ const getFieldError = (fieldName: string, value: string): string | null => {
               <div className="w-full lg:w-3/5 flex flex-col justify-start items-start text-start">
                 <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] sm:leading-[54px] text-center">
                   <span className="text-black">Who can become a </span>
-                  <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                     Partner?
                   </span>
                 </h1>
 
-                <ul className="font-['Open_Sans'] mt-6 list-disc pl-5 text-[#242424] text-base font-light leading-[32px] space-y-1">
+                <ul className="font-['Open_Sans'] mt-6 list-disc pl-5 text-[#242424] text-base font-light leading-8 space-y-1">
                   <li>
                     Organizations with strong consulting or training backgrounds
                     (HR, DEI, ESG, leadership, or culture development).
@@ -613,9 +613,9 @@ const getFieldError = (fieldName: string, value: string): string | null => {
 
           <section className="hidden sm:flex flex-col bg-white px-6 sm:px-10 md:px-16 lg:px-22 py-[60px] mb-0">
             <div className="text-center mb-10">
-              <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-[40px] lg:leading-[54px] tracking-[-0.02em]">
+              <h2 className="font-['Poppins',Helvetica] font-medium text-2xl sm:text-3xl lg:text-[32px] leading-snug sm:leading-10 lg:leading-[54px] tracking-[-0.02em]">
                 Your Path to Becoming a{" "}
-                <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                   Partner
                 </span>
               </h2>
@@ -623,7 +623,7 @@ const getFieldError = (fieldName: string, value: string): string | null => {
 
             <div className="relative flex justify-between">
               <div
-                className="absolute top-5 left-[calc(theme(spacing.5))] right-[calc(theme(spacing.5))] h-1 bg-[#6340FF]"
+                className="absolute top-5 left-[calc(--spacing(5))] right-[calc(--spacing(5))] h-1 bg-[#6340FF]"
                 style={{
                   left: "calc(5.25rem)",
                   right: "calc(5.25rem)",
@@ -678,7 +678,7 @@ const getFieldError = (fieldName: string, value: string): string | null => {
             className="w-full bg-[#F5F7F9] pb-10 sm:py-10 px-5 lg:px-10"
           >
             <h1 className="pb-10 font-['Poppins',Helvetica] font-medium text-2xl md:text-[32px] leading-[54px] text-center">
-              <span className="bg-gradient-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              <span className="bg-linear-to-b from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 Application Form
               </span>
             </h1>
@@ -731,7 +731,7 @@ const getFieldError = (fieldName: string, value: string): string | null => {
                 </>
               ) : (
                 <>
-                  <div className="rounded-[25px] bg-white p-[20px] lg:p-[30px] flex flex-col">
+                  <div className="rounded-[25px] bg-white p-5 lg:p-[30px] flex flex-col">
                     <form
                       className="w-full flex flex-col flex-1"
                       onSubmit={handleSubmit}
@@ -900,28 +900,38 @@ const getFieldError = (fieldName: string, value: string): string | null => {
                             </span>
                           }
                         >
-                          {/* <Input
-                            name="organization_size"
-                            placeholder="Number of employees"
-                            value={data.organization_size}
-                            onChange={handleChange}
-                            error={
-                              shouldShowError("organization_size")
-                                ? fieldErrors.organization_size
-                                : null
-                            }
-                          /> */}
-
                           <div className="relative group">
                             <select
                               name="organization_size"
                               value={data.organization_size}
-                              onChange={handleSelectChange} // Use the new handler
-                              className={`w-full appearance-none py-[15px] px-[12px] border border-[#CBD0DC] rounded-sm border-2 border-[#EEEEEE] bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${
+                              onChange={handleSelectChange}
+                              className={`w-full appearance-none py-[15px] px-3 rounded-sm border-2 bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-5 ${
+                                shouldShowError("organization_size")
+                                  ? "border-red-500 focus:border-red-500"
+                                  : "border-[#EEEEEE]"
+                              } ${
                                 data.organization_size
                                   ? "text-black"
                                   : "text-[#6E7179]"
                               }`}
+                              ref={(el) => {
+                                // This ref ensures the element is available for focus
+                                if (
+                                  shouldShowError("organization_size") &&
+                                  el
+                                ) {
+                                  // Set a flag to indicate this field should be focused
+                                  const shouldFocus = sessionStorage.getItem(
+                                    "focusOrganizationSize"
+                                  );
+                                  if (shouldFocus) {
+                                    el.focus();
+                                    sessionStorage.removeItem(
+                                      "focusOrganizationSize"
+                                    );
+                                  }
+                                }
+                              }}
                             >
                               <option value="" disabled>
                                 Select your organization
@@ -935,7 +945,11 @@ const getFieldError = (fieldName: string, value: string): string | null => {
                             {/* Custom dropdown arrow */}
                             <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center px-2 text-gray-700 border-l border-gray-300 h-fit top-1/2 -translate-y-1/2">
                               <svg
-                                className="fill-current text-[#ccc] h-5 w-5 group-focus-within:text-black"
+                                className={`fill-current h-5 w-5 group-focus-within:text-black ${
+                                  shouldShowError("organization_size")
+                                    ? "text-red-500"
+                                    : "text-[#ccc]"
+                                }`}
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 20 20"
                               >
@@ -943,6 +957,12 @@ const getFieldError = (fieldName: string, value: string): string | null => {
                               </svg>
                             </div>
                           </div>
+                          {shouldShowError("organization_size") &&
+                            fieldErrors.organization_size && (
+                              <span className="text-red-500 text-xs mt-1 block">
+                                {fieldErrors.organization_size}
+                              </span>
+                            )}
                         </Field>
                         <Field
                           label={
@@ -982,7 +1002,7 @@ const getFieldError = (fieldName: string, value: string): string | null => {
                         <button
                           type="submit"
                           disabled={isSubmitting}
-                          className="rounded-full px-[20px] py-[10px] text-base font-normal text-white disabled:opacity-60"
+                          className="rounded-full px-5 py-2.5 text-base font-normal text-white disabled:opacity-60"
                           style={{
                             background:
                               "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
@@ -1027,10 +1047,10 @@ function Card({
         <img src={icon} className="w-[34px] h-[34px]" />
       </div>
 
-      <h3 className="text-lg font-poppins font-medium text-[#222224] leading-[24px]">
+      <h3 className="text-lg font-poppins font-medium text-[#222224] leading-6">
         {title}
       </h3>
-      <p className="mt-2 font-['Open_Sans'] text-center text-base font-light leading-[24px] text-[#242424]">
+      <p className="mt-2 font-['Open_Sans'] text-center text-base font-light leading-6 text-[#242424]">
         {body}
       </p>
     </div>
@@ -1080,7 +1100,7 @@ function Input({
         type={type}
         placeholder={placeholder}
         required={required}
-        className={`w-full h-full rounded-sm border-2 bg-white pt-[15px] px-[12px] pb-[17px] text-[14px] outline-none placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${
+        className={`w-full h-full rounded-sm border-2 bg-white pt-[15px] px-3 pb-[17px] text-[14px] outline-none placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-5 ${
           error ? "border-red-500" : "border-[#EEEEEE] focus:border-[#C9C9FF]"
         }`}
       />
@@ -1112,7 +1132,7 @@ function TextArea({
         onChange={onChange}
         rows={4}
         placeholder={placeholder}
-        className={`h-full w-full resize-none rounded-sm border-2 bg-white p-[10px] text-[14px] outline-none placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-[20px] ${
+        className={`h-full w-full resize-none rounded-sm border-2 bg-white p-2.5 text-[14px] outline-none placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-5 ${
           error ? "border-red-500" : "border-[#EEEEEE] focus:border-[#C9C9FF]"
         }`}
       />
@@ -1155,7 +1175,7 @@ function PhoneInputField({
           placeholder={placeholder}
           required
           className="
-            h-full bg-white pt-[7px] pb-[8px] text-[14px] outline-none
+            h-full bg-white pt-[7px] pb-2 text-[14px] outline-none
           "
           inputClassName="
             flex-1 !border-0 outline-none !p-0 !m-0

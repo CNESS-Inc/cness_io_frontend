@@ -39,7 +39,7 @@ const FriendCard: React.FC<FriendCardProps> = ({
   const profileImage = image && image.trim() !== "" ? image : "/profile.png";
 
   return (
-    <div className="flex-none bg-white w-full lg:max-w-[100%] max-w-[263px] h-[291px] rounded-[12px] p-[12px] pb-[18px] shadow border border-gray-200 mx-auto">
+    <div className="flex-none bg-white w-full lg:max-w-full max-w-[263px] h-[291px] rounded-xl p-3 pb-[18px] shadow border border-gray-200 mx-auto">
       {/* Image */}
       <div className="relative w-full h-[209px] xs:h-[160px]">
         <img
@@ -53,7 +53,7 @@ const FriendCard: React.FC<FriendCardProps> = ({
               : profileImage
           }
           alt={name}
-          className="w-full h-full object-cover rounded-[12px]"
+          className="w-full h-full object-cover rounded-xl"
         />
         <button
           onClick={onMaximize}

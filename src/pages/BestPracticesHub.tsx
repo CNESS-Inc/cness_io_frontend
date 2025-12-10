@@ -26,6 +26,7 @@ import {
 } from "../components/ui/DashboardCard";
 import DOMPurify from "dompurify";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 const truncateText = (text: string, maxLength: number): string => {
   if (!text) return "";
@@ -84,6 +85,10 @@ export default function BestPracticesHub() {
   const [interest, setInterestData] = useState<any[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
+
+   const dropdownRef = useClickOutside(() => {
+    setIsDropdownOpen(false);
+  });
 
   // Get profession title from query params and find matching ID
   const professionTitleFromParams = searchParams.get("profession") || "";
@@ -882,7 +887,7 @@ export default function BestPracticesHub() {
                   />
 
                   {/* Right purple pill (dropdown trigger) */}
-                  <div className="relative shrink-0">
+                  <div className="relative shrink-0" ref={dropdownRef}>
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                       className="flex items-center gap-1 sm:gap-2 bg-[#7077FE] text-white font-semibold rounded-full px-3 sm:px-4 py-2 h-full focus:outline-none whitespace-nowrap min-h-11"
