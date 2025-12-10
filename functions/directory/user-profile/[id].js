@@ -18,6 +18,7 @@ function isBot(ua = "") {
 
 export async function onRequest({ params, request, env }) {
     const userAgent = request.headers.get("user-agent") || "";
+    console.log('userAgent', userAgent)
     const url = new URL(request.url);
     const origin = request.headers.get("origin") || "";
 
