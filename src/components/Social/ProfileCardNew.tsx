@@ -186,22 +186,22 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
   const postCount = profileData.post_count.toString();
 
   return (
-    <div className="p-6 pb-5 bg-white rounded-2xl ">
+    <div className="p-4 sm:p-6 pb-5 bg-white rounded-2xl">
       {/* TOP SECTION */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <div className="relative w-[120px] h-20 shrink-0 flex items-center">
             {/* Badge image (background) - you can update this with actual badge logic */}
 
             <div className="absolute top-[50%] translate-y-[-50%] right-1.5 w-[70px] h-[70px] object-contain z-0 border flex justify-center items-center border-gray-400 rounded-full">
-            <img
-              src={badgeImg}
-              alt="Badge"
-              className="w-[35px] h-[35px] object-contain z-0"
-            />
+              <img
+                src={badgeImg}
+                alt="Badge"
+                className="w-[35px] h-[35px] object-contain z-0"
+              />
 
             </div>
-            
+
 
             {/* Profile image (front) */}
             <img
@@ -234,7 +234,7 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
                 className="text-sm text-purple-600 font-jakarta cursor-pointer mt-1"
                 style={{
                   lineHeight: "100%",
-                  letterSpacing: "0", 
+                  letterSpacing: "0",
                 }}
               >
                 {postCount} posts
@@ -245,7 +245,7 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
 
         <button
           onClick={() => navigate(`/dashboard/Profile/editprofile`)}
-          className="relative z-50 bg-[#7077FE] hover:bg-[#7077FE] text-white px-6 py-2 rounded-full flex items-center gap-2 text-sm font-semibold"
+          className="bg-[#7077FE] text-white px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 text-sm font-semibold"
         >
           <Pencil className="w-4 h-4" />
           Edit Profile
@@ -320,62 +320,56 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
       )}
 
       {/* Tabs */}
-      <div
-        className="flex border-t border-gray-200"
-        style={{
-          height: "50px",
-          gap: "20px",
-          paddingTop: "8px",
-        }}
-      >
-        {tabs.map((tab) => (
-          <button
-            key={tab.label}
-            onClick={() => onTabChange(tab.label)}
-            className="relative transition-colors flex items-center justify-center gap-2"
-            style={{
-              width: "161.66px",
-              height: "60px",
-              paddingTop: "6px",
-              paddingRight: "12px",
-              paddingBottom: "12px",
-              paddingLeft: "12px",
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 500,
-              fontSize: "14px",
-              fontStyle: "normal",
-              lineHeight: "100%",
-              letterSpacing: "0",
-              color: activeTab === tab.label ? "#9747FF" : "#374151",
-            }}
-          >
-            {activeTab === tab.label && (
-              <span
-                aria-hidden
-                className="absolute top-0 left-0 right-0 bottom-0 rounded-t-xl
-              bg-linear-to-b from-[#FFFFFF] via-[#F5F2FF] to-[rgba(151,71,255,0.14)] z-0"
-              />
-            )}
-            <span
-              className="relative z-10 flex items-center gap-3"
+      <div className="flex justify-start border-t border-gray-200 pt-2">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+          {tabs.map((tab) => (
+            <button
+              key={tab.label}
+              onClick={() => onTabChange(tab.label)}
+              className="relative transition-colors flex items-center justify-center gap-2 h-[50px] px-3 py-2"
               style={{
-                color: "#222224",
+                width: "161.66px",
+                height: "60px",
+                paddingTop: "6px",
+                paddingRight: "12px",
+                paddingBottom: "12px",
+                paddingLeft: "12px",
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 fontWeight: 500,
-                fontStyle: "normal",
                 fontSize: "14px",
+                fontStyle: "normal",
                 lineHeight: "100%",
                 letterSpacing: "0",
+                color: activeTab === tab.label ? "#9747FF" : "#374151",
               }}
             >
-              {tab.icon}
-              {tab.label}
-            </span>
-            {activeTab === tab.label && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#9747FF] rounded-full" />
-            )}
-          </button>
-        ))}
+              {activeTab === tab.label && (
+                <span
+                  aria-hidden
+                  className="absolute top-0 left-0 right-0 bottom-0 rounded-t-xl bg-linear-to-b from-[#FFFFFF] via-[#F5F2FF] to-[rgba(151,71,255,0.14)] z-0"
+                />
+              )}
+              <span
+                className="relative z-10 flex items-center gap-2 sm:gap-3"
+                style={{
+                  color: "#222224",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontWeight: 500,
+                  fontStyle: "normal",
+                  fontSize: "14px",
+                  lineHeight: "100%",
+                  letterSpacing: "0",
+                }}
+              >
+                {tab.icon}
+                {tab.label}
+              </span>
+              {activeTab === tab.label && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#9747FF] rounded-full" />
+              )}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

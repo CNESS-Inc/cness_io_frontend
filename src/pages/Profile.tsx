@@ -11,7 +11,7 @@ import {
   Copy, // Posts & Collections
   PlayCircle, // Reels
   Users, // Connections
-   AtSign,      // About
+  AtSign,      // About
   CirclePlay, // empty state icon
 } from "lucide-react";
 import MyPost from "../components/Profile/Mypost";
@@ -81,9 +81,9 @@ const profiles = [
   {
     profileImage:
       !userProfilePicture ||
-      userProfilePicture === "null" ||
-      userProfilePicture === "undefined" ||
-      !userProfilePicture.startsWith("http")
+        userProfilePicture === "null" ||
+        userProfilePicture === "undefined" ||
+        !userProfilePicture.startsWith("http")
         ? "/profile.png"
         : userProfilePicture,
     name: fullName,
@@ -255,7 +255,7 @@ export default function Profile() {
         "margaret_name",
         res?.data?.data?.user.margaret_name
       );
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -613,8 +613,8 @@ export default function Profile() {
   }, [activeTab, boards.length]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f9f9fb] pt-2 px-2 sm:px-2 md:px-1 lg:px-1">
-     {/* {profiles.map((profile, index) => (
+    <div className="flex flex-col min-h-screen bg-[#f9f9fb] py-2 px-2 sm:px-3 md:px-4 lg:px-6">
+      {/* {profiles.map((profile, index) => (
         <ProfileCard
           key={index}
           {...profile}
@@ -631,27 +631,27 @@ export default function Profile() {
           onTabChange={setActiveTab}
         />
       ))}*/}
-   
-{profiles.map((profile, index) => (
-  <ProfileCardNew
-    key={index}
-    {...profile}
-    onOpenFollowing={() => {
-      setOpenFollowing(true);
-      fetchFollowingUsers();
-    }}
-    onOpenFollowers={() => {
-      setopenfollowers(true);
-      fetchFollowerUsers();
-    }}
-    activeTab={activeTab}
-    onTabChange={setActiveTab}
-  />
-))}
+
+      {profiles.map((profile, index) => (
+        <ProfileCardNew
+          key={index}
+          {...profile}
+          onOpenFollowing={() => {
+            setOpenFollowing(true);
+            fetchFollowingUsers();
+          }}
+          onOpenFollowers={() => {
+            setopenfollowers(true);
+            fetchFollowerUsers();
+          }}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+      ))}
       {/* Content */}
-      <div className="flex-1 py-5">
+      <div className="flex-1 py-4 sm:py-5">
         {activeTab === "Conscious Acts" && (
-          <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
             {userPosts.length ? (
               userPosts.map((post, i) => (
                 <MyPost
@@ -681,7 +681,7 @@ export default function Profile() {
                 />
               ))
             ) : (
-              <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-16 text-center bg-[#F5F2FF]">
+              <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
                 <div className="flex items-center gap-2 text-[#575FFF]">
                   <CirclePlay className="h-5 w-5" strokeWidth={2} />
                   <span className="text-sm">No Post yet</span>
@@ -743,13 +743,13 @@ export default function Profile() {
         {activeTab === "Collections" &&
           (collectionItems.length === 0 ? (
             // Empty state without any button
-            <div className="border border-dashed border-[#C4B5FD] rounded-xl bg-[#F8F6FF] py-12 flex items-center justify-center">
+            <div className="border border-dashed border-[#C4B5FD] rounded-xl bg-[#F8F6FF] py-8 sm:py-12 flex items-center justify-center">
               <p className="text-sm text-gray-500">No collections yet</p>
             </div>
           ) : (
             // Collections exist: header + list
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-3">
                 <p className="text-sm text-gray-500">
                   Only You Can See What You’ve Saved
                 </p>
@@ -766,7 +766,7 @@ export default function Profile() {
                 }}
               /> */}
 
-              <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
                 {collectionItems.length ? (
                   collectionItems.map((post, i) => (
                     <>
@@ -804,7 +804,7 @@ export default function Profile() {
                     </>
                   ))
                 ) : (
-                  <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-16 text-center bg-[#F5F2FF]">
+                  <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
                     <div className="flex items-center gap-2 text-[#575FFF]">
                       <CirclePlay className="h-5 w-5" strokeWidth={2} />
                       <span className="text-sm">No Post yet</span>
@@ -816,7 +816,7 @@ export default function Profile() {
           ))}
 
         {activeTab === "Inspiration Reels" && (
-          <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
             {userReels.length ? (
               userReels.map((reel, i) => (
                 <MyPost
@@ -842,7 +842,7 @@ export default function Profile() {
                 />
               ))
             ) : (
-              <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-16 text-center bg-[#F5F2FF]">
+              <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
                 <div className="flex items-center gap-2 text-[#575FFF]">
                   <CirclePlay className="h-5 w-5" strokeWidth={2} />
                   <span className="text-sm">No Reels yet</span>
@@ -861,9 +861,9 @@ export default function Profile() {
                 username: f.username,
                 profileImage:
                   !f.profile_picture ||
-                  f.profile_picture === "null" ||
-                  f.profile_picture === "undefined" ||
-                  !f.profile_picture.startsWith("http")
+                    f.profile_picture === "null" ||
+                    f.profile_picture === "undefined" ||
+                    !f.profile_picture.startsWith("http")
                     ? "/profile.png"
                     : f.profile_picture,
               }))}
@@ -891,9 +891,9 @@ export default function Profile() {
           handle: user.username,
           avatar:
             !user.profile_picture ||
-            user.profile_picture === "null" ||
-            user.profile_picture === "undefined" ||
-            !user.profile_picture.startsWith("http")
+              user.profile_picture === "null" ||
+              user.profile_picture === "undefined" ||
+              !user.profile_picture.startsWith("http")
               ? "/profile.png"
               : user.profile_picture,
         }))}
@@ -908,9 +908,9 @@ export default function Profile() {
           handle: user.username,
           avatar:
             !user.profile_picture ||
-            user.profile_picture === "null" ||
-            user.profile_picture === "undefined" ||
-            !user.profile_picture.startsWith("http")
+              user.profile_picture === "null" ||
+              user.profile_picture === "undefined" ||
+              !user.profile_picture.startsWith("http")
               ? "/profile.png"
               : user.profile_picture,
           isFollowing: user.is_following,
