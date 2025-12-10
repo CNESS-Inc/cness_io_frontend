@@ -1,18 +1,18 @@
-const BOT_UAS = [
-    "twitterbot",
-    "facebookexternalhit",
-    "linkedinbot",
-    "whatsapp",
-    "slackbot",
-    "discordbot",
-    "telegrambot",
-    "curl",
-];
+// const BOT_UAS = [
+//     "twitterbot",
+//     "facebookexternalhit",
+//     "linkedinbot",
+//     "whatsapp",
+//     "slackbot",
+//     "discordbot",
+//     "telegrambot",
+//     "curl",
+// ];
 
-function isBot(ua = "") {
-    ua = ua.toLowerCase();
-    return BOT_UAS.some((b) => ua.includes(b));
-}
+// function isBot(ua = "") {
+//     ua = ua.toLowerCase();
+//     return BOT_UAS.some((b) => ua.includes(b));
+// }
 
 export async function onRequest({ params, request, env }) {
     const userAgent = request.headers.get("user-agent") || "";
@@ -20,9 +20,9 @@ export async function onRequest({ params, request, env }) {
 const origin = request.headers.get("origin") || "";
 console.log("🟠 Incoming Origin:", origin);
     // 1) Normal browser → return the SPA normally
-    if (!isBot(userAgent)) {
-        return env.ASSETS.fetch(request); // <-- THIS FIXES YOUR ERROR
-    }
+    // if (!isBot(userAgent)) {
+    //     return env.ASSETS.fetch(request); // <-- THIS FIXES YOUR ERROR
+    // }
 
     // 2) Bot → return preview HTML
     let profile = null;
@@ -56,7 +56,7 @@ console.log("🟠 Incoming Origin:", origin);
 
     const image =
         profile?.profile_picture ??
-        "https://cdn.cness.io/default-avatar.svg";
+        "https://cdn.cness.io/default_image.jpeg";
 
     const description = `Check out ${name}'s profile on CNESS`;
 
