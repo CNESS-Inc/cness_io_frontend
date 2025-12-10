@@ -19,14 +19,6 @@ const Certification: React.FC = () => {
   useEffect(() => {
     if (location.state?.plans) {
       setPlansData(location.state.plans || []);
-
-      if (location.state.assessmentSubmitted) {
-        showToast({
-          message: "Assessment submitted successfully!",
-          type: "success",
-          duration: 4000,
-        });
-      }
     }
   }, [location]);
 
