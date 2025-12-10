@@ -416,7 +416,7 @@ export default function DashboardDirectory() {
 
   return (
     <>
-      <div className="px-4 sm:px-6 lg:px-1">
+      <div className="px-1">
         {/* Hero Section - Mobile Optimized */}
         {/* <section className="relative h-auto max-w-full sm:h-[350px] md:h-[400px] lg:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 sm:mt-4 flex items-center justify-center"> */}
         <section className="relative mx-auto mt-2 sm:mt-4 overflow-hidden rounded-xl">
@@ -428,10 +428,10 @@ export default function DashboardDirectory() {
           />
 
           {/* CENTER CONTENT - Mobile Responsive */}
-          <div className="relative z-10 flex flex-col items-center justify-center text-center pb-8 sm:pb-10 px-4 sm:px-6 sm:h-[350px] md:h-[400px] lg:h-[540px] 2xl:h-[650px]">
+          <div className="relative z-10 flex flex-col items-center justify-center text-center pb-8 sm:pb-10 px-4 sm:px-6 sm:h-[350px] md:h-[470px] 2xl:h-[570px]">
             <h1
               className="text-center font-[poppins] font-semibold mb-4 sm:mb-6
-                text-2xl sm:text-3xl md:text-[32px] leading-[1.3] sm:leading-[1.4]
+                text-2xl sm:text-3xl lg:text-[32px] leading-[1.3] sm:leading-[1.4]
                 bg-linear-to-b from-[#4E4E4E] to-[#232323] 
                 bg-clip-text text-transparent"
             >
@@ -444,7 +444,7 @@ export default function DashboardDirectory() {
             <div className="w-full flex flex-col gap-2 justify-center items-center mb-4 sm:mb-6">
               <div
                 className="w-full bg-white rounded-full sm:rounded-full
-                  flex items-center p-3 sm:p-0 sm:pl-5 h-auto sm:h-14 max-w-[650px] 2xl:max-w-[720px] border border-1 border-[#C6C1C1] justify-between"
+                  flex items-center p-3 sm:p-0 sm:pl-5 sm:pr-1 h-auto sm:h-14 max-w-[650px] 2xl:max-w-[720px] border border-1 border-[#C6C1C1] justify-between"
               >
                 <div className="flex items-center flex-1">
                   <span className="text-[#7077FE] mr-3 text-lg">

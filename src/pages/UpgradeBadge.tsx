@@ -350,9 +350,9 @@ const UpgradeBadge = () => {
             {scoreData?.cis_result?.length > 0 &&
             scoreData?.is_submitted_by_head ? (
               <div className="flex flex-wrap gap-2">
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                   <button
-                    className="bg-white border border-gray-200 text-[#64748B] text-sm font-medium px-4 sm:px-5 py-2 rounded-full shadow-md hover:shadow-lg transition-shadow w-full sm:w-auto"
+                    className="bg-white border border-gray-200 text-[#64748B] text-sm font-medium px-4 sm:px-5 py-2 rounded-full shadow-md hover:shadow-lg transition-shadow w-full sm:w-[104px]"
                     onClick={toggleMenu}
                   >
                     Share
@@ -418,7 +418,7 @@ const UpgradeBadge = () => {
                   )}
                 </div>
                 <button
-                  className="bg-[#FF6B81] text-white text-sm font-medium px-4 sm:px-5 py-2 rounded-full shadow-md hover:shadow-lg transition-shadow flex items-center justify-center gap-2 w-full sm:w-auto disabled:opacity-50"
+                  className="bg-[#FF6B81] text-white text-sm font-medium px-4 sm:px-5 py-2 rounded-full shadow-md hover:shadow-lg transition-shadow flex items-center justify-center gap-2 w-full sm:w-[104px] disabled:opacity-50"
                   onClick={handleReportDownload}
                   disabled={isGeneratingPDF}
                 >

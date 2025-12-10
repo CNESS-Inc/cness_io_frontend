@@ -464,7 +464,7 @@ export default function Affiliate() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-3 mt-2 px-1">
+    <div className="w-full flex flex-col gap-3 mt-2 px-1">
       <div className="flex gap-3">
         {tabs.map((tab) => (
           <button
@@ -489,32 +489,32 @@ export default function Affiliate() {
       </div>
       {activeTab === "overview" ? (
         <div className="w-full h-full flex flex-col gap-3">
-          <div className="flex flex-col gap-[24px] p-[24px] rounded-xl bg-white">
+          <div className="flex flex-col gap-[24px] p-3 sm:p-[24px] rounded-xl bg-white">
             <div className="flex flex-col gap-3">
-  <div className="flex items-center gap-2">
-    <h3 className="text-2xl font-semibold font-['Poppins',Helvetica] bg-[linear-gradient(90deg,#6340FF_0%,#D748EA_100%)] bg-clip-text text-transparent">
-      Your Affiliate
-    </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-2xl font-semibold font-['Poppins',Helvetica] bg-[linear-gradient(90deg,#6340FF_0%,#D748EA_100%)] bg-clip-text text-transparent">
+                  Your Affiliate
+                </h3>
 
-    {/* Tooltip Wrapper */}
-    <div className="relative group cursor-pointer">
-      <HelpCircle className="h-5 w-5 text-gray-400 hover:text-gray-700" />
+                {/* Tooltip Wrapper */}
+                <div className="relative group cursor-pointer">
+                  <HelpCircle className="h-5 w-5 text-gray-400 hover:text-gray-700" />
 
-      {/* Tooltip Content */}
-      <div className="absolute left-1/2 -translate-x-1/2 mt-4 hidden group-hover:block 
+                  {/* Tooltip Content */}
+                  <div className="absolute left-1/2 -translate-x-1/2 mt-4 hidden group-hover:block 
                       whitespace-nowrap bg-gray-900 text-white text-sm py-2 px-3 rounded shadow-lg z-10">
-Share CNESS with others and enjoy a 10% reward 
-<br></br>each time your referred users make a platform fee.
-      </div>
-    </div>
-  </div>
+                    Share CNESS with others and enjoy a 10% reward
+                    <br></br>each time your referred users make a platform fee.
+                  </div>
+                </div>
+              </div>
 
-  <p className="text-base font-normal text-[#7A7A7A] font-['Open_Sans',Helvetica]">
-    Monitor your affiliate income and handle your withdrawals efficiently.
-  </p>
-</div>
-            <div className="flex w-full h-full gap-3">
-              <div className="flex flex-col gap-6 relative w-full md:w-[55%] py-[24px] px-[32px] bg-[linear-gradient(96.64deg,#7077FE_0%,#CE8FFB_79.88%,#FFF2C0_158.59%)] border border-[#ECEEF2] rounded-xl">
+              <p className="text-base font-normal text-[#7A7A7A] font-['Open_Sans',Helvetica]">
+                Monitor your affiliate income and handle your withdrawals efficiently.
+              </p>
+            </div>
+            <div className="flex flex-col lg:flex-row w-full h-full gap-3">
+              <div className="flex flex-col gap-6 relative w-full lg:w-[55%] py-[24px] px-[32px] bg-[linear-gradient(96.64deg,#7077FE_0%,#CE8FFB_79.88%,#FFF2C0_158.59%)] border border-[#ECEEF2] rounded-xl">
                 <img
                   src={bg}
                   alt="affiliate bg"
@@ -526,7 +526,7 @@ Share CNESS with others and enjoy a 10% reward
                   </p>
                   <button
                     onClick={withdrawalRequest}
-                    className="bg-white py-3 px-[18px] flex gap-2 border border-[#ECEEF2] rounded-full shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)] cursor-pointer">
+                    className="bg-white py-3 px-2 sm:px-[18px] flex gap-1 sm:gap-2 border border-[#ECEEF2] rounded-full shadow-[0px_4px_8px_0px_rgba(0,0,0,0.1)] cursor-pointer">
                     <img
                       src={fund}
                       alt="fund icon"
@@ -537,7 +537,7 @@ Share CNESS with others and enjoy a 10% reward
                     </span>
                   </button>
                 </div>
-                <h3 className="text-[42px] font-bold font-['Open_Sans',Helvetica] text-white">
+                <h3 className="text-2xl sm:text-[42px] font-bold font-['Open_Sans',Helvetica] text-white">
                   ${referreEarning}
                 </h3>
                 <div className="w-full border border-[#ECEEF2]"></div>
@@ -545,7 +545,7 @@ Share CNESS with others and enjoy a 10% reward
                   Pending: ${pendingAmount}
                 </p>
               </div>
-              <div className="w-full md:w-[45%] bg-white border border-[#ECEEF2] p-3 rounded-xl flex flex-col gap-5">
+              <div className="w-full lg:w-[45%] bg-white border border-[#ECEEF2] p-3 rounded-xl flex flex-col gap-5">
                 <div className="flex items-center justify-between pb-3 border-b border-[rgba(0,0,0,0.1)]">
                   <div className="flex items-center gap-3.5">
                     <img
@@ -577,7 +577,7 @@ Share CNESS with others and enjoy a 10% reward
                       Code :
                     </p>
                     <div className="flex justify-between items-center">
-                      <h3 className="text-2xl font-semibold font-['Poppins',Helvetica] text-[#7077FE]">
+                      <h3 className="text-xl sm:text-2xl font-semibold font-['Poppins',Helvetica] text-[#7077FE]">
                         {currentReferralCode}
                       </h3>
                       <div className="py-[8px] flex gap-[11px]">
@@ -611,14 +611,14 @@ Share CNESS with others and enjoy a 10% reward
                   <p className="font-medium text-sm text-[#242424] font-['Poppins',Helvetica]">
                     Affiliate Link:
                   </p>
-                  <p className="font-medium text-sm text-[#64748B] font-['Poppins',Helvetica]">
+                  <p className="font-medium text-xs sm:text-sm text-[#64748B] font-['Poppins',Helvetica]">
                     {baseUrl}/sign-up?referral_code={currentReferralCode}
                   </p>
                 </div>
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {cardData.map((card, idx) => (
               <div
                 key={idx}
@@ -635,7 +635,7 @@ Share CNESS with others and enjoy a 10% reward
                   </p>
                 </div>
                 <div className="px-[8px] flex flex-col gap-[18px]">
-                  <h3 className="text-[32px] font-semibold font-['Poppins',Helvetica] text-[#222224]">
+                  <h3 className="text-xl sm:text-[32px] font-semibold font-['Poppins',Helvetica] text-[#222224]">
                     {card.value}
                   </h3>
                   <p
@@ -671,16 +671,16 @@ Share CNESS with others and enjoy a 10% reward
                 <p className="text-[#7A7A7A] font-['Open_Sans',Helvetica]">
                   No payment methods added yet
                 </p>
-              <button
-  onClick={() => setIsAddPaymentModalOpen(true)}
-  className="rounded-full px-[20px] py-[10px] text-base font-normal text-white disabled:opacity-60"
+                <button
+                  onClick={() => setIsAddPaymentModalOpen(true)}
+                  className="rounded-full px-[20px] py-[10px] text-base font-normal text-white disabled:opacity-60"
                   style={{
                     background:
                       "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
                   }}
->
-  Add Your First Payment Method
-</button>
+                >
+                  Add Your First Payment Method
+                </button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -776,8 +776,7 @@ Share CNESS with others and enjoy a 10% reward
             endIndex={endIndex}
           />
         </div>
-      )
-      }
+      )}
       <AddPaymentMethodModal
         isOpen={isAddPaymentModalOpen}
         onClose={() => {
