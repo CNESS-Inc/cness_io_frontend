@@ -31,7 +31,7 @@ export async function onRequest({ params, request, env }) {
     const res = await fetch(apiUrl);
     if (res.ok) {
       const json = await res.json();
-      profile = json?.data?.data || null;
+      profile = json?.data?.data?.data || null;
     }
   } catch (e) {
     // ignore
