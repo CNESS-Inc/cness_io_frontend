@@ -481,7 +481,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
                           <button
                             onClick={() => {
                               copyPostLink(
-                                `${window.location.origin}/post/${item.originalData.id}`,
+                                `${window.location.origin}/social?p=${item.originalData.id}`,
                                 (msg) => showToast({ type: "success", message: msg, duration: 2000 }),
                                 (msg) => showToast({ type: "error", message: msg, duration: 2000 })
                               );

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { GetUserNotification, GetUserNotificationCount, MarkNotificationAsRead } from '../Common/ServerAPI';
 
 interface NotificationItem {
@@ -12,9 +13,12 @@ interface NotificationItem {
   createdAt: string;
   sender_user: any | null;
   sender_profile: any | null;
+  redirection: string | null;
+  data_id: string | null;
 }
 
 const Notification: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedNotification, setSelectedNotification] = useState<NotificationItem | null>(null);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,7 +76,65 @@ const Notification: React.FC = () => {
     }
   };
 
+  const handleNotificationRedirect = (notification: NotificationItem) => {
+    // If no redirection configured, try to use sender_id for profile redirect
+    if (!notification.redirection && notification.sender_id) {
+      // Default: redirect to sender's profile
+      navigate(`/dashboard/userprofile/${notification.sender_id}`);
+      return;
+    }
 
+    if (!notification.redirection || !notification.data_id) {
+      return; // No redirection configured for this notification
+    }
+
+    // Build query string if needed
+    const query = `?openpost=true&dataset=${notification.data_id}`;
+
+    // Handle redirection based on notification type
+    switch (notification.redirection) {
+      case "profile":
+        // Redirect to user profile (use data_id first, fallback to sender_id)
+        const profileId = notification.data_id || notification.sender_id;
+        if (profileId) {
+          navigate(`/dashboard/userprofile/${profileId}`);
+        }
+        break;
+
+      case "post":
+        // Redirect to post
+        if (notification.data_id) {
+          navigate(`/dashboard/profile${query}`);
+        }
+        break;
+
+      case "my-connections":
+        // Redirect to profile for friend request notifications
+        // Works for: friend request received, friend request accepted
+        const userId = notification.data_id || notification.sender_id;
+        if (userId) {
+          navigate(`/dashboard/userprofile/${userId}`);
+        }
+        break;
+
+      case "order":
+      case "order-confirmation":
+        // Redirect to order history page for order notifications
+        if (notification.data_id) {
+          navigate(`/dashboard/order-history/${notification.data_id}`);
+        }
+        break;
+
+      default:
+        // For unknown types, try to redirect to sender's profile if available
+        if (notification.sender_id) {
+          navigate(`/dashboard/userprofile/${notification.sender_id}`);
+        } else {
+          console.log("Unknown redirection type:", notification.redirection);
+        }
+        break;
+    }
+  };
 
   useEffect(() => {
     getNotification();
@@ -167,7 +229,14 @@ const Notification: React.FC = () => {
       {/* Content View */}
       <main className="flex-1 bg-[#F9F9FF] p-6 overflow-y-auto">
         {selectedNotification ? (
-          <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow">
+          <div
+            className={`max-w-2xl mx-auto bg-white p-6 rounded-lg shadow ${
+              (selectedNotification.redirection && selectedNotification.data_id) || selectedNotification.sender_id
+                ? 'cursor-pointer hover:shadow-lg transition-shadow'
+                : ''
+            }`}
+            onClick={() => handleNotificationRedirect(selectedNotification)}
+          >
             <h2 className="text-xl font-semibold text-[#222224] mb-2">
               {selectedNotification.title}
             </h2>
@@ -177,11 +246,27 @@ const Notification: React.FC = () => {
             <p className="text-gray-700 text-base leading-relaxed">
               {selectedNotification.description}
             </p>
+            {((selectedNotification.redirection && selectedNotification.data_id) || selectedNotification.sender_id) && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-sm text-purple-600 font-medium flex items-center gap-2">
+                  {selectedNotification.redirection === 'my-connections' || !selectedNotification.redirection
+                    ? 'Click to view profile'
+                    : selectedNotification.redirection === 'order' || selectedNotification.redirection === 'order-confirmation'
+                    ? 'Click to view order'
+                    : selectedNotification.redirection === 'post'
+                    ? 'Click to view post'
+                    : 'Click to view'}
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-center text-gray-500 mt-20">
-            {notifications.length > 0 
-              ? "Select a notification to view details" 
+            {notifications.length > 0
+              ? "Select a notification to view details"
               : "You don't have any notifications yet"}
           </div>
         )}
