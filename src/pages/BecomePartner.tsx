@@ -541,7 +541,7 @@ const BecomePartner = () => {
               </span>
             </h1>
             <div className="w-full pt-10">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-[40px]">
                 {features.map((item) => (
                   <div
                     key={item.id}
@@ -653,9 +653,8 @@ const BecomePartner = () => {
                   left: "calc(1.25rem)",
                   width:
                     steps.length > 1
-                      ? `calc((( ${
-                          ((currentStep - 1) / (steps.length - 1)) * 100
-                        }% ) - 1.25rem))`
+                      ? `calc((( ${((currentStep - 1) / (steps.length - 1)) * 100
+                      }% ) - 1.25rem))`
                       : "0%",
                 }}
               />
@@ -922,15 +921,13 @@ const BecomePartner = () => {
                               name="organization_size"
                               value={data.organization_size}
                               onChange={handleSelectChange}
-                              className={`w-full appearance-none py-[15px] px-3 rounded-sm border-2 bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-5 ${
-                                shouldShowError("organization_size")
+                              className={`w-full appearance-none py-[15px] px-3 rounded-sm border-2 bg-white text-[14px] outline-none focus:border-[#C9C9FF] placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-5 ${shouldShowError("organization_size")
                                   ? "border-red-500 focus:border-red-500"
                                   : "border-[#EEEEEE]"
-                              } ${
-                                data.organization_size
+                                } ${data.organization_size
                                   ? "text-black"
                                   : "text-[#6E7179]"
-                              }`}
+                                }`}
                               ref={(el) => {
                                 // This ref ensures the element is available for focus
                                 if (
@@ -962,11 +959,10 @@ const BecomePartner = () => {
                             {/* Custom dropdown arrow */}
                             <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center px-2 text-gray-700 border-l border-gray-300 h-fit top-1/2 -translate-y-1/2">
                               <svg
-                                className={`fill-current h-5 w-5 group-focus-within:text-black ${
-                                  shouldShowError("organization_size")
+                                className={`fill-current h-5 w-5 group-focus-within:text-black ${shouldShowError("organization_size")
                                     ? "text-red-500"
                                     : "text-[#ccc]"
-                                }`}
+                                  }`}
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 20 20"
                               >
@@ -1005,11 +1001,10 @@ const BecomePartner = () => {
 
                       {submitMessage && (
                         <div
-                          className={`p-3 rounded-md ${
-                            submitMessage.type === "success"
+                          className={`p-3 rounded-md ${submitMessage.type === "success"
                               ? "bg-green-100 text-green-800"
                               : "bg-red-100 text-red-800"
-                          }`}
+                            }`}
                         >
                           {submitMessage.text}
                         </div>
@@ -1117,9 +1112,8 @@ function Input({
         type={type}
         placeholder={placeholder}
         required={required}
-        className={`w-full h-full rounded-sm border-2 bg-white pt-[15px] px-3 pb-[17px] text-[14px] outline-none placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-5 ${
-          error ? "border-red-500" : "border-[#EEEEEE] focus:border-[#C9C9FF]"
-        }`}
+        className={`w-full h-full rounded-sm border-2 bg-white pt-[15px] px-3 pb-[17px] text-[14px] outline-none placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-5 ${error ? "border-red-500" : "border-[#EEEEEE] focus:border-[#C9C9FF]"
+          }`}
       />
       {error && (
         <span className="text-red-500 text-xs mt-1 block">{error}</span>
@@ -1149,9 +1143,8 @@ function TextArea({
         onChange={onChange}
         rows={4}
         placeholder={placeholder}
-        className={`h-full w-full resize-none rounded-sm border-2 bg-white p-2.5 text-[14px] outline-none placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-5 ${
-          error ? "border-red-500" : "border-[#EEEEEE] focus:border-[#C9C9FF]"
-        }`}
+        className={`h-full w-full resize-none rounded-sm border-2 bg-white p-2.5 text-[14px] outline-none placeholder:text-[#6E7179] placeholder:font-normal placeholder:text-xs placeholder:leading-5 ${error ? "border-red-500" : "border-[#EEEEEE] focus:border-[#C9C9FF]"
+          }`}
       />
       {error && (
         <span className="text-red-500 text-xs mt-1 block">{error}</span>
@@ -1180,9 +1173,8 @@ function PhoneInputField({
       <input type="hidden" name={name} value={value} />
 
       <div
-        className={`${
-          error ? "border-red-500" : "border-[#EEEEEE]"
-        } border-2 rounded-sm`}
+        className={`${error ? "border-red-500" : "border-[#EEEEEE]"
+          } border-2 rounded-sm`}
       >
         <PhoneInput
           value={value}

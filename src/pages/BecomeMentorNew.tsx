@@ -562,7 +562,7 @@ const BecomeMentor = () => {
             </span>
           </h1>
           <div className="w-full pt-10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[40px]">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-[40px]">
               {role.map((item) => (
                 <div
                   key={item.id}
