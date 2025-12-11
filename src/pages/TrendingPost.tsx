@@ -30,6 +30,9 @@ export default function Trending() {
   const [visibleTopic, setVisibleTopic] = useState(10);
   const [userSelectedTopics, setUserSelectedTopics] = useState<any[]>([]); // list of user selected topics
   const loggedInUserID = localStorage.getItem("Id");
+  const [isTopicsOpen, setIsTopicsOpen] = useState(false);
+  const openTopics = () => setIsTopicsOpen(true);
+  const closeTopics = () => setIsTopicsOpen(false);
 
   const navigate = useNavigate();
 
@@ -107,9 +110,8 @@ export default function Trending() {
         const newPosts: Post[] = res.data.data.rows.map((el: any) => {
           return {
             avatar: el?.profile?.profile_picture || null,
-            name: `${el?.profile?.first_name || ""} ${
-              el?.profile?.last_name || ""
-            }`,
+            name: `${el?.profile?.first_name || ""} ${el?.profile?.last_name || ""
+              }`,
             time: el?.createdAt,
             following: el?.if_following || false,
             media: el?.file,
@@ -197,9 +199,8 @@ export default function Trending() {
           const newPosts: Post[] = res.data.data.rows.map((el: any) => {
             return {
               avatar: el?.profile?.profile_picture || null,
-              name: `${el?.profile?.first_name || ""} ${
-                el?.profile?.last_name || ""
-              }`,
+              name: `${el?.profile?.first_name || ""} ${el?.profile?.last_name || ""
+                }`,
               time: el?.createdAt,
               following: el?.if_following || false,
               media: el?.file,
@@ -229,6 +230,48 @@ export default function Trending() {
     loadFirstPage();
   }, []);
 
+  const TopicsPanel = () => (
+    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm min-h-[560px]">
+      <div className="mb-4 flex items-center gap-2">
+        <TrendingUp className="h-4 w-4 text-indigo-600" />
+        <div className="font-medium text-gray-900">Trending Topics</div>
+      </div>
+      <div className="border-b border-gray-200 w-full mb-4"></div>
+
+      <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
+        {topics?.slice(0, visibleTopic)?.map((topic) => (
+          <button
+            key={topic.id}
+            onClick={() =>
+              navigate(`/dashboard/${topic.slug}`, {
+                state: { topics, userSelectedTopics },
+              })
+            }
+            className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+          >
+            <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+            {topic.topic_name}
+          </button>
+        ))}
+        {visibleTopic < topics?.length && (
+          <button
+            onClick={() => setVisibleTopic((pre) => pre + 10)}
+            className="text-sm text-blue-500 hover:underline hover:text-blue-600 transition cursor-pointer"
+          >
+            See more
+          </button>
+        )}
+        {topics?.length === 0 && (
+          <button disabled className="text-gray-400 italic">
+            No topics available
+          </button>
+        )}
+      </ul>
+
+      <div className="my-5 h-px bg-gray-100" />
+    </div>
+  );
+
   return (
     <div className="w-full px-0.5 md:px-0.1 py-1">
       {/* Header */}
@@ -240,13 +283,23 @@ export default function Trending() {
           </h1>
         </div>
 
-        <button
-          onClick={() => nav(-1)}
-          className="inline-flex items-center gap-2 rounded-full border bg-white border-gray-200 px-3 py-1.5 text-sm text-black hover:bg-gray-50 bg-color-white"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Back
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={openTopics}
+            className="xl:hidden inline-flex items-center gap-2 rounded-full border bg-white border-gray-200 px-3 py-1.5 text-sm text-black hover:bg-gray-50"
+          >
+            <TrendingUp className="h-4 w-4 text-indigo-600" />
+            Topics
+          </button>
+          <button
+            onClick={() => nav(-1)}
+            className="inline-flex items-center gap-2 rounded-full border bg-white border-gray-200 px-3 py-1.5 text-sm text-black hover:bg-gray-50 bg-color-white"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Back
+          </button>
+        </div>
       </div>
 
       <p className="mb-6 text-sm text-gray-500">
@@ -315,50 +368,51 @@ export default function Trending() {
         </div>
 
         {/* Topics rail (right) */}
-        <aside className="xl:sticky xl:top-4 self-start">
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm min-h-[560px]">
-            <div className="mb-4 flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-indigo-600" />
-              <div className="font-medium text-gray-900">Trending Topics</div>
-            </div>
-            <div className="border-b border-gray-200 w-full mb-4"></div>
-
-            <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
-              {topics?.slice(0, visibleTopic)?.map((topic) => (
-                <button
-                  key={topic.id}
-                  onClick={() =>
-                    navigate(`/dashboard/${topic.slug}`, {
-                      state: {
-                        topics,
-                        userSelectedTopics,
-                      },
-                    })
-                  }
-                  className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
-                >
-                  <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                  {topic.topic_name}
-                </button>
-              ))}
-              {visibleTopic < topics?.length && (
-                <button
-                  onClick={() => setVisibleTopic((pre) => pre + 10)}
-                  className="text-sm text-blue-500 hover:underline hover:text-blue-600 transition cursor-pointer"
-                >
-                  See more
-                </button>
-              )}
-              {topics?.length === 0 && (
-                <button disabled className="text-gray-400 italic">
-                  No topics available
-                </button>
-              )}
-            </ul>
-
-            <div className="my-5 h-px bg-gray-100" />
-          </div>
+        <aside className="hidden xl:block xl:sticky xl:top-4 self-start">
+          <TopicsPanel />
         </aside>
+      </div>
+
+      {isTopicsOpen && (
+        <div
+          className="xl:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={closeTopics}
+        />
+      )}
+      <div
+        className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${isTopicsOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Trending topics"
+      >
+        <div className="sticky top-0 z-10 bg-white px-4 py-3 border-b flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-indigo-600" />
+            <span className="font-medium">Trending Topics</span>
+          </div>
+          <button
+            onClick={closeTopics}
+            className="p-2 hover:bg-gray-100 rounded-full"
+          >
+            <svg
+              className="w-6 h-6 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        <div className="p-4 overflow-y-auto h-[calc(100%-56px)]">
+          <TopicsPanel />
+        </div>
       </div>
     </div>
   );

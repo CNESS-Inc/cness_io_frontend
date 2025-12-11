@@ -12,7 +12,7 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import EnquiryModal from "../components/directory/Enquire";
 import {
   GetDirectoryProfileByUserId,
@@ -31,8 +31,28 @@ import {
   RejectFriendRequest,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import Modal from "../components/ui/Modal";
+
+const levels = [
+  {
+    key: "Aspiring",
+    label: "ASPIRED",
+    img: "https://cdn.cness.io/aspiringlogo.svg",
+  },
+  {
+    key: "Inspired",
+    label: "INSPIRED",
+    img: "https://cdn.cness.io/inspired1.svg",
+  },
+  {
+    key: "Leader",
+    label: "LEADER",
+    img: "https://cdn.cness.io/leader1.webp",
+  },
+];
 
 const DirectoryProfile = () => {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -67,10 +87,18 @@ const DirectoryProfile = () => {
     Record<string, boolean>
   >({});
   const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
-  const [editReplyTexts, setEditReplyTexts] = useState<Record<string, string>>({});
-  const [submittingEditReply, setSubmittingEditReply] = useState<Record<string, boolean>>({});
-  const [deletingReply, setDeletingReply] = useState<Record<string, boolean>>({});
-  const [pagination, setPagination] = useState<Record<string, { pageNo: number; hasMore: boolean; loadingMore: boolean }>>({});
+  const [editReplyTexts, setEditReplyTexts] = useState<Record<string, string>>(
+    {}
+  );
+  const [submittingEditReply, setSubmittingEditReply] = useState<
+    Record<string, boolean>
+  >({});
+  const [deletingReply, setDeletingReply] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [pagination, setPagination] = useState<
+    Record<string, { pageNo: number; hasMore: boolean; loadingMore: boolean }>
+  >({});
   const [infoId, setInfoId] = useState<string | null>(null);
   const { id } = useParams();
   const { showToast } = useToast();
@@ -78,7 +106,20 @@ const DirectoryProfile = () => {
   const isLoggedIn = localStorage.getItem("Id");
   const [connecting, setConnecting] = useState(false);
   const [acceptingRequest, setAcceptingRequest] = useState(false);
-const [rejectingRequest, setRejectingRequest] = useState(false);
+  const [rejectingRequest, setRejectingRequest] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    reviewId: string | null;
+    replyId: string | null;
+  }>({
+    isOpen: false,
+    reviewId: null,
+    replyId: null,
+  });
+
+  const badgeImg = profileData?.badge?.level
+    ? levels.find((el) => el.key === profileData.badge?.level)?.img
+    : "";
 
   useEffect(() => {
     const fetchDirectoryProfile = async () => {
@@ -100,7 +141,7 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
             setInfoId(response.data.data.bussiness_profile?.id || null);
             setProfileData(response.data.data);
           } else {
-            setProfileData({})
+            setProfileData({});
           }
         } else {
           showToast({
@@ -180,6 +221,15 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
     }
   }, [profileData?.bussiness_profile?.id]);
 
+  useEffect(() => {
+    // Fetch child reviews for all reviews when component mounts
+    reviews.forEach((review) => {
+      if (review.id && !childReviews[review.id]) {
+        fetchChildReviews(review.id);
+      }
+    });
+  }, [reviews]);
+
   if (loading) {
     return (
       <main className="flex-1 p-4 md:p-6">
@@ -206,8 +256,9 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
     try {
       setConnecting(true);
 
-      // Check current friend status
+      // Get current friend status
       const isCurrentlyFriend = profileData?.is_friend || false;
+      const requestStatus = profileData?.friend_request_status;
       const friendId = userId;
 
       if (isCurrentlyFriend) {
@@ -224,7 +275,27 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
             duration: 2000,
           });
 
-          // Update the profile data to reflect unfriending
+          // Update the profile data
+          setProfileData((prev: any) => ({
+            ...prev,
+            is_friend: false,
+            friend_request_status: null,
+          }));
+        }
+      } else if (requestStatus === "PENDING") {
+        const formattedData = {
+          friend_id: friendId,
+        };
+
+        const res = await SendFriendRequest(formattedData);
+
+        if (res?.success?.message) {
+          showToast({
+            message: res.success.message || "Friend request cancelled",
+            type: "success",
+            duration: 2000,
+          });
+
           setProfileData((prev: any) => ({
             ...prev,
             is_friend: false,
@@ -245,7 +316,7 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
             duration: 2000,
           });
 
-          // Update the profile data to reflect pending request
+          // Update the profile data
           setProfileData((prev: any) => ({
             ...prev,
             is_friend: false,
@@ -268,122 +339,122 @@ const [rejectingRequest, setRejectingRequest] = useState(false);
   };
 
   const handleAcceptRequest = async () => {
-  if (!userId) return;
-  
-  try {
-    setAcceptingRequest(true);
-    const formattedData = { friend_id: userId };
-    
-    // You need to import AcceptFriendRequest from your ServerAPI
-    const res = await AcceptFriendRequest(formattedData);
-    
-    if (res?.success?.message) {
-      showToast({
-        message: res.success.message || "Friend request accepted!",
-        type: "success",
-        duration: 2000,
-      });
-      
-      // Update the profile data
-      setProfileData((prev: any) => ({
-        ...prev,
-        is_friend: true,
-        friend_request_status: "ACCEPT",
-        reciver_request_status: null,
-      }));
-    }
-  } catch (error: any) {
-    console.error("Error accepting friend request:", error);
-    showToast({
-      message:
-        error?.response?.data?.error?.message ||
-        "Failed to accept friend request",
-      type: "error",
-      duration: 3000,
-    });
-  } finally {
-    setAcceptingRequest(false);
-  }
-};
+    if (!userId) return;
 
-const handleRejectRequest = async () => {
-  if (!userId) return;
-  
-  try {
-    setRejectingRequest(true);
-    const formattedData = { friend_id: userId };
-    
-    // You need to import RejectFriendRequest from your ServerAPI
-    const res = await RejectFriendRequest(formattedData);
-    
-    if (res?.success?.message) {
+    try {
+      setAcceptingRequest(true);
+      const formattedData = { friend_id: userId };
+
+      // You need to import AcceptFriendRequest from your ServerAPI
+      const res = await AcceptFriendRequest(formattedData);
+
+      if (res?.success?.message) {
+        showToast({
+          message: res.success.message || "Friend request accepted!",
+          type: "success",
+          duration: 2000,
+        });
+
+        // Update the profile data
+        setProfileData((prev: any) => ({
+          ...prev,
+          is_friend: true,
+          friend_request_status: "ACCEPT",
+          reciver_request_status: null,
+        }));
+      }
+    } catch (error: any) {
+      console.error("Error accepting friend request:", error);
       showToast({
-        message: res.success.message || "Friend request rejected",
-        type: "success",
-        duration: 2000,
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to accept friend request",
+        type: "error",
+        duration: 3000,
       });
-      
-      // Update the profile data
-      setProfileData((prev: any) => ({
-        ...prev,
-        is_friend: false,
-        friend_request_status: null,
-        reciver_request_status: null,
-      }));
+    } finally {
+      setAcceptingRequest(false);
     }
-  } catch (error: any) {
-    console.error("Error rejecting friend request:", error);
-    showToast({
-      message:
-        error?.response?.data?.error?.message ||
-        "Failed to reject friend request",
-      type: "error",
-      duration: 3000,
-    });
-  } finally {
-    setRejectingRequest(false);
-  }
-};
+  };
+
+  const handleRejectRequest = async () => {
+    if (!userId) return;
+
+    try {
+      setRejectingRequest(true);
+      const formattedData = { friend_id: userId };
+
+      // You need to import RejectFriendRequest from your ServerAPI
+      const res = await RejectFriendRequest(formattedData);
+
+      if (res?.success?.message) {
+        showToast({
+          message: res.success.message || "Friend request rejected",
+          type: "success",
+          duration: 2000,
+        });
+
+        // Update the profile data
+        setProfileData((prev: any) => ({
+          ...prev,
+          is_friend: false,
+          friend_request_status: null,
+          reciver_request_status: null,
+        }));
+      }
+    } catch (error: any) {
+      console.error("Error rejecting friend request:", error);
+      showToast({
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to reject friend request",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setRejectingRequest(false);
+    }
+  };
 
   // Add this function to get the button text and style
- const getConnectionButtonState = () => {
-  const requestStatus = profileData?.friend_request_status;
-  const receiverStatus = profileData?.reciver_request_status;
-  
-  // Check if user has received a pending request
-  if (receiverStatus === "PENDING") {
-    return {
-      showAcceptReject: true,
-      text: "Respond to Request",
-      className: "bg-white text-gray-700 border border-gray-300",
-    };
-  }
-  
-  if (requestStatus === "ACCEPT") {
+  const getConnectionButtonState = () => {
+    const requestStatus = profileData?.friend_request_status;
+    const receiverStatus = profileData?.reciver_request_status;
+
+    // Check if user has received a pending request
+    if (receiverStatus === "PENDING") {
+      return {
+        showAcceptReject: true,
+        text: "Respond to Request",
+        className: "bg-white text-gray-700 border border-gray-300",
+      };
+    }
+
+    if (requestStatus === "ACCEPT") {
+      return {
+        showAcceptReject: false,
+        text: "Connected",
+        className:
+          "bg-green-100 text-green-700 border border-green-300 hover:bg-green-200",
+      };
+    }
+
+    if (requestStatus === "PENDING") {
+      return {
+        showAcceptReject: false,
+        text: "Requested",
+        className:
+          "bg-yellow-100 text-yellow-700 border border-yellow-300 hover:bg-yellow-200",
+      };
+    }
+
     return {
       showAcceptReject: false,
-      text: "Connected",
-      className:
-        "bg-green-100 text-green-700 border border-green-300 hover:bg-green-200",
+      text: "Connect now",
+      className: "bg-[#7077FE] text-white hover:bg-[#5b63e6]",
     };
-  }
-
-  if (requestStatus === "PENDING") {
-    return {
-      showAcceptReject: false,
-      text: "Requested",
-      className:
-        "bg-yellow-100 text-yellow-700 border border-yellow-300 hover:bg-yellow-200",
-    };
-  }
-
-  return {
-    showAcceptReject: false,
-    text: "Connect now",
-    className: "bg-[#7077FE] text-white hover:bg-[#5b63e6]",
   };
-};
-const connectionButtonState = getConnectionButtonState();
+  const connectionButtonState = getConnectionButtonState();
 
   const businessProfile = profileData.bussiness_profile || {};
   const userProfile = profileData.user_profile || {};
@@ -392,8 +463,8 @@ const connectionButtonState = getConnectionButtonState();
   const photos = profileData.photos || [];
   const services = profileData.service_offered || [];
   const bestPractices = profileData.best_practies || [];
-  console.log("🚀 ~ DirectoryProfile ~ bestPractices:", bestPractices);
   const products = profileData.products || [];
+
 
   const formatBusinessHours = () => {
     if (businessHours.business_status === 1 && businessHours.weekly_hours) {
@@ -528,7 +599,6 @@ const connectionButtonState = getConnectionButtonState();
         });
       } else {
         newSet.add(reviewId);
-        fetchChildReviews(reviewId);
       }
       return newSet;
     });
@@ -836,11 +906,16 @@ const connectionButtonState = getConnectionButtonState();
     }
   };
 
-  const handleDeleteReply = async (reviewId: string, replyId: string) => {
-    if (!window.confirm("Are you sure you want to delete this reply?")) {
-      return;
-    }
+  const showDeleteConfirmation = (reviewId: string, replyId: string) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      reviewId,
+      replyId,
+    });
+  };
 
+  // Actually delete the reply after confirmation
+  const handleConfirmDelete = async (reviewId: string, replyId: string) => {
     try {
       setDeletingReply((prev) => ({ ...prev, [replyId]: true }));
       const payload = {
@@ -849,6 +924,7 @@ const connectionButtonState = getConnectionButtonState();
 
       await DeleteDirectoryReviewReply(payload);
 
+      // Update child reviews
       setChildReviews((prevChildReviews) => {
         const currentReplies = prevChildReviews[reviewId] || [];
         const updatedReplies = currentReplies.filter(
@@ -860,6 +936,7 @@ const connectionButtonState = getConnectionButtonState();
         };
       });
 
+      // Update parent review count
       setReviews((prevReviews) =>
         prevReviews.map((review) =>
           review.id === reviewId
@@ -875,6 +952,13 @@ const connectionButtonState = getConnectionButtonState();
         message: "Reply deleted successfully",
         type: "success",
         duration: 3000,
+      });
+
+      // Close the modal
+      setDeleteConfirmation({
+        isOpen: false,
+        reviewId: null,
+        replyId: null,
       });
     } catch (error: any) {
       showToast({
@@ -1077,7 +1161,7 @@ const connectionButtonState = getConnectionButtonState();
                     )}
                   </p>
                 </div>
-                {services.length > 0 && (
+                {services.length > 0 && isLoggedIn !== id ? (
                   <div className="flex justify-center sm:justify-start">
                     <button
                       onClick={() => setShowEnquiry(true)}
@@ -1086,6 +1170,8 @@ const connectionButtonState = getConnectionButtonState();
                       Enquire now
                     </button>
                   </div>
+                ) : (
+                  ""
                 )}
               </div>
             </div>
@@ -1094,7 +1180,7 @@ const connectionButtonState = getConnectionButtonState();
           {/* User Information Section */}
           <section className="bg-white rounded-xl p-4 md:p-6 space-y-4">
             <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white">
+              {/* <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white">
                 <img
                   src={
                     userProfile.profile_picture ||
@@ -1109,6 +1195,26 @@ const connectionButtonState = getConnectionButtonState();
                     target.src =
                       "https://static.codia.ai/image/2025-12-04/s7mmhLwgmO.png";
                   }}
+                />
+              </div> */}
+              <div className="relative w-[120px] h-20 shrink-0 flex items-center">
+                {/* Badge image (background) - you can update this with actual badge logic */}
+                <div className="absolute top-[50%] translate-y-[-50%] right-1.5 w-[70px] h-[70px] object-contain z-0 border flex justify-center items-center border-gray-400 rounded-full">
+                  <img
+                    src={badgeImg}
+                    alt="Badge"
+                    className="w-[35px] h-[35px] object-contain z-0"
+                  />
+                </div>
+
+                {/* Profile image (front) */}
+                <img
+                  src={
+                    userProfile.profile_picture ||
+                    "https://static.codia.ai/image/2025-12-04/s7mmhLwgmO.png"
+                  }
+                  alt="Profile"
+                  className="w-[75px] h-[75px] rounded-full object-cover border-2 border-white z-10"
                 />
               </div>
 
@@ -1197,19 +1303,20 @@ const connectionButtonState = getConnectionButtonState();
                 {profileData.friend_profile_pics &&
                 profileData.friend_profile_pics.length > 0 ? (
                   <>
-                    {profileData.friend_profile_pics.slice(0, 3).map((pic: string, i: number) => (
-                      <img
-                        key={i}
-                        src={pic ? pic : "/profile.png"}
-                        className="w-10 h-10 rounded-full border-2 border-white object-cover"
-                        alt={`Friend ${i + 1}`}
-                        onError={(e) => {
-                          const target =
-                            e.target as HTMLImageElement;
-                          target.src = "/profile.png"; // Clear broken images
-                        }}
-                      />
-                    ))}
+                    {profileData.friend_profile_pics
+                      .slice(0, 3)
+                      .map((pic: string, i: number) => (
+                        <img
+                          key={i}
+                          src={pic ? pic : "/profile.png"}
+                          className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                          alt={`Friend ${i + 1}`}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/profile.png"; // Clear broken images
+                          }}
+                        />
+                      ))}
                     {profileData.friend_count > 3 && (
                       <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#FFE4F5] rounded-full border-2 border-white flex items-center justify-center">
                         <span className="text-[#F07EFF] font-bold text-xs sm:text-sm">
@@ -1227,51 +1334,53 @@ const connectionButtonState = getConnectionButtonState();
                 )}
               </div>
               {isLoggedIn !== id && (
-  <div className="w-full sm:w-auto">
-    {connectionButtonState.showAcceptReject ? (
-      // Show Accept/Reject buttons when user has received a pending request
-      <div className="flex flex-col sm:flex-row gap-2">
-        <button
-          onClick={handleAcceptRequest}
-          disabled={acceptingRequest}
-          className={`px-4 py-2 rounded-full font-semibold text-xs sm:text-sm w-full flex items-center justify-center gap-2 bg-green-100 text-green-700 border border-green-300 hover:bg-green-200 disabled:opacity-50`}
-        >
-          {acceptingRequest ? (
-            "Accepting..."
-          ) : (
-            <>
-              <UserRoundPlus className="w-4 h-4" />
-              Accept
-            </>
-          )}
-        </button>
-        <button
-          onClick={handleRejectRequest}
-          disabled={rejectingRequest}
-          className={`px-4 py-2 rounded-full font-semibold text-xs sm:text-sm w-full flex items-center justify-center gap-2 bg-red-100 text-red-700 border border-red-300 hover:bg-red-200 disabled:opacity-50`}
-        >
-          {rejectingRequest ? (
-            "Rejecting..."
-          ) : (
-            <>
-              <UserRoundMinus className="w-4 h-4" />
-              Reject
-            </>
-          )}
-        </button>
-      </div>
-    ) : (
-      // Show regular Connect/Requested/Connected button
-      <button
-        onClick={handleConnection}
-        disabled={connecting}
-        className={`px-4 py-2 sm:px-5 sm:py-2 rounded-full font-semibold text-xs sm:text-sm w-full sm:w-auto transition-colors duration-300 ${connectionButtonState.className}`}
-      >
-        {connecting ? "Connecting..." : connectionButtonState.text}
-      </button>
-    )}
-  </div>
-)}
+                <div className="w-full sm:w-auto">
+                  {connectionButtonState.showAcceptReject ? (
+                    // Show Accept/Reject buttons when user has received a pending request
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <button
+                        onClick={handleAcceptRequest}
+                        disabled={acceptingRequest}
+                        className={`px-4 py-2 rounded-full font-semibold text-xs sm:text-sm w-full flex items-center justify-center gap-2 bg-green-100 text-green-700 border border-green-300 hover:bg-green-200 disabled:opacity-50`}
+                      >
+                        {acceptingRequest ? (
+                          "Accepting..."
+                        ) : (
+                          <>
+                            <UserRoundPlus className="w-4 h-4" />
+                            Accept
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={handleRejectRequest}
+                        disabled={rejectingRequest}
+                        className={`px-4 py-2 rounded-full font-semibold text-xs sm:text-sm w-full flex items-center justify-center gap-2 bg-red-100 text-red-700 border border-red-300 hover:bg-red-200 disabled:opacity-50`}
+                      >
+                        {rejectingRequest ? (
+                          "Rejecting..."
+                        ) : (
+                          <>
+                            <UserRoundMinus className="w-4 h-4" />
+                            Reject
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  ) : (
+                    // Show regular Connect/Requested/Connected button
+                    <button
+                      onClick={handleConnection}
+                      disabled={connecting}
+                      className={`px-4 py-2 sm:px-5 sm:py-2 rounded-full font-semibold text-xs sm:text-sm w-full sm:w-auto transition-colors duration-300 ${connectionButtonState.className}`}
+                    >
+                      {connecting
+                        ? "Connecting..."
+                        : connectionButtonState.text}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -1435,9 +1544,16 @@ const connectionButtonState = getConnectionButtonState();
                 <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
                   Best practice
                 </h3>
-                <span className="text-[#F07EFF] font-semibold text-xs cursor-pointer">
+                <button
+                  onClick={() =>
+                    navigate(`/dashboard/userprofile/${id}`, {
+                      state: { activeTab: "best" },
+                    })
+                  }
+                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer hover:underline"
+                >
                   View all
-                </span>
+                </button>
               </div>
               <div className="space-y-4">
                 {bestPractices.map((item: any) => {
@@ -1524,7 +1640,12 @@ const connectionButtonState = getConnectionButtonState();
                 <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
                   Products
                 </h3>
-                <span className="text-[#F07EFF] font-semibold text-xs cursor-pointer">
+                <span
+                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer"
+                  onClick={() =>
+                    navigate(`/dashboard/shop-detail/${profileData.shop_id}`)
+                  }
+                >
                   View all
                 </span>
               </div>
@@ -1644,7 +1765,14 @@ const connectionButtonState = getConnectionButtonState();
                             ${product.final_price || product.price}
                           </div>
                         </div>
-                        <button className="bg-[#7077FE] text-white px-6 py-2 sm:px-8 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] capitalize w-full sm:w-auto">
+                        <button
+                          className="bg-[#7077FE] text-white px-6 py-2 sm:px-8 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] capitalize w-full sm:w-auto"
+                          onClick={() =>
+                            navigate(
+                              `/dashboard/product-detail/${product?.id}`
+                            )
+                          }
+                        >
                           Buy
                         </button>
                       </div>
@@ -1730,6 +1858,7 @@ const connectionButtonState = getConnectionButtonState();
           </div>
 
           {/* Reviews List */}
+          {/* In the Reviews List section, modify the review rendering */}
           <div className="space-y-4">
             <h3 className="text-lg font-[Poppins] font-semibold text-[#081021]">
               All Reviews
@@ -1772,13 +1901,6 @@ const connectionButtonState = getConnectionButtonState();
                     >
                       <div className="space-y-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          {review.profile?.profile_picture && (
-                            <img
-                              src={review.profile.profile_picture}
-                              alt={`${review.profile.first_name} ${review.profile.last_name}`}
-                              className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover"
-                            />
-                          )}
                           <span className="font-[Poppins] font-semibold text-black text-sm sm:text-base">
                             {`${review.profile?.first_name || ""} ${
                               review.profile?.last_name || ""
@@ -1788,32 +1910,13 @@ const connectionButtonState = getConnectionButtonState();
                           <span className="font-['open_sans'] text-[#9CA3AF] text-xs">
                             {reviewDate}
                           </span>
-                          {review.is_my_review && (
-                            <>
-                              <div className="w-1.5 h-1.5 bg-[#9CA3AF] rounded-full"></div>
-                              <span className="font-['open_sans'] text-[#7077FE] text-xs">
-                                Your review
-                              </span>
-                            </>
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                              key={star}
-                              className={`w-3 h-3 sm:w-4 sm:h-4 ${
-                                star <= review.rating
-                                  ? "text-[#FACC15] fill-[#FACC15]"
-                                  : "text-[#94A3B8]"
-                              }`}
-                              strokeWidth={1.2}
-                            />
-                          ))}
                         </div>
                         <p className="font-['open_sans'] text-xs sm:text-sm text-[#1F2937] leading-relaxed">
                           {review.description}
                         </p>
                       </div>
+
+                      {/* Action buttons - Keep these */}
                       <div className="flex items-center space-x-2 p-2">
                         <button
                           onClick={() => handleLikeReview(review.id)}
@@ -1842,14 +1945,7 @@ const connectionButtonState = getConnectionButtonState();
                           onClick={() => toggleReplyInput(review.id)}
                           className="flex items-center space-x-1 bg-transparent px-2 py-1 rounded-full text-[#1F2937] hover:bg-gray-100"
                         >
-                          <svg
-                            className="w-5 h-5 sm:w-6 sm:h-6"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                          >
-                            <path d="M15.73 5.5h1.035A7.465 7.465 0 0118 9.625a7.465 7.465 0 01-1.235 4.125h-.148c-.806 0-1.534.446-2.031 1.08a9.04 9.04 0 01-2.861 2.4c-.723.384-1.35.956-1.653 1.715a4.498 4.498 0 00-.322 1.672V21a.75.75 0 01-.75.75 2.25 2.25 0 01-2.25-2.25c0-1.152.26-2.243.723-3.218C7.74 15.724 7.366 15 6.748 15H3.622c-1.026 0-1.945-.694-2.054-1.715A12.134 12.134 0 011.5 12c0-2.848.992-5.464 2.649-7.521C4.537 3.997 5.136 3.75 5.754 3.75h1.616c.483 0 .964.078 1.423.23l3.114 1.04a4.5 4.5 0 001.423.23h2.394z" />
-                          </svg>
+                          <img src="/reply.png" />
                           <span className="font-['open_sans'] text-xs">
                             Reply{" "}
                             {review.reply_count > 0 &&
@@ -1857,6 +1953,8 @@ const connectionButtonState = getConnectionButtonState();
                           </span>
                         </button>
                       </div>
+
+                      {/* Reply input section - Only show when reply button is clicked */}
                       {openReplyInputs.has(review.id) && (
                         <div className="mt-4 space-y-3 pl-3 sm:pl-4 border-l-2 border-[#ECEEF2]">
                           <div className="space-y-2">
@@ -1902,265 +2000,278 @@ const connectionButtonState = getConnectionButtonState();
                               </div>
                             </div>
                           </div>
-                          <div
-                            className="space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto pr-1"
-                            onScroll={(e) => {
-                              const target = e.target as HTMLElement;
-                              const scrollBottom =
-                                target.scrollHeight -
-                                target.scrollTop -
-                                target.clientHeight;
-                              if (
-                                scrollBottom < 100 &&
-                                pagination[review.id]?.hasMore &&
-                                !pagination[review.id]?.loadingMore
-                              ) {
-                                loadMoreChildReviews(review.id);
-                              }
-                            }}
-                          >
-                            {loadingChildReviews[review.id] ? (
-                              <div className="text-center py-4 text-[#64748B] text-xs">
-                                Loading replies...
-                              </div>
-                            ) : childReviews[review.id] &&
-                              childReviews[review.id].length > 0 ? (
-                              <>
-                                {childReviews[review.id].map(
-                                  (childReview: any) => {
-                                    const childReviewDate =
-                                      childReview.createdAt
-                                        ? new Date(
-                                            childReview.createdAt
-                                          ).toLocaleDateString("en-US", {
-                                            year: "numeric",
-                                            month: "short",
-                                            day: "numeric",
-                                          })
-                                        : "";
-
-                                    return (
-                                      <div
-                                        key={childReview.id}
-                                        className="bg-white border border-[#ECEEF2] rounded-lg p-3 space-y-2"
-                                      >
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
-                                          <div className="flex items-center space-x-2">
-                                            {childReview.profile
-                                              ?.profile_picture && (
-                                              <img
-                                                src={
-                                                  childReview.profile
-                                                    .profile_picture
-                                                }
-                                                alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
-                                                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover"
-                                              />
-                                            )}
-                                            <span className="font-[Poppins] font-semibold text-sm text-black">
-                                              {`${
-                                                childReview.profile
-                                                  ?.first_name || ""
-                                              } ${
-                                                childReview.profile
-                                                  ?.last_name || ""
-                                              }`.trim() || "Anonymous"}
-                                            </span>
-                                            <div className="w-1 h-1 bg-[#9CA3AF] rounded-full"></div>
-                                            <span className="font-['open_sans'] text-[#9CA3AF] text-xs">
-                                              {childReviewDate}
-                                            </span>
-                                          </div>
-                                          {childReview.is_my_reply &&
-                                            editingReplyId !==
-                                              childReview.id && (
-                                              <div className="flex items-center space-x-2">
-                                                <button
-                                                  onClick={() =>
-                                                    handleEditReply(
-                                                      childReview.id,
-                                                      childReview.text ||
-                                                        childReview.description
-                                                    )
-                                                  }
-                                                  className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
-                                                  disabled={
-                                                    deletingReply[
-                                                      childReview.id
-                                                    ]
-                                                  }
-                                                >
-                                                  Edit
-                                                </button>
-                                                <span className="text-[#D1D5DB]">
-                                                  |
-                                                </span>
-                                                <button
-                                                  onClick={() =>
-                                                    handleDeleteReply(
-                                                      review.id,
-                                                      childReview.id
-                                                    )
-                                                  }
-                                                  className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
-                                                  disabled={
-                                                    deletingReply[
-                                                      childReview.id
-                                                    ]
-                                                  }
-                                                >
-                                                  {deletingReply[childReview.id]
-                                                    ? "Deleting..."
-                                                    : "Delete"}
-                                                </button>
-                                              </div>
-                                            )}
-                                        </div>
-                                        {editingReplyId === childReview.id ? (
-                                          <div className="space-y-2">
-                                            <div className="border border-[#D1D5DB] rounded-xl sm:rounded-2xl p-3">
-                                              <textarea
-                                                className="w-full outline-none resize-none font-['open_sans'] text-[#1F2937] bg-transparent text-sm sm:text-base"
-                                                placeholder="Edit your reply..."
-                                                value={
-                                                  editReplyTexts[
-                                                    childReview.id
-                                                  ] || ""
-                                                }
-                                                onChange={(e) => {
-                                                  const value = e.target.value;
-                                                  if (value.length <= 1000) {
-                                                    setEditReplyTexts(
-                                                      (prev) => ({
-                                                        ...prev,
-                                                        [childReview.id]: value,
-                                                      })
-                                                    );
-                                                  }
-                                                }}
-                                                rows={2}
-                                              />
-                                              <div className="flex flex-col sm:flex-row justify-end items-end space-y-2 sm:space-y-0 sm:space-x-3 mt-2">
-                                                <span className="font-['open_sans'] text-[#9CA3AF] text-[11px] sm:text-[12px]">
-                                                  {1000 -
-                                                    (editReplyTexts[
-                                                      childReview.id
-                                                    ]?.length || 0)}{" "}
-                                                  Characters remaining
-                                                </span>
-                                                <button
-                                                  onClick={() =>
-                                                    handleCancelEdit(
-                                                      childReview.id
-                                                    )
-                                                  }
-                                                  className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100 w-full sm:w-auto"
-                                                  disabled={
-                                                    submittingEditReply[
-                                                      childReview.id
-                                                    ]
-                                                  }
-                                                >
-                                                  Cancel
-                                                </button>
-                                                <button
-                                                  onClick={() =>
-                                                    handleUpdateReply(
-                                                      review.id,
-                                                      childReview.id
-                                                    )
-                                                  }
-                                                  disabled={
-                                                    submittingEditReply[
-                                                      childReview.id
-                                                    ] ||
-                                                    !editReplyTexts[
-                                                      childReview.id
-                                                    ]?.trim()
-                                                  }
-                                                  className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-4 py-1.5 sm:px-5 sm:py-2 rounded-full font-[Poppins] font-semibold text-sm w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                                                >
-                                                  {submittingEditReply[
-                                                    childReview.id
-                                                  ]
-                                                    ? "Updating..."
-                                                    : "Update"}
-                                                </button>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        ) : (
-                                          <p className="font-['open_sans'] text-xs sm:text-sm text-[#1F2937] leading-relaxed pl-6 sm:pl-8">
-                                            {childReview.text ||
-                                              childReview.description}
-                                          </p>
-                                        )}
-                                        {editingReplyId !== childReview.id && (
-                                          <div className="flex items-center pl-6 sm:pl-8 pt-1">
-                                            <button
-                                              onClick={() =>
-                                                handleLikeReply(
-                                                  review.id,
-                                                  childReview.id
-                                                )
-                                              }
-                                              className={`flex items-center space-x-1 ${
-                                                childReview.is_liked
-                                                  ? "text-[#7077FE]"
-                                                  : "text-[#1F2937]"
-                                              }`}
-                                            >
-                                              <svg
-                                                className="w-4 h-4 sm:w-5 sm:h-5"
-                                                viewBox="0 0 24 24"
-                                                fill={
-                                                  childReview.is_liked
-                                                    ? "currentColor"
-                                                    : "none"
-                                                }
-                                                stroke="currentColor"
-                                              >
-                                                <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
-                                              </svg>
-                                              {childReview.likes_count > 0 && (
-                                                <span className="font-['open_sans'] text-xs">
-                                                  {childReview.likes_count}
-                                                </span>
-                                              )}
-                                            </button>
-                                          </div>
-                                        )}
-                                      </div>
-                                    );
-                                  }
-                                )}
-                                {pagination[review.id]?.loadingMore && (
-                                  <div className="text-center py-4 text-[#64748B] text-xs">
-                                    Loading more replies...
-                                  </div>
-                                )}
-                                {pagination[review.id]?.hasMore &&
-                                  !pagination[review.id]?.loadingMore && (
-                                    <div className="text-center py-2">
-                                      <button
-                                        onClick={() =>
-                                          loadMoreChildReviews(review.id)
-                                        }
-                                        className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
-                                      >
-                                        Load more replies
-                                      </button>
-                                    </div>
-                                  )}
-                              </>
-                            ) : (
-                              <div className="text-center py-2 text-[#64748B] text-xs">
-                                No replies yet
-                              </div>
-                            )}
-                          </div>
                         </div>
                       )}
+
+                      {/* Child reviews section - ALWAYS SHOW (moved outside openReplyInputs) */}
+                      {childReviews[review.id] &&
+                        childReviews[review.id].length > 0 && (
+                          <div className="space-y-3 pl-3 sm:pl-4 border-l-2 border-[#ECEEF2]">
+                            <div
+                              className="space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto pr-1"
+                              onScroll={(e) => {
+                                const target = e.target as HTMLElement;
+                                const scrollBottom =
+                                  target.scrollHeight -
+                                  target.scrollTop -
+                                  target.clientHeight;
+                                if (
+                                  scrollBottom < 100 &&
+                                  pagination[review.id]?.hasMore &&
+                                  !pagination[review.id]?.loadingMore
+                                ) {
+                                  loadMoreChildReviews(review.id);
+                                }
+                              }}
+                            >
+                              {loadingChildReviews[review.id] ? (
+                                <div className="text-center py-4 text-[#64748B] text-xs">
+                                  Loading replies...
+                                </div>
+                              ) : childReviews[review.id] &&
+                                childReviews[review.id].length > 0 ? (
+                                <>
+                                  {childReviews[review.id].map(
+                                    (childReview: any) => {
+                                      const childReviewDate =
+                                        childReview.createdAt
+                                          ? new Date(
+                                              childReview.createdAt
+                                            ).toLocaleDateString("en-US", {
+                                              year: "numeric",
+                                              month: "short",
+                                              day: "numeric",
+                                            })
+                                          : "";
+
+                                      return (
+                                        <div
+                                          key={childReview.id}
+                                          className="bg-white border border-[#ECEEF2] rounded-lg p-3 space-y-2"
+                                        >
+                                          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
+                                            <div className="flex items-center space-x-2">
+                                              {childReview.profile
+                                                ?.profile_picture && (
+                                                <img
+                                                  src={
+                                                    childReview.profile
+                                                      .profile_picture
+                                                  }
+                                                  alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
+                                                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover"
+                                                />
+                                              )}
+                                              <span className="font-[Poppins] font-semibold text-sm text-black">
+                                                {`${
+                                                  childReview.profile
+                                                    ?.first_name || ""
+                                                } ${
+                                                  childReview.profile
+                                                    ?.last_name || ""
+                                                }`.trim() || "Anonymous"}
+                                              </span>
+                                              <div className="w-1 h-1 bg-[#9CA3AF] rounded-full"></div>
+                                              <span className="font-['open_sans'] text-[#9CA3AF] text-xs">
+                                                {childReviewDate}
+                                              </span>
+                                            </div>
+                                            {childReview.is_my_reply &&
+                                              editingReplyId !==
+                                                childReview.id && (
+                                                <div className="flex items-center space-x-2">
+                                                  <button
+                                                    onClick={() =>
+                                                      handleEditReply(
+                                                        childReview.id,
+                                                        childReview.text ||
+                                                          childReview.description
+                                                      )
+                                                    }
+                                                    className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
+                                                    disabled={
+                                                      deletingReply[
+                                                        childReview.id
+                                                      ]
+                                                    }
+                                                  >
+                                                    Edit
+                                                  </button>
+                                                  <span className="text-[#D1D5DB]">
+                                                    |
+                                                  </span>
+                                                  <button
+                                                    onClick={() =>
+                                                      showDeleteConfirmation(
+                                                        review.id,
+                                                        childReview.id
+                                                      )
+                                                    }
+                                                    className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
+                                                    disabled={
+                                                      deletingReply[
+                                                        childReview.id
+                                                      ]
+                                                    }
+                                                  >
+                                                    {deletingReply[
+                                                      childReview.id
+                                                    ]
+                                                      ? "Deleting..."
+                                                      : "Delete"}
+                                                  </button>
+                                                </div>
+                                              )}
+                                          </div>
+                                          {editingReplyId === childReview.id ? (
+                                            <div className="space-y-2">
+                                              <div className="border border-[#D1D5DB] rounded-xl sm:rounded-2xl p-3">
+                                                <textarea
+                                                  className="w-full outline-none resize-none font-['open_sans'] text-[#1F2937] bg-transparent text-sm sm:text-base"
+                                                  placeholder="Edit your reply..."
+                                                  value={
+                                                    editReplyTexts[
+                                                      childReview.id
+                                                    ] || ""
+                                                  }
+                                                  onChange={(e) => {
+                                                    const value =
+                                                      e.target.value;
+                                                    if (value.length <= 1000) {
+                                                      setEditReplyTexts(
+                                                        (prev) => ({
+                                                          ...prev,
+                                                          [childReview.id]:
+                                                            value,
+                                                        })
+                                                      );
+                                                    }
+                                                  }}
+                                                  rows={2}
+                                                />
+                                                <div className="flex flex-col sm:flex-row justify-end items-end space-y-2 sm:space-y-0 sm:space-x-3 mt-2">
+                                                  <span className="font-['open_sans'] text-[#9CA3AF] text-[11px] sm:text-[12px]">
+                                                    {1000 -
+                                                      (editReplyTexts[
+                                                        childReview.id
+                                                      ]?.length || 0)}{" "}
+                                                    Characters remaining
+                                                  </span>
+                                                  <button
+                                                    onClick={() =>
+                                                      handleCancelEdit(
+                                                        childReview.id
+                                                      )
+                                                    }
+                                                    className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100 w-full sm:w-auto"
+                                                    disabled={
+                                                      submittingEditReply[
+                                                        childReview.id
+                                                      ]
+                                                    }
+                                                  >
+                                                    Cancel
+                                                  </button>
+                                                  <button
+                                                    onClick={() =>
+                                                      handleUpdateReply(
+                                                        review.id,
+                                                        childReview.id
+                                                      )
+                                                    }
+                                                    disabled={
+                                                      submittingEditReply[
+                                                        childReview.id
+                                                      ] ||
+                                                      !editReplyTexts[
+                                                        childReview.id
+                                                      ]?.trim()
+                                                    }
+                                                    className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-4 py-1.5 sm:px-5 sm:py-2 rounded-full font-[Poppins] font-semibold text-sm w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                                                  >
+                                                    {submittingEditReply[
+                                                      childReview.id
+                                                    ]
+                                                      ? "Updating..."
+                                                      : "Update"}
+                                                  </button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <p className="font-['open_sans'] text-xs sm:text-sm text-[#1F2937] leading-relaxed pl-6 sm:pl-8">
+                                              {childReview.text ||
+                                                childReview.description}
+                                            </p>
+                                          )}
+                                          {editingReplyId !==
+                                            childReview.id && (
+                                            <div className="flex items-center pl-6 sm:pl-8 pt-1">
+                                              <button
+                                                onClick={() =>
+                                                  handleLikeReply(
+                                                    review.id,
+                                                    childReview.id
+                                                  )
+                                                }
+                                                className={`flex items-center space-x-1 ${
+                                                  childReview.is_liked
+                                                    ? "text-[#7077FE]"
+                                                    : "text-[#1F2937]"
+                                                }`}
+                                              >
+                                                <svg
+                                                  className="w-4 h-4 sm:w-5 sm:h-5"
+                                                  viewBox="0 0 24 24"
+                                                  fill={
+                                                    childReview.is_liked
+                                                      ? "currentColor"
+                                                      : "none"
+                                                  }
+                                                  stroke="currentColor"
+                                                >
+                                                  <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
+                                                </svg>
+                                                {childReview.likes_count >
+                                                  0 && (
+                                                  <span className="font-['open_sans'] text-xs">
+                                                    {childReview.likes_count}
+                                                  </span>
+                                                )}
+                                              </button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    }
+                                  )}
+                                  {pagination[review.id]?.loadingMore && (
+                                    <div className="text-center py-4 text-[#64748B] text-xs">
+                                      Loading more replies...
+                                    </div>
+                                  )}
+                                  {pagination[review.id]?.hasMore &&
+                                    !pagination[review.id]?.loadingMore && (
+                                      <div className="text-center py-2">
+                                        <button
+                                          onClick={() =>
+                                            loadMoreChildReviews(review.id)
+                                          }
+                                          className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
+                                        >
+                                          Load more replies
+                                        </button>
+                                      </div>
+                                    )}
+                                </>
+                              ) : (
+                                <div className="text-center py-2 text-[#64748B] text-xs">
+                                  No replies yet
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                     </div>
                   );
                 })}
@@ -2195,6 +2306,67 @@ const connectionButtonState = getConnectionButtonState();
         directory={directoryData}
         infoId={infoId}
       />
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteConfirmation.isOpen}
+        onClose={() =>
+          setDeleteConfirmation({
+            isOpen: false,
+            reviewId: null,
+            replyId: null,
+          })
+        }
+      >
+        <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
+          <h2 className="text-lg sm:text-xl font-bold text-[#081021] mb-3 sm:mb-4">
+            Confirm Deletion
+          </h2>
+          <p className="mb-4 sm:mb-6 text-sm sm:text-base text-[#64748B]">
+            Are you sure you want to delete this reply? This action cannot be
+            undone.
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={() =>
+                setDeleteConfirmation({
+                  isOpen: false,
+                  reviewId: null,
+                  replyId: null,
+                })
+              }
+              className="px-4 py-2 rounded-full border border-[#D1D5DB] text-[#64748B] font-medium hover:bg-gray-50 w-full sm:w-auto"
+              disabled={deletingReply[deleteConfirmation.replyId || ""]}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={async () => {
+                if (deleteConfirmation.reviewId && deleteConfirmation.replyId) {
+                  await handleConfirmDelete(
+                    deleteConfirmation.reviewId,
+                    deleteConfirmation.replyId
+                  );
+                }
+              }}
+              className="px-4 py-2 rounded-full bg-[#EF4444] text-white font-medium hover:bg-[#DC2626] disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+              disabled={deletingReply[deleteConfirmation.replyId || ""]}
+            >
+              {deletingReply[deleteConfirmation.replyId || ""] ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2 inline-block"></div>
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };

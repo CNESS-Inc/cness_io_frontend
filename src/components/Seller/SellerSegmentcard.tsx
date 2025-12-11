@@ -43,14 +43,11 @@ import {
   GetAllFormDetails,
   GetLibraryrDetails,
   // GetAllPlanDetails,
-  GetSubDomainDetails,
   GetUserNotification,
   MeDetails,
-  PaymentDetails,
   RejectFriendRequest,
   SendBpFollowRequest,
   SendFriendRequest,
-  submitOrganizationDetails,
   submitPersonDetails,
   UnFriend,
 } from "../../Common/ServerAPI";
@@ -63,23 +60,6 @@ import DOMPurify from "dompurify";
 import { ProductCard } from "../../pages/Library";
 //import like from "../../assets/likes.svg";
 //import heart from "../../assets/heart.svg";
-
-interface OrganizationForm {
-  domain_id: string;
-  sub_domain_id: string;
-  organization_type_id: string;
-  revenue_range_id: string;
-  organization_name: string;
-  domain: string;
-  custom_domain?: string;
-  sub_domain: string;
-  employee_size: string;
-  revenue: string;
-  question: Array<{
-    question_id: string;
-    answer: string;
-  }>;
-}
 
 interface FormErrors {
   email?: string;
@@ -105,21 +85,6 @@ interface QuestionAnswer {
   answer: string;
 }
 
-type OrgPricingPlan = {
-  id: any;
-  title: any;
-  description: string;
-  monthlyPrice?: string;
-  yearlyPrice?: string;
-  period: string;
-  billingNote?: string;
-  features: string[];
-  buttonText: string;
-  buttonClass: string;
-  borderClass: string;
-  popular: boolean;
-};
-
 interface PersonForm {
   first_name: string;
   last_name: string;
@@ -127,11 +92,6 @@ interface PersonForm {
   professions: (string | number)[];
   custom_profession?: string;
   question: QuestionAnswer[];
-}
-
-interface SubDomain {
-  id: string;
-  name: string;
 }
 
 interface Interest {
@@ -266,38 +226,14 @@ export function GreetingBar({
     | "disqualify"
     | null
   >(null);
-  const [isAnnual, setIsAnnual] = useState(true);
-  const [personPricing, setPersonPricing] = useState<any[]>([]);
   // const [user, setUser] = useState<any | null>(null);
   const [readlineQuestion, setReadlineQuestion] = useState([]);
   const { showToast } = useToast();
-  const [domains, setDomains] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [orgFormStep, setOrgFormStep] = useState(1);
   const [personFormStep, setPersonFormStep] = useState(1);
-  const [subDomain, setsubDomain] = useState<SubDomain[] | null>();
   const [profession, setProfession] = useState<Profession[]>([]);
   const [interest, setInterest] = useState<Interest[]>([]);
-  const [revenue, setRevenue] = useState([]);
-  const [OrganizationSize, setOrganizationSize] = useState([]);
-  const [organizationpricingPlans, setorganizationpricingPlans] = useState<
-    OrgPricingPlan[]
-  >([]);
-  const [isOrgFormSubmitted, setIsOrgFormSubmitted] = useState(false);
-  const [organizationErrors, setOrganizationErrors] = useState<FormErrors>({});
   const [personErrors, setPersonErrors] = useState<FormErrors>({});
-  const [organizationForm, setOrganizationForm] = useState<OrganizationForm>({
-    domain_id: "",
-    sub_domain_id: "",
-    organization_type_id: "",
-    revenue_range_id: "",
-    organization_name: "",
-    domain: "",
-    sub_domain: "",
-    employee_size: "",
-    revenue: "",
-    question: [], // Changed from 'question' to 'questions' to match interface
-  });
 
   const [personForm, setPersonForm] = useState<PersonForm>({
     first_name: "",
@@ -320,64 +256,6 @@ export function GreetingBar({
       localStorage.setItem("hasLoggedBefore", JSON.stringify(true));
     }
   }, []);
-
-  const handleOrganizationFormChange = async (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-
-    if (name.startsWith("question_")) {
-      // Handle question answers (unchanged)
-      const questionId = name.replace("question_", "");
-      setOrganizationForm((prev) => {
-        const existingQuestionIndex = prev.question.findIndex(
-          (q) => q.question_id === questionId
-        );
-
-        if (existingQuestionIndex >= 0) {
-          // Update existing answer
-          const updatedQuestions = [...prev.question];
-          updatedQuestions[existingQuestionIndex] = {
-            question_id: questionId,
-            answer: value,
-          };
-          return { ...prev, question: updatedQuestions };
-        } else {
-          // Add new question answer
-          return {
-            ...prev,
-            question: [
-              ...prev.question,
-              { question_id: questionId, answer: value },
-            ],
-          };
-        }
-      });
-    } else {
-      // Handle other fields normally
-      setOrganizationForm((prev) => ({
-        ...prev,
-        [name]: value,
-        ...(name === "domain" && value !== "other" && { sub_domain: "" }),
-        ...(name === "domain" && value !== "other" && { custom_domain: "" }),
-      }));
-      if (name === "domain" && value && value !== "other") {
-        try {
-          const response = await GetSubDomainDetails(value);
-          setsubDomain(response?.data?.data);
-        } catch (error: any) {
-          console.error("Error calling API:", error);
-          showToast({
-            message: error?.response?.data?.error?.message,
-            type: "error",
-            duration: 5000,
-          });
-        }
-      }
-    }
-  };
 
   const handlePersonSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -438,37 +316,6 @@ export function GreetingBar({
           response?.data?.data?.user.margaret_name
         );
 
-        // Create combined plan objects with both monthly and yearly data
-        const updatedPlans = Object.values(plansByRange)?.map(
-          (planGroup: any) => {
-            const monthlyPlan = planGroup.monthly;
-            const yearlyPlan = planGroup.yearly;
-
-            return {
-              id: monthlyPlan?.id || yearlyPlan?.id,
-              title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              description: "Customized pricing based on your selection",
-              monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-              yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-              period: isAnnual ? "/year" : "/month",
-              billingNote: yearlyPlan
-                ? isAnnual
-                  ? `billed annually ($${yearlyPlan.amount})`
-                  : `or $${monthlyPlan?.amount}/month`
-                : undefined,
-              features: [], // Add any features you need here
-              buttonText: "Get Started",
-              buttonClass: yearlyPlan
-                ? ""
-                : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-              borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-              popular: !!yearlyPlan,
-            };
-          }
-        );
-
-        setPersonPricing(updatedPlans);
-        setActiveModal("personPricing");
       } else if (res.success.statusCode === 201) {
         setActiveModal("disqualify");
         const response = await MeDetails();
@@ -541,61 +388,6 @@ export function GreetingBar({
     let isValid = true;
     const newErrors: FormErrors = {};
 
-    if (formType === "organization") {
-      // Always validate step 1 fields if we're on step 1 or validating all steps
-      if (step === 1) {
-        const requiredFields = [
-          "organization_name",
-          "domain",
-          "employee_size",
-          "revenue",
-        ];
-
-        // Only require sub_domain if domain is not "other"
-        if (formData.domain !== "other") {
-          requiredFields.push("sub_domain");
-        }
-
-        requiredFields.forEach((field) => {
-          // Special handling for domain="other" case
-          if (field === "domain" && formData.domain === "other") {
-            if (!formData.custom_domain?.trim()) {
-              newErrors.custom_domain = "Custom domain is required";
-              isValid = false;
-            }
-          } else {
-            const error = validateField(field, formData[field], {
-              required: true,
-            });
-            if (error) {
-              newErrors[field] = error;
-              isValid = false;
-            }
-          }
-        });
-      }
-
-      // Only validate questions when submitting (validateAllSteps = true)
-      if (step === 2) {
-        readlineQuestion.forEach((question: any) => {
-          const answer =
-            formData.question?.find(
-              (q: QuestionAnswer) => q.question_id === question.id
-            )?.answer || "";
-
-          if (!answer || answer.trim() === "") {
-            newErrors[`question_${question.id}`] = "This Field is required";
-            isValid = false;
-          }
-        });
-      }
-
-      if (setErrors) {
-        setOrganizationErrors(newErrors);
-      }
-      return isValid;
-    }
-
     if (formType === "person") {
       // Always validate step 1 fields if we're on step 1 or validating all steps
       if (step === 1) {
@@ -647,12 +439,9 @@ export function GreetingBar({
   const fetchAllDataDetails = async () => {
     try {
       const response = await GetAllFormDetails();
-      setDomains((response as any)?.data?.data?.domain);
       setProfession((response as any)?.data?.data?.profession);
       setInterest((response as any)?.data?.data?.interest);
       setReadlineQuestion(response?.data?.data?.questions);
-      setOrganizationSize(response?.data?.data?.organization_size);
-      setRevenue(response?.data?.data?.revenue);
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message,
@@ -662,23 +451,12 @@ export function GreetingBar({
     }
   };
 
-  const handleNextClick = () => {
-    // Only validate step 1 fields when clicking next
-    const isValid = validateForm(organizationForm, "organization", 1, true);
-
-    if (isValid) {
-      setOrgFormStep(2);
-      setOrganizationErrors({});
-    }
-  };
-
   const handleNextPersonClick = () => {
     // Only validate step 1 fields when clicking next
     const isValid = validateForm(personForm, "person", 1, true);
 
     if (isValid) {
       setPersonFormStep(2);
-      setOrganizationErrors({});
     }
   };
 
@@ -760,29 +538,6 @@ export function GreetingBar({
     }
   }, [activeModal]);
 
-  const handlePlanSelection = async (plan: any) => {
-    try {
-      const payload = {
-        plan_id: plan.id,
-        plan_type: isAnnual ? "Yearly" : "Monthly",
-      };
-
-      const res = await PaymentDetails(payload);
-
-      if (res?.data?.data?.url) {
-        const url = res.data.data.url;
-        window.location.href = url;
-      } else {
-        console.error("URL not found in response");
-      }
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
 
   // const completedStep = localStorage.getItem("completed_step");
   // console.log("🚀 ~ GreetingBar ~ completedStep:", completedStep);
@@ -810,106 +565,6 @@ export function GreetingBar({
   //     });
   //   }
   // };
-
-  const handleOrganizationSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsOrgFormSubmitted(true);
-    // Validate all fields (both steps) when submitting
-    const isValid = validateForm(organizationForm, "organization", 2, true);
-
-    if (!isValid) return;
-    setIsSubmitting(true);
-
-    if (
-      organizationForm.domain === "other" &&
-      !organizationForm.custom_domain
-    ) {
-      setOrganizationErrors({
-        ...organizationErrors,
-        custom_domain: "Custom domain name is required",
-      });
-      return;
-    }
-
-    try {
-      const res = await submitOrganizationDetails(organizationForm);
-      localStorage.setItem("person_organization", "2");
-      localStorage.setItem("completed_step", "1");
-      if (res.success.statusCode === 200) {
-        const plansByRange: Record<string, any> = {};
-        res?.data?.data?.plan.forEach((plan: any) => {
-          if (!plansByRange[plan.plan_range]) {
-            plansByRange[plan.plan_range] = {};
-          }
-          plansByRange[plan.plan_range][plan.plan_type] = plan;
-        });
-
-        const response = await MeDetails();
-        localStorage.setItem(
-          "profile_picture",
-          response?.data?.data?.user.profile_picture
-        );
-        localStorage.setItem("name", response?.data?.data?.user.name);
-        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
-        localStorage.setItem(
-          "margaret_name",
-          response?.data?.data?.user.margaret_name
-        );
-
-        // Create combined plan objects with both monthly and yearly data
-        const updatedPlans = Object.values(plansByRange)?.map(
-          (planGroup: any) => {
-            const monthlyPlan = planGroup.monthly;
-            const yearlyPlan = planGroup.yearly;
-
-            return {
-              id: monthlyPlan?.id || yearlyPlan?.id,
-              title: monthlyPlan?.plan_range || yearlyPlan?.plan_range,
-              description: "Customized pricing based on your selection",
-              monthlyPrice: monthlyPlan ? `$${monthlyPlan.amount}` : undefined,
-              yearlyPrice: yearlyPlan ? `$${yearlyPlan.amount}` : undefined,
-              period: isAnnual ? "/year" : "/month",
-              billingNote: yearlyPlan
-                ? isAnnual
-                  ? `billed annually ($${yearlyPlan.amount})`
-                  : `or $${monthlyPlan?.amount}/month`
-                : undefined,
-              features: [], // Add any features you need here
-              buttonText: "Get Started",
-              buttonClass: yearlyPlan
-                ? ""
-                : "bg-gray-100 text-gray-800 hover:bg-gray-200",
-              borderClass: yearlyPlan ? "border-2 border-[#F07EFF]" : "border",
-              popular: !!yearlyPlan,
-            };
-          }
-        );
-
-        setorganizationpricingPlans(updatedPlans);
-        setActiveModal("organizationPricing");
-      } else if (res.success.statusCode === 201) {
-        navigate("/dashboard");
-        const response = await MeDetails();
-        localStorage.setItem(
-          "profile_picture",
-          response?.data?.data?.user.profile_picture
-        );
-        localStorage.setItem("name", response?.data?.data?.user.name);
-        localStorage.setItem("main_name", response?.data?.data?.user.main_name);
-        localStorage.setItem(
-          "margaret_name",
-          response?.data?.data?.user.margaret_name
-        );
-        localStorage.setItem("is_disqualify", "true");
-      }
-      // onSuccess();
-      // navigate("/dashboard");
-    } catch (error) {
-      console.error("Error submitting organization form:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handlePersonFormChange = (
     e: React.ChangeEvent<
@@ -949,18 +604,6 @@ export function GreetingBar({
       }));
     }
   };
-
-  const getBillingNote = (plan: any) => {
-    if (!plan.yearlyPrice || !plan.monthlyPrice) return undefined;
-
-    if (isAnnual) {
-      // For annual billing: show "billed annually (yearly price)"
-      return `billed annually ($${plan.yearlyPrice.replace("$", "") * 12})`;
-    } else {
-      return `or ${plan.monthlyPrice}/month`;
-    }
-  };
-
   // const getBadgeStatusInfo = (badgePaymentStatus: any[]) => {
   //   // If badgePaymentStatus is not provided or empty, return null
   //   if (!badgePaymentStatus || badgePaymentStatus.length === 0) {
@@ -1098,709 +741,6 @@ export function GreetingBar({
           {/* <div className="w-full lg:min-w-[363px] lg:max-w-[400px] flex items-center gap-[10px] rounded-lg bg-[#FFCC00]/10 px-3 py-[10px] text-[#7A5A00]"></div> */}
         </div>
       </div>
-      <Modal isOpen={activeModal === "PricingModal"} onClose={closeModal}>
-        <div className="p-6 rounded-lg w-full mx-auto z-10 relative">
-          <h2 className="text-xl poppins font-bold mb-4 text-center">
-            Pricing Plan
-          </h2>
-
-          <div className="flex justify-center">
-            {personPricing.map((plan) => (
-              <div
-                key={plan.id}
-                className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
-              >
-                {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#9747FF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
-                    Popular
-                  </div>
-                )}
-                <h3 className="font-semibold text-lg mb-2 mt-2">
-                  {plan.title}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
-                <div className="mb-4">
-                  <span className="text-3xl font-bold">
-                    {isAnnual
-                      ? plan.yearlyPrice || plan.monthlyPrice
-                      : plan.monthlyPrice}
-                  </span>
-                  <span className="text-gray-500">/month</span>
-                  {getBillingNote(plan) && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      {getBillingNote(plan)}
-                    </p>
-                  )}
-                </div>
-                <Button
-                  variant="gradient-primary"
-                  className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                  onClick={() => handlePlanSelection(plan)}
-                >
-                  {plan.buttonText}
-                </Button>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 text-center">
-            <label className="inline-flex items-center cursor-pointer">
-              <span className="mr-3 text-sm font-medium text-gray-700">
-                Monthly billing
-              </span>
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={isAnnual}
-                  onChange={() => setIsAnnual(!isAnnual)}
-                />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
-              </div>
-              <span className="ml-3 text-sm font-medium text-gray-700">
-                Annual billing
-              </span>
-            </label>
-          </div>
-        </div>
-      </Modal>
-      <Modal isOpen={activeModal === "organization"} onClose={closeModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
-          {" "}
-          {/* Ensures center + padding on small screens */}
-          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
-            {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
-              <div>
-                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-15 h-15 text-gray-700"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="3"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <circle
-                      cx="4.5"
-                      cy="4.5"
-                      r="2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <circle
-                      cx="19.5"
-                      cy="4.5"
-                      r="2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <circle
-                      cx="4.5"
-                      cy="19.5"
-                      r="2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <circle
-                      cx="19.5"
-                      cy="19.5"
-                      r="2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <line
-                      x1="12"
-                      y1="12"
-                      x2="4.5"
-                      y2="4.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <line
-                      x1="12"
-                      y1="12"
-                      x2="19.5"
-                      y2="4.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <line
-                      x1="12"
-                      y1="12"
-                      x2="4.5"
-                      y2="19.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <line
-                      x1="12"
-                      y1="12"
-                      x2="19.5"
-                      y2="19.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                  </svg>
-                </div>
-
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Let’s Get to Know Your Organization
-                </h2>
-                <p className="text-gray-900 text-sm">
-                  This information helps us understand your conscious impact
-                  better.
-                </p>
-              </div>
-            </div>
-
-            {/* Right Form Panel */}
-            <div className="w-full lg:w-[60%] bg-white px-4 py-6 sm:px-6 sm:py-8 md:p-10 overflow-y-auto">
-              <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Let’s Set Up Your Organization
-              </h2>
-
-              <form onSubmit={handleOrganizationSubmit} className="space-y-6">
-                {orgFormStep === 1 && (
-                  <>
-                    {/* Organization Name */}
-                    <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Organization Name
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="organization_name"
-                        value={organizationForm.organization_name}
-                        onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${organizationErrors.organization_name
-                          ? "border-red-500"
-                          : "border-gray-300"
-                          } rounded-md`}
-                        placeholder="Enter organization name"
-                      />
-                      {organizationErrors.organization_name && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {organizationErrors.organization_name}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Domain
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        name="domain"
-                        value={organizationForm.domain}
-                        onChange={handleOrganizationFormChange}
-                        className={`w-full px-3 py-2 border ${organizationErrors.domain
-                          ? "border-red-500"
-                          : "border-gray-300"
-                          } rounded-md`}
-                      >
-                        <option value="">Select domain</option>
-                        {domains?.map((domain: any) => (
-                          <option key={domain.id} value={domain.id}>
-                            {domain.name}
-                          </option>
-                        ))}
-                        <option value="other">Other (please specify)</option>
-                      </select>
-                      {organizationErrors.domain && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {organizationErrors.domain}
-                        </p>
-                      )}
-                    </div>
-
-                    {organizationForm.domain === "other" ? (
-                      <div className="mb-4">
-                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                          Custom Domain Name
-                          <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="custom_domain"
-                          value={organizationForm.custom_domain || ""}
-                          onChange={handleOrganizationFormChange}
-                          className={`w-full px-3 py-2 border ${organizationErrors.custom_domain
-                            ? "border-red-500"
-                            : "border-gray-300"
-                            } rounded-md`}
-                          placeholder="Enter your domain name"
-                        />
-                        {organizationErrors.custom_domain && (
-                          <p className="mt-1 text-sm text-red-600">
-                            {organizationErrors.custom_domain}
-                          </p>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="mb-4">
-                        <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                          Sub Domain
-                        </label>
-                        <select
-                          name="sub_domain"
-                          value={organizationForm.sub_domain}
-                          onChange={handleOrganizationFormChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                        >
-                          <option value="">Select Sub domain</option>
-                          {subDomain?.map((subdomain: any) => (
-                            <option key={subdomain.id} value={subdomain.id}>
-                              {subdomain.name}
-                            </option>
-                          ))}
-                        </select>
-                        {organizationErrors.sub_domain && (
-                          <p className="mt-1 text-sm text-red-600">
-                            {organizationErrors.sub_domain}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Employees Size */}
-                    <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Employees Size
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        name="employee_size"
-                        value={organizationForm.employee_size}
-                        onChange={handleOrganizationFormChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      >
-                        <>
-                          <option value="">Select Employee Size</option>
-                          {OrganizationSize?.map((orgsize: any) => (
-                            <option key={orgsize.id} value={orgsize.id}>
-                              {orgsize.name}
-                            </option>
-                          ))}
-                        </>
-                      </select>
-                      {organizationErrors.employee_size && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {organizationErrors.employee_size}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Revenue */}
-                    <div className="mb-4">
-                      <label className="block openSans text-base font-medium text-gray-700 mb-1">
-                        Revenue
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        name="revenue"
-                        value={organizationForm.revenue}
-                        onChange={handleOrganizationFormChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      >
-                        <>
-                          <option value="">Select Revenue Range</option>
-                          {revenue?.map((revenue: any) => (
-                            <option key={revenue.id} value={revenue.id}>
-                              {revenue.revenue_range}
-                            </option>
-                          ))}
-                        </>
-                      </select>
-                      {organizationErrors.revenue && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {organizationErrors.revenue}
-                        </p>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                {orgFormStep === 2 && (
-                  <>
-                    {/* Questions with options as radio buttons */}
-                    <div className="space-y-4">
-                      {readlineQuestion?.map((question: any) => {
-                        const existingAnswer =
-                          organizationForm.question.find(
-                            (q: QuestionAnswer) => q.question_id === question.id
-                          )?.answer || "";
-
-                        return (
-                          <div key={question.id} className="mb-4">
-                            <label className="block openSans text-base font-medium text-gray-800 mb-1">
-                              {question.question}
-                            </label>
-
-                            {question.options && question.options.length > 0 ? (
-                              <div className="space-y-2">
-                                {question?.options?.map((option: any) => (
-                                  <div
-                                    key={option.id}
-                                    className="flex items-center"
-                                  >
-                                    <input
-                                      type="radio"
-                                      id={`question_${question.id}_${option.id}`}
-                                      name={`question_${question.id}`}
-                                      value={option.option}
-                                      checked={existingAnswer === option.option}
-                                      onChange={handleOrganizationFormChange}
-                                      className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 shrink-0 peer-checked:border-transparent peer-checked:bg-linear-to-r peer-checked:from-[#7077FE] peer-checked:to-[#F07EFF] hover:from-[#F07EFF] hover:to-[#F07EFF] transition-all duration-300"
-                                    />
-                                    <label
-                                      htmlFor={`question_${question.id}_${option.id}`}
-                                      className="ml-3 block openSans text-base text-gray-700"
-                                    >
-                                      {option.option}
-                                    </label>
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <textarea
-                                name={`question_${question.id}`}
-                                value={existingAnswer}
-                                onChange={handleOrganizationFormChange}
-                                className={`w-full px-3 py-2 border ${organizationErrors[`question_${question.id}`]
-                                  ? "border-red-500"
-                                  : "border-gray-300"
-                                  } rounded-md`}
-                                placeholder={`Enter your answer`}
-                                rows={3}
-                              />
-                            )}
-
-                            {isOrgFormSubmitted &&
-                              organizationErrors[`question_${question.id}`] && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {
-                                    organizationErrors[
-                                    `question_${question.id}`
-                                    ]
-                                  }
-                                </p>
-                              )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </>
-                )}
-                {/* Form Footer Actions */}
-
-                {/* Form Footer Actions */}
-                <div className="flex justify-end mt-6 gap-3 flex-wrap">
-                  {orgFormStep === 2 && (
-                    <>
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          setOrgFormStep(1);
-                          setOrganizationErrors({});
-                        }}
-                        variant="white-outline"
-                        className="w-[104px] h-[39px] rounded-[100px] p-0
-          font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-          flex items-center justify-center"
-                      >
-                        Back
-                      </Button>
-
-                      <Button
-                        type="button"
-                        onClick={closeModal}
-                        variant="white-outline"
-                        className="w-[104px] h-[39px] rounded-[100px] p-0
-          font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-          flex items-center justify-center"
-                      >
-                        Cancel
-                      </Button>
-
-                      <Button
-                        type="submit"
-                        variant="gradient-primary"
-                        className="w-[104px] h-[39px] rounded-[100px] p-0
-          font-['Plus Jakarta Sans'] font-medium text-[12px] leading-none
-          flex items-center justify-center"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? "Submitting..." : "Submit"}
-                      </Button>
-
-                      {/* <Button
-                              type="button"
-                              onClick={() => setOrgFormStep(3)}
-                              variant="white-outline"
-                              className="border border-[#7077FE] text-[#7077FE] hover:bg-[#f0f4ff]"
-                            >
-                              Pricing
-                            </Button> */}
-                    </>
-                  )}
-
-                  {orgFormStep === 1 && (
-                    <>
-                      <Button
-                        type="button"
-                        onClick={closeModal}
-                        variant="white-outline"
-                      >
-                        Cancel
-                      </Button>
-
-                      <Button
-                        type="button"
-                        onClick={handleNextClick}
-                        variant="gradient-primary"
-                        className="rounded-full py-3 px-8 transition-all"
-                      >
-                        Next
-                      </Button>
-                    </>
-                  )}
-                </div>
-
-                {/* Dummy Pricing */}
-                {orgFormStep === 3 && (
-                  <>
-                    <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
-                      🌟 Choose Your Plan
-                    </h2>
-
-                    <div className="flex justify-center">
-                      <div className="relative w-full max-w-sm p-8 rounded-3xl border border-violet-300 shadow-xl bg-white hover:shadow-2xl transition-all duration-300">
-                        {/* Ribbon */}
-                        <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-3 py-1 rounded-bl-xl rounded-tr-3xl font-semibold shadow-md">
-                          Popular
-                        </div>
-
-                        {/* Plan Info */}
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                          Starter Plan
-                        </h3>
-                        <p className="text-sm text-gray-600 mb-6">
-                          Perfect for small conscious teams
-                        </p>
-
-                        <div className="text-center mb-6">
-                          <span className="text-4xl font-extrabold text-gray-900">
-                            $36
-                          </span>
-                          <span className="text-sm text-gray-500 ml-1">
-                            /month
-                          </span>
-                        </div>
-
-                        {/* CTA */}
-                        <div className="flex justify-center">
-                          <Button
-                            variant="gradient-primary"
-                            className="rounded-full py-3 px-8 text-white shadow-lg hover:opacity-90 transition"
-                            onClick={() => closeModal()} // or navigate("/dashboard")
-                          >
-                            Get Started
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </form>
-            </div>
-          </div>
-        </div>
-      </Modal>
-      <Modal
-        isOpen={activeModal === "organizationPricing"}
-        onClose={closeModal}
-      >
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
-          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
-            {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
-              <div>
-                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-15 h-15 text-gray-700"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="3"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <circle
-                      cx="4.5"
-                      cy="4.5"
-                      r="2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <circle
-                      cx="19.5"
-                      cy="4.5"
-                      r="2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <circle
-                      cx="4.5"
-                      cy="19.5"
-                      r="2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <circle
-                      cx="19.5"
-                      cy="19.5"
-                      r="2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <line
-                      x1="12"
-                      y1="12"
-                      x2="4.5"
-                      y2="4.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <line
-                      x1="12"
-                      y1="12"
-                      x2="19.5"
-                      y2="4.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <line
-                      x1="12"
-                      y1="12"
-                      x2="4.5"
-                      y2="19.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <line
-                      x1="12"
-                      y1="12"
-                      x2="19.5"
-                      y2="19.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                  </svg>
-                </div>
-
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Let’s Get to Know Your Organization
-                </h2>
-                <p className="text-gray-900 text-sm">
-                  This information helps us understand your conscious impact
-                  better.
-                </p>
-              </div>
-            </div>
-
-            {/* Right Form Panel */}
-            <div className=" p-6 rounded-lg w-full mx-auto my-auto z-10 relative">
-              <h2 className="text-xl poppins font-bold mb-4 text-center">
-                Organization Pricing Plan
-              </h2>
-
-              <div className="flex justify-center">
-                {organizationpricingPlans?.map((plan) => (
-                  <div
-                    key={plan.id}
-                    className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
-                  >
-                    {plan.popular && (
-                      <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
-                        Popular
-                      </div>
-                    )}
-                    <h3 className="font-semibold text-lg mb-2 mt-2">
-                      {plan.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-4">
-                      {plan.description}
-                    </p>
-                    <div className="mb-4">
-                      <span className="text-3xl font-bold">
-                        {isAnnual
-                          ? plan.yearlyPrice || plan.monthlyPrice
-                          : plan.monthlyPrice}
-                      </span>
-                      <span className="text-gray-500">/month</span>
-                      {getBillingNote(plan) && (
-                        <p className="text-sm text-gray-500 mt-1">
-                          {getBillingNote(plan)}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      variant="gradient-primary"
-                      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                      onClick={() => handlePlanSelection(plan)}
-                    >
-                      {plan.buttonText}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 text-center">
-                <label className="inline-flex items-center cursor-pointer">
-                  <span className="mr-3 text-sm font-medium text-gray-700">
-                    Monthly billing
-                  </span>
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={isAnnual}
-                      onChange={() => setIsAnnual(!isAnnual)}
-                    />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
-                  </div>
-                  <span className="ml-3 text-sm font-medium text-gray-700">
-                    Annual billing
-                  </span>
-                </label>
-              </div>
-
-              <div className="mt-6 text-center">
-                <button
-                  onClick={closeModal}
-                  className="text-gray-500 hover:text-gray-700 font-medium text-sm underline focus:outline-none"
-                >
-                  Skip for now, go to Dashboard
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Modal>
       <Modal isOpen={activeModal === "person"} onClose={closeModal}>
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
           <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
@@ -2158,119 +1098,6 @@ export function GreetingBar({
           </div>
         </div>
       </Modal>
-      <Modal isOpen={activeModal === "personPricing"} onClose={closeModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-2 sm:px-4 py-4 overflow-y-auto">
-          <div className="w-full max-w-[1100px] max-h-[90vh] bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row overflow-hidden">
-            {/* LEFT PANEL */}
-            <div className="hidden lg:flex bg-linear-to-br from-[#EDCDFD] via-[#9785FF] to-[#72DBF2] w-full lg:w-[40%] flex-col items-center justify-center text-center p-10">
-              <div>
-                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-[#CFC7FF] flex items-center justify-center shadow-md">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-15 h-15 text-gray-700"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                </div>
-
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Let's Get to <br></br>
-                  Know You Better
-                </h2>
-                <p className="text-gray-700 text-sm">
-                  This information helps us understand your conscious impact
-                  better.
-                </p>
-              </div>
-            </div>
-
-            {/* Right Form Panel */}
-            <div className=" p-6 rounded-lg w-full mx-auto my-auto z-10 relative">
-              <h2 className="text-xl poppins font-bold mb-4 text-center">
-                Person Pricing Plan
-              </h2>
-
-              <div className="flex justify-center">
-                {personPricing?.map((plan) => (
-                  <div
-                    key={plan.id}
-                    className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
-                  >
-                    {plan.popular && (
-                      <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
-                        Popular
-                      </div>
-                    )}
-                    <h3 className="font-semibold text-lg mb-2 mt-2">
-                      {plan.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-4">
-                      {plan.description}
-                    </p>
-                    <div className="mb-4">
-                      <span className="text-3xl font-bold">
-                        {isAnnual
-                          ? plan.yearlyPrice || plan.monthlyPrice
-                          : plan.monthlyPrice}
-                      </span>
-                      <span className="text-gray-500">/month</span>
-                      {getBillingNote(plan) && (
-                        <p className="text-sm text-gray-500 mt-1">
-                          {getBillingNote(plan)}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      variant="gradient-primary"
-                      className="rounded-[100px] py-3 px-8 self-stretch transition-colors duration-500 ease-in-out"
-                      onClick={() => handlePlanSelection(plan)}
-                    >
-                      {plan.buttonText}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 text-center">
-                <label className="inline-flex items-center cursor-pointer">
-                  <span className="mr-3 text-sm font-medium text-gray-700">
-                    Monthly billing
-                  </span>
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={isAnnual}
-                      onChange={() => setIsAnnual(!isAnnual)}
-                    />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
-                  </div>
-                  <span className="ml-3 text-sm font-medium text-gray-700">
-                    Annual billing
-                  </span>
-                </label>
-              </div>
-
-              <div className="mt-6 text-center">
-                <button
-                  onClick={closeModal}
-                  className="text-gray-500 hover:text-gray-700 font-medium text-sm underline focus:outline-none"
-                >
-                  Skip for now, go to Dashboard
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Modal>
       <Modal isOpen={activeModal === "disqualify"} onClose={closeModal}>
         <div className="text-center p-6 max-w-md">
           <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-linear-to-r from-[#7077FE] to-[#9747FF] mb-4">
@@ -2319,7 +1146,7 @@ export function TrueProfileCard({
   //title = "True Profile Created",
   //description = "Your profile is now complete with all the essential details added. This allows us to customize your experience!",
 
-  completion = 100,
+  completion = 0,
   avatar,
   onUpdateProfile,
 }: // onOpen,
@@ -2506,7 +1333,11 @@ export function CertificationCard({
 
   return (
     <>
-      <Card className="rounded-xl border border-[#E5E7EB] px-4 md:px-[18px] py-5 space-y-3">
+      <Card className="rounded-xl 
+  border border-[#E5E7EB] 
+  px-3 sm:px-4 md:px-[18px] 
+  py-4 sm:py-5 
+  space-y-3">
         {activeLevel === null ||
           (activeLevel === "Aspiring" && progress === 0) ? (
           <div
@@ -2566,7 +1397,7 @@ export function CertificationCard({
                       of Certification Process
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
+<div className="flex w-full sm:w-auto">
                     <button
                       onClick={() => navigate("/dashboard/inspired-assessment")}
                       className="relative w-full sm:w-[194px] h-10 rounded-full px-5 py-2.5 flex items-center justify-center text-center font-semibold text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
@@ -2655,7 +1486,7 @@ export function CertificationCard({
             </div>
             <HeaderDivider />
 
-            <div className="flex items-center justify-between gap-3">
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
               <div className="mt-2 flex items-end gap-2">
                 <span className="text-[32px] font-semibold font-['Open_Sans'] leading-8 text-[#222224]">
                   CIS Score:
@@ -2668,7 +1499,7 @@ export function CertificationCard({
                 </span>
               </div>
               {score < 60 ? (
-                <div className="flex items-center gap-2 w-full sm:w-auto">
+<div className="flex w-full sm:w-auto">
                   <button
                     onClick={onContinue}
                     className="relative w-full sm:w-[194px] h-10 rounded-full px-5 py-2.5 flex items-center justify-center text-center font-semibold text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
@@ -2847,7 +1678,14 @@ export function CertificationCard({
                     {activeLevel !== "Leader" && (
                       <button
                         onClick={() => handleUpgradeClick(activeLevel)}
-                        className="mt-4 sm:mt-5 inline-flex w-full sm:w-auto min-w-[140px] h-10 sm:h-10 items-center justify-center gap-[7px] rounded-full bg-[#7077FE] px-5 sm:px-6 font-opensans text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
+                        className="mt-4 sm:mt-5 
+    w-full sm:w-auto 
+    h-10 
+    flex items-center justify-center 
+    px-4 sm:px-6 
+    text-sm sm:text-[14px] 
+    rounded-full 
+    bg-[#7077FE] text-white  items-center justify-center gap-[7px] px-5 sm:px-6 font-opensans text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
                       >
                         Upgrade to {getNextLevel()}
                       </button>
@@ -2974,7 +1812,22 @@ export function BestPracticesSection({
 }) {
   // Desktop: simple 2-up pager
   const navigate = useNavigate();
-  const pageSize = 2;
+const getPageSize = () => {
+  if (window.innerWidth >= 1400) return 3; // large screens
+  if (window.innerWidth >= 1024) return 2; // normal desktop
+  return 1; // fallback
+};
+const [pageSize, setPageSize] = React.useState(getPageSize());
+React.useEffect(() => {
+  const handleResize = () => {
+    setPageSize(getPageSize());
+  };
+
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
+
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
   const [page, setPage] = React.useState(0);
   const start = page * pageSize;
@@ -3108,8 +1961,8 @@ export function BestPracticesSection({
                   `/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`
                 )
               }
-              className="snap-start w-[272px] h-[317px] rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
-            >
+ className="snap-start w-[90%] sm:w-[272px] max-w-[320px] h-auto flex-shrink-0
+             rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"            >
               {/* Image */}
               <div className="h-[135px] rounded-lg overflow-hidden">
                 <img
@@ -3138,10 +1991,11 @@ export function BestPracticesSection({
                   {bp.title}
                 </div>
                 <span
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(bp.description),
-                  }}
-                />
+  className="line-clamp-3 text-[14px] text-[#667085]"
+  dangerouslySetInnerHTML={{
+    __html: DOMPurify.sanitize(bp.description),
+  }}
+/>
                 {bp.if_following ? (
                   <button
                     className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
@@ -3207,92 +2061,105 @@ export function BestPracticesSection({
         </button>
       </div>
 
-      {/* --- DESKTOP list (keep your 2-up pager) --- */}
-      <div className="mt-3 hidden flex flex-col-2 sm:flex gap-4 overflow-hidden">
-        {visible.map((bp) => (
-          <div
-            key={bp.id}
-            onClick={() =>
-              navigate(`/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`)
-            }
-            className="w-[282px] h-[317px] rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
-          >
-            <div className="h-[135px] rounded-lg overflow-hidden">
-              <img
-                src={
-                  !bp.image ||
-                    bp.image === "null" ||
-                    bp.image === "undefined" ||
-                    !bp.image.startsWith("http") ||
-                    bp.image === "http://localhost:5026/file/"
-                    ? iconMap["companycard1"]
-                    : bp.image
-                }
-                alt={bp.title}
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  // Fallback in case the image fails to load
-                  (e.target as HTMLImageElement).src = iconMap["companycard1"];
-                }}
-              />
-            </div>
-
-            <div className="flex flex-col flex-1">
-              <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
-                {bp.title}
-              </div>
-              <span className="mt-3 font-opensans text-[16px] leading-[150%] text-[#667085] line-clamp-2"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(bp.description),
-                }}
-              />
-              {bp.if_following ? (
-                <button
-                  className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
-                             font-opensans text-[14px] font-semibold text-white
-                             shadow transition flex items-center justify-center gap-2
-                             disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFollowPost(bp.id);
-                  }}
-                  disabled={loadingStates[bp.id]}
-                >
-                  {loadingStates[bp.id] ? (
-                    <>
-                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Loading...
-                    </>
-                  ) : (
-                    'Following'
-                  )}
-                </button>
-              ) : (
-                <button
-                  className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
-                             font-opensans text-[14px] font-semibold text-white
-                             shadow hover:bg-[#5A61E8] transition flex items-center justify-center gap-2
-                             disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFollowPost(bp.id);
-                  }}
-                  disabled={loadingStates[bp.id]}
-                >
-                  {loadingStates[bp.id] ? (
-                    <>
-                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Loading...
-                    </>
-                  ) : (
-                    'Follow'
-                  )}
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
+  {/* --- DESKTOP RESPONSIVE CONTROLLED GRID --- */}
+{/* --- DESKTOP list (responsive grid) --- */}
+<div
+  className="mt-3 hidden sm:grid gap-4 overflow-hidden"
+  // auto-fit will show 1 / 2 / 3 cards per row depending on space
+  style={{
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+  }}
+>
+  {visible.map((bp) => (
+    <div
+      key={bp.id}
+      onClick={() =>
+        navigate(`/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`)
+      }
+      className="rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
+    >
+      {/* Image */}
+      <div className="h-[135px] rounded-lg overflow-hidden">
+        <img
+          src={
+            !bp.image ||
+            bp.image === "null" ||
+            bp.image === "undefined" ||
+            !bp.image.startsWith("http") ||
+            bp.image === "http://localhost:5026/file/"
+              ? iconMap["companycard1"]
+              : bp.image
+          }
+          alt={bp.title}
+          className="h-full w-full object-cover"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = iconMap["companycard1"];
+          }}
+        />
       </div>
+
+      {/* Content */}
+      <div className="flex flex-col flex-1">
+        <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
+          {bp.title}
+        </div>
+
+        <span
+          className="mt-2 font-opensans text-[14px] leading-[150%] text-[#667085] line-clamp-2"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(bp.description),
+          }}
+        />
+
+        {/* Follow / Following button (kept exactly from your logic) */}
+        {bp.if_following ? (
+          <button
+            className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
+                       font-opensans text-[14px] font-semibold text-white
+                       shadow transition flex items-center justify-center gap-2
+                       disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFollowPost(bp.id);
+            }}
+            disabled={loadingStates[bp.id]}
+          >
+            {loadingStates[bp.id] ? (
+              <>
+                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Loading...
+              </>
+            ) : (
+              "Following"
+            )}
+          </button>
+        ) : (
+          <button
+            className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
+                       font-opensans text-[14px] font-semibold text-white
+                       shadow hover:bg-[#5A61E8] transition flex items-center justify-center gap-2
+                       disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFollowPost(bp.id);
+            }}
+            disabled={loadingStates[bp.id]}
+          >
+            {loadingStates[bp.id] ? (
+              <>
+                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Loading...
+              </>
+            ) : (
+              "Follow"
+            )}
+          </button>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
+
 
       {/* Dots: mobile shows one dot per card; desktop shows one per page */}
       {/* Mobile dots */}
@@ -3869,7 +2736,7 @@ export function SocialStackCard({
       } else if (status === "requested") {
         // If not connected, send friend request
         const formattedData = { friend_id: id };
-        const response = await RejectFriendRequest(formattedData);
+        const response = await SendFriendRequest(formattedData);
 
         if (response.success) {
           setFriendRequests((prev) => ({

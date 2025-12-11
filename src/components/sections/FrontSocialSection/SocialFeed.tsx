@@ -195,9 +195,8 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${
-              index === current ? "block" : "hidden"
-            }`}
+            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
+              }`}
           >
             {item.type === "image" ? (
               <img
@@ -249,9 +248,8 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                idx === current ? "bg-indigo-500" : "bg-gray-300"
-              }`}
+              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
+                }`}
             ></button>
           ))}
         </div>
@@ -295,6 +293,7 @@ export default function SocialFeed() {
   const [activeView] = useState<"posts" | "following" | "collection">("posts");
   const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
   const [collectionItems] = useState<CollectionItem[]>([]);
+const storyScrollRef = useRef<HTMLDivElement>(null);
 
   const [_isPostsLoading, setIsPostsLoading] = useState(false);
   const [isFollowingLoading] = useState(false);
@@ -319,6 +318,7 @@ export default function SocialFeed() {
   }>({});
 
   const [showReportModal, setShowReportModal] = useState(false);
+  const [isTopicsOpen, setIsTopicsOpen] = useState(false);
 
   const [selectedPostForReport, setSelectedPostForReport] = useState<
     string | null
@@ -648,22 +648,22 @@ export default function SocialFeed() {
     return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
   };
 
-const handleClickOutside = (event: MouseEvent) => {
-  if (!openMenu.postId || !openMenu.type) return;
+  const handleClickOutside = (event: MouseEvent) => {
+    if (!openMenu.postId || !openMenu.type) return;
 
-  const key = `${openMenu.postId}-${openMenu.type}`;
-  const currentMenu = menuRef.current[key];
+    const key = `${openMenu.postId}-${openMenu.type}`;
+    const currentMenu = menuRef.current[key];
 
-  // Close options menu if click is outside
-  if (currentMenu && !currentMenu.contains(event.target as Node)) {
-    setOpenMenu({ postId: null, type: null });
-  }
-  
-  // Close share menu if click is outside
-  if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
-    setOpenMenu({ postId: null, type: null });
-  }
-};
+    // Close options menu if click is outside
+    if (currentMenu && !currentMenu.contains(event.target as Node)) {
+      setOpenMenu({ postId: null, type: null });
+    }
+
+    // Close share menu if click is outside
+    if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+      setOpenMenu({ postId: null, type: null });
+    }
+  };
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -843,9 +843,9 @@ const handleClickOutside = (event: MouseEvent) => {
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-2 px-2 md:px-2 lg:px-0 w-full">
+      <div className="flex flex-col xl:flex-row justify-between gap-2 xl:gap-2 px-2 md:px-2 xl:px-0 w-full">
         {/* Left Side: Post & Stories - Full width on mobile */}
-        <div className="w-full lg:max-w-[75%]" ref={containerRef}>
+        <div className="w-full xl:max-w-[75%]" ref={containerRef}>
           {activeView === "posts" ? (
             <>
               {/* Start a Post */}
@@ -905,79 +905,63 @@ const handleClickOutside = (event: MouseEvent) => {
 
               {/* Story Strip Wrapper */}
               <h4 className="font-medium">Reflections</h4>
-              <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
-                {/* Create Story Card */}
-                <div
-                  onClick={() => setOpenSignup(true)}
-                  className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start"
-                >
-                  <img
-                    src="/profile.png"
-                    alt="Create Story Background"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/profile.png";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
-                  <svg
-                    viewBox="0 0 162 70"
-                    preserveAspectRatio="none"
-                    className="absolute bottom-0 left-0 w-full h-[70px] z-10"
-                  >
-                    <path
-                      d="M0,0 H61 C65,0 81,22 81,22 C81,22 97,0 101,0 H162 V70 H0 Z"
-                      fill="#7C81FF"
-                    />
-                  </svg>
-                  <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
-                    <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl  border-5">
-                      <img
-                        src={iconMap["storyplus"]}
-                        alt="storyplus"
-                        className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert"
-                      />
-                    </div>
-                  </div>
-                  <div className="absolute bottom-3.5 w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
-                    Create Story
-                  </div>
-                  <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
-                </div>
+            <div className="relative mt-3 md:mt-4">
 
-                {
-                  storiesData.map((story) => (
-                    <div
-                      key={story.id}
-                      className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative mohan"
-                      onClick={() => setOpenSignup(true)}
-                    >
-                      <StoryCard
-                        id={story.id}
-                        userIcon={story.profile.profile_picture}
-                        userName={`${story.profile.first_name} ${story.profile.last_name}`}
-                        title={story.stories[0].description || "Untitled Story"}
-                        videoSrc={story.stories[0].thumbnail}
-                      />
+  {/* LEFT ARROW */}
+  <button
+  onClick={() => storyScrollRef.current?.scrollBy({ left: -300, behavior: "smooth" })}
+  className="absolute -left-3 top-1/2 -translate-y-1/2 bg-white shadow-md 
+             w-[38px] h-[38px] rounded-full flex items-center justify-center
+             z-50 pointer-events-auto"
+>
+  <ChevronLeft size={20} />
+</button>
 
-                      <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
-                        <img
-                          src={story.profile.profile_picture || "./public.png"}
-                          alt={`${story.profile.first_name} ${story.profile.last_name}`}
-                          className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/profile.png";
-                          }}
-                        />
-                        <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
-                          {story.username}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-              </div>
+  {/* SCROLL WRAPPER */}
+  <div
+    ref={storyScrollRef}
+    className="flex gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-2"
+  >
+
+
+
+    {/* STORY CARDS */}
+    {storiesData.map((story) => (
+      <div
+        key={story.id}
+        onClick={() => setOpenSignup(true)}
+        className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] rounded-xl overflow-hidden relative snap-start shrink-0"
+      >
+        <StoryCard
+          id={story.id}
+          userIcon={story.profile.profile_picture}
+          userName={`${story.profile.first_name} ${story.profile.last_name}`}
+          title={story.stories[0].description}
+          videoSrc={story.stories[0].thumbnail}
+        />
+
+        {/* Bottom label */}
+        <div className="absolute bottom-2 left-2 flex items-center gap-2 text-white z-20">
+          <img
+            src={story.profile.profile_picture || "/profile.png"}
+            className="w-6 h-6 rounded-full border border-white"
+          />
+          <span className="text-xs font-medium">{story.username}</span>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {/* RIGHT ARROW */}
+<button
+  onClick={() => storyScrollRef.current?.scrollBy({ left: 300, behavior: "smooth" })}
+  className="absolute -right-3 top-1/2 -translate-y-1/2 bg-white shadow-md 
+             w-[38px] h-[38px] rounded-full flex items-center justify-center
+             z-50 pointer-events-auto"
+>
+  <ChevronRight size={20} />
+</button>
+</div>
               <div className="w-full border-t border-[#C8C8C8] mt-4 md:mt-6"></div>
 
               {/* Posts Section */}
@@ -1036,13 +1020,13 @@ const handleClickOutside = (event: MouseEvent) => {
                           disabled={connectingUsers[post.user_id] || false}
                           className={`hidden sm:flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
                                 ${
-                                  // getFriendStatus(post.user_id) === "connected"
-                                  //   ? "bg-red-500 text-white hover:bg-red-600"
-                                  //   :
-                                  getFriendStatus(post.user_id) === "requested"
-                                    ? "bg-gray-400 text-white cursor-not-allowed"
-                                    : "bg-white text-black shadow-md"
-                                }`}
+                            // getFriendStatus(post.user_id) === "connected"
+                            //   ? "bg-red-500 text-white hover:bg-red-600"
+                            //   :
+                            getFriendStatus(post.user_id) === "requested"
+                              ? "bg-gray-400 text-white cursor-not-allowed"
+                              : "bg-white text-black shadow-md"
+                            }`}
                         >
                           <img
                             src={iconMap["userplus"]}
@@ -1054,18 +1038,17 @@ const handleClickOutside = (event: MouseEvent) => {
                             : // : getFriendStatus(post.user_id) === "connected"
                             // ? "Connected"
                             getFriendStatus(post.user_id) === "requested"
-                            ? "Requested"
-                            : "Connect"}
+                              ? "Requested"
+                              : "Connect"}
                         </button>
                         {/* Follow Button */}
                         <button
                           onClick={() => setOpenSignup(true)}
                           className={`flex w-[100px] justify-center items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${
-                                  post.if_following
-                                    ? "bg-transparent text-blue-500 hover:text-blue-600"
-                                    : "bg-[#7C81FF] text-white hover:bg-indigo-600"
-                                }`}
+                                ${post.if_following
+                              ? "bg-transparent text-blue-500 hover:text-blue-600"
+                              : "bg-[#7C81FF] text-white hover:bg-indigo-600"
+                            }`}
                         >
                           {post.if_following ? (
                             <>
@@ -1114,8 +1097,8 @@ const handleClickOutside = (event: MouseEvent) => {
                                         ? "Loading..."
                                         : getFriendStatus(post.user_id) ===
                                           "requested"
-                                        ? "Requested"
-                                        : "Connect"}
+                                          ? "Requested"
+                                          : "Connect"}
                                     </button>
                                   </li>
                                   <li>
@@ -1164,16 +1147,16 @@ const handleClickOutside = (event: MouseEvent) => {
                                   </li>
                                   {getFriendStatus(post.user_id) ===
                                     "connected" && (
-                                    <li>
-                                      <button
-                                        onClick={() => setOpenSignup(true)}
-                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                                      >
-                                        <CiCircleRemove className="w-4 h-4 text-black" />
-                                        Remove Connection
-                                      </button>
-                                    </li>
-                                  )}
+                                      <li>
+                                        <button
+                                          onClick={() => setOpenSignup(true)}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                        >
+                                          <CiCircleRemove className="w-4 h-4 text-black" />
+                                          Remove Connection
+                                        </button>
+                                      </li>
+                                    )}
                                 </ul>
                               </div>
                             )}
@@ -1234,7 +1217,7 @@ const handleClickOutside = (event: MouseEvent) => {
                   <div className="mt-3 md:mt-4">
                     <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
                       {expandedPosts[post.id] ||
-                      post?.content?.length <= CONTENT_LIMIT
+                        post?.content?.length <= CONTENT_LIMIT
                         ? post.content
                         : `${post?.content?.substring(0, CONTENT_LIMIT)}...`}
                       {post?.content?.length > CONTENT_LIMIT && (
@@ -1337,9 +1320,8 @@ const handleClickOutside = (event: MouseEvent) => {
                     <button
                       onClick={() => setOpenSignup(true)}
                       disabled={isLoading}
-                      className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${
-                        isLoading ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
+                      className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                     >
                       <ThumbsUp
                         className="w-5 h-5 md:w-6 md:h-6 shrink-0"
@@ -1347,9 +1329,8 @@ const handleClickOutside = (event: MouseEvent) => {
                         stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
                       />
                       <span
-                        className={`hidden sm:flex ${
-                          post.is_liked ? "#7077FE" : "text-black"
-                        }`}
+                        className={`hidden sm:flex ${post.is_liked ? "#7077FE" : "text-black"
+                          }`}
                       >
                         {" "}
                         Appreciate
@@ -1365,9 +1346,8 @@ const handleClickOutside = (event: MouseEvent) => {
                         stroke={selectedPostId === post.id ? "#7077FE" : "#000"}
                       />{" "}
                       <span
-                        className={`hidden sm:flex ${
-                          selectedPostId === post.id ? "#7077FE" : "text-black"
-                        }`}
+                        className={`hidden sm:flex ${selectedPostId === post.id ? "#7077FE" : "text-black"
+                          }`}
                       >
                         Reflections
                       </span>
@@ -1376,7 +1356,7 @@ const handleClickOutside = (event: MouseEvent) => {
                     <div className="relative">
                       <button
                         // onClick={() => setOpenSignup(true)}
-                            onClick={() => toggleMenu(post.id, "share")}
+                        onClick={() => toggleMenu(post.id, "share")}
                         className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-normal text-sm md:text-base rounded-md hover:bg-gray-50 text-black"
                       >
                         <Share2 className="w-5 h-5 md:w-6 md:h-6" />
@@ -1513,20 +1493,18 @@ const handleClickOutside = (event: MouseEvent) => {
         </div>
 
         {/* Right Sidebar Container */}
-        <div className="w-full lg:w-[25%] flex flex-col gap-4">
-          {/* Quick Actions */}
-          <div className="w-full h-fit bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+        <div className="hidden xl:flex w-full xl:w-[25%] flex-col gap-4">
+          <div className="w-full bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
             <h3 className="text-black flex items-center gap-2 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
               <img
                 src={iconMap["socialtrending"]}
                 alt="Home Icon"
                 className="w-7 h-7 transition duration-200 group-hover:brightness-0 group-hover:invert"
-              />{" "}
+              />
               Trending Topics
             </h3>
             <div className="w-full border-t border-[#C8C8C8] my-4"></div>
             <ul className="space-y-4 text-sm md:text-[15px] text-gray-700 px-4">
-              {/* Replace with actual trending topics */}
               {topics?.slice(0, 10)?.map((topic, index) => (
                 <li
                   key={index}
@@ -1542,6 +1520,65 @@ const handleClickOutside = (event: MouseEvent) => {
                 </button>
               )}
             </ul>
+          </div>
+        </div>
+
+        {isTopicsOpen && (
+          <div
+            className="xl:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setIsTopicsOpen(false)}
+          />
+        )}
+        <div
+          className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${isTopicsOpen ? "translate-x-0" : "translate-x-full"
+            }`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Trending topics"
+        >
+          <div className="sticky top-0 z-10 bg-white px-4 py-3 border-b flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <img src={iconMap["socialtrending"]} alt="topics" className="w-5 h-5" />
+              <span className="font-medium">Trending Topics</span>
+            </div>
+            <button
+              onClick={() => setIsTopicsOpen(false)}
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <svg
+                className="w-6 h-6 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <div className="p-4 overflow-y-auto h-[calc(100%-56px)]">
+            <div className="w-full bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+              <ul className="space-y-4 text-sm md:text-[15px] text-gray-700">
+                {topics?.slice(0, 10)?.map((topic, index) => (
+                  <li
+                    key={index}
+                    onClick={() => setOpenSignup(true)}
+                    className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                  >
+                    {index + 1}. #{topic.topic_name}
+                  </li>
+                ))}
+                {topics?.length === 0 && (
+                  <button disabled className="text-gray-400 italic">
+                    No Trending topics available
+                  </button>
+                )}
+              </ul>
+            </div>
           </div>
         </div>
 

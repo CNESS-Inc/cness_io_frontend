@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FiSearch } from "react-icons/fi";
+// import { FiSearch } from "react-icons/fi";
 import { GetMarketPlaceBuyerCategories, GetMarketPlaceBuyerFilters } from "../../Common/ServerAPI";
 import { useLocation } from "react-router-dom";
 
@@ -96,6 +96,35 @@ const FilterSidebar: React.FC<FilterProps> = ({
     setLocalFilters(filters);
   }, [filters]);
 
+  // Check if any filters are applied
+  const hasActiveFilters = () => {
+    return Object.keys(localFilters).some(key => {
+      const value = localFilters[key as keyof typeof localFilters];
+      return value !== undefined && value !== null && value !== '' && 
+             !(key === 'min_price' && value === filterOptions.price_min?.toString()) &&
+             !(key === 'max_price' && value === filterOptions.price_max?.toString());
+    });
+  };
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    const clearedFilters = {
+      category_slug: undefined,
+      min_price: undefined,
+      max_price: undefined,
+      language: undefined,
+      min_duration: undefined,
+      max_duration: undefined,
+      min_rating: undefined,
+      max_rating: undefined,
+      order_time: undefined,
+      sort_by: undefined,
+      creator_search: undefined,
+    };
+    setLocalFilters(clearedFilters);
+    onFilterChange(clearedFilters);
+  };
+
   const handleCategoryToggle = (categorySlug: string) => {
     const newFilters = {
       ...localFilters,
@@ -135,19 +164,6 @@ const FilterSidebar: React.FC<FilterProps> = ({
     onFilterChange(newFilters);
   };
 
-  {/*const handleDurationToggle = (durationRange: any) => {
-    const isDurationSelected =
-      localFilters.min_duration === durationRange.min &&
-      localFilters.max_duration === durationRange.max;
-
-    const newFilters = isDurationSelected
-      ? { ...localFilters, min_duration: undefined, max_duration: undefined }
-      : { ...localFilters, min_duration: durationRange.min, max_duration: durationRange.max };
-
-    setLocalFilters(newFilters);
-    onFilterChange(newFilters);
-  };*/}
-
   const handleRatingChange = (value: number) => {
     const newFilters = {
       ...localFilters,
@@ -157,22 +173,17 @@ const FilterSidebar: React.FC<FilterProps> = ({
     onFilterChange(newFilters);
   };
 
-  const handleCreatorSearchChange = (value: string) => {
-    const newFilters = {
-      ...localFilters,
-      creator_search: value,
-    };
-    setLocalFilters(newFilters);
-  };
+  // const handleCreatorSearchChange = (value: string) => {
+  //   const newFilters = {
+  //     ...localFilters,
+  //     creator_search: value,
+  //   };
+  //   setLocalFilters(newFilters);
+  // };
 
-  const handleCreatorSearchBlur = () => {
-    onFilterChange(localFilters);
-  };
-
- /// const isDurationSelected = (durationRange: any) => {
-   // return localFilters.min_duration === durationRange.min &&
-  //    localFilters.max_duration === durationRange.max;
-//  };
+  // const handleCreatorSearchBlur = () => {
+  //   onFilterChange(localFilters);
+  // };
 
   return (
     <>
@@ -218,11 +229,19 @@ const FilterSidebar: React.FC<FilterProps> = ({
           </button>
         </div>
 
-        {/* 🏷️ Filters Title */}
-        <div>
-          <h3 className="text-lg font-bold mb-4">Filters</h3>
-          <div className="border-t border-gray-200 mb-5"></div>
+        {/* Header with Title and Clear Button */}
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold">Filters</h3>
+          {hasActiveFilters() && (
+            <button
+              onClick={handleClearFilters}
+              className="text-sm text-red-500 hover:text-red-700 font-medium transition-colors"
+            >
+              Clear All
+            </button>
+          )}
         </div>
+        <div className="border-t border-gray-200 mb-5"></div>
 
         {/* 📂 Category */}
         {filterConfig.showCategory && !isCategoriesPage && categories.length > 0 && (
@@ -344,27 +363,6 @@ const FilterSidebar: React.FC<FilterProps> = ({
           </div>
         )}
 
-        {/* ⏱️ Duration
-        {filterConfig.showDuration && filterOptions.duration_ranges && filterOptions.duration_ranges.length > 0 && (
-          <div className="space-y-2 mb-8">
-            <h3 className="text-[16px] font-semibold">Duration</h3>
-            {filterOptions.duration_ranges.map((duration: any, index: number) => (
-              <label
-                key={index}
-                className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={isDurationSelected(duration)}
-                  onChange={() => handleDurationToggle(duration)}
-                  className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
-                />
-                <span>{duration.label}</span>
-              </label>
-            ))}
-          </div>
-        )} */}
-
         {/* ⭐ Ratings */}
         {filterConfig.showRating && filterOptions.rating_range && (
           <div className="space-y-2 mb-8">
@@ -391,7 +389,7 @@ const FilterSidebar: React.FC<FilterProps> = ({
         )}
 
         {/* 🧑‍🎨 Creator Search */}
-        {filterConfig.showCreatorSearch && (
+        {/* {filterConfig.showCreatorSearch && (
           <div className="mt-8 relative">
             <h3 className="text-[16px] font-[poppins] font-semibold mb-3">
               Creators / Publisher
@@ -406,35 +404,10 @@ const FilterSidebar: React.FC<FilterProps> = ({
             />
             <FiSearch className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-400" />
           </div>
-        )}
+        )} */}
       </aside >
     </>
   );
 };
 
 export default FilterSidebar;
-
-/* 💡 Reusable Filter Group Component */
-// const FilterGroup = ({
-//   title,
-//   items,
-// }: {
-//   title: string;
-//   items: string[];
-// }) => (
-//   <div className="space-y-2 mb-8">
-//     <h3 className="text-[16px] font-semibold">{title}</h3>
-//     {items.map((item) => (
-//       <label
-//         key={item}
-//         className="flex items-center space-x-2 text-sm text-gray-700 font-[poppins] cursor-pointer"
-//       >
-//         <input
-//           type="checkbox"
-//           className="w-4 h-4 rounded border-gray-300 font-[poppins] text-[#7077FE] focus:ring-2 focus:ring-[#7077FE]"
-//         />
-//         <span>{item}</span>
-//       </label>
-//     ))}
-//   </div>
-// );

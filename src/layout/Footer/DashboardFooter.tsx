@@ -49,11 +49,11 @@ const Footer = () => {
                   className="hidden lg:block h-auto w-36"
                 />
                 <Image
-                  src="/responsive-logo.png"
+                  src="https://cdn.cness.io/cnesslogo.svg"
                   alt="Company Logo"
                   width={80}
-                  height={45}
-                  className="block lg:hidden h-auto w-auto max-w-20"
+                  
+                  className="block lg:hidden h-auto w-auto max-w-10"
                 />
               </Link>
               <p className="text-sm md:text-base font-normal font-openSans leading-relaxed text-[#1E1E1E] mt-2 md:mt-0">

@@ -74,10 +74,10 @@ interface BestSellingProduct {
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon }) => (
   <div className="p-4 bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
     <div className="flex items-center justify-between mb-3">
-      <h3 className="text-gray-700 font-[400] text-[14px] leading-[100%] capitalize font-['Open_Sans']">
+      <h3 className="text-gray-700 font-normal text-[14px] leading-[100%] capitalize font-['Open_Sans']">
         {title}
       </h3>
-      <div className="w-[40px] h-[40px]">
+      <div className="w-10 h-10">
         <img src={icon} alt="" className="w-full h-full object-cover" />
       </div>
     </div>
@@ -99,7 +99,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
     <img
       src={image}
       alt={title}
-      className="sm:w-20 sm:h-16 md:w-20 md:h-16 border-b border-gray-100 last:border-none rounded-lg object-cover flex-shrink-0"
+      className="sm:w-20 sm:h-16 md:w-20 md:h-16 border-b border-gray-100 last:border-none rounded-lg object-cover shrink-0"
     />
     <div className="flex-1 space-y-1">
       <h4 className="text-gray-900 sm:text-[12px] md:text-[12px] lg:text-[12px] font-medium line-clamp-2">
@@ -502,13 +502,13 @@ const VendorDashboard: React.FC = () => {
                   <div className="absolute -top-[90px] left-1/2 -translate-x-1/2 z-20 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
                     <div className="bg-white border border-[#B197FC] rounded-xl shadow-lg px-3 py-2 text-center min-w-[140px]">
                       <div className="text-gray-500 text-[12px]">{bar.date}</div>
-                      <div className="text-gray-900 font-semibold text-[16px] mt-[2px]">
+                      <div className="text-gray-900 font-semibold text-[16px] mt-0.5">
                         {bar.value}
                       </div>
                     </div>
                   </div>
                   <svg
-                    className="absolute left-1/2 -translate-x-1/2 z-[5]"
+                    className="absolute left-1/2 -translate-x-1/2 z-5"
                     width="2"
                     height={dashedLineHeight}
                     style={{ bottom: `${bar.height}px` }}
@@ -540,11 +540,11 @@ const VendorDashboard: React.FC = () => {
                           strokeDasharray="10,8"
                         />
                       </svg>
-                      <div className="w-[40px] h-[40px] rounded-full bg-[#7177FE] shadow-md"></div>
+                      <div className="w-10 h-10 rounded-full bg-[#7177FE] shadow-md"></div>
                     </div>
                   </div>
                   <div className="w-[42px] rounded-t-full relative overflow-hidden" style={{ height: bar.height }}>
-                    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-[#E2E4FF]/100 via-[#E2E4FF] to-[#B3B8FA]"></div>
+                    <div className="absolute inset-0 bg-linear-to-t from-transparent via-[#E2E4FF]/100 via-[#E2E4FF] to-[#B3B8FA]"></div>
                   </div>
                   <span className="text-gray-600 text-[14px] mt-3">{bar.week}</span>
                 </div>
@@ -555,7 +555,7 @@ const VendorDashboard: React.FC = () => {
 
         {/* Best Selling */}
         
-        <div className="bg-white border border-gray-200 rounded-[12px] p-[10px] h-auto shadow-sm">
+        <div className="bg-white border border-gray-200 rounded-xl p-2.5 h-auto shadow-sm">
           <h2 className="text-[#242E3A] font-['Poppins'] font-semibold text-[18px] mb-1">
             Best Selling
           </h2>
@@ -597,7 +597,7 @@ const VendorDashboard: React.FC = () => {
           <h2 className="text-gray-800 font-['Poppins'] font-semibold text-[18px] leading-[130%] tracking-[0] capitalize mb-0.5">
             Product Submission Queue
           </h2>
-          <p className="text-gray-600 font-['Open_Sans'] font-[400] text-[14px] leading-[115%] tracking-[0] mt-2">
+          <p className="text-gray-600 font-['Open_Sans'] font-normal text-[14px] leading-[115%] tracking-[0] mt-2">
             Check the status of all newly submitted digital products and take action quickly
           </p>
         </div>

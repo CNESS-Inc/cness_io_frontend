@@ -518,11 +518,10 @@ const SingleBP = () => {
                   value={replyText}
                   onChange={(e) => handleReplyChange(e, comment.id)}
                   disabled={isReplyLoading[comment.id]}
-                  className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${
-                    isReplyLoading[comment.id]
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
+                  className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${isReplyLoading[comment.id]
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                    }`}
                 ></textarea>
 
                 {replyErrors[comment.id] && (
@@ -537,11 +536,10 @@ const SingleBP = () => {
                       handleReplySubmit(comment.id, comment.post_id)
                     }
                     disabled={isReplyLoading[comment.id]}
-                    className={`bg-linear-to-r from-purple-500 to-pink-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 ${
-                      isReplyLoading[comment.id]
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
+                    className={`bg-linear-to-r from-purple-500 to-pink-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 ${isReplyLoading[comment.id]
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                      }`}
                     style={{
                       background:
                         "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
@@ -559,11 +557,10 @@ const SingleBP = () => {
                   <button
                     onClick={() => setReplyingTo(null)}
                     disabled={isReplyLoading[comment.id]}
-                    className={`text-gray-500 px-3 py-1 rounded-full text-sm border border-gray-300 ${
-                      isReplyLoading[comment.id]
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
+                    className={`text-gray-500 px-3 py-1 rounded-full text-sm border border-gray-300 ${isReplyLoading[comment.id]
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                      }`}
                   >
                     Cancel
                   </button>
@@ -988,7 +985,7 @@ const SingleBP = () => {
             <div className="flex flex-wrap items-center justify-between text-sm text-gray-600 mb-6 gap-3">
               {/* Breadcrumb */}
               <div className="flex flex-wrap items-center gap-2 text-gray-500">
-                 {/*<img
+                {/*<img
                   src={home}
                   alt="Home"
                   className="w-[15px] h-[15px] cursor-pointer"
@@ -1078,7 +1075,7 @@ const SingleBP = () => {
 
                 {/* Go Back Button */}
                 <button
-                  className="flex items-center gap-1 text-black border border-[#D77CFF] rounded-full px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition"
+                  className="flex items-center gap-1 text-black border border-[#D77CFF] rounded-full px-4 py-2.5 sm:px-5 sm:py-3.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition"
                   onClick={() => navigate("/dashboard/bestpractices")}
                 >
                   Go Back
@@ -1094,16 +1091,16 @@ const SingleBP = () => {
                     ? singlepost?.profession_data?.title
                     : singlepost?.interest_data?.name}
                 </p>
-                <h1 className="text-[34px] sm:text-3xl font-bold text-[#000000] mt-1 leading-snug">
+                <h1 className="text-2xl md:text-3xl font-bold text-[#000000] mt-1 leading-snug">
                   {singlepost?.title}
                 </h1>
               </div>
 
               {/* ======= Info Row - Grid Version ======= */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-10 relative">
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 mb-5 sm:mb-10 relative">
                 {/* Left Section - Post Info */}
-                <div className="lg:col-span-7 xl:col-span-8 ">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0">
+                <div className="col-span-12 xl:col-span-8 ">
+                  <div className="grid grid-cols-1 grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-0">
                     {/* Created By */}
                     <div className="flex items-center gap-3 py-2 relative">
                       <img
@@ -1118,11 +1115,11 @@ const SingleBP = () => {
                         <p className="text-xs text-gray-500">Created By</p>
                       </div>
                       {/* Vertical line */}
-                      <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 h-[70px] w-px bg-[#E0E0E0] hidden sm:block"></div>
+                      <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 h-[70px] w-px bg-[#E0E0E0] hidden lg:block"></div>
                     </div>
 
                     {/* Last Updated */}
-                    <div className="flex flex-col items-start sm:items-center justify-center py-2 relative">
+                    <div className="flex flex-col items-end lg:items-center justify-end lg:justify-center py-2 relative">
                       <p className="font-semibold text-gray-900">
                         {new Date(singlepost?.updatedAt).toLocaleDateString(
                           "en-US",
@@ -1135,11 +1132,11 @@ const SingleBP = () => {
                       </p>
                       <p className="text-xs text-gray-500">Last Updated</p>
                       {/* Vertical line */}
-                      <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 h-[70px] w-px bg-[#E0E0E0] hidden sm:block"></div>
+                      <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 h-[70px] w-px bg-[#E0E0E0] hidden lg:block"></div>
                     </div>
 
                     {/* Appreciate */}
-                    <div className="flex justify-center gap-2 py-2 ml-6">
+                    <div className="hidden lg:flex justify-end xl:justify-center gap-2 py-2 ml-6">
                       <div
                         className="flex items-center gap-1 text-base font-medium"
                         style={{
@@ -1156,15 +1153,13 @@ const SingleBP = () => {
                         data-comment-button
                         onClick={handleLike}
                         disabled={isAppreciateLoading}
-                        className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${
-                          isLiked
-                            ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
-                            : "border-[#7B78FE] text-dark hover:bg-gray-100"
-                        } ${
-                          isAppreciateLoading
+                        className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${isLiked
+                          ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
+                          : "border-[#7B78FE] text-dark hover:bg-gray-100"
+                          } ${isAppreciateLoading
                             ? "opacity-50 cursor-not-allowed"
                             : ""
-                        }`}
+                          }`}
                       >
                         {isAppreciateLoading ? (
                           <div className="w-4 h-4 border-2 border-[#7178FF] border-t-transparent rounded-full animate-spin"></div>
@@ -1185,46 +1180,88 @@ const SingleBP = () => {
                     </div>
                   </div>
                 </div>
-                <div className="absolute right-0 left-[70%] top-1/2 transform -translate-y-1/2 h-[70px] w-px bg-[#E0E0E0] hidden sm:block"></div>
+                <div className="absolute right-0 left-[70%] top-1/2 transform -translate-y-1/2 h-[70px] w-px bg-[#E0E0E0] hidden xl:block"></div>
                 {/* Right Section - Actions */}
-                <div className="lg:col-span-5 xl:col-span-4 ">
-                  <div className="flex items-center justify-start sm:justify-end gap-3 h-full">
-                    <button
-                      onClick={fetchSavedPost}
-                      disabled={isSaveLoading}
-                      className={`flex items-center gap-2 text-black text-sm font-medium px-3 py-1.5 rounded-full hover:bg-gray-50 whitespace-nowrap ${
-                        isSaveLoading ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                    >
-                      {isSaveLoading ? (
-                        <div className="w-4 h-4 border-2 border-[#D77CFF] border-t-transparent rounded-full animate-spin"></div>
-                      ) : isSaved ? (
-                        <FaBookmark className="text-base text-[#D77CFF]" />
-                      ) : (
-                        <FaRegBookmark className="text-base text-[#D77CFF]" />
-                      )}
-                      {isSaveLoading ? "Saving..." : isSaved ? "Saved" : "Save"}
-                    </button>
+                <div className="col-span-12 xl:col-span-4 mt-5 xl:mt-0">
+                  <div className="w-full flex flex-col sm:flex-row gap-4 sm:gap-2 justify-end sm:justify-between lg:justify-end items-center">
+                    <div className="w-full flex lg:hidden justify-end sm:justify-start items-center gap-2">
+                      <div
+                        className="flex items-center gap-1 text-base font-medium"
+                        style={{
+                          background:
+                            "linear-gradient(129.46deg, #DB7DFF 4.29%, #7178FF 95.71%)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                        }}
+                      >
+                        <img src={thumbs} alt="Likes" />
+                        {localLikeCount}
+                      </div>
+                      <button
+                        data-comment-button
+                        onClick={handleLike}
+                        disabled={isAppreciateLoading}
+                        className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${isLiked
+                          ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
+                          : "border-[#7B78FE] text-dark hover:bg-gray-100"
+                          } ${isAppreciateLoading
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                          }`}
+                      >
+                        {isAppreciateLoading ? (
+                          <div className="w-4 h-4 border-2 border-[#7178FF] border-t-transparent rounded-full animate-spin"></div>
+                        ) : isLiked ? (
+                          "Appreciated"
+                        ) : (
+                          "Appreciate"
+                        )}
+                      </button>
+                      {animations.map((anim) => (
+                        <CreditAnimation
+                          key={anim.id}
+                          from={anim.from}
+                          to={anim.to}
+                          amount={anim.amount}
+                        />
+                      ))}
+                    </div>
+                    <div className="w-full flex items-center justify-end gap-3 h-full">
+                      <button
+                        onClick={fetchSavedPost}
+                        disabled={isSaveLoading}
+                        className={`flex items-center gap-2 text-black text-sm font-medium px-3 py-1.5 rounded-full hover:bg-gray-50 whitespace-nowrap ${isSaveLoading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                      >
+                        {isSaveLoading ? (
+                          <div className="w-4 h-4 border-2 border-[#D77CFF] border-t-transparent rounded-full animate-spin"></div>
+                        ) : isSaved ? (
+                          <FaBookmark className="text-base text-[#D77CFF]" />
+                        ) : (
+                          <FaRegBookmark className="text-base text-[#D77CFF]" />
+                        )}
+                        {isSaveLoading ? "Saving..." : isSaved ? "Saved" : "Save"}
+                      </button>
 
-                    <button
-                      onClick={toggleFollowPost}
-                      disabled={isFollowLoading}
-                      className={`text-white px-4 py-1.5 rounded-full text-sm font-medium transition whitespace-nowrap ${
-                        isFollowLoading ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                      style={{
-                        background:
-                          "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
-                      }}
-                    >
-                      {isFollowLoading ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      ) : isFollowing ? (
-                        "Following"
-                      ) : (
-                        "+ Follow"
-                      )}
-                    </button>
+                      <button
+                        onClick={toggleFollowPost}
+                        disabled={isFollowLoading}
+                        className={`text-white px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-full text-sm font-medium transition whitespace-nowrap ${isFollowLoading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                        style={{
+                          background:
+                            "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
+                        }}
+                      >
+                        {isFollowLoading ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : isFollowing ? (
+                          "Following"
+                        ) : (
+                          "+ Follow"
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1289,11 +1326,10 @@ const SingleBP = () => {
                         value={comment}
                         onChange={handleCommentChange}
                         disabled={isCommentLoading} // Disable textarea during loading
-                        className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${
-                          isCommentLoading
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        }`}
+                        className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${isCommentLoading
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                          }`}
                       ></textarea>
 
                       {commentError && (
@@ -1308,11 +1344,10 @@ const SingleBP = () => {
                         <button
                           onClick={handleCommentSubmit}
                           disabled={isCommentLoading}
-                          className={`bg-linear-to-r me-2 from-purple-500 to-pink-400 text-white px-4 py-2 pb-2 rounded-full text-sm flex items-center gap-2 ${
-                            isCommentLoading
-                              ? "opacity-50 cursor-not-allowed"
-                              : ""
-                          }`}
+                          className={`bg-linear-to-r me-2 from-purple-500 to-pink-400 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-full text-sm flex items-center gap-2 ${isCommentLoading
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                            }`}
                           style={{
                             background:
                               "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
@@ -1385,8 +1420,7 @@ const SingleBP = () => {
                           className="flex gap-3 items-start p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer"
                           onClick={() => {
                             navigate(
-                              `/dashboard/bestpractices/${
-                                practice.id
+                              `/dashboard/bestpractices/${practice.id
                               }/${slugify(practice.title)}`
                             );
                           }}

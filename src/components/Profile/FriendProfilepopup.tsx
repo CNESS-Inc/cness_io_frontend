@@ -455,74 +455,63 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   };
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-        {/* Modal */}
-        <div
-          className="bg-white rounded-[18px] flex flex-col shadow-lg 
-    overflow-hidden w-[95%] max-w-[900px] h-[80vh] p-3"
-        >
-          <div
-            className="bg-white rounded-xl border border-gray-200 flex flex-col 
-      shadow-lg overflow-hidden w-full h-full pb-3 gap-3"
-          >
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="bg-white rounded-[18px] flex flex-col shadow-lg overflow-hidden w-full max-w-[900px] h-[90vh] sm:h-[80vh] p-2 sm:p-3">
+          <div className="bg-white rounded-xl border border-gray-200 flex flex-col shadow-lg overflow-hidden w-full h-full pb-3 gap-3">
             {/* Header */}
             <div className="shrink-0">
               <div className="relative">
                 <img
                   src={companycard}
                   alt="Cover"
-                  className="w-6xl h-[150px] object-cover rounded-t-2xl"
+                  className="w-full h-[100px] sm:h-[150px] object-cover rounded-t-2xl"
                 />
                 <button
                   onClick={onClose}
-                  className="absolute top-3 right-3 bg-white rounded-full p-1 shadow hover:bg-gray-100"
+                  className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white rounded-full p-1 shadow hover:bg-gray-100"
                 >
-                  <X className="w-5 h-5 text-gray-600" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                 </button>
               </div>
 
               {/* Profile Info */}
-              <div className="flex items-center justify-between p-2 mt-2">
-                {/* Left: Profile image + info */}
-                <div className="flex items-center gap-4 px-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-2 mt-2 gap-3">
+                <div className="flex items-center gap-3 sm:gap-4 px-0 sm:px-6">
                   <img
                     src={
                       !profileData?.profile_picture ||
-                      profileData?.profile_picture === "null" ||
-                      profileData?.profile_picture === "undefined" ||
-                      (profileData?.profile_picture &&
-                        !profileData?.profile_picture.startsWith("http")) ||
-                      profileData?.profile_picture ===
-                        "http://localhost:5026/file/"
+                        profileData?.profile_picture === "null" ||
+                        profileData?.profile_picture === "undefined" ||
+                        (profileData?.profile_picture &&
+                          !profileData?.profile_picture.startsWith("http")) ||
+                        profileData?.profile_picture === "http://localhost:5026/file/"
                         ? !friend.image ||
                           friend.image === "null" ||
                           friend.image === "undefined" ||
                           !friend.image.startsWith("http") ||
                           friend.image === "http://localhost:5026/file/"
-                          ? "/profile.png" // Default fallback image if both sources fail
+                          ? "/profile.png"
                           : friend.image
                         : profileData?.profile_picture
                     }
                     alt={profileData?.first_name || friend.name}
+                    className="rounded-full border-white object-cover w-16 h-16 sm:w-[77px] sm:h-[77px]"
                     style={{
-                      width: "77.25px",
-                      height: "77.25px",
                       borderWidth: "1.42px",
                     }}
-                    className="rounded-full border-white object-cover"
                     onError={(e) => {
                       e.currentTarget.src = "/profile.png";
                     }}
                   />
 
                   <div>
-                    <h2 className="font-medium text-gray-900">
+                    <h2 className="font-medium text-sm sm:text-base text-gray-900">
                       {profileData
                         ? `${profileData.first_name} ${profileData.last_name}`
                         : friend.name}
                     </h2>
-                    <p className="text-gray-500 text-sm">@{friend.username}</p>
-                    <div className="flex gap-4 text-sm mt-1">
+                    <p className="text-gray-500 text-xs sm:text-sm">@{friend.username}</p>
+                    <div className="flex gap-3 sm:gap-4 text-xs sm:text-sm mt-1">
                       <span className="text-indigo-500">
                         {followingFollowers?.followingCount || 0} Following
                       </span>
@@ -534,7 +523,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                 </div>
 
                 {/* Right: Buttons */}
-                <div className="flex gap-2 mt-8 ">
+                <div className="flex gap-2 w-full sm:w-auto sm:mt-8">
                   <div className="w-full">
                     {/* Show Accept/Reject buttons when user has received a pending request */}
                     {profileData?.reciver_request_status === "PENDING" ? (
@@ -570,26 +559,25 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                         className={`w-full h-9 rounded-full px-3 border border-[#ECEEF2] 
                           font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
                           flex items-center justify-center gap-2
-                          ${
-                            profileData?.user_id === loggedInUserId
-                              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                              : profileData?.if_friend &&
-                                profileData?.friend_request_status === "ACCEPT"
+                          ${profileData?.user_id === loggedInUserId
+                            ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                            : profileData?.if_friend &&
+                              profileData?.friend_request_status === "ACCEPT"
                               ? "bg-green-100 text-green-700"
                               : !profileData?.if_friend &&
                                 profileData?.friend_request_status === "PENDING"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-[#FFFFFF] text-[#0B3449]"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-[#FFFFFF] text-[#0B3449]"
                           }`}
                       >
                         <UserRoundPlus className="w-4 h-4" />
                         {profileData?.if_friend &&
-                        profileData?.friend_request_status === "ACCEPT"
+                          profileData?.friend_request_status === "ACCEPT"
                           ? "Connected"
                           : !profileData?.if_friend &&
                             profileData?.friend_request_status === "PENDING"
-                          ? "Requested..."
-                          : "Connect"}
+                            ? "Requested..."
+                            : "Connect"}
                       </button>
                     )}
                   </div>
@@ -597,10 +585,9 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                   <button
                     onClick={() => handleFollow(profileData?.user_id)}
                     className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                      ${
-                        profileData?.if_following
-                          ? "bg-[#7077FE] text-white hover:text-[#7077FE]/80"
-                          : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
+                      ${profileData?.if_following
+                        ? "bg-[#7077FE] text-white hover:text-[#7077FE]/80"
+                        : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
                       }`}
                   >
                     {profileData?.if_following ? (
@@ -641,17 +628,15 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
             <div className="border border-gray-100 mx-3 mt-1"></div>
 
             {/* Scrollable Posts */}
-            <div className="flex-1 overflow-y-auto p-4">
-              <h3 className="text-[14px] font-medium text-gray-800">
-                Posts
-              </h3>
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4">
+              <h3 className="text-sm sm:text-[14px] font-medium text-gray-800 mb-3">Posts</h3>
 
               {loading ? (
                 <div className="flex justify-center items-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
                 </div>
               ) : userPosts.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   {userPosts.map((post, index) => (
                     <MyPost
                       key={post.id || index}
