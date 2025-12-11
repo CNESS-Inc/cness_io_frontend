@@ -267,8 +267,14 @@ const DashboardHeader = ({
     }
   };
 
-  const handleNotificationClick = () => {
+  const handleNotificationClick = async () => {
+    // Fetch notifications when opening the dropdown
+    if (!isNotificationDropdownOpen) {
+      await getNotification();
+    }
+
     setIsNotificationDropdownOpen(!isNotificationDropdownOpen);
+
     // Mark all notifications as read when opening the dropdown
     if (!isNotificationDropdownOpen) {
       setNotifications((prev: Notification[]) =>
@@ -414,7 +420,6 @@ const DashboardHeader = ({
   };
 
   useEffect(() => {
-    getNotification();
     fetchMeDetails();
   }, []);
 
