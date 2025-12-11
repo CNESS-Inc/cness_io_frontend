@@ -61,7 +61,7 @@ interface DirectoryFormData {
 }
 
 const EditDirectory: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [serviceData, setServiceData] = useState<any>(null);
   const [countryData, setCountryData] = useState<any[]>([]);
@@ -462,7 +462,7 @@ const EditDirectory: React.FC = () => {
           type: "success",
           duration: 5000,
         });
-        navigate("/dashboard/DashboardDirectory")
+        navigate("/dashboard/DashboardDirectory");
       } else {
         showToast({
           message: response?.error?.message,
@@ -2239,45 +2239,134 @@ const EditDirectory: React.FC = () => {
 
           {/* ----------- 2. TEMPORARY CLOSED ----------- */}
           {mode === "temporary" && (
-            <div className="mt-4 flex flex-col sm:flex-row gap-4">
-              <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-sm text-[#64748B]">
-                  Start Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  {...register("temporaryStartDate")}
-                  className={`border rounded-lg px-2 py-2 sm:py-1 text-sm ${
-                    errors.temporaryStartDate
-                      ? "border-red-500"
-                      : "border-[#CBD5E1]"
-                  }`}
-                />
-                {errors.temporaryStartDate && (
-                  <span className="text-red-500 text-xs sm:text-sm">
-                    {errors.temporaryStartDate.message}
-                  </span>
-                )}
-              </div>
+            <div className="flex items-center">
+              <p className="me-6 text-[#081021] text-[14px] ">Date</p>
+              <div className="mt-4 flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col gap-1.5 flex-1">
+                  <label className="text-sm text-[#64748B]">
+                    Start Date
+                    {/* <span className="text-red-500">*</span> */}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      {...register("temporaryStartDate")}
+                      className={`border h-[43px] rounded-lg px-2 py-2 sm:py-1 text-sm w-full appearance-none
+              [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden
+              [&::-webkit-clear-button]:hidden [&::-webkit-datetime-edit-ampm-field]:hidden
+              ${
+                errors.temporaryStartDate
+                  ? "border-red-500"
+                  : "border-[#CBD5E1]"
+              }`}
+                    />
+                    {/* Custom Calendar Icon - Clickable */}
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer bg-transparent border-none p-0"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const input = e.currentTarget
+                          .previousElementSibling as HTMLInputElement;
+                        if (input && input.type === "date") {
+                          input.showPicker();
+                        }
+                      }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-[#64748B]"
+                      >
+                        <path
+                          d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeMiterlimit="10"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M15.6949 13.7H15.7039M15.6949 16.7H15.7039M11.995 13.7H12.004M11.995 16.7H12.004M8.29431 13.7H8.30329M8.29431 16.7H8.30329"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  {errors.temporaryStartDate && (
+                    <span className="text-red-500 text-xs sm:text-sm">
+                      {errors.temporaryStartDate.message}
+                    </span>
+                  )}
+                </div>
 
-              <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-sm text-[#64748B]">
-                  End Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  {...register("temporaryEndDate")}
-                  className={`border rounded-lg px-2 py-2 sm:py-1 text-sm ${
-                    errors.temporaryEndDate
-                      ? "border-red-500"
-                      : "border-[#CBD5E1]"
-                  }`}
-                />
-                {errors.temporaryEndDate && (
-                  <span className="text-red-500 text-xs sm:text-sm">
-                    {errors.temporaryEndDate.message}
-                  </span>
-                )}
+                <div className="flex flex-col gap-1.5 flex-1">
+                  <label className="text-sm text-[#64748B]">
+                    End Date
+                    {/* <span className="text-red-500">*</span> */}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      {...register("temporaryEndDate")}
+                      className={`border h-[43px] rounded-lg px-2 py-2 sm:py-1 text-sm w-full appearance-none
+              [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden
+              [&::-webkit-clear-button]:hidden [&::-webkit-datetime-edit-ampm-field]:hidden
+              ${
+                errors.temporaryEndDate ? "border-red-500" : "border-[#CBD5E1]"
+              }`}
+                    />
+                    {/* Custom Calendar Icon - Clickable */}
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer bg-transparent border-none p-0"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const input = e.currentTarget
+                          .previousElementSibling as HTMLInputElement;
+                        if (input && input.type === "date") {
+                          input.showPicker();
+                        }
+                      }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-[#64748B]"
+                      >
+                        <path
+                          d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeMiterlimit="10"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M15.6949 13.7H15.7039M15.6949 16.7H15.7039M11.995 13.7H12.004M11.995 16.7H12.004M8.29431 13.7H8.30329M8.29431 16.7H8.30329"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  {errors.temporaryEndDate && (
+                    <span className="text-red-500 text-xs sm:text-sm">
+                      {errors.temporaryEndDate.message}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           )}
