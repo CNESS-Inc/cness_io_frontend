@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 interface SubscriptionData {
   plan_active: boolean;
+  is_badge_active: boolean;
   id: string;
   user_id: string;
   plan_type: string;
@@ -57,6 +58,7 @@ const Setting = () => {
   const [subscription, setSubscription] = useState<SubscriptionData | null>(
     null
   );
+  console.log("🚀 ~ Setting ~ subscription:", subscription)
   const [loading, setLoading] = useState(true);
   const [isAnnual] = useState(true);
   const { showToast } = useToast();
@@ -352,7 +354,20 @@ const Setting = () => {
                   </button>
                 </div> */}
                 </div>
-              ) : (
+              ) : subscription?.is_badge_active === false ? (
+  // ❗ Badge inactive UI
+  <div className="text-center py-8">
+    <p className="text-gray-600">
+      You don't have Certification.
+    </p>
+    <button
+      onClick={() => navigate("/dashboard/assesmentcertification")}
+      className="w-full sm:w-auto px-6 mt-3 py-2.5 rounded-full bg-linear-to-r from-indigo-500 to-purple-500 text-white font-semibold shadow-md hover:opacity-90 transition disabled:opacity-50"
+    >
+      Go to Certification
+    </button>
+  </div>
+) : (
                 <div className="text-center py-8">
                   <p className="text-gray-600">
                     You don't have any active subscription.

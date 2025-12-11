@@ -11,7 +11,7 @@ import {
   Copy, // Posts & Collections
   PlayCircle, // Reels
   Users, // Connections
-  AtSign,      // About
+  //AtSign,      // About
   CirclePlay, // empty state icon
 } from "lucide-react";
 import MyPost from "../components/Profile/Mypost";
@@ -38,7 +38,8 @@ import {
   GetSavedPosts,
   SavePost,
   GetUserReel,
-  GetFollowingUser,
+  // GetFollowingUser,
+  GetConnectionUser,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Modal from "../components/ui/Modal";
@@ -95,7 +96,7 @@ const profiles = [
       { label: "Inspiration Reels", icon: <PlayCircle size={16} /> },
       { label: "Connections", icon: <Users size={16} /> },
       { label: "Collections", icon: <Copy size={16} /> },
-      { label: "About", icon: <AtSign size={16} /> },
+      //{ label: "About", icon: <AtSign size={16} /> },
     ],
   },
 ];
@@ -295,14 +296,14 @@ export default function Profile() {
   const fetchFollowingUsers = async () => {
     try {
       // const res = await GetConnectionUser();
-      const res = await GetFollowingUser();
+      const res = await GetConnectionUser();
       // Transform the API response to match FollowedUser interface
       const transformedUsers = res.data.data.rows.map((item: any) => ({
-        id: item.following_id,
-        username: item.following_user.username,
-        first_name: item.following_user.profile.first_name || "",
-        last_name: item.following_user.profile.last_name || "",
-        profile_picture: item.following_user.profile.profile_picture,
+        id: item.friend_id,
+        username: item?.friend_user?.username,
+        first_name: item.friend_user.profile.first_name || "",
+        last_name: item.friend_user.profile.last_name || "",
+        profile_picture: item.friend_user.profile.profile_picture,
         is_following: true, // Since these are users you're following
       }));
 
@@ -613,7 +614,7 @@ export default function Profile() {
   }, [activeTab, boards.length]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f9f9fb] py-2 px-2 sm:px-3 md:px-4 lg:px-6">
+    <div className="flex flex-col min-h-screen bg-[#f9f9fb] py-2 px-2 sm:px-2 md:px-2 lg:px-2">
       {/* {profiles.map((profile, index) => (
         <ProfileCard
           key={index}
@@ -649,7 +650,7 @@ export default function Profile() {
         />
       ))}
       {/* Content */}
-      <div className="flex-1 py-4 sm:py-5">
+      <div className="flex-1 py-4 sm:py-4">
         {activeTab === "Conscious Acts" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
             {userPosts.length ? (

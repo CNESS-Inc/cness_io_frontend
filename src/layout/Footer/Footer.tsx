@@ -35,9 +35,9 @@ const Footer = () => {
     <>
       <BackToTopButton />
       <footer className="bg-[#F7F7F7] text-black py-8 md:py-12 px-4 sm:px-6">
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-12 gap-6">
           {/* Main description - full width on mobile, then 2/5 on md+ */}
-<div className="lg:col-span-4 md:col-span-3 col-span-1 space-y-4">
+          <div className="lg:col-span-4 md:col-span-3 col-span-1 space-y-4">
             <Link to="/" className="flex items-center" aria-label="Home">
               <Image
                 src="https://res.cloudinary.com/diudvzdkb/image/upload/w_240,h_136,f_webp,q_auto/v1759918812/cnesslogo_neqkfd"
@@ -53,12 +53,11 @@ const Footer = () => {
               />
             </Link>
             <p className="text-[16px] font-normal font-openSans leading-[160%] text-[#1E1E1E] lg:block md:block hidden">
-CNESS LIFE Conscious Social Media Super App.
+              CNESS LIFE Conscious Social Media Super App.
             </p>
           </div>
           <div className="col-span-8  sm:col-span-3 md:col-span-8 space-y-4">
-<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {/* Quick Links section */}
               <div className="w-fit space-y-3 md:space-y-4 ">
                 <h4 className="lg:text-base md:text-lg text-[14px]  font-semibold text-[#6F74DD] font-[poppins]">
@@ -198,17 +197,20 @@ CNESS LIFE Conscious Social Media Super App.
               </div>
 
               {/* Contact section  */}
-<div className="space-y-3 md:space-y-4 md:-ml-4 lg:-ml-8">
-                <h4 className="lg:text-base md:text-lg text-[14px] font-semibold text-[#6F74DD] font-[poppins]">Contact Us</h4>
-                 <ul className="space-y-1 md:space-y-2">
+              <div className="space-y-3 md:space-y-4 md:-ml-4 lg:-ml-8">
+                <h4 className="lg:text-base md:text-lg text-[14px] font-semibold text-[#6F74DD] font-[poppins]">
+                  Contact Us
+                </h4>
+                <ul className="space-y-1 md:space-y-2">
                   <li>
                     <a
-                      href="https://www.facebook.com/share/1A8V21L6Qj"
-                       target="_blank"
-    className="flex items-start text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline whitespace-normal"
+                      href="https://maps.google.com/?q=825+Wilshire+Blvd+%23333,+Santa+Monica,+CA+90401,+USA"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start text-[16px] leading-[160%] font-normal font-openSans text-[#1E1E1E] hover:underline whitespace-normal"
                     >
-    <FaMapMarkerAlt className="me-2 md:me-3 mt-1" />
-                      825 Wilshire Blvd #333, Santa Monica, CA 90401, USA. 
+                      <FaMapMarkerAlt className="me-2 md:me-3 mt-1" />
+                      825 Wilshire Blvd #333, Santa Monica, CA 90401, USA.
                     </a>
                   </li>
                   <li>

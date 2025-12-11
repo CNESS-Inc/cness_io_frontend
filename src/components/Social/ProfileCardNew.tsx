@@ -186,7 +186,8 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
   const postCount = profileData.post_count.toString();
 
   return (
-    <div className="p-4 sm:p-6 pb-5 bg-white rounded-2xl">
+    
+<div className="px-3 sm:px-6 py-1 bg-white rounded-2xl">
       {/* TOP SECTION */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
@@ -252,7 +253,7 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
       </div>
 
       {/* About */}
-      <div className="bg-white rounded-xl p-5 pl-0 w-full flex flex-col items-start">
+<div className="bg-white rounded-xl p-3 pl-0 w-full flex flex-col items-start">
         <div className="flex items-center gap-3 mb-4">
           <img src={profilefill} alt="Profile" className="w-6 h-6" />
           <h3
@@ -319,7 +320,11 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
       )}
 
       {/* Tabs */}
-      <div className="flex justify-start border-t border-gray-200 pt-2">
+<div className="-mx-3 sm:-mx-6">
+    <div className="w-full border-t border-gray-200"></div>
+
+<div className="flex justify-start pt-2 px-0">
+
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
           {tabs.map((tab) => (
             <button
@@ -331,7 +336,7 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
                 height: "60px",
                 paddingTop: "6px",
                 paddingRight: "12px",
-                paddingBottom: "12px",
+                paddingBottom: "0px",
                 paddingLeft: "12px",
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
                 fontWeight: 500,
@@ -370,6 +375,7 @@ const ProfileCardNew: React.FC<ProfileCardNewProps> = ({
           ))}
         </div>
       </div>
+    </div>
     </div>
   );
 };

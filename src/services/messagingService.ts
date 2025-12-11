@@ -1,4 +1,4 @@
-import { GetConversationMessages, HandleSendMessage } from "../Common/ServerAPI";
+import { GetConversationMessages, HandleSendMessage, GetConversations } from "../Common/ServerAPI";
 
 export interface Message {
   id: string;
@@ -27,6 +27,21 @@ export interface SendMessageData {
   receiverId: string | number;
   content: string;
 }
+
+// Get all conversations for the current user (optimized for messaging)
+export const getConversations = async () => {
+  try {
+    console.log('📡 Calling conversations API using ServerAPI');
+
+    const response = await GetConversations();
+
+    console.log('✅ API Response:', response.data);
+    return response;
+  } catch (error: any) {
+    console.error("❌ Error fetching conversations:", error.response?.data || error.message);
+    throw error;
+  }
+};
 
 // Get messages for a specific conversation
 export const getConversationMessages = async (conversationId: string | number) => {
