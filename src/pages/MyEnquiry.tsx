@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEllipsisH } from "react-icons/fa";
-import { PiClockCounterClockwise, PiCaretLeft, PiCaretRight } from "react-icons/pi";
-import { IoIosCheckmarkCircleOutline } from "react-icons/io";
+import { PiCaretLeft, PiCaretRight } from "react-icons/pi";
+// import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { GetAllMyEnquiries, GetEnquiryCount } from "../Common/ServerAPI";
-import { NotepadText } from "lucide-react";
+// import { NotepadText } from "lucide-react";
 
 export type Enquiry = {
   id: string;
@@ -186,9 +186,9 @@ export default function MyEnquiry() {
     <div className="p-4 md:p-6 lg:p-3">
       {/* Header cards - Stack on mobile, grid on tablet+ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <Card title="Total Inquiry" value={counts.total} icon={<NotepadText  size={22} />} />
-        <Card title="Pending" value={counts.pending} icon={<PiClockCounterClockwise size={22} />} variant="warning" />
-        <Card title="Completed" value={counts.completed} icon={<IoIosCheckmarkCircleOutline size={22} />} variant="success" />
+        <Card title="Total Inquiry" value={counts.total} icon={<img src="/total_inquiry.png"/>} />
+        <Card title="Pending" value={counts.pending} icon={<img src="/pending.png"/>} variant="warning" />
+        <Card title="Completed" value={counts.completed} icon={<img src="/complete.png"/>} variant="success" />
       </div>
 
       {error && (

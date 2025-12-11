@@ -41,7 +41,7 @@ import {
   CreateBestPractice,
   //UnFriend,
 } from "../Common/ServerAPI";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useState, useEffect } from "react";
 //import banner from "../assets/aspcom2.png";
@@ -104,11 +104,11 @@ export const formatRange = (
 
 export default function UserProfileView() {
   const [userDetails, setUserDetails] = useState<any>();
-  console.log("🚀 ~ UserProfileView ~ userDetails:", userDetails)
   const [followBP, setFollowBP] = useState<any>([]);
   const [activeTab, setActiveTab] = useState("about");
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { showToast } = useToast();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const handleShareToggle = () => setIsShareOpen((prev) => !prev);
@@ -155,10 +155,6 @@ export default function UserProfileView() {
   };
   const filteredMineBestPractices = mineBestPractices.filter(
     (practice) => practice.status === 1
-  );
-  console.log(
-    "🚀 ~ UserProfileView ~ filteredMineBestPractices:",
-    filteredMineBestPractices
   );
 
   const isOwnProfile =
@@ -257,7 +253,11 @@ export default function UserProfileView() {
       });
     }
   };
-
+ useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location]);
   useEffect(() => {
     // if(!loggedInUserID){
     fetchMineBestPractices();
