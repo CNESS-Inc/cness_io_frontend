@@ -87,19 +87,19 @@ const SegmentedRing = ({
   tickLength = 7,
   dotRadius = 0.6, // Smaller dot size
 }: // Gap between line and dot
-{
-  value: number;
-  label?: string;
-  color?: string;
-  scoreColor?: string;
-  labelColor?: string;
-  size?: number;
-  thickness?: number;
-  segments?: number;
-  tickLength?: number;
-  dotRadius?: number;
-  dotGap?: number;
-}) => {
+  {
+    value: number;
+    label?: string;
+    color?: string;
+    scoreColor?: string;
+    labelColor?: string;
+    size?: number;
+    thickness?: number;
+    segments?: number;
+    tickLength?: number;
+    dotRadius?: number;
+    dotGap?: number;
+  }) => {
   const cx = size / 2;
   const cy = size / 2;
   const radius = size / 2 - tickLength;
@@ -349,19 +349,19 @@ const ScoreResult = () => {
                 <th>Percentage</th>
             </tr>
             ${data.array
-              .map(
-                (item: any) => `
+          .map(
+            (item: any) => `
             <tr>
                 <td>${item.section.name}</td>
                 <td>${item.section.total_weight}</td>
                 <td>${item.section.weight}</td>
                 <td>${Math.round(
-                  (item.section.weight / item.section.total_weight) * 100
-                )}%</td>
+              (item.section.weight / item.section.total_weight) * 100
+            )}%</td>
             </tr>
             `
-              )
-              .join("")}
+          )
+          .join("")}
             <tr style="background-color: #e8f5e8;">
                 <td colspan="2"><strong>Total Score</strong></td>
                 <td colspan="2"><strong>${data.final_score} / 100</strong></td>
@@ -371,15 +371,15 @@ const ScoreResult = () => {
         <div class="footer">
             <p>Thank you for your dedication to conscious growth.</p>
             <p class="mb">Generated on: ${new Date().toLocaleDateString(
-              "en-US",
-              {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            )}</p>
+            "en-US",
+            {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            }
+          )}</p>
         </div>
     </body>
     </html>`;
@@ -491,7 +491,7 @@ const ScoreResult = () => {
                 Score & Results
               </p>
               {scoreData.is_submitted_by_head &&
-              scoreData.cis_result.length > 0 ? (
+                scoreData.cis_result.length > 0 ? (
                 <div className="flex gap-2">
                   <div className="relative">
                     <button
@@ -687,9 +687,9 @@ const ScoreResult = () => {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-2">
-             
-               {/* Certification Level Card */}
+            <div className="grid w-full grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-2">
+
+              {/* Certification Level Card */}
               <div className="h-52 bg-white rounded-xl p-3 shadow-sm border border-[#eceef2] relative">
                 {/* Lock overlay - shown when certification level is not available */}
                 {!scoreData?.badge?.level && (
@@ -810,9 +810,9 @@ const ScoreResult = () => {
                 </div>
               </div>
 
-             
- {/* Overall CIS Score Card */}
-<div
+
+              {/* Overall CIS Score Card */}
+              <div
                 className="min-h-52 p-4 rounded-xl border border-[#eceef2] shadow-sm sm:col-span-2 lg:col-span-2 relative"
                 style={{
                   background:
@@ -823,30 +823,30 @@ const ScoreResult = () => {
                 {(!scoreData.is_assessment_submited ||
                   !scoreData.is_submitted_by_head ||
                   scoreData.cis_score === 0) && (
-                  <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-xl shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
-                    <svg
-                      className="w-8 h-8 text-gray-700 opacity-80 mb-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fill="#4F46E5"
-                        d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
-                      />
-                      <path
-                        fill="#4F46E5"
-                        d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
-                      />
-                    </svg>
-                    <p className="text-sm text-gray-700 font-medium">
-                      {!scoreData.is_assessment_submited
-                        ? "Complete Inspired Assessment to Unlock"
-                        : !scoreData.is_submitted_by_head
-                        ? "Score Under Review"
-                        : "Score Not Available"}
-                    </p>
-                  </div>
-                )}
+                    <div className="absolute inset-0 bg-white/30 backdrop-blur-md border border-white/30 rounded-xl shadow-inner flex flex-col items-center justify-center z-10 px-4 text-center">
+                      <svg
+                        className="w-8 h-8 text-gray-700 opacity-80 mb-2"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill="#4F46E5"
+                          d="M10 2a4 4 0 00-4 4v3H5a1 1 0 000 2h10a1 1 0 000-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v3H8V6z"
+                        />
+                        <path
+                          fill="#4F46E5"
+                          d="M4 11a1 1 0 011-1h10a1 1 0 011 1v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5z"
+                        />
+                      </svg>
+                      <p className="text-sm text-gray-700 font-medium">
+                        {!scoreData.is_assessment_submited
+                          ? "Complete Inspired Assessment to Unlock"
+                          : !scoreData.is_submitted_by_head
+                            ? "Score Under Review"
+                            : "Score Not Available"}
+                      </p>
+                    </div>
+                  )}
 
                 <div className="flex items-center gap-3 mb-2">
                   <div className="bg-[#E8CDFD] w-7 h-7 flex items-center justify-center rounded-full p-2">
@@ -1141,7 +1141,7 @@ const ScoreResult = () => {
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-600">
-                 Please complete your assessment to view your results.
+                  Please complete your assessment to view your results.
                 </p>
               </div>
             )}
