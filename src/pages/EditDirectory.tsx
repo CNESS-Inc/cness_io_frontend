@@ -457,7 +457,7 @@ const EditDirectory: React.FC = () => {
           type: "success",
           duration: 5000,
         });
-        navigate("/dashboard/DashboardDirectory");
+        // navigate("/dashboard/DashboardDirectory");
       } else {
         showToast({
           message: response?.error?.message,
