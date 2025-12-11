@@ -174,7 +174,7 @@ const AssessmentCertification = () => {
         return (
           <button
             disabled
-            className="font-plusJakarta font-medium text-[16px] leading-[100%] text-center text-gray-400 px-5 py-2.5 rounded-full transition-all duration-300 ease-out bg-gray-200 cursor-not-allowed"
+            className="font-plusJakarta font-medium text-[16px] leading-[100%] text-center text-gray-400 px-5 py-4 rounded-full transition-all duration-300 ease-out bg-gray-200 cursor-not-allowed"
           >
             {buttonText}
           </button>
@@ -185,7 +185,7 @@ const AssessmentCertification = () => {
         <>
           <button
             onClick={handleButtonClick}
-            className={`font-plusJakarta font-medium text-[16px] leading-[100%] text-center text-white px-5 py-2.5 rounded-full transition-all duration-300 ease-out bg-linear-to-r from-[#7077FE] to-[#F07EFF] hover:opacity-90`}
+            className={`font-plusJakarta font-medium text-[16px] leading-[100%] text-center text-white px-5 py-4 rounded-full transition-all duration-300 ease-out bg-linear-to-r from-[#7077FE] to-[#F07EFF] hover:opacity-90`}
           >
             {buttonText}
           </button>
@@ -883,7 +883,14 @@ const AssessmentCertification = () => {
           </div>
         </section>
       </div>
-      {isModalOpen && <Nomimationmodel onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && (
+        <Nomimationmodel
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={() => {
+            fetchCertificationDetails();
+          }}
+        />
+      )}
     </>
   );
 };

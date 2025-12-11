@@ -331,7 +331,7 @@ const DashboardHeader = ({
   // Format the date to a more readable format
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "Invalid date"; // fallback if parsing fails
+    if (isNaN(date.getTime())) return ""; // fallback if parsing fails
 
     const now = new Date();
     const diffInMs = now.getTime() - date.getTime();

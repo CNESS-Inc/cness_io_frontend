@@ -33,27 +33,30 @@ export default function HeroSection() {
       <div className="z-10 pt-12 sm:pt-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
         <h1
           style={{ fontFamily: "Poppins, sans-serif" }}
-          className={`font-medium text-[clamp(28px,5vw,42px)] leading-[125%] tracking-[-0.02em] bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${step >= 4 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6"
-            }`}
+          className={`font-medium text-[clamp(28px,5vw,42px)] leading-[125%] tracking-[-0.02em] bg-linear-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${
+            step >= 4 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6"
+          }`}
         >
-          Find Your People. Grow Together. 
-          <br /> 
+          Find Your People. Grow Together.
+          <br />
         </h1>
 
         <p
-          className={`font-['Open_Sans'] font-light text-[14px] sm:text-[15px] lg:text-[16px] leading-[22px] sm:leading-[24px] tracking-[0px] text-[#242424] text-center max-w-[65ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-            }`}
-        >      
-CNESS is a place where mindful people connect, share their stories 
-and learn from each other. Whether you’re new to conscious living 
-or already on your journey, you’re welcome here. 
+          className={`font-['Open_Sans'] font-light text-[14px] sm:text-[15px] lg:text-[16px] leading-[22px] sm:leading-6 tracking-[0px] text-[#242424] text-center max-w-[65ch] mt-4 sm:mt-6 lg:mt-6 transition-all duration-1000 ease-in-out  ${
+            step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}
+        >
+          CNESS is a place where mindful people connect, share their stories and
+          learn from each other. Whether you’re new to conscious living or
+          already on your journey, you’re welcome here.
         </p>
 
         <div
-          className={`mt-5 sm:mt-6 flex justify-center transition-all duration-1000 ease-in-out ${step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-            }`}
+          className={`mt-5 sm:mt-6 flex justify-center transition-all duration-1000 ease-in-out ${
+            step >= 5 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}
         >
-<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto items-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto items-center">
             <Button
               variant="gradient-primary"
               className="w-full sm:w-auto rounded-[100px] hero-section-btn 
@@ -78,10 +81,10 @@ or already on your journey, you’re welcome here.
       </div>
 
       {/* bottom image */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 pb-10 sm:pb-12 pt-12 sm:pt-16">
-<div className="relative mx-auto w-full max-w-[1900px] rounded-[24px] sm:rounded-[32px] overflow-hidden aspect-[16/9] sm:aspect-auto">
+<div className="w-full px-4 sm:px-6 lg:px-8 pb-6 sm:pb-10 pt-6 sm:pt-12">
+<div className="relative mx-auto w-full max-w-[1900px] rounded-[16px] sm:rounded-[32px] overflow-hidden">
           {/* responsive height using aspect-ratio; keeps the face framed via object-position */}
-          <div className="hero-img w-full rounded-[32px] aspect-auto object-cover object-center overflow-hidden">
+          <div className="hero-img w-full rounded-4xl aspect-auto object-cover object-center overflow-hidden">
             {/* <img
               src="https://cdn.cness.io/Hero%20section1.webp"
               alt="Hero Section"
@@ -113,9 +116,8 @@ or already on your journey, you’re welcome here.
               height={374}
               loading="eager"
               fetchPriority="high"
-className="w-full h-auto sm:h-full object-cover object-center"
+className="w-full h-auto object-cover object-center"
             />
-
           </div>
 
           {/* floating pills only on large screens to avoid crowding mobile */}

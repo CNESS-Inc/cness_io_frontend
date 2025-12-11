@@ -437,7 +437,12 @@ const BecomeMentor = () => {
           }}
         >
           <div className="flex flex-col lg:flex-row justify-between items-stretch gap-5">
-            <div className="w-full lg:w-1/3 py-[30px] px-[26px] gap-6 bg-white rounded-[40px]">
+<div className="w-full lg:w-1/3 
+  py-[30px] px-[20px] 
+  pb-[50px]       /* space for button */
+  gap-6 
+  bg-white 
+  rounded-[40px]">
               <h1 className="font-['Poppins',Helvetica] font-medium text-2xl md:text-[42px] lg:text-3xl xl:text-[42px] md:leading-[54px] lg:leading-[40px] xl:leading-[54px] text-wrap">
                 <span className="text-[#1A1A1A]">
                   Lead the Next
@@ -455,20 +460,31 @@ const BecomeMentor = () => {
               </h5>
               <div className="pt-6">
                 <button
-                  className="py-4 px-5 font-['Open_Sans',Helvetica] text-black font-medium text-sm text-white rounded-full"
-                  onClick={() => {
-                    const element = document.getElementById("apply_partner");
-                    if (element) {
-                      element.scrollIntoView({ behavior: "smooth" });
-                    }
-                  }}
-                  style={{
-                    background:
-                      "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
-                  }}
-                >
-                  Apply to Become a Mentor
-                </button>
+  className="
+  inline-flex items-center justify-center
+    px-4 py-2              /* compact for tiny screens */
+    xs:px-5 xs:py-2.5      /* slightly larger for >375px */
+    sm:px-7 sm:py-3        /* normal size for tablets */
+    md:px-8                /* larger desktops */
+    
+    rounded-full 
+    font-openSans font-medium
+    text-white
+    text-sm sm:text-base
+    whitespace-nowrap
+    leading-none
+    max-w-full
+  "
+  style={{
+    background: "linear-gradient(97deg, #7077FE 8%, #F07EFF 107%)",
+  }}
+  onClick={() => {
+    const element = document.getElementById('apply_partner');
+    if (element) element.scrollIntoView({ behavior: 'smooth' });
+  }}
+>
+  Apply to Become a Mentor
+</button>
               </div>
             </div>
             <div className="w-full lg:w-2/3 rounded-[40px]">

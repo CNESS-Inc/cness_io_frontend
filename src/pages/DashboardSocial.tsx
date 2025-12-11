@@ -224,9 +224,8 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${
-              index === current ? "block" : "hidden"
-            }`}
+            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
+              }`}
           >
             {item.type === "image" ? (
               <img
@@ -278,9 +277,8 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                idx === current ? "bg-indigo-500" : "bg-gray-300"
-              }`}
+              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
+                }`}
             ></button>
           ))}
         </div>
@@ -485,11 +483,11 @@ export default function SocialTopBar() {
           prev.map((p) =>
             p.user_id === userId
               ? {
-                  ...p,
-                  if_friend: false,
-                  friend_request_status: "PENDING",
-                  is_requested: true,
-                }
+                ...p,
+                if_friend: false,
+                friend_request_status: "PENDING",
+                is_requested: true,
+              }
               : p
           )
         );
@@ -509,11 +507,11 @@ export default function SocialTopBar() {
           prev.map((p) =>
             p.user_id === userId
               ? {
-                  ...p,
-                  if_friend: false,
-                  friend_request_status: null,
-                  is_requested: false,
-                }
+                ...p,
+                if_friend: false,
+                friend_request_status: null,
+                is_requested: false,
+              }
               : p
           )
         );
@@ -533,11 +531,11 @@ export default function SocialTopBar() {
           prev.map((p) =>
             p.user_id === userId
               ? {
-                  ...p,
-                  if_friend: false,
-                  friend_request_status: null,
-                  is_requested: false,
-                }
+                ...p,
+                if_friend: false,
+                friend_request_status: null,
+                is_requested: false,
+              }
               : p
           )
         );
@@ -600,7 +598,7 @@ export default function SocialTopBar() {
         // Get the first image URL if available, or use profile picture as fallback
         const firstImageUrl =
           item.file &&
-          item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
+            item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
             ? item.file.split(",")[0].trim()
             : item.profile.profile_picture;
 
@@ -1104,12 +1102,12 @@ export default function SocialTopBar() {
         prevPosts.map((post) =>
           post.id === postId
             ? {
-                ...post,
-                is_liked: !post.is_liked,
-                likes_count: post.is_liked
-                  ? post.likes_count - 1
-                  : post.likes_count + 1,
-              }
+              ...post,
+              is_liked: !post.is_liked,
+              likes_count: post.is_liked
+                ? post.likes_count - 1
+                : post.likes_count + 1,
+            }
             : post
         )
       );
@@ -1605,9 +1603,9 @@ export default function SocialTopBar() {
   return (
     <>
       {isAdult ? (
-        <div className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-4 px-2 md:px-4 lg:px-2 w-full pt-2">
+        <div className="flex flex-col xl:flex-row justify-between gap-2 xl:gap-4 px-2 md:px-4 xl:px-2 w-full pt-2">
           {/* Left Side: Post & Stories - Full width on mobile */}
-          <div className="w-full lg:max-w-[75%]" ref={containerRef}>
+          <div className="w-full xl:max-w-[75%]" ref={containerRef}>
             {activeView === "posts" ? (
               <>
                 {/* {isPostsLoading ? (
@@ -1623,9 +1621,9 @@ export default function SocialTopBar() {
                         <img
                           src={
                             !userProfilePicture ||
-                            userProfilePicture === "null" ||
-                            userProfilePicture === "undefined" ||
-                            !userProfilePicture.startsWith("http")
+                              userProfilePicture === "null" ||
+                              userProfilePicture === "undefined" ||
+                              !userProfilePicture.startsWith("http")
                               ? "/profile.png"
                               : userProfilePicture
                           }
@@ -1639,7 +1637,7 @@ export default function SocialTopBar() {
                           onClick={() => openPostPopup()}
                           readOnly
                         />
-                        <div className="lg:hidden z-40">
+                        <div className="xl:hidden z-40">
                           <button
                             onClick={toggleSidebar}
                             className="bg-[#7077FE] text-white p-4 rounded-full shadow-lg hover:bg-[#5b63e6] transition-all"
@@ -1742,9 +1740,8 @@ export default function SocialTopBar() {
                                 : "/profile.png"
                             }
                             userName={
-                              `${story.storyuser?.profile?.first_name || ""} ${
-                                story.storyuser?.profile?.last_name || ""
-                              }`.trim() || ""
+                              `${story.storyuser?.profile?.first_name || ""} ${story.storyuser?.profile?.last_name || ""
+                                }`.trim() || ""
                             }
                             title={story.description || "Untitled Story"}
                             videoSrc={story?.thumbnail || ""}
@@ -1848,9 +1845,9 @@ export default function SocialTopBar() {
                             <img
                               src={
                                 !post.profile.profile_picture ||
-                                post.profile.profile_picture === "null" ||
-                                post.profile.profile_picture === "undefined" ||
-                                !post.profile.profile_picture.startsWith("http")
+                                  post.profile.profile_picture === "null" ||
+                                  post.profile.profile_picture === "undefined" ||
+                                  !post.profile.profile_picture.startsWith("http")
                                   ? "/profile.png"
                                   : post.profile.profile_picture
                               }
@@ -1891,35 +1888,33 @@ export default function SocialTopBar() {
                             {/* Connect Button */}
                             <button
                               onClick={() => handleConnect(post.user_id)}
-                              className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${
-                                post.if_friend &&
+                              className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${post.if_friend &&
                                 post.friend_request_status === "ACCEPT"
-                                  ? "bg-green-100 text-green-700 border border-green-300"
-                                  : !post.if_friend &&
-                                    post.friend_request_status === "PENDING"
+                                ? "bg-green-100 text-green-700 border border-green-300"
+                                : !post.if_friend &&
+                                  post.friend_request_status === "PENDING"
                                   ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
                                   : "bg-white text-black border border-gray-200"
-                              }`}
+                                }`}
                             >
                               <span className="flex items-center gap-1">
                                 <UserRoundPlus className="w-4 h-4" />
                                 {post.if_friend &&
-                                post.friend_request_status === "ACCEPT"
+                                  post.friend_request_status === "ACCEPT"
                                   ? "Connected"
                                   : !post.if_friend &&
                                     post.friend_request_status === "PENDING"
-                                  ? "Requested"
-                                  : "Connect"}
+                                    ? "Requested"
+                                    : "Connect"}
                               </span>
                             </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(post.user_id)}
                               className={`flex justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors h-[35px]
-                                ${
-                                  post.if_following
-                                    ? "bg-[#7077FE] text-white hover:bg-indigo-600"
-                                    : "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                ${post.if_following
+                                  ? "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                  : "bg-[#7077FE] text-white hover:bg-indigo-600"
                                 }`}
                             >
                               {post.if_following ? (
@@ -1974,8 +1969,8 @@ export default function SocialTopBar() {
                                             ? "Loading..."
                                             : getFriendStatus(post.user_id) ===
                                               "requested"
-                                            ? "Requested" // This will now change back to "Connect" when clicked again
-                                            : "Connect"}
+                                              ? "Requested" // This will now change back to "Connect" when clicked again
+                                              : "Connect"}
                                         </button>
                                       </li>
                                       <li>
@@ -2109,14 +2104,14 @@ export default function SocialTopBar() {
                         <p className="text-gray-800 font-[poppins] text-sm md:text-base mb-2 md:mb-3 space-y-1">
                           <span>
                             {expandedPosts[post.id] ||
-                            post?.content?.length <= CONTENT_LIMIT
+                              post?.content?.length <= CONTENT_LIMIT
                               ? renderContentWithHashtags(post.content || "")
                               : renderContentWithHashtags(
-                                  `${post?.content?.substring(
-                                    0,
-                                    CONTENT_LIMIT
-                                  )}...`
-                                )}
+                                `${post?.content?.substring(
+                                  0,
+                                  CONTENT_LIMIT
+                                )}...`
+                              )}
                           </span>
                           {post?.content?.length > CONTENT_LIMIT && (
                             <button
@@ -2240,9 +2235,8 @@ export default function SocialTopBar() {
                         <button
                           onClick={(e) => handleLike(post.id, e)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${
-                            isLoading ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
                         >
                           <span className="hidden sm:flex text-lg text-black">
                             {post.likes_count}
@@ -2254,9 +2248,8 @@ export default function SocialTopBar() {
                           />
 
                           <span
-                            className={`hidden sm:flex ${
-                              post.is_liked ? "text-[#7077FE]" : "text-black"
-                            }`}
+                            className={`hidden sm:flex ${post.is_liked ? "text-[#7077FE]" : "text-black"
+                              }`}
                           >
                             Appreciate
                           </span>
@@ -2274,11 +2267,10 @@ export default function SocialTopBar() {
                             setSelectedPostId(post.id);
                             setShowCommentBox(true);
                           }}
-                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${
-                            selectedPostId === post.id
-                              ? "text-[#7077FE]"
-                              : "text-black"
-                          }`}
+                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${selectedPostId === post.id
+                            ? "text-[#7077FE]"
+                            : "text-black"
+                            }`}
                         >
                           <MessageSquare
                             className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
@@ -2290,11 +2282,10 @@ export default function SocialTopBar() {
                             }
                           />{" "}
                           <span
-                            className={`hidden sm:flex ${
-                              selectedPostId === post.id
-                                ? "#7077FE"
-                                : "text-black"
-                            }`}
+                            className={`hidden sm:flex ${selectedPostId === post.id
+                              ? "#7077FE"
+                              : "text-black"
+                              }`}
                           >
                             Reflections
                           </span>
@@ -2413,12 +2404,44 @@ export default function SocialTopBar() {
                   <h3 className="text-lg font-semibold text-gray-800">
                     People You Follow
                   </h3>
-                  <button
-                    onClick={() => setActiveView("posts")}
-                    className="text-sm text-[#7C81FF] hover:underline"
-                  >
-                    Back to Posts
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setActiveView("posts")}
+                      className="text-sm text-[#7C81FF] hover:underline"
+                    >
+                      Back to Posts
+                    </button>
+                    {/* Mobile sidebar toggle */}
+                    <div className="xl:hidden z-40">
+                      <button
+                        onClick={toggleSidebar}
+                        className="bg-[#7077FE] text-white p-3 rounded-full shadow-lg hover:bg-[#5b63e6] transition-all"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          {isSidebarOpen ? (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          ) : (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 6h16M4 12h16M4 18h16"
+                            />
+                          )}
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 {isFollowingLoading ? (
                   <div className="flex justify-center items-center h-64">
@@ -2445,12 +2468,44 @@ export default function SocialTopBar() {
                   <h3 className="text-lg font-semibold text-gray-800">
                     My Collection
                   </h3>
-                  <button
-                    onClick={() => setActiveView("posts")}
-                    className="text-sm text-[#7C81FF] hover:underline"
-                  >
-                    Back to Posts
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setActiveView("posts")}
+                      className="text-sm text-[#7C81FF] hover:underline"
+                    >
+                      Back to Posts
+                    </button>
+                    {/* Mobile sidebar toggle */}
+                    <div className="xl:hidden z-40">
+                      <button
+                        onClick={toggleSidebar}
+                        className="bg-[#7077FE] text-white p-3 rounded-full shadow-lg hover:bg-[#5b63e6] transition-all"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          {isSidebarOpen ? (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          ) : (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 6h16M4 12h16M4 18h16"
+                            />
+                          )}
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 {isCollectionLoading ? (
                   <div className="flex justify-center items-center h-64">
@@ -2465,20 +2520,19 @@ export default function SocialTopBar() {
 
           {isSidebarOpen && (
             <div
-              className="lg:hidden fixed inset-0 bg-black/50 z-40"
+              className="xl:hidden fixed inset-0 bg-black/50 z-40"
               onClick={toggleSidebar}
             />
           )}
 
           <div
-            className={`fixed lg:static top-0 right-0 h-full lg:h-auto w-[280px] sm:w-[320px] lg:w-[25%] max-w-[90vw] lg:max-w-none bg-white lg:bg-transparent shadow-xl lg:shadow-none transform transition-transform duration-300 ease-in-out ${
-              isSidebarOpen
-                ? "translate-x-0 p-3"
-                : "translate-x-full lg:translate-x-0"
-            } z-50 lg:z-auto overflow-y-auto pt-0 flex flex-col gap-4`}
+            className={`fixed xl:static top-0 right-0 h-full xl:h-auto w-[280px] sm:w-[320px] xl:w-[25%] max-w-[90vw] xl:max-w-none bg-white xl:bg-transparent shadow-xl xl:shadow-none transform transition-transform duration-300 ease-in-out ${isSidebarOpen
+              ? "translate-x-0 p-3"
+              : "translate-x-full xl:translate-x-0"
+              } z-50 xl:z-auto overflow-y-auto pt-0 flex flex-col gap-4`}
           >
             {/* Close button for mobile */}
-            <div className="lg:hidden flex justify-between items-center px-4 pb-4 border-b border-gray-200 sticky top-0 bg-white z-10 pt-4">
+            <div className="xl:hidden flex justify-between items-center px-4 pb-4 border-b border-gray-200 sticky top-0 bg-white z-10 pt-4">
               <h3 className="text-lg font-semibold text-gray-800">Menu</h3>
               <button
                 onClick={toggleSidebar}
@@ -2519,7 +2573,7 @@ export default function SocialTopBar() {
                 <li
                   onClick={() => {
                     fetchCollectionItems();
-                    setIsSidebarOpen(false);
+                    // setIsSidebarOpen(false);
                   }}
                   className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
                 >

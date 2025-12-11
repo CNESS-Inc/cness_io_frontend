@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { StorySidebar } from "./StorySidebar";
 import { StoryViewer } from "./StoryViewer";
 import { GetStory, LikeStory } from "../../../Common/ServerAPI";
+import { useToast } from "../../../components/ui/Toast/ToastProvider"; // Add this import
 
 interface StoryContent {
   id: string;
@@ -18,7 +19,6 @@ interface StoryUser {
 }
 
 interface Story {
-  is_liked: unknown;
   id: string;
   userId?: string;
   user: StoryUser;
@@ -26,13 +26,24 @@ interface Story {
   createdAt?: Date;
   isViewed: boolean;
   content: StoryContent[];
+  is_liked: boolean;
+  likes_count: number;
+  comments_count: number;
+  video_file?: string; // Add this if you need it
 }
 
 export function StoriesApp() {
   const [searchParams] = useSearchParams();
   const [activeStoryId, setActiveStoryId] = useState<any>(null);
   const [stories, setStories] = useState<Story[]>([]);
+  console.log("🚀 ~ StoriesApp ~ stories:", stories[0])
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Add toast hook
+  const { showToast } = useToast();
+  
+  // Add ref for storing like animation callbacks
+  const likeAnimationRef = useRef<(amount?: number) => void>(() => {});
 
   // Get URL parameters
   const selectedUserId = searchParams.get("user");
@@ -42,7 +53,6 @@ export function StoriesApp() {
     (story) => story.id === activeStoryId
   );
   const currentStory = stories[currentStoryIndex];
-
 
   const [currentContentIndex, setCurrentContentIndex] = useState(0);
 
@@ -125,6 +135,11 @@ export function StoriesApp() {
     } catch (e) {
       console.error(e);
       setStories([]);
+      showToast({
+        message: "Failed to load stories",
+        type: "error",
+        duration: 3000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -140,9 +155,11 @@ export function StoriesApp() {
       const initials = `${firstNameInitial}${lastNameInitial}`.toUpperCase();
 
       return {
-        id: story.id, // Each story has its own ID
+        id: story.id,
         userId: story.user_id,
         is_liked: story.is_liked || false,
+        likes_count: story.likes_count || 0,
+        comments_count: story.comments_count || 0,
         user: {
           name: `${firstName} ${lastName}`.trim() || "Unknown User",
           avatar: story.storyuser?.profile?.profile_picture || "",
@@ -167,45 +184,88 @@ export function StoriesApp() {
     GetStoryData();
   }, [selectedUserId, selectedStoryId]);
 
-  useEffect(() => {
-    console.log(
-      "Stories:",
-      stories.map((s) => ({ id: s.id, user: s.user.name, createdAt: s.createdAt }))
-    );
-    console.log("Active story ID:", activeStoryId);
-    console.log("Current story index:", currentStoryIndex);
-  }, [stories, activeStoryId, currentStoryIndex]);
-
-  const handleLikeClick = async (story: any) => {
+  // UPDATED handleLikeClick function with credit animation support
+  const handleLikeClick = async () => {
+    if (!currentStory) return;
+    
     try {
-      await LikeStory(story.id);
-      // Update the story's like status in local state
+      // Store current like state before API call
+      const isCurrentlyLiked = currentStory.is_liked;
+      
+      // Format data similar to PostsLike
+      const formattedData = currentStory.id;
+
+      // Make the API call
+      const res = await LikeStory(formattedData);
+
+      // Update karma_credits in localStorage from API response (if provided)
+      if (res?.data?.data?.karma_credits !== undefined) {
+        localStorage.setItem(
+          "karma_credits",
+          res.data.data.karma_credits.toString()
+        );
+        window.dispatchEvent(new Event("karmaCreditsUpdated"));
+      }
+
+      // Trigger credit animation when LIKING (not unliking)
+      if (
+        (import.meta.env.VITE_ENV_STAGE === "test" || 
+         import.meta.env.VITE_ENV_STAGE === "uat") &&
+        !isCurrentlyLiked &&
+        likeAnimationRef.current
+      ) {
+        likeAnimationRef.current(5); // 5 credits for story like
+      }
+
+      // Update story data in state
       setStories((prevStories) =>
-        prevStories.map((s) =>
-          s.id === story.id
+        prevStories.map((story) =>
+          story.id === currentStory.id
             ? {
-                ...s,
-                is_liked: !s.is_liked,
+                ...story,
+                is_liked: !story.is_liked,
+                likes_count: story.is_liked
+                  ? story.likes_count - 1
+                  : story.likes_count + 1,
                 isViewed: true,
                 hasNewStory: false,
               }
-            : s
+            : story
         )
       );
-    } catch (error) {
-      console.error("Error submitting like:", error);
+
+      // Show success toast
+      showToast({
+        message: isCurrentlyLiked 
+          ? "Story unliked successfully" 
+          : "Story liked successfully",
+        type: "success",
+        duration: 2000,
+      });
+
+    } catch (error: any) {
+      console.error("Error liking story:", error);
+      showToast({
+        message: error?.response?.data?.error?.message || "Failed to like story",
+        type: "error",
+        duration: 3000,
+      });
     }
   };
 
   const handleStoryChange = () => {
-    // This will be called when story changes in StoryViewer
-    // Any additional logic can be added here if needed
+    // Any additional logic when story changes
+  };
+
+  // Function to register animation callback from StoryViewer
+  const registerAnimationCallback = (callback: (amount?: number) => void) => {
+    likeAnimationRef.current = callback;
   };
 
   if (isLoading) {
     return (
       <div className="h-screen bg-background flex justify-center items-center">
-        Loading...
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
       </div>
     );
   }
@@ -229,6 +289,17 @@ export function StoriesApp() {
     );
   }
 
+  const handleCommentCountUpdate = (storyId: string, newCount: number) => {
+    console.log("🚀 ~ handleCommentCountUpdate ~ newCount:", newCount)
+    setStories((prevStories) =>
+      prevStories.map((story) =>
+        story.id === storyId
+          ? { ...story, comments_count: newCount }
+          : story
+      )
+    );
+  };
+
   return (
     <div className="h-screen bg-background flex">
       <StorySidebar
@@ -250,18 +321,26 @@ export function StoriesApp() {
           userName={currentStory.user.name}
           userAvatar={currentStory.user.avatar}
           is_liked={currentStory.is_liked}
+          likes_count={currentStory.likes_count}
+          comments_count={currentStory.comments_count}
           onPrevious={handlePrevious}
           onNext={handleNext}
           hasPrevious={currentContentIndex > 0 || currentStoryIndex > 0}
-          timeAgo={currentStory.createdAt} // You might want to calculate this based on createdAt
+          timeAgo={currentStory.createdAt}
           hasNext={
             currentContentIndex < currentStory.content.length - 1 ||
             currentStoryIndex < stories.length - 1
           }
-          onLike={() => handleLikeClick(currentStory)}
+          onLike={handleLikeClick} // Pass the updated function
           storyId={currentStory.content[currentContentIndex]?.id}
           userId={currentStory.userId}
           onStoryChange={handleStoryChange}
+          // Add this prop to pass animation callback
+          onRegisterAnimation={registerAnimationCallback}
+          onCommentCountUpdate={(newCount) => {
+            // This will update the specific story's comment count
+            handleCommentCountUpdate(currentStory.id, newCount);
+          }}
         />
       )}
     </div>

@@ -87,7 +87,7 @@ const AllFriends = ({ searchTerm, onSelect, onChat }: Props) => {
 
   return (
     <>
-      <div className="sm:grid gap-4 md:gap-5 lg:gap-6 justify-items-center grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-4 3xl:grid-cols-6">
+     <div className="w-full grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5 lg:gap-6 justify-items-center">
         {connections.length > 0 ? (
           connections.map((conn) => (
             <FriendCard

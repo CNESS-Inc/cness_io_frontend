@@ -147,7 +147,7 @@ export default function EcoSystemApp() {
         background: "linear-gradient(180deg, #FAFAFA 0%, #F6F5FA 100%)",
       }}
     >
-      <div className="w-full max-w-8xl mx-auto grid grid-cols-1 xl:grid-cols-2 gap-[60px] justify-center items-center">
+<div className="w-full max-w-[1400px] mx-auto grid grid-cols-1 xl:grid-cols-2 gap-[60px] justify-center items-center">
         {/* left card  */}
         <div className="flex flex-col sm:flex-row justify-center items-center mx-auto gap-[30px] relative max-w-2xl lg:w-full">
           <div
