@@ -971,12 +971,9 @@ export default function SocialFeed() {
                   {/* Header */}
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 md:gap-3">
-
                       <Link
                         to={`/dashboard/userprofile/${singlePost?.profile?.id}`}
                       >
-                                              <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 md:w-[55px] md:h-[55px] lg:w-[63px] lg:h-[63px]">
-
                         <img
                           src={
                             singlePost.profile.profile_picture
@@ -990,7 +987,6 @@ export default function SocialFeed() {
                             target.src = "/profile.png";
                           }}
                         />
-                        </div>
                       </Link>
                       <div>
                         <p className="font-semibold text-sm md:text-base text-gray-800">
@@ -1369,19 +1365,27 @@ export default function SocialFeed() {
                           <Link
                             to={`/dashboard/userprofile/${post?.profile?.id}`}
                           >
+                            <div
+    className="
+      w-8 aspect-square
+      md:w-[55px] lg:w-[63px]
+      flex-shrink-0 overflow-hidden rounded-full
+    "
+  >
                             <img
                               src={
                                 post.profile.profile_picture
                                   ? post.profile.profile_picture
                                   : "/profile.png"
                               }
-                              className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
+      className="w-full h-full object-cover rounded-full"
                               alt="User"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.src = "/profile.png";
                               }}
                             />
+                            </div>
                           </Link>
                           <div>
                             <p className="font-semibold text-sm md:text-base text-gray-800">
