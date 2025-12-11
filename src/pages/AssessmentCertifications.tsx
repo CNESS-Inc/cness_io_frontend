@@ -196,7 +196,8 @@ const AssessmentCertification = () => {
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
           <p className="font-['Open_Sans'] font-normal text-[14px] leading-[160%] text-blue-800">
             {cert.message ||
-              `Your ${cert.level} certification is ${cert.status === 1 ? "pending approval" : "approved"
+              `Your ${cert.level} certification is ${
+                cert.status === 1 ? "pending approval" : "approved"
               }.`}
           </p>
           {cert.start_date && cert.end_date && (
@@ -235,10 +236,11 @@ const AssessmentCertification = () => {
         onClick={() => isAspiringCompleted && setIsModalOpen(true)}
         variant="white-outline"
         disabled={!isAspiringCompleted}
-        className={`font-plusJakarta font-medium text-[16px] leading-[100%] tracking-[0] text-center px-5 py-2.5 rounded-full ${isAspiringCompleted
+        className={`font-plusJakarta font-medium text-[16px] leading-[100%] tracking-[0] text-center px-5 py-2.5 rounded-full ${
+          isAspiringCompleted
             ? "text-black border border-[#9C4DF4] bg-gray-50 hover:bg-gray-100 cursor-pointer"
             : "text-gray-400 border border-gray-300 bg-gray-100 cursor-not-allowed"
-          }`}
+        }`}
       >
         Nominate a Leader
       </Button>
@@ -881,7 +883,14 @@ const AssessmentCertification = () => {
           </div>
         </section>
       </div>
-      {isModalOpen && <Nomimationmodel onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && (
+        <Nomimationmodel
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={() => {
+            fetchCertificationDetails();
+          }}
+        />
+      )}
     </>
   );
 };

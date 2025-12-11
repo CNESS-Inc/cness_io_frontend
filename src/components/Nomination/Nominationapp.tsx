@@ -7,6 +7,7 @@ import { useToast } from "../ui/Toast/ToastProvider";
 // ✅ Define props for the modal
 interface NominationFormModalProps {
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
 // ✅ Define a type for the form data
@@ -23,6 +24,7 @@ interface FormData {
 
 const NominationFormModal: React.FC<NominationFormModalProps> = ({
   onClose,
+  onSuccess,
 }) => {
   const { showToast } = useToast();
   const [formData, setFormData] = useState<FormData>({
@@ -38,7 +40,7 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [badge, setBadge] = useState<any>([]);
-const [showFileError, setShowFileError] = useState(false);
+  const [showFileError, setShowFileError] = useState(false);
 
   const fetchBadge = async () => {
     try {
@@ -70,29 +72,29 @@ const [showFileError, setShowFileError] = useState(false);
 
   // ✅ Handle file change separately for better control
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0] || null;
+    const file = e.target.files?.[0] || null;
 
-  if (file) {
-    const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+    if (file) {
+      const maxSize = 2 * 1024 * 1024; // 2MB in bytes
 
-    if (file.size > maxSize) {
-      showToast({
-        message: "File size exceeds 2MB. Please upload a smaller file.",
-        type: "error",
-        duration: 4000,
-      });
-      setShowFileError(true);
-      return;
+      if (file.size > maxSize) {
+        showToast({
+          message: "File size exceeds 2MB. Please upload a smaller file.",
+          type: "error",
+          duration: 4000,
+        });
+        setShowFileError(true);
+        return;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        file,
+      }));
+
+      setShowFileError(false); // clear error if valid file
     }
-
-    setFormData((prev) => ({
-      ...prev,
-      file,
-    }));
-
-    setShowFileError(false); // clear error if valid file
-  }
-};
+  };
 
   // ✅ Handle file removal
   const handleRemoveFile = () => {
@@ -103,48 +105,55 @@ const [showFileError, setShowFileError] = useState(false);
   };
 
   // ✅ Proper typing for form submit
-const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-   if (!formData.file) {
-    setShowFileError(true);
-    showToast({
-      message: "Please upload supporting evidence before submitting.",
-      type: "error",
-      duration: 4000,
-    });
-    return;
-  }
-  setIsSubmitting(true);
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.file) {
+      setShowFileError(true);
+      showToast({
+        message: "Please upload supporting evidence before submitting.",
+        type: "error",
+        duration: 4000,
+      });
+      return;
+    }
+    setIsSubmitting(true);
 
-  try {
-    const formDataToSend = new FormData();
-    formDataToSend.append('full_name', formData.fullName);
-    formDataToSend.append('email', formData.email);
-    formDataToSend.append('badge_id', formData.certificationLevel);
-    formDataToSend.append('nominator_name', formData.nominatorName);
-    formDataToSend.append('recognition_reason', formData.reason);
-    formDataToSend.append('initiative_description', formData.project);
-    formDataToSend.append("file", formData.file);
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("full_name", formData.fullName);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("badge_id", formData.certificationLevel);
+      formDataToSend.append("nominator_name", formData.nominatorName);
+      formDataToSend.append("recognition_reason", formData.reason);
+      formDataToSend.append("initiative_description", formData.project);
+      formDataToSend.append("file", formData.file);
 
-    // Using fetch
-    const response = await AddNomination(formDataToSend)
-    console.log("🚀 ~ handleSubmit ~ response:", response)
-    showToast({
-      message: 'Nomination submitted successfully!',
-      type: 'success',
-      duration: 5000,
-    });
-    onClose();
-  } catch (error: any) {
-    showToast({
-      message: error?.response?.data?.error?.message || 'An error occurred while submitting the nomination.',
-      type: 'error',
-      duration: 5000,
-    });
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      await AddNomination(formDataToSend);
+
+      showToast({
+        message: "Nomination submitted successfully!",
+        type: "success",
+        duration: 5000,
+      });
+
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
+
+      onClose();
+    } catch (error: any) {
+      showToast({
+        message:
+          error?.response?.data?.error?.message ||
+          "An error occurred while submitting the nomination.",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (!open) return null;
 
@@ -171,11 +180,13 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 
         {/* Upload Section */}
         {!formData.file ? (
-          <div 
-className={`mt-2 text-center py-6 px-4 rounded-[26px] border-2 ${
-      showFileError ? "border-red-500" : "border-[#CBD0DC]"
-    } border-dashed flex flex-col items-center justify-center cursor-pointer mb-2 transition-all`}
-  >            <div className="pb-4 flex flex-col items-center">
+          <div
+            className={`mt-2 text-center py-6 px-4 rounded-[26px] border-2 ${
+              showFileError ? "border-red-500" : "border-[#CBD0DC]"
+            } border-dashed flex flex-col items-center justify-center cursor-pointer mb-2 transition-all`}
+          >
+            {" "}
+            <div className="pb-4 flex flex-col items-center">
               <svg
                 className="w-12 h-12 text-[#CBD0DC]"
                 fill="none"
@@ -196,7 +207,6 @@ className={`mt-2 text-center py-6 px-4 rounded-[26px] border-2 ${
                 PDF, JPEG, PNG formats, up to 2MB
               </h4>
             </div>
-
             <div className="">
               <input
                 type="file"
@@ -204,9 +214,9 @@ className={`mt-2 text-center py-6 px-4 rounded-[26px] border-2 ${
                 className="hidden"
                 accept=".pdf,.jpg,.jpeg,.png"
                 onChange={(e) => {
-          handleFileChange(e);
-          setShowFileError(false); 
-        }}
+                  handleFileChange(e);
+                  setShowFileError(false);
+                }}
               />
               <label
                 htmlFor="nominationFile"
@@ -260,11 +270,11 @@ className={`mt-2 text-center py-6 px-4 rounded-[26px] border-2 ${
         )}
 
         {/* Show inline error message */}
-{showFileError && (
-  <p className="text-red-500 text-sm text-center mb-4">
-    * Uploading supporting evidence is required.
-  </p>
-)}
+        {showFileError && (
+          <p className="text-red-500 text-sm text-center mb-4">
+            * Uploading supporting evidence is required.
+          </p>
+        )}
 
         {/* Form Section */}
         <form
@@ -292,7 +302,7 @@ className={`mt-2 text-center py-6 px-4 rounded-[26px] border-2 ${
                 value={formData.fullName}
                 onChange={handleChange}
                 placeholder="Applicant/Nominee's full name"
-                className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="w-full px-2.5 py-3 border border-[#CBD0DC] rounded-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                 required
               />
             </div>
@@ -311,7 +321,7 @@ className={`mt-2 text-center py-6 px-4 rounded-[26px] border-2 ${
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Enter mail ID for official communication"
-                className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="w-full px-2.5 py-3 border border-[#CBD0DC] rounded-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                 required
               />
             </div>

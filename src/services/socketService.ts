@@ -3,10 +3,12 @@ import io, { Socket } from 'socket.io-client';
 class SocketService {
   private socket: Socket | null = null;
   private isConnected = false;
+  private listenersSet = false;
 
   connect(token: string) {
-    if (this.socket?.connected) {
-      console.log('🟢 Socket already connected');
+    // If socket already exists, return it (even if connecting)
+    if (this.socket) {
+      console.log('🟢 Socket instance already exists, reusing...');
       return this.socket;
     }
 
@@ -15,23 +17,24 @@ class SocketService {
       auth: {
         token: token
       },
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'], // Try polling first for reliability
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 5,
-      reconnectionDelay: 1000
+      reconnectionDelay: 1000,
+      timeout: 10000
     });
 
     this.setupEventListeners();
-    
+
     return this.socket;
   }
 
   private setupEventListeners() {
-    if (!this.socket) return;
+    if (!this.socket || this.listenersSet) return;
 
     this.socket.on('connect', () => {
-      console.log('🟢 Connected to server');
+      console.log('🟢 Connected to socket server (transport:', this.socket?.io.engine.transport.name, ')');
       this.isConnected = true;
     });
 
@@ -41,8 +44,10 @@ class SocketService {
     });
 
     this.socket.on('connect_error', (error) => {
-      console.error('❌ Connection error:', error);
+      console.error('❌ Connection error:', error.message);
     });
+
+    this.listenersSet = true;
   }
 
   // Join a conversation room
@@ -70,6 +75,14 @@ class SocketService {
     }
   }
 
+  // Set active conversation (for notification logic)
+  setActiveConversation(conversationId: string | null) {
+    if (this.socket) {
+      this.socket.emit('setActiveConversation', conversationId);
+      console.log(`👁️ Set active conversation:`, conversationId);
+    }
+  }
+
   // Mark messages as read
   markAsRead(conversationId: string, senderId: string) {
     if (this.socket) {
@@ -77,6 +90,22 @@ class SocketService {
         conversationId,
         senderId
       });
+    }
+  }
+
+  // Send message via socket
+  sendMessage(data: {
+    conversationId: string | number;
+    receiverId: string | number;
+    content: string;
+    attachments?: string[]; // Array of attachment URLs (already uploaded)
+  }) {
+    if (this.socket) {
+      this.socket.emit('sendMessage', data);
+      console.log('📤 Sending message via socket:', data);
+    } else {
+      console.error('❌ Cannot send message: Socket not connected');
+      throw new Error('Socket not connected');
     }
   }
 
@@ -101,6 +130,20 @@ class SocketService {
     }
   }
 
+  // Listen for message notifications (when receiver doesn't have conversation open)
+  onMessageNotification(callback: (data: {
+    type: string,
+    conversationId: string,
+    senderId: string,
+    senderName: string,
+    content: string,
+    timestamp: string
+  }) => void) {
+    if (this.socket) {
+      this.socket.on('messageNotification', callback);
+    }
+  }
+
   // Listen for notifications
   onNotification(callback: (data: any) => void) {
     if (this.socket) {
@@ -112,6 +155,20 @@ class SocketService {
   onNotificationCount(callback: (data: any) => void) {
     if (this.socket) {
       this.socket.on('notificationCount', callback);
+    }
+  }
+
+  // Listen for message send acknowledgment
+  onMessageSent(callback: (data: { success: boolean; message?: any; error?: string }) => void) {
+    if (this.socket) {
+      this.socket.on('messageSent', callback);
+    }
+  }
+
+  // Listen for message send errors
+  onMessageError(callback: (data: { error: string; originalMessage?: any }) => void) {
+    if (this.socket) {
+      this.socket.on('messageError', callback);
     }
   }
 
@@ -142,7 +199,39 @@ class SocketService {
       this.socket.disconnect();
       this.socket = null;
       this.isConnected = false;
+      this.listenersSet = false;
     }
+  }
+
+  // Wait for socket to be ready
+  waitForConnection(): Promise<Socket> {
+    return new Promise((resolve, reject) => {
+      if (this.socket?.connected) {
+        resolve(this.socket);
+        return;
+      }
+
+      if (!this.socket) {
+        reject(new Error('Socket not initialized'));
+        return;
+      }
+
+      const timeout = setTimeout(() => {
+        reject(new Error('Socket connection timeout'));
+      }, 10000);
+
+      this.socket.once('connect', () => {
+        clearTimeout(timeout);
+        if (this.socket) {
+          resolve(this.socket);
+        }
+      });
+
+      this.socket.once('connect_error', (error) => {
+        clearTimeout(timeout);
+        reject(error);
+      });
+    });
   }
 }
 
