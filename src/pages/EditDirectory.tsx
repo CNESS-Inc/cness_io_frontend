@@ -7,7 +7,6 @@ import {
   CreateOrUpdateBasicInfo,
   GetBasicInfoDetails,
   GetServiceDetails,
-  GetCountryDetails,
   UploadDirectoryLogo,
   UploadDirectoryPhotos,
   ChangeDirectoryPhoto,
@@ -29,8 +28,6 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Select from "react-select";
 import LocationSearchDropdown from "../components/LocationSearch/LocationSearchDropdown";
-import CreatableSelect from "react-select/creatable";
-// import { useNavigate } from "react-router-dom";
 
 interface DayType {
   name: string;
@@ -65,7 +62,6 @@ const EditDirectory: React.FC = () => {
   // const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [serviceData, setServiceData] = useState<any>(null);
-  const [countryData, setCountryData] = useState<any[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<{
     placeId: string;
     name: string;
@@ -799,19 +795,6 @@ const EditDirectory: React.FC = () => {
     }
   };
 
-  const GetCountries = async () => {
-    try {
-      const response = await GetCountryDetails();
-      setCountryData(response.data.data || []);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
-
   const GetBasicInfo = async () => {
     try {
       const response = await GetBasicInfoDetails();
@@ -1491,7 +1474,6 @@ const EditDirectory: React.FC = () => {
   useEffect(() => {
     if (!hasFetched.current) {
       GetService();
-      GetCountries();
       GetBasicInfo();
       hasFetched.current = true;
     }

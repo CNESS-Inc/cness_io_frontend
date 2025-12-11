@@ -29,9 +29,6 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Display value text
-  const displayValue = value ? `${value.name}, ${value.address}` : "";
-
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
