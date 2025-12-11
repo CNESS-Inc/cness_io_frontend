@@ -6,7 +6,6 @@ import { CommentStory, FetchCommentStory } from "../../../Common/ServerAPI";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 
 const ReelComment = (props: any) => {
-  console.log("🚀 ~ ReelComment ~ props:", props)
   const [commentText, setCommentText] = useState("");
   const [commentData, setComentData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,8 +22,19 @@ const ReelComment = (props: any) => {
       };
       await CommentStory(formattedData);
       setCommentText(""); // Clear input after submitting
+      
+      // Fetch updated comments
       await fetchComment();
-      await props.GetStoryData();
+      
+      // Update parent component's comment count
+      if (props.onCommentCountUpdate && commentData) {
+        props.onCommentCountUpdate(commentData.length + 1);
+      }
+      
+      // Call GetStoryData if provided (for refreshing parent data)
+      if (props.GetStoryData) {
+        await props.GetStoryData();
+      }
     } catch (error) {
       console.error("Error submitting comment:", error);
     } finally {
@@ -93,7 +103,6 @@ const ReelComment = (props: any) => {
                           }
                           alt="profile"
                           className="w-8 h-8 rounded-full mr-4"
-                          effect="blur"
                         />
                       </Link>
                       <div style={{ width: "100%" }}>

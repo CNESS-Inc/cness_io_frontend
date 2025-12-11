@@ -1,5 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+  Pause,
+  Play,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import Button from "../../ui/Button";
 import { Input } from "../../ui/input";
 import Like from "../../../assets/story-like.png";
@@ -25,15 +33,19 @@ interface StoryViewerProps {
   hasPrevious: boolean;
   hasNext: boolean;
   timeAgo: any;
-  onLike: () => void;
-  is_liked: any;
   allStories: { content: StoryContent[] }[];
   currentStoryIndex: number;
   currentContentIndex: number;
+  comments_count: number; // Add this
   onContentIndexChange: (index: number) => void;
-  storyId?: string;
   userId?: string;
   onStoryChange?: () => void;
+  onLike: () => void;
+  is_liked: boolean;
+  likes_count: number;
+  storyId?: string;
+  onRegisterAnimation?: (callback: (amount?: number) => void) => void;
+  onCommentCountUpdate?: (newCount: number) => void;
 }
 
 interface TimeAgoProps {
@@ -90,10 +102,15 @@ export function StoryViewer({
   timeAgo,
   onLike,
   is_liked,
+  likes_count,
+  comments_count, // Add this prop
+  onRegisterAnimation,
+  onCommentCountUpdate,
   storyId,
   userId,
   onStoryChange,
 }: StoryViewerProps) {
+  console.log("🚀 ~ StoryViewer ~ comments_count:", comments_count)
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState("");
@@ -101,7 +118,7 @@ export function StoryViewer({
   const [selectedReelId, setSelectedReelId] = useState<string | null>(null);
   const [showSharePopup, setShowSharePopup] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [liked, setLiked] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const currentStory = stories[currentIndex];
   const duration = currentStory?.duration || 5000;
 
@@ -109,6 +126,17 @@ export function StoryViewer({
   const [videoDuration, setVideoDuration] = useState(duration);
   const [isStoryReady, setIsStoryReady] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+
+  useEffect(() => {
+    if (onRegisterAnimation) {
+      const animationCallback = () => {
+        setIsAnimating(true);
+        setTimeout(() => setIsAnimating(false), 1000);
+      };
+      
+      onRegisterAnimation(animationCallback);
+    }
+  }, [onRegisterAnimation]);
 
   const prevStory = hasPrevious
     ? allStories[currentStoryIndex - 1]?.content?.[0]
@@ -125,7 +153,6 @@ export function StoryViewer({
     }
   };
 
-  // Update video element when mute state changes
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = isMuted;
@@ -139,7 +166,7 @@ export function StoryViewer({
     setProgress(0);
     setIsPaused(false);
     setSelectedReelId(null);
-    setIsStoryReady(false); // Reset ready state
+    setIsStoryReady(false); 
 
     // Clear any existing intervals
     if (intervalRef.current) {
@@ -180,7 +207,7 @@ export function StoryViewer({
           const duration =
             videoRef.current.duration * 1000 || currentStory.duration;
           setVideoDuration(duration);
-          setIsStoryReady(true); // Mark as ready when metadata is loaded
+          setIsStoryReady(true); 
         }
       };
 
@@ -204,10 +231,8 @@ export function StoryViewer({
   const handleAutoAdvance = () => {
     console.log("⏭️ Auto advancing content");
     if (currentContentIndex < stories.length - 1) {
-      // Move to next content in current user's stories
       onContentIndexChange(currentContentIndex + 1);
     } else {
-      // Move to next user
       onNext();
     }
   };
@@ -284,7 +309,7 @@ export function StoryViewer({
     selectedReelId,
     currentStory,
     currentStory?.type,
-    isStoryReady, // Add this dependency
+    isStoryReady,
   ]);
 
   // Video time update handler
@@ -432,15 +457,107 @@ export function StoryViewer({
     setSelectedReelId(currentStory.id);
   };
 
-  const handleLikeClick = (e: React.MouseEvent) => {
+  const handleLikeClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    setLiked(is_liked);
+
+    // Trigger animation
+    setIsAnimating(true);
+
+    // Call the parent like handler
     onLike();
+
+    // Reset animation after 1 second
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 1000);
   };
+
+  const animationStyles = `
+    @keyframes heartPop {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(121, 254, 0, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(121, 254, 0, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(121, 254, 0, 0);
+      }
+    }
+
+    @keyframes likePulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.3);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .like-button-animate {
+      animation: likePulse 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .heart-pop-animation {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: heartPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+      z-index: 40;
+    }
+
+    .pulse-glow {
+      animation: pulseGlow 1s ease-in-out;
+    }
+
+    .bg-pulse {
+      animation: bgPulse 0.6s ease-out;
+    }
+
+    @keyframes bgPulse {
+      0% {
+        background-color: #79FE00;
+      }
+      100% {
+        background-color: #79FE00;
+      }
+    }
+
+    .bg-unlike-pulse {
+      animation: bgUnlikePulse 0.6s ease-out;
+    }
+
+    @keyframes bgUnlikePulse {
+      0% {
+        background-color: #7077FE;
+      }
+      100% {
+        background-color: #7077FE;
+      }
+    }
+  `;
 
   const handleCloseComments = () => {
     setSelectedReelId(null);
     setIsPaused(false);
+  };
+
+  const updateCommentCount = (newCount: number) => {
+    if (onCommentCountUpdate) {
+      onCommentCountUpdate(newCount);
+    }
   };
 
   const handleShare = () => {
@@ -457,10 +574,21 @@ export function StoryViewer({
   if (!currentStory) return null;
 
   return (
-    // In your StoryViewer component, replace the main content section with this:
-
     <div className="relative w-full h-full bg-black">
-      {/* Backdrop with previous and next story previews */}
+      <style>{animationStyles}</style>
+
+      {/* Floating heart animation */}
+      {isAnimating && (
+        <div className="heart-pop-animation">
+          <Heart
+            size={80}
+            fill="#7077FE"
+            color="#7077FE"
+            className="drop-shadow-lg"
+          />
+        </div>
+      )}
+
       <div className="absolute inset-0 flex justify-center items-center">
         {/* Previous story preview (left side) */}
         {hasPrevious && prevStory && (
@@ -561,7 +689,7 @@ export function StoryViewer({
                   src={currentStory.url}
                   className="w-full h-full object-cover"
                   autoPlay
-                  muted={isMuted} // Use state instead of hardcoded muted
+                  muted={isMuted}
                   loop={false}
                   onClick={(e) => togglePause(e)}
                 />
@@ -653,25 +781,6 @@ export function StoryViewer({
         disabled={!hasNext && currentIndex === stories.length - 1}
       />
 
-      {/* Side navigation arrows */}
-      {/* {hasPrevious && (
-        <Button
-          onClick={onPrevious}
-          className="absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white backdrop-blur-lg border border-white/20 text-black hover:bg-white z-20"
-        >
-          <ChevronLeft className="w-6 h-6 text-black" />
-        </Button>
-      )}
-
-      {hasNext && (
-        <Button
-          onClick={onNext}
-          className="absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white backdrop-blur-lg border border-white/20 text-white hover:bg-white z-20"
-        >
-          <ChevronRight className="w-6 h-6 text-black" />
-        </Button>
-      )} */}
-
       {/* Message input */}
       <div className="absolute bottom-4 w-3/8 mx-auto left-4 right-4 z-30">
         <div className="flex items-center gap-2 rounded-full p-2">
@@ -682,28 +791,95 @@ export function StoryViewer({
             className="flex-1 bg-white backdrop-blur-lg rounded-full border-none placeholder:text-black focus-visible:ring-0"
             onClick={(e) => handleCommentClick(e)}
           />
-          <Button
-            size="sm"
-            className={`rounded-full ${
-              is_liked ? "bg-[#79FE00] text-black" : "bg-[#7077FE]"
-            } text-black border border-white hover:bg-[#79FE00] w-8 h-8 p-0 transition-all duration-300`}
-            onClick={(e) => handleLikeClick(e)}
-          >
-            <img
-              src={Like}
-              className={`w-4 h-4 transition-transform duration-300 ${
-                liked ? "transform scale-125" : ""
-              }`}
-              alt="Like"
-            />
-          </Button>
-          <Button
-            size="sm"
-            className="rounded-full bg-[#F07EFF] text-black border border-white hover:bg-white/90 w-8 h-8 p-0"
-            onClick={(e) => handleCommentClick(e)}
-          >
-            <img src={comment} className="w-4 h-4" alt="Comment" />
-          </Button>
+          
+          {/* Like Button with Count */}
+          <div className="relative">
+            <Button
+              size="sm"
+              className={`
+              rounded-full 
+              ${is_liked ? "bg-[#7077FE]" : "bg-[#7077FE]"} 
+              ${isAnimating && is_liked ? "pulse-glow like-button-animate" : ""}
+              ${isAnimating && !is_liked ? "bg-unlike-pulse" : ""}
+              text-black border border-white hover:bg-[#7077FE] 
+              w-8 h-8 p-0 transition-all duration-300 relative
+            `}
+              onClick={(e) => handleLikeClick(e)}
+              disabled={isAnimating}
+            >
+              <div className="relative w-full h-full flex items-center justify-center">
+                {isAnimating && is_liked && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Heart
+                      size={20}
+                      fill="white"
+                      color="white"
+                      className="animate-pulse"
+                    />
+                  </div>
+                )}
+
+                <img
+                  src={Like}
+                  className={`
+                  w-4 h-4 transition-all duration-300 
+                  ${is_liked ? "transform scale-110" : ""}
+                  ${isAnimating ? "opacity-0" : "opacity-100"}
+                `}
+                  alt="Like"
+                />
+              </div>
+            </Button>
+
+            {/* Like count badge */}
+            <div
+              className={`
+              absolute -top-2 -right-2 
+              bg-white rounded-full 
+              w-5 h-5 flex items-center justify-center 
+              text-xs font-bold 
+              transition-all duration-300
+              ${
+                likes_count > 0
+                  ? "scale-100 opacity-100 text-[#7077FE]"
+                  : "scale-0 opacity-0"
+              }
+            `}
+            >
+              {likes_count}
+            </div>
+          </div>
+
+          {/* Comment Button with Count */}
+          <div className="relative">
+            <Button
+              size="sm"
+              className="rounded-full bg-[#F07EFF] text-black border border-white hover:bg-white/90 w-8 h-8 p-0"
+              onClick={(e) => handleCommentClick(e)}
+            >
+              <img src={comment} className="w-4 h-4" alt="Comment" />
+            </Button>
+
+            {/* Comment count badge */}
+            <div
+              className={`
+              absolute -top-2 -right-2 
+              bg-white rounded-full 
+              w-5 h-5 flex items-center justify-center 
+              text-xs font-bold 
+              transition-all duration-300
+              ${
+                comments_count > 0
+                  ? "scale-100 opacity-100 text-[#F07EFF]"
+                  : "scale-0 opacity-0"
+              }
+            `}
+            >
+              {comments_count}
+            </div>
+          </div>
+
+          {/* Share Button */}
           <div className="relative">
             <Button
               size="sm"
@@ -732,6 +908,7 @@ export function StoryViewer({
         <ReelComment
           selectedReelId={selectedReelId}
           setSelectedReelId={handleCloseComments}
+          onCommentCountUpdate={updateCommentCount}
         />
       )}
     </div>

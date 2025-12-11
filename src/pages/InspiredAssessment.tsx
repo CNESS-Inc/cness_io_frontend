@@ -373,6 +373,7 @@ const InspiredAssessment = () => {
         type: "success",
         duration: 3000,
       });
+      navigate("/dashboard/assesmentcertification")
       // if (res) {
       //   setActiveModal("price");
 
