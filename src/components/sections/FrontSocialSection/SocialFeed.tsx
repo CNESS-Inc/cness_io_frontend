@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import like from "../../../assets/sociallike.svg";
 import StoryCard from "../../../components/Social/StoryCard";
@@ -30,6 +30,7 @@ import {
   GetPostsDetails,
   GetAllStory,
   FeedPostsDetails,
+  GetUserPostById,
 } from "../../../Common/ServerAPI";
 import carosuel1 from "../../../assets/carosuel1.png";
 // import comment from "../../../assets/comment.png";
@@ -195,8 +196,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
-              }`}
+            className={`w-full h-full transition-opacity duration-500 ${
+              index === current ? "block" : "hidden"
+            }`}
           >
             {item.type === "image" ? (
               <img
@@ -248,8 +250,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
-                }`}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                idx === current ? "bg-indigo-500" : "bg-gray-300"
+              }`}
             ></button>
           ))}
         </div>
@@ -293,7 +296,7 @@ export default function SocialFeed() {
   const [activeView] = useState<"posts" | "following" | "collection">("posts");
   const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
   const [collectionItems] = useState<CollectionItem[]>([]);
-const storyScrollRef = useRef<HTMLDivElement>(null);
+  const storyScrollRef = useRef<HTMLDivElement>(null);
 
   const [_isPostsLoading, setIsPostsLoading] = useState(false);
   const [isFollowingLoading] = useState(false);
@@ -307,6 +310,11 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
   console.log("🚀 ~ SocialFeed ~ userInfo:", userInfo);
   // const [isAdult, setIsAdult] = useState<Boolean>(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const postIdFromURL = queryParams.get("p");
+  const [singlePost, setSinglePost] = useState<Post | null>(null);
+  const [isLoadingSinglePost, setIsLoadingSinglePost] = useState(false);
   const { showToast } = useToast();
 
   const [friendRequests, setFriendRequests] = useState<{
@@ -466,16 +474,92 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
     };
   }, []);
 
+  // Update the fetchSinglePost function
+  const fetchSinglePost = async (postId: string) => {
+    setIsLoadingSinglePost(true);
+    try {
+      const response = await GetUserPostById(postId);
+
+      if (response?.success?.status) {
+        // Transform the API response to match your Post interface
+        const postData = response.data.data;
+
+        const transformedPost: Post = {
+          id: postData.id,
+          user_id: postData.user_id,
+          content: postData.content,
+          file: postData.file,
+          file_type: postData.file_type,
+          is_poll: !!postData.poll, // Check if poll exists
+          poll_id: postData.poll?.id || null,
+          createdAt: postData.createdAt,
+          likes_count: postData.likes_count || 0,
+          comments_count: postData.total_comment_count || 0,
+          if_following: postData.if_following || false,
+          if_friend: postData.if_friend || false,
+          is_liked: postData.is_liked || false,
+          is_saved: postData.is_saved || false,
+          is_requested: postData.is_requested || false,
+          user: {
+            id: postData.user.id,
+            username: postData.user.username,
+          },
+          profile: {
+            id: postData.profile.id,
+            user_id: postData.profile.user_id,
+            first_name: postData.profile.first_name,
+            last_name: postData.profile.last_name,
+            profile_picture: postData.profile.profile_picture,
+          },
+        };
+
+        setSinglePost(transformedPost);
+
+        // Also add to userPosts array if you want it in the feed
+        // This prevents duplicate fetches if user navigates back
+        setUserPosts((prev) => {
+          // Check if post already exists in the array
+          const exists = prev.some((p) => p.id === transformedPost.id);
+          if (!exists) {
+            return [transformedPost, ...prev];
+          }
+          return prev;
+        });
+      } else {
+        showToast({
+          type: "error",
+          message: "Post not found",
+          duration: 2000,
+        });
+        // Optionally navigate back to feed
+        navigate("/social");
+      }
+    } catch (error) {
+      console.error("Error fetching single post:", error);
+      showToast({
+        type: "error",
+        message: "Failed to load post",
+        duration: 2000,
+      });
+      // Optionally navigate back to feed
+      navigate("/social");
+    } finally {
+      setIsLoadingSinglePost(false);
+    }
+  };
+
   const getUserPosts = async () => {
+    // If we're in single post view mode (postIdFromURL exists but user is logged in and redirected),
+    // don't fetch the regular posts feed
+    if (postIdFromURL && loggedInUserID) return;
+
     if (isLoading || !hasMore) return;
 
     setIsLoading(true);
     setIsPostsLoading(true);
     try {
-      // Call the API to get the posts for the current page
       let res;
       if (loggedInUserID) {
-        // res = await PostsDetails(page);
         res = await FeedPostsDetails(page);
       } else {
         res = await GetPostsDetails(page);
@@ -486,15 +570,14 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
         const totalPages = res?.data?.data?.count / 10 || 0;
 
         if (newPosts.length === 0) {
-          setHasMore(false); // No more posts to load
+          setHasMore(false);
         } else {
           setUserPosts([...userPosts, ...newPosts]);
 
-          // Check if the current page is the last page
           if (page >= totalPages) {
-            setHasMore(false); // We've loaded all available pages
+            setHasMore(false);
           } else {
-            setPage(page + 1); // Load the next page
+            setPage(page + 1);
           }
         }
       }
@@ -507,15 +590,33 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
   };
 
   useEffect(() => {
+    if (postIdFromURL) {
+      if (loggedInUserID) {
+        // User is logged in, redirect to dashboard feed with the same post ID
+        navigate(`/dashboard/feed?p=${postIdFromURL}`);
+      } else {
+        // User is not logged in, fetch single post
+        fetchSinglePost(postIdFromURL);
+      }
+    }
+  }, [postIdFromURL, loggedInUserID, navigate]);
+
+  useEffect(() => {
     if (loggedInUserID) {
-      navigate("/dashboard/feed");
+      if (!postIdFromURL) {
+        navigate("/dashboard/feed");
+      }
     } else {
-      getUserPosts();
-      fetchStory();
-      fetchTopics();
-      setTimeout(() => {
-        setOpenSignup(true);
-      }, 60000);
+      if (!postIdFromURL) {
+        getUserPosts();
+        fetchStory();
+        fetchTopics();
+        setTimeout(() => {
+          setOpenSignup(true);
+        }, 60000);
+      } else {
+        fetchTopics();
+      }
     }
   }, []);
 
@@ -660,7 +761,10 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
     }
 
     // Close share menu if click is outside
-    if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+    if (
+      shareMenuRef.current &&
+      !shareMenuRef.current.contains(event.target as Node)
+    ) {
       setOpenMenu({ postId: null, type: null });
     }
   };
@@ -848,137 +952,29 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
         <div className="w-full xl:max-w-[75%]" ref={containerRef}>
           {activeView === "posts" ? (
             <>
-              {/* Start a Post */}
-              <div className="bg-linear-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-6 rounded-xl mb-4 md:mb-5">
-                <div className="flex flex-col gap-2 md:gap-3">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={
-                        localStorage.getItem("profile_picture") ||
-                        "/profile.png"
-                      }
-                      alt="User"
-                      className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Create a Conscious Act"
-                      className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
-                      onClick={() => setOpenSignup(true)}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex justify-center gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
-                    <button
-                      className="flex items-center gap-1 md:gap-2"
-                      onClick={() => setOpenSignup(true)}
-                    >
-                      <Image
-                        src="/youtube.png"
-                        alt="youtube"
-                        width={20}
-                        height={14}
-                        className="object-contain rounded-0 w-5 md:w-6"
-                      />
-                      <span className="text-black text-xs md:text-sm">
-                        Video
-                      </span>
-                    </button>
-                    <button
-                      className="flex items-center gap-1 md:gap-2"
-                      onClick={() => setOpenSignup(true)}
-                    >
-                      <Image
-                        src="/picture.png"
-                        alt="picture"
-                        width={20}
-                        height={16}
-                        className="object-contain rounded-0 w-5 md:w-6"
-                      />
-                      <span className="text-black text-xs md:text-sm">
-                        Photo
-                      </span>
-                    </button>
-                  </div>
+              {/* Loading state for single post */}
+              {isLoadingSinglePost && (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
                 </div>
-              </div>
+              )}
 
-              {/* Story Strip Wrapper */}
-              <h4 className="font-medium">Reflections</h4>
-            <div className="relative mt-3 md:mt-4">
-
-  {/* LEFT ARROW */}
-  <button
-  onClick={() => storyScrollRef.current?.scrollBy({ left: -300, behavior: "smooth" })}
-  className="absolute -left-3 top-1/2 -translate-y-1/2 bg-white shadow-md 
-             w-[38px] h-[38px] rounded-full flex items-center justify-center
-             z-50 pointer-events-auto"
->
-  <ChevronLeft size={20} />
-</button>
-
-  {/* SCROLL WRAPPER */}
-  <div
-    ref={storyScrollRef}
-    className="flex gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-2"
-  >
-
-
-
-    {/* STORY CARDS */}
-    {storiesData.map((story) => (
-      <div
-        key={story.id}
-        onClick={() => setOpenSignup(true)}
-        className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] rounded-xl overflow-hidden relative snap-start shrink-0"
-      >
-        <StoryCard
-          id={story.id}
-          userIcon={story.profile.profile_picture}
-          userName={`${story.profile.first_name} ${story.profile.last_name}`}
-          title={story.stories[0].description}
-          videoSrc={story.stories[0].thumbnail}
-        />
-
-        {/* Bottom label */}
-        <div className="absolute bottom-2 left-2 flex items-center gap-2 text-white z-20">
-          <img
-            src={story.profile.profile_picture || "/profile.png"}
-            className="w-6 h-6 rounded-full border border-white"
-          />
-          <span className="text-xs font-medium">{story.username}</span>
-        </div>
-      </div>
-    ))}
-  </div>
-
-  {/* RIGHT ARROW */}
-<button
-  onClick={() => storyScrollRef.current?.scrollBy({ left: 300, behavior: "smooth" })}
-  className="absolute -right-3 top-1/2 -translate-y-1/2 bg-white shadow-md 
-             w-[38px] h-[38px] rounded-full flex items-center justify-center
-             z-50 pointer-events-auto"
->
-  <ChevronRight size={20} />
-</button>
-</div>
-              <div className="w-full border-t border-[#C8C8C8] mt-4 md:mt-6"></div>
-
-              {/* Posts Section */}
-
-              {userPosts.map((post) => (
+              {/* Single Post View */}
+              {singlePost && !isLoadingSinglePost && (
                 <div
-                  key={post.id}
+                  key={singlePost.id}
                   className="bg-white rounded-xl shadow-md p-4 md:p-6 w-full mx-auto mt-4 md:mt-5"
                 >
                   {/* Header */}
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 md:gap-3">
-                      <Link to={`/dashboard/userprofile/${post?.profile?.id}`}>
+                      <Link
+                        to={`/dashboard/userprofile/${singlePost?.profile?.id}`}
+                      >
                         <img
                           src={
-                            post.profile.profile_picture
-                              ? post.profile.profile_picture
+                            singlePost.profile.profile_picture
+                              ? singlePost.profile.profile_picture
                               : "/profile.png"
                           }
                           className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
@@ -992,249 +988,40 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                       <div>
                         <p className="font-semibold text-sm md:text-base text-gray-800">
                           <Link
-                            to={`/dashboard/userprofile/${post?.profile?.id}`}
+                            to={`/dashboard/userprofile/${singlePost?.profile?.id}`}
                           >
                             {" "}
-                            {post.profile.first_name} {post.profile.last_name}
+                            {singlePost.profile.first_name}{" "}
+                            {singlePost.profile.last_name}
                           </Link>
                           <span className="text-gray-500 text-xs md:text-sm">
                             {" "}
                             <Link
-                              to={`/dashboard/userprofile/${post?.profile?.id}`}
+                              to={`/dashboard/userprofile/${singlePost?.profile?.id}`}
                             >
                               {" "}
-                              @{post.user.username}
+                              @{singlePost.user.username}
                             </Link>
                           </span>
                         </p>
                         <p className="text-xs md:text-[12px] text-[#606060]">
-                          {formatMessageTime(post.createdAt)}
+                          {formatMessageTime(singlePost.createdAt)}
                         </p>
                       </div>
                     </div>
-                    {post.user_id !== loggedInUserID && (
-                      <div className="flex gap-2">
-                        {/* Connect Button */}
-                        <button
-                          onClick={() => setOpenSignup(true)}
-                          disabled={connectingUsers[post.user_id] || false}
-                          className={`hidden sm:flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
-                                ${
-                            // getFriendStatus(post.user_id) === "connected"
-                            //   ? "bg-red-500 text-white hover:bg-red-600"
-                            //   :
-                            getFriendStatus(post.user_id) === "requested"
-                              ? "bg-gray-400 text-white cursor-not-allowed"
-                              : "bg-white text-black shadow-md"
-                            }`}
-                        >
-                          <img
-                            src={iconMap["userplus"]}
-                            alt="userplus"
-                            className="w-4 h-4"
-                          />
-                          {connectingUsers[post.user_id]
-                            ? "Loading..."
-                            : // : getFriendStatus(post.user_id) === "connected"
-                            // ? "Connected"
-                            getFriendStatus(post.user_id) === "requested"
-                              ? "Requested"
-                              : "Connect"}
-                        </button>
-                        {/* Follow Button */}
-                        <button
-                          onClick={() => setOpenSignup(true)}
-                          className={`flex w-[100px] justify-center items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${post.if_following
-                              ? "bg-transparent text-blue-500 hover:text-blue-600"
-                              : "bg-[#7C81FF] text-white hover:bg-indigo-600"
-                            }`}
-                        >
-                          {post.if_following ? (
-                            <>
-                              <TrendingUp className="w-60 h-60" /> Resonating
-                            </>
-                          ) : (
-                            "+ Resonate"
-                          )}
-                        </button>
-
-                        {/* Three Dots Menu */}
-                        <div className="relative">
-                          <button
-                            onClick={() => toggleMenu(post.id, "options")}
-                            className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
-                            title="More options"
-                          >
-                            <MoreHorizontal className="w-5 h-5 text-gray-600" />
-                          </button>
-
-                          {openMenu.postId === post.id &&
-                            openMenu.type === "options" && (
-                              <div
-                                className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
-                                ref={(el) => {
-                                  const key = `${post.id}-options`;
-                                  if (el) menuRef.current[key] = el;
-                                  else delete menuRef.current[key];
-                                }}
-                              >
-                                <ul className="space-y-1">
-                                  <li className="sm:hidden">
-                                    <button
-                                      onClick={() => setOpenSignup(true)}
-                                      disabled={
-                                        connectingUsers[post.user_id] || false
-                                      }
-                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                    >
-                                      <img
-                                        src={iconMap["userplus"]}
-                                        alt="userplus"
-                                        className="w-4 h-4"
-                                      />
-                                      {connectingUsers[post.user_id]
-                                        ? "Loading..."
-                                        : getFriendStatus(post.user_id) ===
-                                          "requested"
-                                          ? "Requested"
-                                          : "Connect"}
-                                    </button>
-                                  </li>
-                                  <li>
-                                    <button
-                                      // onClick={() => setOpenSignup(true)}
-                                      onClick={() => {
-                                        copyPostLink(
-                                          `${window.location.origin}/post/${post.id}`,
-                                          (msg) =>
-                                            showToast({
-                                              type: "success",
-                                              message: msg,
-                                              duration: 2000,
-                                            }),
-                                          (msg) =>
-                                            showToast({
-                                              type: "error",
-                                              message: msg,
-                                              duration: 2000,
-                                            })
-                                        );
-                                      }}
-                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                    >
-                                      <LinkIcon className="w-4 h-4" />
-                                      Copy Act Link
-                                    </button>
-                                  </li>
-                                  <li>
-                                    <button
-                                      onClick={() => setOpenSignup(true)}
-                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                                    >
-                                      <Bookmark className="w-4 h-4" />
-                                      {post.is_saved ? "Unsave" : "Save Act"}
-                                    </button>
-                                  </li>
-                                  <li>
-                                    <button
-                                      onClick={() => setOpenSignup(true)}
-                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                                    >
-                                      <Flag className="w-4 h-4" />
-                                      Report Act
-                                    </button>
-                                  </li>
-                                  {getFriendStatus(post.user_id) ===
-                                    "connected" && (
-                                      <li>
-                                        <button
-                                          onClick={() => setOpenSignup(true)}
-                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                                        >
-                                          <CiCircleRemove className="w-4 h-4 text-black" />
-                                          Remove Connection
-                                        </button>
-                                      </li>
-                                    )}
-                                </ul>
-                              </div>
-                            )}
-                        </div>
-                      </div>
-                    )}
-
-                    {post.user_id == loggedInUserID && (
-                      <div className="flex gap-2">
-                        {/* Three Dots Menu */}
-                        <div className="relative">
-                          <button
-                            onClick={() => toggleMenu(post.id, "options")}
-                            className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
-                            title="More options"
-                          >
-                            <MoreHorizontal className="w-5 h-5 text-gray-600" />
-                          </button>
-
-                          {openMenu.postId === post.id &&
-                            openMenu.type === "options" && (
-                              <div
-                                className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
-                                ref={(el) => {
-                                  const key = `${post.id}-options`;
-                                  if (el) menuRef.current[key] = el;
-                                  else delete menuRef.current[key];
-                                }}
-                              >
-                                <ul className="space-y-1">
-                                  <li>
-                                    <button
-                                      onClick={() => setOpenSignup(true)}
-                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                                    >
-                                      <LinkIcon className="w-4 h-4" />
-                                      Copy Post Link
-                                    </button>
-                                  </li>
-                                  <li>
-                                    <button
-                                      onClick={() => setOpenSignup(true)}
-                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                                    >
-                                      <Bookmark className="w-4 h-4" />
-                                      {post.is_saved ? "Unsave" : "Save Post"}
-                                    </button>
-                                  </li>
-                                </ul>
-                              </div>
-                            )}
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   {/* Post Content */}
                   <div className="mt-3 md:mt-4">
                     <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
-                      {expandedPosts[post.id] ||
-                        post?.content?.length <= CONTENT_LIMIT
-                        ? post.content
-                        : `${post?.content?.substring(0, CONTENT_LIMIT)}...`}
-                      {post?.content?.length > CONTENT_LIMIT && (
-                        <button
-                          onClick={() => setOpenSignup(true)}
-                          className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
-                        >
-                          {expandedPosts[post.id] ? "Show less" : "Read more"}
-                        </button>
-                      )}
+                      {singlePost.content}
                     </p>
 
                     {/* Dynamic Media Block */}
-                    {post.file && (
+                    {singlePost.file && (
                       <div className="rounded-lg">
                         {(() => {
-                          const urls = post.file
+                          const urls = singlePost.file
                             .split(",")
                             .map((url) => url.trim());
                           const mediaItems = urls.map((url) => ({
@@ -1244,7 +1031,7 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                               | "image",
                           }));
 
-                          // Use PostCarousel if there are multiple items (images or videos)
+                          // Use PostCarousel if there are multiple items
                           if (mediaItems.length > 1) {
                             return <PostCarousel mediaItems={mediaItems} />;
                           }
@@ -1292,7 +1079,7 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                           </div>
 
                           <span className="text-[14px] text-[#64748B] pl-3 md:pl-5">
-                            {post.likes_count}
+                            {singlePost.likes_count}
                           </span>
                         </div>
                       </div>
@@ -1307,10 +1094,10 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                             <span>{post.comments_count}</span>
                           </div> */}
                     </div>
-                    {post.comments_count > 0 && (
+                    {singlePost.comments_count > 0 && (
                       <div>
                         <span className="text-sm text-[#64748B]">
-                          {post.comments_count} Reflections Thread
+                          {singlePost.comments_count} Reflections Thread
                         </span>
                       </div>
                     )}
@@ -1320,17 +1107,19 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                     <button
                       onClick={() => setOpenSignup(true)}
                       disabled={isLoading}
-                      className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
+                      className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${
+                        isLoading ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     >
                       <ThumbsUp
                         className="w-5 h-5 md:w-6 md:h-6 shrink-0"
-                        fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
-                        stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
+                        fill={singlePost.is_liked ? "#7077FE" : "none"} // <-- condition here
+                        stroke={singlePost.is_liked ? "#7077FE" : "#000"} // keeps border visible
                       />
                       <span
-                        className={`hidden sm:flex ${post.is_liked ? "#7077FE" : "text-black"
-                          }`}
+                        className={`hidden sm:flex ${
+                          singlePost.is_liked ? "#7077FE" : "text-black"
+                        }`}
                       >
                         {" "}
                         Appreciate
@@ -1342,12 +1131,19 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                     >
                       <MessageSquare
                         className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
-                        fill={selectedPostId === post.id ? "#7077FE" : "none"}
-                        stroke={selectedPostId === post.id ? "#7077FE" : "#000"}
+                        fill={
+                          selectedPostId === singlePost.id ? "#7077FE" : "none"
+                        }
+                        stroke={
+                          selectedPostId === singlePost.id ? "#7077FE" : "#000"
+                        }
                       />{" "}
                       <span
-                        className={`hidden sm:flex ${selectedPostId === post.id ? "#7077FE" : "text-black"
-                          }`}
+                        className={`hidden sm:flex ${
+                          selectedPostId === singlePost.id
+                            ? "#7077FE"
+                            : "text-black"
+                        }`}
                       >
                         Reflections
                       </span>
@@ -1356,13 +1152,13 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                     <div className="relative">
                       <button
                         // onClick={() => setOpenSignup(true)}
-                        onClick={() => toggleMenu(post.id, "share")}
+                        onClick={() => toggleMenu(singlePost.id, "share")}
                         className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-normal text-sm md:text-base rounded-md hover:bg-gray-50 text-black"
                       >
                         <Share2 className="w-5 h-5 md:w-6 md:h-6" />
                         <span className="hidden sm:flex text-black">Share</span>
                       </button>
-                      {openMenu.postId === post.id &&
+                      {openMenu.postId === singlePost.id &&
                         openMenu.type === "share" && (
                           <div
                             className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
@@ -1371,14 +1167,14 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                             <ul className="flex items-center gap-4">
                               <li>
                                 <FacebookShareButton
-                                  url={`${window.location.origin}/post/${post.id}`}
+                                  url={`${window.location.origin}/social?p=${singlePost.id}`}
                                 >
                                   <FaFacebook size={32} color="#4267B2" />
                                 </FacebookShareButton>
                               </li>
                               <li>
                                 <LinkedinShareButton
-                                  url={`${window.location.origin}/post/${post.id}`}
+                                  url={`${window.location.origin}/social?p=${singlePost.id}`}
                                 >
                                   <FaLinkedin size={32} color="#0077B5" />
                                 </LinkedinShareButton>
@@ -1387,14 +1183,14 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                                                                                     <FaInstagram size={32} color="#C13584" />
                                                                                   </li> */}
                               <TwitterShareButton
-                                url={`${window.location.origin}/post/${post.id}`}
+                                url={`${window.location.origin}/social?p=${singlePost.id}`}
                                 title={tweetText}
                               >
                                 <FaTwitter size={32} color="#1DA1F2" />
                               </TwitterShareButton>
                               <li>
                                 <WhatsappShareButton
-                                  url={`${window.location.origin}/post/${post.id}`}
+                                  url={`${window.location.origin}/social?p=${singlePost.id}`}
                                 >
                                   <FaWhatsapp size={32} color="#1DA1F2" />
                                 </WhatsappShareButton>
@@ -1403,7 +1199,7 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                                 <button
                                   onClick={() => {
                                     navigator.clipboard.writeText(
-                                      `${window.location.origin}/post/${post.id}`
+                                      `${window.location.origin}/social?p=${singlePost.id}`
                                     );
                                     setCopy(true);
                                     setTimeout(() => setCopy(false), 1500);
@@ -1428,7 +1224,629 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                     </div>
                   </div>
                 </div>
-              ))}
+              )}
+
+              {/* Regular Feed View (only show when not viewing single post) */}
+              {!singlePost && !isLoadingSinglePost && (
+                <>
+                  {/* Start a Post */}
+                  <div className="bg-linear-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-6 rounded-xl mb-4 md:mb-5">
+                    <div className="flex flex-col gap-2 md:gap-3">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={
+                            localStorage.getItem("profile_picture") ||
+                            "/profile.png"
+                          }
+                          alt="User"
+                          className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Create a Conscious Act"
+                          className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
+                          onClick={() => setOpenSignup(true)}
+                          readOnly
+                        />
+                      </div>
+                      <div className="flex justify-center gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
+                        <button
+                          className="flex items-center gap-1 md:gap-2"
+                          onClick={() => setOpenSignup(true)}
+                        >
+                          <Image
+                            src="/youtube.png"
+                            alt="youtube"
+                            width={20}
+                            height={14}
+                            className="object-contain rounded-0 w-5 md:w-6"
+                          />
+                          <span className="text-black text-xs md:text-sm">
+                            Video
+                          </span>
+                        </button>
+                        <button
+                          className="flex items-center gap-1 md:gap-2"
+                          onClick={() => setOpenSignup(true)}
+                        >
+                          <Image
+                            src="/picture.png"
+                            alt="picture"
+                            width={20}
+                            height={16}
+                            className="object-contain rounded-0 w-5 md:w-6"
+                          />
+                          <span className="text-black text-xs md:text-sm">
+                            Photo
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Story Strip Wrapper */}
+                  <h4 className="font-medium">Reflections</h4>
+                  <div className="relative mt-3 md:mt-4">
+                    {/* LEFT ARROW */}
+                    <button
+                      onClick={() =>
+                        storyScrollRef.current?.scrollBy({
+                          left: -300,
+                          behavior: "smooth",
+                        })
+                      }
+                      className="absolute -left-3 top-1/2 -translate-y-1/2 bg-white shadow-md 
+             w-[38px] h-[38px] rounded-full flex items-center justify-center
+             z-50 pointer-events-auto"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+
+                    {/* SCROLL WRAPPER */}
+                    <div
+                      ref={storyScrollRef}
+                      className="flex gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-2"
+                    >
+                      {/* STORY CARDS */}
+                      {storiesData.map((story) => (
+                        <div
+                          key={story.id}
+                          onClick={() => setOpenSignup(true)}
+                          className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] rounded-xl overflow-hidden relative snap-start shrink-0"
+                        >
+                          <StoryCard
+                            id={story.id}
+                            userIcon={story.profile.profile_picture}
+                            userName={`${story.profile.first_name} ${story.profile.last_name}`}
+                            title={story.stories[0].description}
+                            videoSrc={story.stories[0].thumbnail}
+                          />
+
+                          {/* Bottom label */}
+                          <div className="absolute bottom-2 left-2 flex items-center gap-2 text-white z-20">
+                            <img
+                              src={
+                                story.profile.profile_picture || "/profile.png"
+                              }
+                              className="w-6 h-6 rounded-full border border-white"
+                            />
+                            <span className="text-xs font-medium">
+                              {story.username}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* RIGHT ARROW */}
+                    <button
+                      onClick={() =>
+                        storyScrollRef.current?.scrollBy({
+                          left: 300,
+                          behavior: "smooth",
+                        })
+                      }
+                      className="absolute -right-3 top-1/2 -translate-y-1/2 bg-white shadow-md 
+             w-[38px] h-[38px] rounded-full flex items-center justify-center
+             z-50 pointer-events-auto"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+                  <div className="w-full border-t border-[#C8C8C8] mt-4 md:mt-6"></div>
+
+                  {/* Posts Section */}
+                  {userPosts.map((post) => (
+                    <div
+                      key={post.id}
+                      className="bg-white rounded-xl shadow-md p-4 md:p-6 w-full mx-auto mt-4 md:mt-5"
+                    >
+                      {/* Header */}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 md:gap-3">
+                          <Link
+                            to={`/dashboard/userprofile/${post?.profile?.id}`}
+                          >
+                            <img
+                              src={
+                                post.profile.profile_picture
+                                  ? post.profile.profile_picture
+                                  : "/profile.png"
+                              }
+                              className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
+                              alt="User"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "/profile.png";
+                              }}
+                            />
+                          </Link>
+                          <div>
+                            <p className="font-semibold text-sm md:text-base text-gray-800">
+                              <Link
+                                to={`/dashboard/userprofile/${post?.profile?.id}`}
+                              >
+                                {" "}
+                                {post.profile.first_name}{" "}
+                                {post.profile.last_name}
+                              </Link>
+                              <span className="text-gray-500 text-xs md:text-sm">
+                                {" "}
+                                <Link
+                                  to={`/dashboard/userprofile/${post?.profile?.id}`}
+                                >
+                                  {" "}
+                                  @{post.user.username}
+                                </Link>
+                              </span>
+                            </p>
+                            <p className="text-xs md:text-[12px] text-[#606060]">
+                              {formatMessageTime(post.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                        {post.user_id !== loggedInUserID && (
+                          <div className="flex gap-2">
+                            {/* Connect Button */}
+                            <button
+                              onClick={() => setOpenSignup(true)}
+                              disabled={connectingUsers[post.user_id] || false}
+                              className={`hidden sm:flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
+                                ${
+                                  // getFriendStatus(post.user_id) === "connected"
+                                  //   ? "bg-red-500 text-white hover:bg-red-600"
+                                  //   :
+                                  getFriendStatus(post.user_id) === "requested"
+                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                    : "bg-white text-black shadow-md"
+                                }`}
+                            >
+                              <img
+                                src={iconMap["userplus"]}
+                                alt="userplus"
+                                className="w-4 h-4"
+                              />
+                              {connectingUsers[post.user_id]
+                                ? "Loading..."
+                                : // : getFriendStatus(post.user_id) === "connected"
+                                // ? "Connected"
+                                getFriendStatus(post.user_id) === "requested"
+                                ? "Requested"
+                                : "Connect"}
+                            </button>
+                            {/* Follow Button */}
+                            <button
+                              onClick={() => setOpenSignup(true)}
+                              className={`flex w-[100px] justify-center items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                                ${
+                                  post.if_following
+                                    ? "bg-transparent text-blue-500 hover:text-blue-600"
+                                    : "bg-[#7C81FF] text-white hover:bg-indigo-600"
+                                }`}
+                            >
+                              {post.if_following ? (
+                                <>
+                                  <TrendingUp className="w-60 h-60" />{" "}
+                                  Resonating
+                                </>
+                              ) : (
+                                "+ Resonate"
+                              )}
+                            </button>
+
+                            {/* Three Dots Menu */}
+                            <div className="relative">
+                              <button
+                                onClick={() => toggleMenu(post.id, "options")}
+                                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
+                                title="More options"
+                              >
+                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                              </button>
+
+                              {openMenu.postId === post.id &&
+                                openMenu.type === "options" && (
+                                  <div
+                                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                    ref={(el) => {
+                                      const key = `${post.id}-options`;
+                                      if (el) menuRef.current[key] = el;
+                                      else delete menuRef.current[key];
+                                    }}
+                                  >
+                                    <ul className="space-y-1">
+                                      <li className="sm:hidden">
+                                        <button
+                                          onClick={() => setOpenSignup(true)}
+                                          disabled={
+                                            connectingUsers[post.user_id] ||
+                                            false
+                                          }
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                        >
+                                          <img
+                                            src={iconMap["userplus"]}
+                                            alt="userplus"
+                                            className="w-4 h-4"
+                                          />
+                                          {connectingUsers[post.user_id]
+                                            ? "Loading..."
+                                            : getFriendStatus(post.user_id) ===
+                                              "requested"
+                                            ? "Requested"
+                                            : "Connect"}
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          // onClick={() => setOpenSignup(true)}
+                                          onClick={() => {
+                                            copyPostLink(
+                                              `${window.location.origin}/social?p=${post.id}`,
+                                              (msg) =>
+                                                showToast({
+                                                  type: "success",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                }),
+                                              (msg) =>
+                                                showToast({
+                                                  type: "error",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                })
+                                            );
+                                          }}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                        >
+                                          <LinkIcon className="w-4 h-4" />
+                                          Copy Act Link
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() => setOpenSignup(true)}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                        >
+                                          <Bookmark className="w-4 h-4" />
+                                          {post.is_saved
+                                            ? "Unsave"
+                                            : "Save Act"}
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() => setOpenSignup(true)}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                        >
+                                          <Flag className="w-4 h-4" />
+                                          Report Act
+                                        </button>
+                                      </li>
+                                      {getFriendStatus(post.user_id) ===
+                                        "connected" && (
+                                        <li>
+                                          <button
+                                            onClick={() => setOpenSignup(true)}
+                                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                          >
+                                            <CiCircleRemove className="w-4 h-4 text-black" />
+                                            Remove Connection
+                                          </button>
+                                        </li>
+                                      )}
+                                    </ul>
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        )}
+
+                        {post.user_id == loggedInUserID && (
+                          <div className="flex gap-2">
+                            {/* Three Dots Menu */}
+                            <div className="relative">
+                              <button
+                                onClick={() => toggleMenu(post.id, "options")}
+                                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
+                                title="More options"
+                              >
+                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                              </button>
+
+                              {openMenu.postId === post.id &&
+                                openMenu.type === "options" && (
+                                  <div
+                                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                    ref={(el) => {
+                                      const key = `${post.id}-options`;
+                                      if (el) menuRef.current[key] = el;
+                                      else delete menuRef.current[key];
+                                    }}
+                                  >
+                                    <ul className="space-y-1">
+                                      <li>
+                                        <button
+                                          onClick={() => setOpenSignup(true)}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                        >
+                                          <LinkIcon className="w-4 h-4" />
+                                          Copy Post Link
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() => setOpenSignup(true)}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                        >
+                                          <Bookmark className="w-4 h-4" />
+                                          {post.is_saved
+                                            ? "Unsave"
+                                            : "Save Post"}
+                                        </button>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Post Content */}
+                      <div className="mt-3 md:mt-4">
+                        <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
+                          {expandedPosts[post.id] ||
+                          post?.content?.length <= CONTENT_LIMIT
+                            ? post.content
+                            : `${post?.content?.substring(
+                                0,
+                                CONTENT_LIMIT
+                              )}...`}
+                          {post?.content?.length > CONTENT_LIMIT && (
+                            <button
+                              onClick={() => setOpenSignup(true)}
+                              className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
+                            >
+                              {expandedPosts[post.id]
+                                ? "Show less"
+                                : "Read more"}
+                            </button>
+                          )}
+                        </p>
+
+                        {/* Dynamic Media Block */}
+                        {post.file && (
+                          <div className="rounded-lg">
+                            {(() => {
+                              const urls = post.file
+                                .split(",")
+                                .map((url) => url.trim());
+                              const mediaItems = urls.map((url) => ({
+                                url,
+                                type: (isVideoFile(url) ? "video" : "image") as
+                                  | "video"
+                                  | "image",
+                              }));
+
+                              // Use PostCarousel if there are multiple items (images or videos)
+                              if (mediaItems.length > 1) {
+                                return <PostCarousel mediaItems={mediaItems} />;
+                              }
+
+                              // Single item rendering
+                              const item = mediaItems[0];
+                              return item.type === "video" ? (
+                                <video
+                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
+                                  controls
+                                  muted
+                                  autoPlay
+                                  loop
+                                >
+                                  <source src={item.url} type="video/mp4" />
+                                  Your browser does not support the video tag.
+                                </video>
+                              ) : (
+                                <img
+                                  src={item.url}
+                                  alt="Post content"
+                                  className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = carosuel1;
+                                  }}
+                                />
+                              );
+                            })()}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Reactions and Action Buttons */}
+                      <div className="flex justify-between items-center mt-3 px-1 text-xs md:text-sm text-gray-600 gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 md:gap-2">
+                            <div className="flex items-center -space-x-2 md:-space-x-3">
+                              <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                                <img
+                                  src={like}
+                                  alt="Home Icon"
+                                  className="w-8 h-8 transition duration-200 group-hover:brightness-0 group-hover:invert"
+                                />
+                              </div>
+
+                              <span className="text-[14px] text-[#64748B] pl-3 md:pl-5">
+                                {post.likes_count}
+                              </span>
+                            </div>
+                          </div>
+                          {/* <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                              <img
+                                src={comment}
+                                alt="Comment"
+                                className="w-6 h-6 md:w-8 md:h-8"
+                              />
+                            </div>
+                            <span>{post.comments_count}</span>
+                          </div> */}
+                        </div>
+                        {post.comments_count > 0 && (
+                          <div>
+                            <span className="text-sm text-[#64748B]">
+                              {post.comments_count} Reflections Thread
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 md:gap-4 mt-3 md:mt-5 border-t border-[#ECEEF2] py-4 md:flex-none">
+                        <button
+                          onClick={() => setOpenSignup(true)}
+                          disabled={isLoading}
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${
+                            isLoading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                        >
+                          <ThumbsUp
+                            className="w-5 h-5 md:w-6 md:h-6 shrink-0"
+                            fill={post.is_liked ? "#7077FE" : "none"} // <-- condition here
+                            stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
+                          />
+                          <span
+                            className={`hidden sm:flex ${
+                              post.is_liked ? "#7077FE" : "text-black"
+                            }`}
+                          >
+                            {" "}
+                            Appreciate
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => setOpenSignup(true)}
+                          className="flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-normal text-sm md:text-base rounded-md hover:bg-gray-50"
+                        >
+                          <MessageSquare
+                            className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
+                            fill={
+                              selectedPostId === post.id ? "#7077FE" : "none"
+                            }
+                            stroke={
+                              selectedPostId === post.id ? "#7077FE" : "#000"
+                            }
+                          />{" "}
+                          <span
+                            className={`hidden sm:flex ${
+                              selectedPostId === post.id
+                                ? "#7077FE"
+                                : "text-black"
+                            }`}
+                          >
+                            Reflections
+                          </span>
+                        </button>
+
+                        <div className="relative">
+                          <button
+                            // onClick={() => setOpenSignup(true)}
+                            onClick={() => toggleMenu(post.id, "share")}
+                            className="flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-normal text-sm md:text-base rounded-md hover:bg-gray-50 text-black"
+                          >
+                            <Share2 className="w-5 h-5 md:w-6 md:h-6" />
+                            <span className="hidden sm:flex text-black">
+                              Share
+                            </span>
+                          </button>
+                          {openMenu.postId === post.id &&
+                            openMenu.type === "share" && (
+                              <div
+                                className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                                ref={shareMenuRef}
+                              >
+                                <ul className="flex items-center gap-4">
+                                  <li>
+                                    <FacebookShareButton
+                                      url={`${window.location.origin}/social?p=${post.id}`}
+                                    >
+                                      <FaFacebook size={32} color="#4267B2" />
+                                    </FacebookShareButton>
+                                  </li>
+                                  <li>
+                                    <LinkedinShareButton
+                                      url={`${window.location.origin}/social?p=${post.id}`}
+                                    >
+                                      <FaLinkedin size={32} color="#0077B5" />
+                                    </LinkedinShareButton>
+                                  </li>
+                                  {/* <li>
+                                                                                    <FaInstagram size={32} color="#C13584" />
+                                                                                  </li> */}
+                                  <TwitterShareButton
+                                    url={`${window.location.origin}/social?p=${post.id}`}
+                                    title={tweetText}
+                                  >
+                                    <FaTwitter size={32} color="#1DA1F2" />
+                                  </TwitterShareButton>
+                                  <li>
+                                    <WhatsappShareButton
+                                      url={`${window.location.origin}/social?p=${post.id}`}
+                                    >
+                                      <FaWhatsapp size={32} color="#1DA1F2" />
+                                    </WhatsappShareButton>
+                                  </li>
+                                  <li>
+                                    <button
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(
+                                          `${window.location.origin}/social?p=${post.id}`
+                                        );
+                                        setCopy(true);
+                                        setTimeout(() => setCopy(false), 1500);
+                                      }}
+                                      className="flex items-center relative"
+                                      title="Copy link"
+                                    >
+                                      <MdContentCopy
+                                        size={30}
+                                        className="text-gray-600"
+                                      />
+                                      {copy && (
+                                        <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                                          Link Copied!
+                                        </div>
+                                      )}
+                                    </button>
+                                  </li>
+                                </ul>
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
             </>
           ) : activeView === "following" ? (
             <div className="bg-white rounded-xl shadow-md p-4 mt-4">
@@ -1484,12 +1902,16 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
               )}
             </div>
           )}
-          <button
-            className="mt-10 mb-10 w-[214px] h-[45px] bg-[#20B9EB] text-white rounded-[100px] mx-auto block"
-            onClick={() => setOpenSignup(true)}
-          >
-            Show more result
-          </button>
+          {!singlePost ? (
+            <button
+              className="mt-10 mb-10 w-[214px] h-[45px] bg-[#20B9EB] text-white rounded-[100px] mx-auto block"
+              onClick={() => setOpenSignup(true)}
+            >
+              Show more result
+            </button>
+          ) : (
+            ""
+          )}
         </div>
 
         {/* Right Sidebar Container */}
@@ -1530,15 +1952,20 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
           />
         )}
         <div
-          className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${isTopicsOpen ? "translate-x-0" : "translate-x-full"
-            }`}
+          className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${
+            isTopicsOpen ? "translate-x-0" : "translate-x-full"
+          }`}
           role="dialog"
           aria-modal="true"
           aria-label="Trending topics"
         >
           <div className="sticky top-0 z-10 bg-white px-4 py-3 border-b flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <img src={iconMap["socialtrending"]} alt="topics" className="w-5 h-5" />
+              <img
+                src={iconMap["socialtrending"]}
+                alt="topics"
+                className="w-5 h-5"
+              />
               <span className="font-medium">Trending Topics</span>
             </div>
             <button

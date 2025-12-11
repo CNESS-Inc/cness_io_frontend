@@ -7,7 +7,6 @@ import {
   CreateOrUpdateBasicInfo,
   GetBasicInfoDetails,
   GetServiceDetails,
-  GetCountryDetails,
   UploadDirectoryLogo,
   UploadDirectoryPhotos,
   ChangeDirectoryPhoto,
@@ -27,8 +26,8 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import CreatableSelect from "react-select/creatable";
-import { useNavigate } from "react-router-dom";
+import Select from "react-select";
+import LocationSearchDropdown from "../components/LocationSearch/LocationSearchDropdown";
 
 interface DayType {
   name: string;
@@ -47,7 +46,6 @@ interface WeeklyHour {
 interface DirectoryFormData {
   bussiness_name: string;
   services: string[];
-  country_id: string;
   contact: string;
   website: string;
   email: string;
@@ -61,10 +59,16 @@ interface DirectoryFormData {
 }
 
 const EditDirectory: React.FC = () => {
-  const navigate = useNavigate()
+  // const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [serviceData, setServiceData] = useState<any>(null);
-  const [countryData, setCountryData] = useState<any[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    placeId: string;
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [phoneDialCode, setPhoneDialCode] = useState<string>("");
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [logoPreview, setLogoPreview] = useState<string>("");
@@ -134,13 +138,7 @@ const EditDirectory: React.FC = () => {
       .array()
       .of(yup.string())
       .min(1, "At least one service is required"),
-    country_id: yup.string().required("Country is required"),
     contact: yup.string().required("Contact number is required"),
-    website: yup
-      .string()
-      .url("Please enter a valid website URL")
-      .nullable()
-      .optional(),
     email: yup
       .string()
       .required("Email is required")
@@ -206,7 +204,6 @@ const EditDirectory: React.FC = () => {
     defaultValues: {
       bussiness_name: "",
       services: [],
-      country_id: "",
       contact: "",
       website: "",
       email: "",
@@ -439,7 +436,7 @@ const EditDirectory: React.FC = () => {
       // Transform form data to match API payload structure
       const payload = {
         bussiness_name: data.bussiness_name,
-        country_id: data.country_id,
+        location: selectedLocation || null,
         website: data.website || null,
         mobile_no: mobile_no,
         mobile_code: mobile_code,
@@ -462,7 +459,7 @@ const EditDirectory: React.FC = () => {
           type: "success",
           duration: 5000,
         });
-        navigate("/dashboard/DashboardDirectory")
+        // navigate("/dashboard/DashboardDirectory");
       } else {
         showToast({
           message: response?.error?.message,
@@ -798,19 +795,6 @@ const EditDirectory: React.FC = () => {
     }
   };
 
-  const GetCountries = async () => {
-    try {
-      const response = await GetCountryDetails();
-      setCountryData(response.data.data || []);
-    } catch (error: any) {
-      showToast({
-        message: error?.response?.data?.error?.message,
-        type: "error",
-        duration: 5000,
-      });
-    }
-  };
-
   const GetBasicInfo = async () => {
     try {
       const response = await GetBasicInfoDetails();
@@ -827,7 +811,6 @@ const EditDirectory: React.FC = () => {
         }
 
         setValue("bussiness_name", data.bussiness_name || "");
-        setValue("country_id", data.country_id || "");
         // Reconstruct phone number from mobile_code and mobile_no
         if (data.mobile_code && data.mobile_no) {
           const phoneNumber = `+${data.mobile_code}${data.mobile_no}`;
@@ -927,6 +910,10 @@ const EditDirectory: React.FC = () => {
           if (data.temporary_end_date) {
             setValue("temporaryEndDate", data.temporary_end_date);
           }
+        }
+        // Load location data
+        if (data.location) {
+          setSelectedLocation(data.location);
         }
         // Set logo URL for preview
         if (data.logo_url) {
@@ -1487,7 +1474,6 @@ const EditDirectory: React.FC = () => {
   useEffect(() => {
     if (!hasFetched.current) {
       GetService();
-      GetCountries();
       GetBasicInfo();
       hasFetched.current = true;
     }
@@ -1537,7 +1523,7 @@ const EditDirectory: React.FC = () => {
                     Services <span className="text-red-500">*</span>
                   </label>
 
-                  <CreatableSelect
+                  <Select
                     isMulti
                     options={
                       serviceData?.map((service: any) => ({
@@ -1568,20 +1554,8 @@ const EditDirectory: React.FC = () => {
                     }}
                     styles={customStyles}
                     classNamePrefix="react-select"
-                    placeholder="Select services or type to add custom..."
-                    noOptionsMessage={({ inputValue }) =>
-                      inputValue
-                        ? `Press Enter to add "${inputValue}" as custom service`
-                        : "No options"
-                    }
-                    formatCreateLabel={(inputValue) =>
-                      `Add "${inputValue}" as custom service`
-                    }
-                    isValidNewOption={(inputValue) =>
-                      inputValue.trim().length > 0 &&
-                      inputValue.trim().length <= 50 &&
-                      !services.includes(inputValue.trim().toLowerCase())
-                    }
+                    placeholder="Select services..."
+                    noOptionsMessage={() => "No services available"}
                     menuPortalTarget={document.body}
                     menuPosition="fixed"
                   />
@@ -1601,40 +1575,11 @@ const EditDirectory: React.FC = () => {
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Location <span className="text-red-500">*</span>
                   </label>
-                  <div className="relative w-full">
-                    <select
-                      {...register("country_id")}
-                      className={`h-[43px] w-full border rounded-lg px-3
-                      text-[#081021] font-semibold text-sm sm:text-base
-                      outline-none bg-white appearance-none ${errors.country_id
-                          ? "border-red-500"
-                          : "border-[#CBD5E1]"
-                        }`}
-                    >
-                      <option value="">Select Location</option>
-                      {countryData.map((country: any) => (
-                        <option key={country.id} value={country.id}>
-                          {country.name}
-                        </option>
-                      ))}
-                    </select>
-
-                    {/* Custom dropdown arrow */}
-                    <svg
-                      width="10"
-                      height="6"
-                      viewBox="0 0 10 6"
-                      fill="#081021"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                    >
-                      <path d="M0 0 L5 6 L10 0 Z" />
-                    </svg>
-                  </div>
-                  {errors.country_id && (
-                    <span className="text-red-500 text-xs sm:text-sm">
-                      {errors.country_id.message}
-                    </span>
-                  )}
+                  <LocationSearchDropdown
+                    value={selectedLocation}
+                    onChange={setSelectedLocation}
+                    placeholder="Search for a location..."
+                  />
                 </div>
 
                 {/* Contact */}
@@ -2178,43 +2123,134 @@ const EditDirectory: React.FC = () => {
 
           {/* ----------- 2. TEMPORARY CLOSED ----------- */}
           {mode === "temporary" && (
-            <div className="mt-4 flex flex-col sm:flex-row gap-4">
-              <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-sm text-[#64748B]">
-                  Start Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  {...register("temporaryStartDate")}
-                  className={`border rounded-lg px-2 py-2 sm:py-1 text-sm ${errors.temporaryStartDate
-                      ? "border-red-500"
-                      : "border-[#CBD5E1]"
-                    }`}
-                />
-                {errors.temporaryStartDate && (
-                  <span className="text-red-500 text-xs sm:text-sm">
-                    {errors.temporaryStartDate.message}
-                  </span>
-                )}
-              </div>
+            <div className="flex items-center">
+              <p className="me-6 text-[#081021] text-[14px] ">Date</p>
+              <div className="mt-4 flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col gap-1.5 flex-1">
+                  <label className="text-sm text-[#64748B]">
+                    Start Date
+                    {/* <span className="text-red-500">*</span> */}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      {...register("temporaryStartDate")}
+                      className={`border h-[43px] rounded-lg px-2 py-2 sm:py-1 text-sm w-full appearance-none
+              [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden
+              [&::-webkit-clear-button]:hidden [&::-webkit-datetime-edit-ampm-field]:hidden
+              ${
+                errors.temporaryStartDate
+                  ? "border-red-500"
+                  : "border-[#CBD5E1]"
+              }`}
+                    />
+                    {/* Custom Calendar Icon - Clickable */}
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer bg-transparent border-none p-0"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const input = e.currentTarget
+                          .previousElementSibling as HTMLInputElement;
+                        if (input && input.type === "date") {
+                          input.showPicker();
+                        }
+                      }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-[#64748B]"
+                      >
+                        <path
+                          d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeMiterlimit="10"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M15.6949 13.7H15.7039M15.6949 16.7H15.7039M11.995 13.7H12.004M11.995 16.7H12.004M8.29431 13.7H8.30329M8.29431 16.7H8.30329"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  {errors.temporaryStartDate && (
+                    <span className="text-red-500 text-xs sm:text-sm">
+                      {errors.temporaryStartDate.message}
+                    </span>
+                  )}
+                </div>
 
-              <div className="flex flex-col gap-1.5 flex-1">
-                <label className="text-sm text-[#64748B]">
-                  End Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  {...register("temporaryEndDate")}
-                  className={`border rounded-lg px-2 py-2 sm:py-1 text-sm ${errors.temporaryEndDate
-                      ? "border-red-500"
-                      : "border-[#CBD5E1]"
-                    }`}
-                />
-                {errors.temporaryEndDate && (
-                  <span className="text-red-500 text-xs sm:text-sm">
-                    {errors.temporaryEndDate.message}
-                  </span>
-                )}
+                <div className="flex flex-col gap-1.5 flex-1">
+                  <label className="text-sm text-[#64748B]">
+                    End Date
+                    {/* <span className="text-red-500">*</span> */}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      {...register("temporaryEndDate")}
+                      className={`border h-[43px] rounded-lg px-2 py-2 sm:py-1 text-sm w-full appearance-none
+              [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden
+              [&::-webkit-clear-button]:hidden [&::-webkit-datetime-edit-ampm-field]:hidden
+              ${
+                errors.temporaryEndDate ? "border-red-500" : "border-[#CBD5E1]"
+              }`}
+                    />
+                    {/* Custom Calendar Icon - Clickable */}
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer bg-transparent border-none p-0"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const input = e.currentTarget
+                          .previousElementSibling as HTMLInputElement;
+                        if (input && input.type === "date") {
+                          input.showPicker();
+                        }
+                      }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-[#64748B]"
+                      >
+                        <path
+                          d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeMiterlimit="10"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M15.6949 13.7H15.7039M15.6949 16.7H15.7039M11.995 13.7H12.004M11.995 16.7H12.004M8.29431 13.7H8.30329M8.29431 16.7H8.30329"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  {errors.temporaryEndDate && (
+                    <span className="text-red-500 text-xs sm:text-sm">
+                      {errors.temporaryEndDate.message}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           )}
