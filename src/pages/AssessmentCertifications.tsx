@@ -288,7 +288,7 @@ const AssessmentCertification = () => {
         <hr className="border-gray-200 mb-8" />
 
         {/* Content Grid */}
-        <div className="grid md:grid-cols-2 gap-10 items-start">
+        <div className="grid lg:grid-cols-2 gap-10 items-start">
           {/* Left Section */}
           <div>
             <h4 className="font-[poppins] font-semibold text-[26px] md:text-[34px] leading-[140%] tracking-[0] text[#000000] mb-3">
@@ -328,7 +328,7 @@ const AssessmentCertification = () => {
           </div>
 
           {/* Right Section */}
-          <div className="flex flex-col space-y-3 md:items-end items-center mt-4 sm:mt-4 md:mt-8">
+          <div className="flex flex-col space-y-3 lg:items-end items-center lg:mt-8">
             <div className="flex flex-col items-center space-y-2">
               <img
                 src="https://cdn.cness.io/aspiringcard.svg"
@@ -348,7 +348,7 @@ const AssessmentCertification = () => {
             Unlocks Trust, Growth, and Purpose
           </h5>
 
-          <div className="grid md:grid-cols-4 gap-4">
+          <div className="grid lg:grid-cols-4 gap-4">
             {[
               {
                 title: "Marketplace listing access",
@@ -415,16 +415,7 @@ const AssessmentCertification = () => {
       <div className="relative">
         {/* Glassy overlay when locked */}
         {!isAspiringCompleted() && (
-          <div
-            className="
-        absolute inset-0
-        bg-white/10
-       
-        flex items-center justify-center 
-        z-10 
-        rounded-2xl
-      "
-          >
+          <div className="absolute inset-0 bg-white/10 flex items-center justify-center z-10 rounded-2xl">
             <div className="flex flex-col items-center">
               {/* Your custom lock icon */}
               <svg
@@ -477,7 +468,7 @@ const AssessmentCertification = () => {
           <hr className="border-gray-200 mb-8" />
 
           {/* Content Grid */}
-          <div className="grid md:grid-cols-2 gap-10 items-start">
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
             {/* Left Section */}
             <div>
               <h4 className="font-[poppins] font-semibold text-[34px] leading-[140%] tracking-[0] text[#000000] mb-3">
@@ -517,7 +508,7 @@ const AssessmentCertification = () => {
             </div>
 
             {/* Right Section */}
-            <div className="flex flex-col space-y-3 md:items-end items-center mt-4 sm:mt-4 md:mt-8">
+            <div className="flex flex-col space-y-3 lg:items-end items-center lg:mt-8">
               <div className="flex flex-col items-center space-y-2">
                 <img
                   src="https://cdn.cness.io/inspired.svg"
@@ -537,7 +528,7 @@ const AssessmentCertification = () => {
               What you will gain with Inspired certification
             </h5>
 
-            <div className="grid md:grid-cols-4 gap-4">
+            <div className="grid lg:grid-cols-4 gap-4">
               {[
                 {
                   title: "Premium Directory visibility",
@@ -666,9 +657,9 @@ const AssessmentCertification = () => {
           <hr className="border-gray-200 mb-8" />
 
           {/* Content Grid */}
-          <div className="grid md:grid-cols-3 gap-10 items-start">
+          <div className="grid lg:grid-cols-3 gap-10 items-start">
             {/* Left Section */}
-            <div className="md:col-span-2">
+            <div className="lg:col-span-2">
               <h4 className="font-[poppins] font-semibold text-[34px] leading-[140%] tracking-[0] text-gray-900 mb-3">
                 Who Is Eligible for This Level of Certification?
               </h4>
@@ -798,7 +789,7 @@ const AssessmentCertification = () => {
             </div>
 
             {/* Right Section */}
-            <div className="flex flex-col space-y-3 md:items-end items-center mt-8 md:col-span-1">
+            <div className="flex flex-col space-y-3 lg:items-end items-center lg:mt-8 lg:col-span-1">
               <div className="flex flex-col items-center space-y-2">
                 <img
                   src="https://cdn.cness.io/leader1.svg"
@@ -818,7 +809,7 @@ const AssessmentCertification = () => {
               Unlocks Trust, Growth, and Purpose
             </h5>
 
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid lg:grid-cols-4 gap-4">
               {[
                 {
                   title: "Credibility",

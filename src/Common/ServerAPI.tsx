@@ -142,6 +142,7 @@ export const EndPoint = {
   basic_info_delete_photos: "/directory-basic-info/delete-photos",
   basic_info_update_business_hour: "/directory-basic-info/update-bussiness-hour",
   basic_info_get_by_user_id: "/directory-basic-info/get-by-user-id",
+  basic_info_search_location: "/directory-basic-info/search-location",
   state: "/state",
   company_profile: "/organization-profile/company-profile",
   user_profile: "/profile/user-profile",
@@ -175,6 +176,7 @@ export const EndPoint = {
   Post_AllComments: "/user/post/comments",
   single_post: "/user/posts/get",
   user_post: "/user/posts",
+  user_post_by_id: "/user/posts/by-id",
   save_post: "/user/posts/save",
   unsave_post: "/user/posts/unsave",
   edit_post: "/user/posts/update",
@@ -1224,6 +1226,12 @@ export const GetBasicInfoDetails = (): ApiResponse => {
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.basic_info_fetch);
 };
 
+export const SearchLocation = (query: string): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["query"] = query;
+  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.basic_info_search_location, params);
+};
+
 export const CreateOrUpdateBasicInfo = (formData: any): ApiResponse => {
   return executeAPI(
     ServerAPI.APIMethod.POST,
@@ -1496,6 +1504,10 @@ export const PostStoryViewd = (story_id: any) => {
 export const GetUserPost = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.user_post);
+};
+export const GetUserPostById = (postId:any) => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_post_by_id}/${postId}`);
 };
 export const LikeStory = (story_id: any) => {
   const data: Partial<any> = {
