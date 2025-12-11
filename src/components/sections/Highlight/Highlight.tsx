@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Button from "../../ui/Button";
 import Image from "../../ui/Image";
 //import Dummyvideo from "../../ui/Dummyvideo";
-import OptimizeImage from "../../ui/OptimizeImage";
+// import OptimizeImage from "../../ui/OptimizeImage";
 
 export default function Highlight() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -15,7 +15,7 @@ export default function Highlight() {
   const videoRef = useRef(null);
   
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    const checkMobile = () => setIsMobile(window.innerWidth < 1280);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -65,9 +65,9 @@ export default function Highlight() {
   ];
 
   return (
-    <section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-18 sm:py-12 lg:py-20 bg-[#FAFAFA] relative lg:bg-[url(https://cdn.cness.io/ellipse.svg)] bg-no-repeat lg:bg-position-[right_bottom_3rem] overflow-hidden">
-      <div className="max-w-[1336px] mx-auto flex lg:flex-row flex-col">
-        <div className="md:px-0 lg:px-0 lg:w-5/12 w-full">
+    <section className="highlight-section lg:min-h-[560px] px-4 sm:px-6 lg:px-8 py-12 lg:py-20 bg-[#FAFAFA] relative lg:bg-[url(https://cdn.cness.io/ellipse.svg)] bg-no-repeat lg:bg-position-[right_bottom_3rem] overflow-hidden">
+      <div className="max-w-[1336px] mx-auto flex xl:flex-row flex-col">
+        <div className="md:px-0 xl:px-0 2xl:w-5/12 xl:w-4/12 w-full">
           <div className="w-full">
             <span
               className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-medium px-4 py-1 rounded-[100px] mb-6 inline-block 
@@ -109,9 +109,9 @@ export default function Highlight() {
           </div>
         </div>
 
-        <div className="lg:p-5 md:p-0 p-0 lg:block md:block hidden lg:w-7/12 w-full lg:mt-0 mt-20  overflow-x-auto scrollbar-thin scrollbar-thumb-[#9747FF]/40 scrollbar-track-transparent highlight-right-content-box">
+        <div className="xl:p-5 md:p-0 p-0 xl:block md:block hidden 2xl:w-7/12 xl:w-8/12 w-full xl:mt-0 mt-20  overflow-x-auto scrollbar-thin scrollbar-thumb-[#9747FF]/40 scrollbar-track-transparent highlight-right-content-box">
           {/* Mobile View - Vertical Cards */}
-          <div className="lg:hidden flex flex-col gap-4 w-full">
+         <div className="xl:hidden flex flex-col gap-4 w-full">
             {highlightCards.map((card, index) => {
               const isOpen = openIndex === index;
 
@@ -134,7 +134,7 @@ export default function Highlight() {
                       isOpen ? "flex-col" : "flex-row items-center"
                     } transition-all duration-500 ease-in-out`}
                   >
-                    <OptimizeImage
+                    {/* <OptimizeImage
                       src={card.icon}
                       alt="Company Logo"
                       width={"100%"}
@@ -142,6 +142,14 @@ export default function Highlight() {
                       className={`${
                         isOpen ? "w-10 h-10 mb-4" : "w-8 h-8 mr-4"
                       }`}
+                    /> */}
+                     <img
+                      src={card.icon}
+                      alt="Company Logo"
+                      loading="lazy"
+                      className={`${
+                        isOpen ? "w-10 h-10 mb-4" : "w-8 h-8 mr-4"
+                      } object-contain`}
                     />
 
                     <div className={`${isOpen ? "" : "flex-1"}`}>
@@ -175,8 +183,8 @@ export default function Highlight() {
           </div>
 
           {/* Desktop View - Original Horizontal Cards */}
-          <div className="hidden lg:block overflow-x-auto scrollbar-thin scrollbar-thumb-[#9747FF]/40 scrollbar-track-transparent highlight-right-content-box">
-            <div className="flex flex-row flex-nowrap gap-1 lg:gap-4 min-w-max lg:justify-end">
+          <div className="hidden xl:block overflow-x-auto scrollbar-thin scrollbar-thumb-[#9747FF]/40 scrollbar-track-transparent highlight-right-content-box">
+            <div className="flex flex-row flex-nowrap gap-1 xl:gap-4 min-w-max xl:justify-end">
               {highlightCards.map((card, index) => {
                 const isExpanded = hoveredIndex === index;
                 

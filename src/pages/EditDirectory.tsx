@@ -1106,12 +1106,12 @@ const EditDirectory: React.FC = () => {
         prevReviews.map((review) =>
           review.id === reviewId
             ? {
-                ...review,
-                is_liked: !review.is_liked,
-                likes_count: review.is_liked
-                  ? Math.max(0, (review.likes_count || 0) - 1)
-                  : (review.likes_count || 0) + 1,
-              }
+              ...review,
+              is_liked: !review.is_liked,
+              likes_count: review.is_liked
+                ? Math.max(0, (review.likes_count || 0) - 1)
+                : (review.likes_count || 0) + 1,
+            }
             : review
         )
       );
@@ -1150,12 +1150,12 @@ const EditDirectory: React.FC = () => {
         const updatedReplies = currentReplies.map((reply: any) =>
           reply.id === replyId
             ? {
-                ...reply,
-                is_liked: !reply.is_liked,
-                likes_count: reply.is_liked
-                  ? Math.max(0, (reply.likes_count || 0) - 1)
-                  : (reply.likes_count || 0) + 1,
-              }
+              ...reply,
+              is_liked: !reply.is_liked,
+              likes_count: reply.is_liked
+                ? Math.max(0, (reply.likes_count || 0) - 1)
+                : (reply.likes_count || 0) + 1,
+            }
             : reply
         );
         return {
@@ -1318,9 +1318,9 @@ const EditDirectory: React.FC = () => {
           prevReviews.map((review) =>
             review.id === reviewId
               ? {
-                  ...review,
-                  reply_count: (review.reply_count || 0) + 1,
-                }
+                ...review,
+                reply_count: (review.reply_count || 0) + 1,
+              }
               : review
           )
         );
@@ -1451,9 +1451,9 @@ const EditDirectory: React.FC = () => {
         prevReviews.map((review) =>
           review.id === reviewId
             ? {
-                ...review,
-                reply_count: Math.max(0, (review.reply_count || 0) - 1),
-              }
+              ...review,
+              reply_count: Math.max(0, (review.reply_count || 0) - 1),
+            }
             : review
         )
       );
@@ -1509,9 +1509,9 @@ const EditDirectory: React.FC = () => {
 
             <div className="flex flex-col gap-4 sm:gap-3">
               {/* ---------------- ROW 1 ---------------- */}
-              <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+              <div className="flex flex-col xl:flex-row gap-4 xl:gap-8">
                 {/* Business Name */}
-                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Business Name <span className="text-red-500">*</span>
                   </label>
@@ -1519,11 +1519,10 @@ const EditDirectory: React.FC = () => {
                     type="text"
                     {...register("bussiness_name")}
                     className={`h-[43px] border rounded-lg px-3 
-                       text-[#081021] font-semibold text-sm sm:text-base outline-none ${
-                         errors.bussiness_name
-                           ? "border-red-500"
-                           : "border-[#CBD5E1]"
-                       }`}
+                       text-[#081021] font-semibold text-sm sm:text-base outline-none ${errors.bussiness_name
+                        ? "border-red-500"
+                        : "border-[#CBD5E1]"
+                      }`}
                   />
                   {errors.bussiness_name && (
                     <span className="text-red-500 text-xs sm:text-sm">
@@ -1533,7 +1532,7 @@ const EditDirectory: React.FC = () => {
                 </div>
 
                 {/* Services */}
-                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Services <span className="text-red-500">*</span>
                   </label>
@@ -1596,9 +1595,9 @@ const EditDirectory: React.FC = () => {
               </div>
 
               {/* ---------------- ROW 2 ---------------- */}
-              <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+              <div className="flex flex-col xl:flex-row gap-4 xl:gap-8">
                 {/* Location */}
-                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Location <span className="text-red-500">*</span>
                   </label>
@@ -1607,11 +1606,10 @@ const EditDirectory: React.FC = () => {
                       {...register("country_id")}
                       className={`h-[43px] w-full border rounded-lg px-3
                       text-[#081021] font-semibold text-sm sm:text-base
-                      outline-none bg-white appearance-none ${
-                        errors.country_id
+                      outline-none bg-white appearance-none ${errors.country_id
                           ? "border-red-500"
                           : "border-[#CBD5E1]"
-                      }`}
+                        }`}
                     >
                       <option value="">Select Location</option>
                       {countryData.map((country: any) => (
@@ -1640,7 +1638,7 @@ const EditDirectory: React.FC = () => {
                 </div>
 
                 {/* Contact */}
-                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Contact <span className="text-red-500">*</span>
                   </label>
@@ -1674,9 +1672,8 @@ const EditDirectory: React.FC = () => {
                         defaultCountry="us"
                         forceDialCode
                         placeholder="Enter contact number"
-                        className={`w-full border rounded-lg ${
-                          errors.contact ? "border-red-500" : "border-[#CBD5E1]"
-                        }`}
+                        className={`w-full border rounded-lg ${errors.contact ? "border-red-500" : "border-[#CBD5E1]"
+                          }`}
                         inputClassName="h-[43px]! w-full px-3 focus:outline-none text-sm sm:text-base border-none"
                         countrySelectorStyleProps={{
                           buttonClassName:
@@ -1701,9 +1698,9 @@ const EditDirectory: React.FC = () => {
               </div>
 
               {/* ---------------- ROW 3 ---------------- */}
-              <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+              <div className="flex flex-col xl:flex-row gap-4 xl:gap-8">
                 {/* Website */}
-                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Website
                   </label>
@@ -1712,9 +1709,8 @@ const EditDirectory: React.FC = () => {
                     {...register("website")}
                     placeholder="https://www.example.com"
                     className={`h-[43px] border rounded-lg px-3 
-                       text-[#081021] font-semibold text-sm sm:text-base outline-none ${
-                         errors.website ? "border-red-500" : "border-[#CBD5E1]"
-                       }`}
+                       text-[#081021] font-semibold text-sm sm:text-base outline-none ${errors.website ? "border-red-500" : "border-[#CBD5E1]"
+                      }`}
                   />
                   {errors.website && (
                     <span className="text-red-500 text-xs sm:text-sm">
@@ -1724,7 +1720,7 @@ const EditDirectory: React.FC = () => {
                 </div>
 
                 {/* Email */}
-                <div className="w-full lg:w-[530px] flex flex-col gap-1.5">
+                <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Email <span className="text-red-500">*</span>
                   </label>
@@ -1732,9 +1728,8 @@ const EditDirectory: React.FC = () => {
                     type="email"
                     {...register("email")}
                     className={`h-[43px] border rounded-lg px-3 
-                       text-[#081021] font-semibold text-sm sm:text-base outline-none ${
-                         errors.email ? "border-red-500" : "border-[#CBD5E1]"
-                       }`}
+                       text-[#081021] font-semibold text-sm sm:text-base outline-none ${errors.email ? "border-red-500" : "border-[#CBD5E1]"
+                      }`}
                   />
                   {errors.email && (
                     <span className="text-red-500 text-xs sm:text-sm">
@@ -1752,9 +1747,8 @@ const EditDirectory: React.FC = () => {
                 <textarea
                   {...register("about")}
                   className={`min-h-[94px] border rounded-lg p-3 text-[#081021] 
-                     font-semibold text-sm sm:text-base leading-[26px] outline-none resize-none ${
-                       errors.about ? "border-red-500" : "border-[#CBD5E1]"
-                     }`}
+                     font-semibold text-sm sm:text-base leading-[26px] outline-none resize-none ${errors.about ? "border-red-500" : "border-[#CBD5E1]"
+                    }`}
                 />
                 {errors.about && (
                   <span className="text-red-500 text-xs sm:text-sm">
@@ -1776,9 +1770,8 @@ const EditDirectory: React.FC = () => {
                     render={({ field: { onChange, value, ...field } }) => (
                       <label
                         className={`w-[82px] h-[82px] bg-white rounded-full 
-               flex items-center justify-center overflow-hidden relative ${
-                 isUploadingLogo ? "cursor-wait" : "cursor-pointer"
-               }`}
+               flex items-center justify-center overflow-hidden relative ${isUploadingLogo ? "cursor-wait" : "cursor-pointer"
+                          }`}
                         style={{
                           backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='61' ry='61' stroke='%23D5D5D5' stroke-width='1' stroke-dasharray='12%2c12' stroke-dashoffset='0' stroke-linecap='butt'/%3e%3c/svg%3e")`,
                         }}
@@ -2049,11 +2042,10 @@ const EditDirectory: React.FC = () => {
             >
               <div
                 className={`w-4 h-4 rounded-full border-5 mt-1
-                 ${
-                   mode === "main"
-                     ? "border-[#7077FE] bg-white"
-                     : "border-gray-300 bg-white group-hover:border-gray-400"
-                 }`}
+                 ${mode === "main"
+                    ? "border-[#7077FE] bg-white"
+                    : "border-gray-300 bg-white group-hover:border-gray-400"
+                  }`}
               ></div>
               <div>
                 <div className="font-semibold text-[#081021] text-sm">
@@ -2074,11 +2066,10 @@ const EditDirectory: React.FC = () => {
             >
               <div
                 className={`w-4 h-4 rounded-full border-5 mt-1
-                ${
-                  mode === "temporary"
+                ${mode === "temporary"
                     ? "border-[#7077FE] bg-white"
                     : "border-gray-300 bg-white group-hover:border-gray-400"
-                }`}
+                  }`}
               ></div>
               <div>
                 <div className="font-semibold text-[#081021] text-sm sm:text-base">
@@ -2099,11 +2090,10 @@ const EditDirectory: React.FC = () => {
             >
               <div
                 className={`w-4 h-4 rounded-full border-5 mt-1
-                ${
-                  mode === "permanent"
+                ${mode === "permanent"
                     ? "border-[#7077FE] bg-white"
                     : "border-gray-300 bg-white group-hover:border-gray-400"
-                }`}
+                  }`}
               ></div>
               <div>
                 <div className="font-semibold text-[#081021] text-sm sm:text-base">
@@ -2119,113 +2109,62 @@ const EditDirectory: React.FC = () => {
           {/* =================== CONDITIONAL SECTION =================== */}
 
           {mode === "main" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 lg:gap-x-2 gap-y-6 sm:gap-y-8 lg:gap-y-12">
+            <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-x-4 lg:gap-x-2 gap-y-6 sm:gap-y-8 2xl:gap-y-12">
               {days.map((day, index) => {
-                // Determine alignment based on position in the row (0-based index)
-                const colPosition = index % 3; // 0 = left, 1 = center, 2 = right
-
+                const colPosition = index % 3;
                 return (
-                  <div
-                    key={index}
-                    className={`
-        ${colPosition === 0 ? "lg:justify-self-start" : ""}
-        ${colPosition === 1 ? "lg:justify-self-center" : ""}
-        ${colPosition === 2 ? "lg:justify-self-end" : ""}
-      `}
-                  >
+                  <div key={index} className={`
+                    ${colPosition === 0 ? "2xl:justify-self-start" : ""}
+                    ${colPosition === 1 ? "2xl:justify-self-center" : ""}
+                    ${colPosition === 2 ? "2xl:justify-self-end" : ""}
+                  `}>
                     <div className="flex flex-col gap-1">
                       {/* TOP ROW: Day Name + Labels */}
-                      <div
-                        className={`flex ${
-                          colPosition === 0
-                            ? "justify-start"
-                            : colPosition === 1
-                            ? "justify-center"
-                            : "justify-end"
-                        }`}
-                      >
-                        {/* DAY NAME */}
-                        <span className="text-sm sm:text-[14px] font-['open_sans'] font-semibold text-[#081021] w-24">
+                      <div className="flex justify-start">
+                        <span className="text-[14px] font-['open_sans'] font-semibold text-[#081021] w-20 sm:w-24 shrink-0">
                           {day.name}
                         </span>
-
-                        {/* LABELS ROW - Hidden on mobile */}
                         <div className="hidden sm:flex items-center gap-2">
-                          <span className="text-sm sm:text-[14px] font-['open_sans'] text-[#64748B] w-[120px]">
-                            Open at
-                          </span>
-                          <span className="text-sm sm:text-[14px] font-['open_sans'] text-[#64748B] w-[120px]">
-                            Closes at
-                          </span>
+                          <span className="text-[14px] font-['open_sans'] text-[#64748B] w-[100px] lg:w-[120px]">Open at</span>
+                          <span className="text-[14px] font-['open_sans'] text-[#64748B] w-[100px] lg:w-[120px]">Closes at</span>
                         </div>
                       </div>
-
                       {/* SECOND ROW: Checkbox + Inputs */}
-                      <div
-                        className={`flex ${
-                          colPosition === 0
-                            ? "justify-start"
-                            : colPosition === 1
-                            ? "justify-center"
-                            : "justify-end"
-                        }`}
-                      >
-                        {/* CHECKBOX */}
-                        <div className="flex items-center gap-2 w-24">
+                      <div className="flex justify-start">
+                        <div className="flex items-center gap-2 w-20 sm:w-24 shrink-0">
                           <input
                             id={`day-${index}`}
                             type="checkbox"
                             checked={day.isOpen}
                             onChange={() => toggleDay(index)}
-                            className="w-4 h-4 accent-[#7077FE]"
+                            className="w-4 h-4 accent-[#7077FE] shrink-0"
                           />
                           <label
                             htmlFor={`day-${index}`}
-                            className="text-xs sm:text-[12px] font-['open_sans'] text-[#64748B] cursor-pointer"
+                            className="text-[12px] font-['open_sans'] text-[#64748B] cursor-pointer"
                           >
                             {day.isOpen ? "Open" : "Closed"}
                           </label>
                         </div>
-
-                        {/* TIME INPUTS ROW */}
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2">
-                          {/* OPEN TIME INPUT */}
-                          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-10">
-                            <span className="sm:hidden text-xs text-[#64748B]">
-                              Open:
-                            </span>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                          <div className="flex items-center gap-1 w-full sm:w-auto">
+                            <span className="sm:hidden text-xs text-[#64748B] w-12 shrink-0">Open:</span>
                             <input
                               type="time"
                               value={day.openTime}
                               disabled={!day.isOpen}
-                              onChange={(e) =>
-                                updateTime(index, "openTime", e.target.value)
-                              }
-                              className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-full sm:w-[120px] text-sm ${
-                                !day.isOpen
-                                  ? "bg-gray-200 opacity-60 cursor-not-allowed"
-                                  : ""
-                              }`}
+                              onChange={(e) => updateTime(index, "openTime", e.target.value)}
+                              className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-full sm:w-[100px] lg:w-[120px] text-sm ${!day.isOpen ? "bg-gray-200 opacity-60 cursor-not-allowed" : ""}`}
                             />
                           </div>
-
-                          {/* CLOSE TIME INPUT */}
-                          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-10">
-                            <span className="sm:hidden text-xs text-[#64748B]">
-                              Close:
-                            </span>
+                          <div className="flex items-center gap-1 w-full sm:w-auto">
+                            <span className="sm:hidden text-xs text-[#64748B] w-12 shrink-0">Close:</span>
                             <input
                               type="time"
                               value={day.closeTime}
                               disabled={!day.isOpen}
-                              onChange={(e) =>
-                                updateTime(index, "closeTime", e.target.value)
-                              }
-                              className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-full sm:w-[120px] text-sm ${
-                                !day.isOpen
-                                  ? "bg-gray-200 opacity-60 cursor-not-allowed"
-                                  : ""
-                              }`}
+                              onChange={(e) => updateTime(index, "closeTime", e.target.value)}
+                              className={`border border-[#CBD5E1] rounded-lg px-2 py-1 w-full sm:w-[100px] lg:w-[120px] text-sm ${!day.isOpen ? "bg-gray-200 opacity-60 cursor-not-allowed" : ""}`}
                             />
                           </div>
                         </div>
@@ -2247,11 +2186,10 @@ const EditDirectory: React.FC = () => {
                 <input
                   type="date"
                   {...register("temporaryStartDate")}
-                  className={`border rounded-lg px-2 py-2 sm:py-1 text-sm ${
-                    errors.temporaryStartDate
+                  className={`border rounded-lg px-2 py-2 sm:py-1 text-sm ${errors.temporaryStartDate
                       ? "border-red-500"
                       : "border-[#CBD5E1]"
-                  }`}
+                    }`}
                 />
                 {errors.temporaryStartDate && (
                   <span className="text-red-500 text-xs sm:text-sm">
@@ -2267,11 +2205,10 @@ const EditDirectory: React.FC = () => {
                 <input
                   type="date"
                   {...register("temporaryEndDate")}
-                  className={`border rounded-lg px-2 py-2 sm:py-1 text-sm ${
-                    errors.temporaryEndDate
+                  className={`border rounded-lg px-2 py-2 sm:py-1 text-sm ${errors.temporaryEndDate
                       ? "border-red-500"
                       : "border-[#CBD5E1]"
-                  }`}
+                    }`}
                 />
                 {errors.temporaryEndDate && (
                   <span className="text-red-500 text-xs sm:text-sm">
@@ -2322,10 +2259,10 @@ const EditDirectory: React.FC = () => {
                 {reviews.map((review: any) => {
                   const reviewDate = review.createdAt
                     ? new Date(review.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })
                     : "";
 
                   return (
@@ -2344,9 +2281,8 @@ const EditDirectory: React.FC = () => {
                               />
                             )} */}
                             <span className="text-black font-[Poppins] font-semibold text-sm sm:text-base">
-                              {`${review.profile?.first_name || ""} ${
-                                review.profile?.last_name || ""
-                              }`.trim() || "Anonymous"}
+                              {`${review.profile?.first_name || ""} ${review.profile?.last_name || ""
+                                }`.trim() || "Anonymous"}
                             </span>
                             <div className="hidden sm:block w-1.5 h-1.5 bg-[#A1A1A1] rounded-full"></div>
                             <span className="text-[#A1A1A1] text-[12px] font-['open_sans']">
@@ -2492,11 +2428,10 @@ const EditDirectory: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleLikeReview(review.id)}
-                            className={`w-6 h-6 flex items-center justify-center ${
-                              review.is_liked
+                            className={`w-6 h-6 flex items-center justify-center ${review.is_liked
                                 ? "text-[#7077FE]"
                                 : "text-[#1E1E1E]"
-                            }`}
+                              }`}
                           >
                             {review.is_liked ? (
                               <img
@@ -2630,12 +2565,12 @@ const EditDirectory: React.FC = () => {
                                     const childReviewDate =
                                       childReview.createdAt
                                         ? new Date(
-                                            childReview.createdAt
-                                          ).toLocaleDateString("en-US", {
-                                            year: "numeric",
-                                            month: "short",
-                                            day: "numeric",
-                                          })
+                                          childReview.createdAt
+                                        ).toLocaleDateString("en-US", {
+                                          year: "numeric",
+                                          month: "short",
+                                          day: "numeric",
+                                        })
                                         : "";
 
                                     return (
@@ -2648,23 +2583,21 @@ const EditDirectory: React.FC = () => {
                                             <div className="flex flex-wrap items-center gap-2">
                                               {childReview.profile
                                                 ?.profile_picture && (
-                                                <img
-                                                  src={
-                                                    childReview.profile
-                                                      .profile_picture
-                                                  }
-                                                  alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
-                                                  className="w-6 h-6 rounded-full object-cover"
-                                                />
-                                              )}
+                                                  <img
+                                                    src={
+                                                      childReview.profile
+                                                        .profile_picture
+                                                    }
+                                                    alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
+                                                    className="w-6 h-6 rounded-full object-cover"
+                                                  />
+                                                )}
                                               <span className="text-black font-[Poppins] font-semibold text-sm sm:text-base">
-                                                {`${
-                                                  childReview.profile
+                                                {`${childReview.profile
                                                     ?.first_name || ""
-                                                } ${
-                                                  childReview.profile
+                                                  } ${childReview.profile
                                                     ?.last_name || ""
-                                                }`.trim() || "Anonymous"}
+                                                  }`.trim() || "Anonymous"}
                                               </span>
                                               <div className="hidden sm:block w-1.5 h-1.5 bg-[#A1A1A1] rounded-full"></div>
                                               <span className="text-[#A1A1A1] text-[12px] font-['open_sans']">
@@ -2674,7 +2607,7 @@ const EditDirectory: React.FC = () => {
 
                                             {/* Edit Mode or Display Mode */}
                                             {editingReplyId ===
-                                            childReview.id ? (
+                                              childReview.id ? (
                                               <div className="space-y-2">
                                                 <div className="bg-white rounded-2xl border border-[#E0E0E0] p-4 sm:p-5 space-y-2.5">
                                                   <textarea
@@ -2682,7 +2615,7 @@ const EditDirectory: React.FC = () => {
                                                     placeholder="Edit your reply..."
                                                     value={
                                                       editReplyTexts[
-                                                        childReview.id
+                                                      childReview.id
                                                       ] || ""
                                                     }
                                                     onChange={(e) => {
@@ -2726,7 +2659,7 @@ const EditDirectory: React.FC = () => {
                                                             className="px-4 py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100"
                                                             disabled={
                                                               submittingEditReply[
-                                                                childReview.id
+                                                              childReview.id
                                                               ]
                                                             }
                                                           >
@@ -2742,7 +2675,7 @@ const EditDirectory: React.FC = () => {
                                                             }
                                                             disabled={
                                                               submittingEditReply[
-                                                                childReview.id
+                                                              childReview.id
                                                               ] ||
                                                               !editReplyTexts[
                                                                 childReview.id
@@ -2774,7 +2707,7 @@ const EditDirectory: React.FC = () => {
                                           {/* Edit/Delete Buttons */}
                                           {childReview.is_my_reply &&
                                             editingReplyId !==
-                                              childReview.id && (
+                                            childReview.id && (
                                               <div className="flex items-center space-x-2 self-start mt-2 sm:mt-0">
                                                 <button
                                                   type="button"
@@ -2782,13 +2715,13 @@ const EditDirectory: React.FC = () => {
                                                     handleEditReply(
                                                       childReview.id,
                                                       childReview.text ||
-                                                        childReview.description
+                                                      childReview.description
                                                     )
                                                   }
                                                   className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
                                                   disabled={
                                                     deletingReply[
-                                                      childReview.id
+                                                    childReview.id
                                                     ]
                                                   }
                                                 >
@@ -2808,7 +2741,7 @@ const EditDirectory: React.FC = () => {
                                                   className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
                                                   disabled={
                                                     deletingReply[
-                                                      childReview.id
+                                                    childReview.id
                                                     ]
                                                   }
                                                 >
@@ -2831,11 +2764,10 @@ const EditDirectory: React.FC = () => {
                                                   childReview.id
                                                 )
                                               }
-                                              className={`w-6 h-6 flex items-center justify-center ${
-                                                childReview.is_liked
+                                              className={`w-6 h-6 flex items-center justify-center ${childReview.is_liked
                                                   ? "text-[#7077FE]"
                                                   : "text-[#1E1E1E]"
-                                              }`}
+                                                }`}
                                             >
                                               {childReview.is_liked ? (
                                                 <img
