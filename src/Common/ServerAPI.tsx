@@ -142,6 +142,7 @@ export const EndPoint = {
   basic_info_delete_photos: "/directory-basic-info/delete-photos",
   basic_info_update_business_hour: "/directory-basic-info/update-bussiness-hour",
   basic_info_get_by_user_id: "/directory-basic-info/get-by-user-id",
+  basic_info_search_location: "/directory-basic-info/search-location",
   state: "/state",
   company_profile: "/organization-profile/company-profile",
   user_profile: "/profile/user-profile",
@@ -1223,6 +1224,12 @@ export const GetBasicInfoServiceDetails = (infoId: string): ApiResponse => {
 export const GetBasicInfoDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.basic_info_fetch);
+};
+
+export const SearchLocation = (query: string): ApiResponse => {
+  let params: { [key: string]: any } = {};
+  params["query"] = query;
+  return executeAPI(ServerAPI.APIMethod.GET, null, EndPoint.basic_info_search_location, params);
 };
 
 export const CreateOrUpdateBasicInfo = (formData: any): ApiResponse => {

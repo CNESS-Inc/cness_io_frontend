@@ -16,12 +16,12 @@ const Certification = () => {
   // }, []);
 
   return (
-<div className="bg-[#FAFAFA] w-full px-4 sm:px-6 lg:px-8 py-15 sm:py-16 lg:py-20">
-<div className="max-w-[1336px] w-full mx-auto flex flex-col-reverse lg:flex-row items-center justify-between gap-10 lg:gap-20">
-<div className="w-full lg:w-[60%] flex flex-col justify-center items-start text-left">
+    <div className="bg-[#FAFAFA] w-full px-4 sm:px-6 lg:px-8 pt-5 md:pt-0 pb-12 lg:py-20">
+      <div className="max-w-[1336px] w-full mx-auto flex flex-col-reverse lg:flex-row items-center justify-between gap-10 lg:gap-20">
+        <div className="w-full lg:w-[60%] flex flex-col justify-center items-start text-left">
           <h3
             style={{ fontFamily: "Poppins, sans-serif" }}
-  className="leading-10 text-[42px] font-medium text-black lg:-mt-[70px] md:-mt-[40px] -mt-0"
+            className="leading-10 text-[42px] font-medium text-black lg:-mt-[70px] md:-mt-[40px] -mt-0"
           >
             Certification Makes It Official.
           </h3>
@@ -45,7 +45,7 @@ const Certification = () => {
               "Sell your digital products in the conscious marketplace",
               "Publish reflections, stories, and offerings on your social feed",
               "Get featured in the CNESS Directory with certification tags",
-          
+
             ].map((text, index) => (
               <div className="flex items-center gap-2" key={index}>
                 <div className="h-[25px] w-[25px] rounded-full bg-[#F4D373] flex items-center justify-center">
@@ -77,13 +77,13 @@ const Certification = () => {
           </Button>
         </div>
 
-<div className="certificate-animation w-full lg:w-[40%] mt-10 lg:mt-10 flex justify-center items-center">
+        <div className="certificate-animation w-full flex justify-center items-center">
           {/* {animationData && ( */}
           <LottieOnView
             // animationData={animationData}
             src="https://cnessioassets.project-69e.workers.dev/badgecard.json"
             loop
-className="w-[300px] sm:w-[380px] md:w-[600px] lg:w-[700px] xl:w-[800px] h-auto mx-auto transition-all duration-500"
+            className="w-[300px] md:w-[600px] lg:w-[700px] xl:w-[800px] h-auto mx-auto transition-all duration-500"
           />
           {/* )} */}
         </div>
