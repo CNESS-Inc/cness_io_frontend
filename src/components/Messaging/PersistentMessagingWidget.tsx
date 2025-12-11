@@ -124,8 +124,16 @@ const PersistentMessagingWidget: React.FC = () => {
   }, [socketConnected]);
 
   useEffect(() => {
-    if (selectedConnection && typingUsers[selectedConnection.id]) {
-      console.log(`${selectedConnection.name} is typing...`);
+    // Convert ID to string for consistent lookup
+    const typingStatus = selectedConnection ? typingUsers[selectedConnection.id.toString()] : false;
+    console.log('👀 Checking typing users:', {
+      selectedConnectionId: selectedConnection?.id,
+      selectedConnectionIdString: selectedConnection?.id.toString(),
+      typingUsers,
+      isTyping: typingStatus
+    });
+    if (selectedConnection && typingStatus) {
+      console.log(`✅ ${selectedConnection.name} is typing...`);
     }
   }, [typingUsers, selectedConnection]);
 
@@ -161,6 +169,11 @@ const PersistentMessagingWidget: React.FC = () => {
     const handleOpenMessaging = async (event: CustomEvent) => {
       const { connection } = event.detail;
 
+      console.log('📱 Opening messaging from event:', {
+        connectionId: connection.id,
+        conversationId: connection.conversationId
+      });
+
       // Open the messaging widget if it's not already open
       if (!isOpen) {
         setIsOpen(true);
@@ -170,40 +183,20 @@ const PersistentMessagingWidget: React.FC = () => {
       setSelectedConnection(connection);
       setShowConversationPanel(true);
 
+      // Join conversation room for real-time updates
+      if (connection.conversationId) {
+        joinConversation(connection.conversationId.toString());
+      }
+
       try {
-        // Set the active conversation in context
-        const conversation = conversations.find(
-          (conv) => conv.id === connection.conversationId
-        );
-        if (conversation) {
-          setActiveConversation(conversation);
-        }
-
-        // Load messages for this specific conversation
+        // Load messages - this updates conversations array in MessagingContext
         if (connection.conversationId) {
-          const loadedMessages = await loadConversationMessages(
-            connection.conversationId
-          );
+          console.log('📥 Loading messages for conversation:', connection.conversationId);
+          await loadConversationMessages(connection.conversationId);
 
-          // Transform messages to the format expected by the widget
-          if (loadedMessages && loadedMessages.length > 0) {
-            const transformedMessages = loadedMessages.map((msg) => ({
-              id: msg.id,
-              sender_id: msg.senderId.toString(),
-              receiver_id: msg.receiverId.toString(),
-              content: msg.content,
-              createdAt: msg.timestamp,
-              updatedAt: msg.timestamp,
-              is_read: msg.isRead,
-              conversation_id: msg.conversationId?.toString() || "",
-              attachments: msg.attachments,
-            }));
-
-            setMessages(transformedMessages);
-          } else {
-            console.log("No messages found for this conversation");
-            setMessages([]);
-          }
+          // After loading, the useEffect will pick up the updated conversation
+          // from conversations array and sync it to activeConversation and local messages
+          console.log('✅ Messages loaded, waiting for useEffect to sync');
         }
       } catch (error) {
         console.error("Error loading conversation data:", error);
@@ -249,77 +242,36 @@ const PersistentMessagingWidget: React.FC = () => {
 
   // Sync local messages with activeConversation messages
   useEffect(() => {
-    if (activeConversation?.messages) {
-      // Transform messages to the format expected by the widget
-      const transformedMessages = activeConversation.messages.map((msg) => ({
-        id: msg.id,
-        sender_id: msg.senderId.toString(),
-        receiver_id: msg.receiverId.toString(),
-        content: msg.content,
-        createdAt: msg.timestamp,
-        updatedAt: msg.timestamp,
-        is_read: msg.isRead,
-        conversation_id: msg.conversationId?.toString() || "",
-        attachments: msg.attachments,
-      }));
+    console.log('🔄 Syncing messages from conversations and activeConversation:', {
+      activeConvId: activeConversation?.id,
+      activeMessageCount: activeConversation?.messages?.length,
+      currentMessageCount: messages.length,
+      selectedConnectionId: selectedConnection?.conversationId,
+      conversationsCount: conversations.length
+    });
 
-      setMessages(transformedMessages);
-    }
-  }, [activeConversation?.messages]);
+    // Always try to get the latest conversation from conversations array
+    if (selectedConnection?.conversationId) {
+      const latestConversation = conversations.find(
+        (conv) => conv.id.toString() === selectedConnection.conversationId.toString()
+      );
 
-  // Update messages when activeConversation changes
-  useEffect(() => {
-    if (activeConversation && selectedConnection) {
-      // Load messages for the active conversation
-      loadConversationMessages(selectedConnection.conversationId ?? "").then(
-        (loadedMessages) => {
-          if (loadedMessages && loadedMessages.length > 0) {
-            const transformedMessages = loadedMessages.map((msg) => ({
-              id: msg.id,
-              sender_id: msg.senderId.toString(),
-              receiver_id: msg.receiverId.toString(),
-              content: msg.content,
-              createdAt: msg.timestamp,
-              updatedAt: msg.timestamp,
-              is_read: msg.isRead,
-              conversation_id: msg.conversationId?.toString() || "",
-              attachments: msg.attachments,
-            }));
+      console.log('🔍 Found latest conversation:', {
+        found: !!latestConversation,
+        messageCount: latestConversation?.messages?.length
+      });
 
-            setMessages(transformedMessages);
-          }
+      if (latestConversation) {
+        // If we found an updated conversation, sync it to activeConversation
+        if (!activeConversation ||
+            activeConversation.id.toString() !== latestConversation.id.toString() ||
+            activeConversation.messages.length !== latestConversation.messages.length) {
+          console.log('🔄 Updating activeConversation from conversations array');
+          setActiveConversation(latestConversation);
         }
-      );
-    }
-  }, [activeConversation, selectedConnection, loadConversationMessages]);
 
-  const handleConnectionClick = async (connection: Connection) => {
-    setSelectedConnection(connection);
-    setShowConversationPanel(true); // Show conversation panel instead of changing tab
-
-    // Join conversation room for real-time updates
-    if (connection.conversationId) {
-      joinConversation(connection.conversationId.toString());
-    }
-
-    try {
-      // Set the active conversation in context
-      const conversation = conversations.find(
-        (conv) => conv.id === connection.conversationId
-      );
-      if (conversation) {
-        setActiveConversation(conversation);
-      }
-
-      // Then load messages for this specific conversation
-      const loadedMessages = await loadConversationMessages(
-        connection.conversationId ?? ""
-      );
-
-      // Use the loaded messages directly instead of waiting for state updates
-      if (loadedMessages && loadedMessages.length > 0) {
-        // Transform messages to the format expected by the widget
-        const transformedMessages = loadedMessages.map((msg) => ({
+        // Transform and set messages
+        const transformedMessages = latestConversation.messages.map((msg) => ({
           id: msg.id,
           sender_id: msg.senderId.toString(),
           receiver_id: msg.receiverId.toString(),
@@ -331,11 +283,46 @@ const PersistentMessagingWidget: React.FC = () => {
           attachments: msg.attachments,
         }));
 
+        console.log('✅ Setting messages in widget:', transformedMessages.length);
         setMessages(transformedMessages);
-      } else {
-        console.log("No messages found for this conversation");
-        setMessages([]);
       }
+    }
+  }, [conversations, selectedConnection?.conversationId, activeConversation?.messages?.length]);
+
+  const handleConnectionClick = async (connection: Connection) => {
+    console.log('📱 Connection clicked:', {
+      connectionId: connection.id,
+      conversationId: connection.conversationId
+    });
+
+    setSelectedConnection(connection);
+    setShowConversationPanel(true);
+
+    // Set as active conversation in MessagingContext (for notification logic)
+    setActiveConversation({
+      id: connection.id,
+      userId: connection.userId,
+      userName: connection.name,
+      userProfileImage: connection.profileImage,
+      lastMessage: connection.lastMessage,
+      lastMessageTime: connection.lastMessageTime,
+      unreadCount: connection.unreadCount,
+      messages: []
+    });
+
+    // Join conversation room for real-time updates
+    if (connection.conversationId) {
+      joinConversation(connection.conversationId.toString());
+    }
+
+    try {
+      // Load messages first - this updates conversations array in MessagingContext
+      console.log('📥 Loading messages for conversation:', connection.conversationId);
+      await loadConversationMessages(connection.conversationId ?? "");
+
+      // After loading, the useEffect will pick up the updated conversation from conversations array
+      // and sync it to activeConversation and local messages
+      console.log('✅ Messages loaded, waiting for useEffect to sync');
     } catch (error) {
       console.error("Error loading conversation data:", error);
       showToast({
@@ -376,8 +363,8 @@ const PersistentMessagingWidget: React.FC = () => {
     setIsOpen(false);
     setShowConversationPanel(false);
     setSelectedConnection(null);
+    setActiveConversation(null); // Clear active conversation
     setMessages([]);
-    setActiveConversation(null);
     setShowEmojiPicker(false);
   };
 
@@ -450,6 +437,7 @@ const PersistentMessagingWidget: React.FC = () => {
         // Use the sendMessage function from context with attachments
         // This will create FormData internally and send to API
         await sendMessage(
+          selectedConnection.conversationId ?? selectedConnection.id,
           selectedConnection.id,
           messageContent,
           selectedImages
@@ -460,11 +448,7 @@ const PersistentMessagingWidget: React.FC = () => {
         setNewMessage("");
         clearImagePreviews(); // Clear image previews after sending
         scrollToBottom();
-        showToast({
-          message: "Message sent!",
-          type: "success",
-          duration: 5000,
-        });
+        // Toast removed - message sends silently
       }
     } catch (error) {
       console.error("Error sending message:", error);
@@ -628,7 +612,7 @@ const PersistentMessagingWidget: React.FC = () => {
     <>
       {/* Conversation Panel - Left Side */}
       {showConversationPanel && selectedConnection && (
-        <div className="fixed bottom-0 lg:right-[calc(31vw+24px)] right-6 lg:w-[25vw] w-[90vw] lg:h-[80vh] h-[60vh] bg-white rounded-lg rounded-bl-none rounded-br-none shadow-2xl border border-gray-200 z-100 flex flex-col">
+        <div className="fixed bottom-0 lg:right-[calc(31vw+24px)] right-6 lg:w-[25vw] w-[90vw] lg:h-[80vh] h-[60vh] bg-white rounded-lg rounded-bl-none rounded-br-none shadow-2xl border border-gray-200 z-[100] flex flex-col">
           {/* Chat Header */}
           <div className="flex items-center justify-between p-3 border-b border-[#ddd] bg-[#7C81FF] rounded-t-lg">
             <div className="flex items-center gap-3">
@@ -749,15 +733,18 @@ const PersistentMessagingWidget: React.FC = () => {
                                       <img
                                         src={attachment.url}
                                         alt={attachment.filename}
-                                        className="max-w-auto h-auto rounded cursor-pointer hover:opacity-90 transition-opacity"
+                                        className="max-w-full h-auto max-h-64 rounded cursor-pointer hover:opacity-90 transition-opacity"
                                         onClick={() => {
                                           // Open image modal when clicked
                                           openImageModal(attachment.url);
                                         }}
+                                        onLoad={() => {
+                                          console.log('✅ Image loaded successfully:', attachment.url);
+                                        }}
                                         onError={(e) => {
                                           // Handle image load errors
                                           console.error(
-                                            "Failed to load image:",
+                                            "❌ Failed to load image:",
                                             attachment.url
                                           );
                                           e.currentTarget.style.display =
@@ -784,6 +771,35 @@ const PersistentMessagingWidget: React.FC = () => {
                 </div>
               );
             })}
+
+            {/* Typing indicator inside messages area */}
+            {selectedConnection && typingUsers[selectedConnection.id.toString()] && (
+              <div className="flex items-start gap-2 px-3 py-2">
+                <img
+                  src={selectedConnection.profileImage || "/profile.png"}
+                  alt={selectedConnection.name}
+                  className="w-8 h-8 rounded-full object-cover shrink-0"
+                />
+                <div className="flex flex-col items-start">
+                  <span className="text-xs font-medium text-gray-600 mb-1">
+                    {selectedConnection.name}
+                  </span>
+                  <div className="bg-gray-200 px-4 py-2 rounded-lg">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                      <div
+                        className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                        style={{ animationDelay: "0.1s" }}
+                      ></div>
+                      <div
+                        className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                        style={{ animationDelay: "0.2s" }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div ref={messagesEndRef} />
           </div>
@@ -887,24 +903,6 @@ const PersistentMessagingWidget: React.FC = () => {
               className="hidden"
             />
 
-            {/* Add typing indicator display in your messages area */}
-            {selectedConnection && typingUsers[selectedConnection.id] && (
-              <div className="flex items-center gap-2 p-2 text-sm text-gray-500">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div
-                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                    style={{ animationDelay: "0.1s" }}
-                  ></div>
-                  <div
-                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                    style={{ animationDelay: "0.2s" }}
-                  ></div>
-                </div>
-                <span>{selectedConnection.name} is typing...</span>
-              </div>
-            )}
-
             <div className="flex items-center justify-between mt-2">
               <div className="flex items-center gap-2">
                 {/* Existing buttons can stay here */}
@@ -960,42 +958,62 @@ const PersistentMessagingWidget: React.FC = () => {
                   <p className="mt-2">Loading connections...</p>
                 </div>
               ) : (
-                connections.map((connection) => (
-                  <div
-                    key={connection.id}
-                    onClick={() => handleConnectionClick(connection)}
-                    className="flex items-center gap-3 p-3 hover:bg-[#CDC1FF1A] cursor-pointer border-b border-[#ddd]"
-                  >
-                    <img
-                      src={connection.profileImage || "/profile.png"}
-                      alt={connection.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium text-gray-900 text-sm truncate">
-                          {connection.name}
-                        </h4>
-                        <span className="text-xs text-gray-500">
-                          {formatTime(
-                            connection.lastMessageTime ||
-                              new Date().toISOString()
-                          )}
-                        </span>
+                connections.map((connection) => {
+                  const isTyping = typingUsers[connection.id.toString()];
+                  return (
+                    <div
+                      key={connection.id}
+                      onClick={() => handleConnectionClick(connection)}
+                      className="flex items-center gap-3 p-3 hover:bg-[#CDC1FF1A] cursor-pointer border-b border-[#ddd]"
+                    >
+                      <img
+                        src={connection.profileImage || "/profile.png"}
+                        alt={connection.name}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-medium text-gray-900 text-sm truncate">
+                            {connection.name}
+                          </h4>
+                          <span className="text-xs text-gray-500">
+                            {formatTime(
+                              connection.lastMessageTime ||
+                                new Date().toISOString()
+                            )}
+                          </span>
+                        </div>
+                        {isTyping ? (
+                          <div className="flex items-center gap-2">
+                            <div className="flex space-x-1">
+                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
+                              <div
+                                className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"
+                                style={{ animationDelay: "0.1s" }}
+                              ></div>
+                              <div
+                                className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"
+                                style={{ animationDelay: "0.2s" }}
+                              ></div>
+                            </div>
+                            <span className="text-xs text-blue-500 italic">typing...</span>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-gray-500 truncate">
+                            {connection.lastMessage}
+                          </p>
+                        )}
                       </div>
-                      <p className="text-xs text-gray-500 truncate">
-                        {connection.lastMessage}
-                      </p>
+                      {connection.unreadCount &&
+                        connection.unreadCount !== "" &&
+                        Number(connection.unreadCount) > 0 && (
+                          <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                            {connection?.unreadCount}
+                          </span>
+                        )}
                     </div>
-                    {connection.unreadCount &&
-                      connection.unreadCount !== "" &&
-                      Number(connection.unreadCount) > 0 && (
-                        <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                          {connection?.unreadCount}
-                        </span>
-                      )}
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
@@ -1005,17 +1023,21 @@ const PersistentMessagingWidget: React.FC = () => {
       {/* Image Modal */}
       {isImageModalOpen && selectedImageForModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70"
           onClick={closeImageModal} // Close modal when clicking outside
           onKeyDown={handleModalKeyDown} // Handle escape key
           tabIndex={0} // Make div focusable for keyboard events
+          autoFocus
         >
           {/* Modal Content */}
-          <div className="relative max-w-[90vw] max-h-[90vh] p-4">
+          <div
+            className="relative max-w-[90vw] max-h-[90vh] p-4"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
+          >
             {/* Close Button */}
             <button
               onClick={closeImageModal}
-              className="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-20 hover:bg-opacity-30 text-gray-500 rounded-full flex items-center justify-center z-10 transition-all duration-200"
+              className="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full flex items-center justify-center z-10 transition-all duration-200"
               aria-label="Close modal"
             >
               <X size={20} />
@@ -1027,7 +1049,6 @@ const PersistentMessagingWidget: React.FC = () => {
                 src={selectedImageForModal || undefined}
                 alt="Full size image"
                 className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
-                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on image
               />
             </div>
 
