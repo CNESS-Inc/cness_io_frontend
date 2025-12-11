@@ -136,11 +136,6 @@ const EditDirectory: React.FC = () => {
       .min(1, "At least one service is required"),
     country_id: yup.string().required("Country is required"),
     contact: yup.string().required("Contact number is required"),
-    website: yup
-      .string()
-      .url("Please enter a valid website URL")
-      .nullable()
-      .optional(),
     email: yup
       .string()
       .required("Email is required")
