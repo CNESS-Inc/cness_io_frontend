@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useState, useRef } from "react";
-import { CirclePlus, SquarePen, Clock } from "lucide-react";
+import { CirclePlus, SquarePen, Clock, Trash2 } from "lucide-react";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 import {
@@ -21,6 +21,7 @@ import {
   UpdateDirectoryReviewReply,
   DeleteDirectoryReviewReply,
   CreateOrUpdateDirectoryReview,
+  DeleteDirectoryPhoto,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useForm, Controller } from "react-hook-form";
@@ -71,7 +72,7 @@ const EditDirectory: React.FC = () => {
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState<boolean>(false);
   const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null);
-  const [deletingPhotoId] = useState<string | null>(null);
+  const [deletingPhotoId,setDeletingPhotoId] = useState<string | null>(null);
   const [directoryInfoId, setDirectoryInfoId] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
 
@@ -628,50 +629,50 @@ const EditDirectory: React.FC = () => {
   };
 
   // Handle photo delete
-  // const handlePhotoDelete = async (photoId: string) => {
-  //   if (!window.confirm("Are you sure you want to delete this photo?")) {
-  //     return;
-  //   }
+  const handlePhotoDelete = async (photoId: string) => {
+    if (!window.confirm("Are you sure you want to delete this photo?")) {
+      return;
+    }
 
-  //   setDeletingPhotoId(photoId);
+    setDeletingPhotoId(photoId);
 
-  //   try {
-  //     const response = await DeleteDirectoryPhoto(photoId);
+    try {
+      const response = await DeleteDirectoryPhoto(photoId);
 
-  //     if (response?.success?.status || response?.data?.success?.status) {
-  //       // Remove photo from state
-  //       const updatedPhotos = photos.filter((photo) => photo.id !== photoId);
-  //       setPhotos(updatedPhotos);
-  //       setPhotoPreviews(updatedPhotos.map((photo) => photo.file || ""));
+      if (response?.success?.status || response?.data?.success?.status) {
+        // Remove photo from state
+        const updatedPhotos = photos.filter((photo) => photo.id !== photoId);
+        setPhotos(updatedPhotos);
+        setPhotoPreviews(updatedPhotos.map((photo) => photo.file || ""));
 
-  //       showToast({
-  //         message:
-  //           response?.success?.message ||
-  //           response?.data?.success?.message ||
-  //           "Photo deleted successfully",
-  //         type: "success",
-  //         duration: 5000,
-  //       });
-  //     } else {
-  //       showToast({
-  //         message:
-  //           response?.error?.message ||
-  //           response?.data?.error?.message ||
-  //           "Failed to delete photo",
-  //         type: "error",
-  //         duration: 5000,
-  //       });
-  //     }
-  //   } catch (error: any) {
-  //     showToast({
-  //       message: error?.response?.error?.message || "Failed to delete photo",
-  //       type: "error",
-  //       duration: 5000,
-  //     });
-  //   } finally {
-  //     setDeletingPhotoId(null);
-  //   }
-  // };
+        showToast({
+          message:
+            response?.success?.message ||
+            response?.data?.success?.message ||
+            "Photo deleted successfully",
+          type: "success",
+          duration: 5000,
+        });
+      } else {
+        showToast({
+          message:
+            response?.error?.message ||
+            response?.data?.error?.message ||
+            "Failed to delete photo",
+          type: "error",
+          duration: 5000,
+        });
+      }
+    } catch (error: any) {
+      showToast({
+        message: error?.response?.error?.message || "Failed to delete photo",
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setDeletingPhotoId(null);
+    }
+  };
 
   // Convert image URL to blob/file
   const urlToFile = async (url: string, filename: string): Promise<File> => {
@@ -1923,13 +1924,13 @@ const EditDirectory: React.FC = () => {
                     </div>
 
                     {/* DELETE ICON */}
-                    {/* <div
+                    <div
                       className="w-9 h-9 flex items-center justify-center cursor-pointer bg-white rounded-full shadow-md hover:bg-red-50 transition-colors"
                       onClick={() => photoId && handlePhotoDelete(photoId)}
                       title="Delete photo"
                     >
                       <Trash2 className="w-4 h-4 text-red-500" />
-                    </div> */}
+                    </div>
                   </div>
 
                   {/* Hidden file input for editing this specific photo */}

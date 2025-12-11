@@ -1606,7 +1606,6 @@ const UserProfilePage = () => {
 
   const selectedCountry = contactInfoForm.watch("country");
   const selectedState = contactInfoForm.watch("state");
-  console.log("🚀 ~ UserProfilePage ~ selectedState:", selectedState);
 
   useEffect(() => {
     if (selectedCountry) {
