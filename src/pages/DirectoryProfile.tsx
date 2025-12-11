@@ -12,7 +12,7 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import EnquiryModal from "../components/directory/Enquire";
 import {
   GetDirectoryProfileByUserId,
@@ -33,7 +33,6 @@ import {
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Modal from "../components/ui/Modal";
 
-
 const levels = [
   {
     key: "Aspiring",
@@ -53,6 +52,7 @@ const levels = [
 ];
 
 const DirectoryProfile = () => {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -117,7 +117,9 @@ const DirectoryProfile = () => {
     replyId: null,
   });
 
-  const badgeImg = profileData?.badge?.level ? levels.find((el) => el.key === profileData.badge?.level)?.img : '';
+  const badgeImg = profileData?.badge?.level
+    ? levels.find((el) => el.key === profileData.badge?.level)?.img
+    : "";
 
   useEffect(() => {
     const fetchDirectoryProfile = async () => {
@@ -1167,7 +1169,9 @@ const DirectoryProfile = () => {
                       Enquire now
                     </button>
                   </div>
-                ) : ""}
+                ) : (
+                  ""
+                )}
               </div>
             </div>
           </section>
@@ -1192,28 +1196,26 @@ const DirectoryProfile = () => {
                   }}
                 />
               </div> */}
-               <div className="relative w-[120px] h-20 shrink-0 flex items-center">
-            {/* Badge image (background) - you can update this with actual badge logic */}
-            <div className="absolute top-[50%] translate-y-[-50%] right-1.5 w-[70px] h-[70px] object-contain z-0 border flex justify-center items-center border-gray-400 rounded-full">
-            <img
-              src={badgeImg}
-              alt="Badge"
-              className="w-[35px] h-[35px] object-contain z-0"
-            />
+              <div className="relative w-[120px] h-20 shrink-0 flex items-center">
+                {/* Badge image (background) - you can update this with actual badge logic */}
+                <div className="absolute top-[50%] translate-y-[-50%] right-1.5 w-[70px] h-[70px] object-contain z-0 border flex justify-center items-center border-gray-400 rounded-full">
+                  <img
+                    src={badgeImg}
+                    alt="Badge"
+                    className="w-[35px] h-[35px] object-contain z-0"
+                  />
+                </div>
 
-            </div>
-            
-
-            {/* Profile image (front) */}
-            <img
-             src={
+                {/* Profile image (front) */}
+                <img
+                  src={
                     userProfile.profile_picture ||
                     "https://static.codia.ai/image/2025-12-04/s7mmhLwgmO.png"
                   }
-              alt="Profile"
-              className="w-[75px] h-[75px] rounded-full object-cover border-2 border-white z-10"
-            />
-          </div>
+                  alt="Profile"
+                  className="w-[75px] h-[75px] rounded-full object-cover border-2 border-white z-10"
+                />
+              </div>
 
               <div className="flex-1 text-center sm:text-left">
                 <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
@@ -1541,9 +1543,16 @@ const DirectoryProfile = () => {
                 <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
                   Best practice
                 </h3>
-                <span className="text-[#F07EFF] font-semibold text-xs cursor-pointer">
+                <button
+                  onClick={() =>
+                    navigate(`/dashboard/userprofile/${id}`, {
+                      state: { activeTab: "best" },
+                    })
+                  }
+                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer hover:underline"
+                >
                   View all
-                </span>
+                </button>
               </div>
               <div className="space-y-4">
                 {bestPractices.map((item: any) => {
@@ -1630,7 +1639,12 @@ const DirectoryProfile = () => {
                 <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
                   Products
                 </h3>
-                <span className="text-[#F07EFF] font-semibold text-xs cursor-pointer">
+                <span
+                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer"
+                  onClick={() =>
+                    navigate(`/dashboard/shop-detail/${profileData.shop_id}`)
+                  }
+                >
                   View all
                 </span>
               </div>
@@ -1750,7 +1764,14 @@ const DirectoryProfile = () => {
                             ${product.final_price || product.price}
                           </div>
                         </div>
-                        <button className="bg-[#7077FE] text-white px-6 py-2 sm:px-8 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] capitalize w-full sm:w-auto">
+                        <button
+                          className="bg-[#7077FE] text-white px-6 py-2 sm:px-8 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] capitalize w-full sm:w-auto"
+                          onClick={() =>
+                            navigate(
+                              `/dashboard/product-detail/${products?.id}`
+                            )
+                          }
+                        >
                           Buy
                         </button>
                       </div>
@@ -2289,7 +2310,11 @@ const DirectoryProfile = () => {
       <Modal
         isOpen={deleteConfirmation.isOpen}
         onClose={() =>
-          setDeleteConfirmation({ isOpen: false, reviewId: null, replyId: null })
+          setDeleteConfirmation({
+            isOpen: false,
+            reviewId: null,
+            replyId: null,
+          })
         }
       >
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
