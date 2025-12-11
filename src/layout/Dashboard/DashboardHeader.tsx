@@ -296,14 +296,28 @@ const DashboardHeader = ({
       prev.map((n) => (n.id === notification.id ? { ...n, is_read: true } : n))
     );
 
+    // If no redirection configured, try to use sender_id for profile redirect
+    if (!notification.redirection && notification.sender_id) {
+      navigate(`/dashboard/userprofile/${notification.sender_id}`);
+      return;
+    }
+
+    // If no redirection data at all, go to main notifications page
+    if (!notification.redirection) {
+      navigate('/dashboard/notification');
+      return;
+    }
+
     // Build query string
     const query = `?openpost=true&dataset=${notification.data_id || ""}`;
 
     // Handle redirection based on notification type
     switch (notification.redirection) {
       case "profile":
-        if (notification.data_id) {
-          navigate(`/dashboard/userprofile/${notification.data_id}`);
+        // Redirect to user profile (use data_id first, fallback to sender_id)
+        const profileId = notification.data_id || notification.sender_id;
+        if (profileId) {
+          navigate(`/dashboard/userprofile/${profileId}`);
         }
         break;
 
@@ -314,16 +328,29 @@ const DashboardHeader = ({
         break;
 
       case "my-connections":
+        // Redirect to profile for friend request notifications
+        // Works for: friend request received, friend request accepted
+        const userId = notification.data_id || notification.sender_id;
+        if (userId) {
+          navigate(`/dashboard/userprofile/${userId}`);
+        }
+        break;
+
+      case "order":
+      case "order-confirmation":
+        // Redirect to order history page for order notifications
         if (notification.data_id) {
-          navigate("/dashboard/MyConnection", {
-            state: { to: "request" },
-          });
+          navigate(`/dashboard/order-history/${notification.data_id}`);
         }
         break;
 
       default:
-        // For notifications without specific redirection or unknown types
-        navigate(`/dashboard/notification${query}`);
+        // For unknown types, try to redirect to sender's profile if available
+        if (notification.sender_id) {
+          navigate(`/dashboard/userprofile/${notification.sender_id}`);
+        } else {
+          navigate('/dashboard/notification');
+        }
         break;
     }
   };
