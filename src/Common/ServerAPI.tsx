@@ -176,6 +176,7 @@ export const EndPoint = {
   Post_AllComments: "/user/post/comments",
   single_post: "/user/posts/get",
   user_post: "/user/posts",
+  user_post_by_id: "/user/posts/by-id",
   save_post: "/user/posts/save",
   unsave_post: "/user/posts/unsave",
   edit_post: "/user/posts/update",
@@ -1503,6 +1504,10 @@ export const PostStoryViewd = (story_id: any) => {
 export const GetUserPost = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.user_post);
+};
+export const GetUserPostById = (postId:any) => {
+  let data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_post_by_id}/${postId}`);
 };
 export const LikeStory = (story_id: any) => {
   const data: Partial<any> = {

@@ -2616,12 +2616,20 @@ const UserProfilePage = () => {
                       handleContactInfoSubmit
                     )}
                   >
+                    
                     <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative">
+                        {/* Privacy note inside the box */}
+    <p className="text-xs text-gray-500 col-span-2">
+      Your phone number and email are never displayed on your public profile.
+    </p>
                       {/* Phone Number */}
+                      
                       <div>
+                        
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Phone Number <span className="text-red-500">*</span>
                         </label>
+                        
                         <div className="flex gap-2">
                           <div className="w-32">
                             <Select
