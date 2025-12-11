@@ -253,7 +253,7 @@ const PersistentMessagingWidget: React.FC = () => {
     // Always try to get the latest conversation from conversations array
     if (selectedConnection?.conversationId) {
       const latestConversation = conversations.find(
-        (conv) => conv.id.toString() === selectedConnection.conversationId.toString()
+        (conv) => conv.id.toString() === selectedConnection.conversationId?.toString()
       );
 
       console.log('🔍 Found latest conversation:', {
@@ -301,12 +301,12 @@ const PersistentMessagingWidget: React.FC = () => {
     // Set as active conversation in MessagingContext (for notification logic)
     setActiveConversation({
       id: connection.id,
-      userId: connection.userId,
+      userId: connection.id, // Use friend's ID as userId
       userName: connection.name,
       userProfileImage: connection.profileImage,
-      lastMessage: connection.lastMessage,
-      lastMessageTime: connection.lastMessageTime,
-      unreadCount: connection.unreadCount,
+      lastMessage: connection.lastMessage || '',
+      lastMessageTime: connection.lastMessageTime || new Date().toISOString(),
+      unreadCount: typeof connection.unreadCount === 'number' ? connection.unreadCount : parseInt(connection.unreadCount || '0'),
       messages: []
     });
 
@@ -1005,7 +1005,6 @@ const PersistentMessagingWidget: React.FC = () => {
                         )}
                       </div>
                       {connection.unreadCount &&
-                        connection.unreadCount !== "" &&
                         Number(connection.unreadCount) > 0 && (
                           <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                             {connection?.unreadCount}

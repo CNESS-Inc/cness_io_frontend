@@ -113,8 +113,6 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
   const loadConversations = async () => {
     try {
       setIsLoading(true);
-      const currentUserId = localStorage.getItem("Id");
-
       // Single API call - backend returns all friends (with or without conversations)
       const response = await getConversationsAPI();
 
@@ -143,8 +141,8 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
       });
 
       console.log('📝 Setting conversations state with', allConversations.length, 'items');
-      console.log('📝 - With messages:', allConversations.filter(c => c.hasMessages).length);
-      console.log('📝 - Without messages:', allConversations.filter(c => !c.hasMessages).length);
+      console.log('📝 - With messages:', allConversations.filter((c:any)=> c.hasMessages).length);
+      console.log('📝 - Without messages:', allConversations.filter((c:any)=> !c.hasMessages).length);
 
       setConversations(allConversations);
 
@@ -232,7 +230,7 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
       }));
 
       if (activeConversation?.id.toString() === conversationId.toString()) {
-        setActiveConversation(prev => prev ? {
+        setActiveConversationState((prev: Conversation | null) => prev ? {
           ...prev,
           lastMessage: sanitizedContent,
           lastMessageTime: optimisticMessage.timestamp,
@@ -505,7 +503,7 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
 
           if (isActiveMatchById || isActiveMatchByUserId) {
             console.log('🔄 Updating active conversation with new message');
-            setActiveConversation(prev => {
+            setActiveConversationState((prev: Conversation | null) => {
               if (!prev) return null;
 
               // If this was a temporary conversation, update with real conversation ID
@@ -514,10 +512,10 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
                 : prev.id;
 
               // Filter out optimistic messages
-              const filteredMessages = prev.messages.filter(msg => !msg.id.startsWith('temp-'));
+              const filteredMessages = prev.messages.filter((msg: Message) => !msg.id.startsWith('temp-'));
 
               // Check if message already exists
-              const messageExists = filteredMessages.some(msg => msg.id === newMessage.id);
+              const messageExists = filteredMessages.some((msg: Message) => msg.id === newMessage.id);
 
               // Determine last message text
               let lastMessageText = data.data.content;
@@ -641,9 +639,9 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
           })));
 
           if (activeConversation) {
-            setActiveConversation(prev => prev ? {
+            setActiveConversationState((prev: Conversation | null) => prev ? {
               ...prev,
-              messages: prev.messages.filter(msg => !msg.id.startsWith('temp-'))
+              messages: prev.messages.filter((msg: Message) => !msg.id.startsWith('temp-'))
             } : null);
           }
         });
