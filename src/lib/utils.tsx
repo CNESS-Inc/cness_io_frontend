@@ -43,3 +43,35 @@ export const copyProductLink = async (
     onError("Failed to copy link");
   }
 };
+
+/**
+ * Sanitizes user input to prevent XSS attacks
+ * @param input - The input string to sanitize
+ * @param maxLength - Maximum allowed length (default: 10000)
+ * @returns Sanitized string
+ */
+export const sanitizeInput = (input: string, maxLength: number = 10000): string => {
+  if (!input) return "";
+
+  // Trim the input
+  let sanitized = input.trim();
+
+  // Limit length
+  if (sanitized.length > maxLength) {
+    sanitized = sanitized.substring(0, maxLength);
+  }
+
+  // Escape HTML special characters to prevent XSS
+  const htmlEscapeMap: { [key: string]: string } = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+    '/': '&#x2F;',
+  };
+
+  sanitized = sanitized.replace(/[&<>"'\/]/g, (char) => htmlEscapeMap[char] || char);
+
+  return sanitized;
+};
