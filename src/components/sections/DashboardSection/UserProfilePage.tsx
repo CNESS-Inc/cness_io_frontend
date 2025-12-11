@@ -6,7 +6,7 @@ import {
   GetCountryDetails,
   GetInterestsDetails,
   GetProfessionalDetails,
-  GetProfileDetails,  
+  GetProfileDetails,
   GetPublicProfileDetails,
   GetServiceDetails,
   GetStateDetails,
@@ -31,6 +31,7 @@ import {
 import examples from "libphonenumber-js/examples.mobile.json";
 import { getCountryCallingCode, getCountries } from "libphonenumber-js/min";
 import Monthpicker from "../../ui/Monthpicker";
+import postalCodes from "postal-codes-js";
 
 const callingCodeToISO: Record<string, string> = {};
 getCountries().forEach((iso) => {
@@ -38,6 +39,56 @@ getCountries().forEach((iso) => {
   // If some calling codes map to multiple countries, last one wins — good fallback.
   callingCodeToISO[code] = iso;
 });
+
+// Helper function to map country names to ISO codes for postal code validation
+const countryNameToISO: Record<string, string> = {
+  "United States": "US",
+  "United Kingdom": "GB",
+  "Canada": "CA",
+  "Australia": "AU",
+  "Germany": "DE",
+  "France": "FR",
+  "Italy": "IT",
+  "Spain": "ES",
+  "Netherlands": "NL",
+  "Belgium": "BE",
+  "Switzerland": "CH",
+  "Austria": "AT",
+  "Sweden": "SE",
+  "Norway": "NO",
+  "Denmark": "DK",
+  "Finland": "FI",
+  "Poland": "PL",
+  "Czech Republic": "CZ",
+  "Portugal": "PT",
+  "Greece": "GR",
+  "Ireland": "IE",
+  "New Zealand": "NZ",
+  "Japan": "JP",
+  "South Korea": "KR",
+  "China": "CN",
+  "India": "IN",
+  "Brazil": "BR",
+  "Mexico": "MX",
+  "Argentina": "AR",
+  "Chile": "CL",
+  "Colombia": "CO",
+  "Peru": "PE",
+  "South Africa": "ZA",
+  "Singapore": "SG",
+  "Malaysia": "MY",
+  "Thailand": "TH",
+  "Indonesia": "ID",
+  "Philippines": "PH",
+  "Vietnam": "VN",
+  "Turkey": "TR",
+  "Russia": "RU",
+  "Ukraine": "UA",
+  "Israel": "IL",
+  "United Arab Emirates": "AE",
+  "Saudi Arabia": "SA",
+  "Egypt": "EG",
+};
 
 const tabNames = [
   "Basic Information",
@@ -443,6 +494,9 @@ const UserProfilePage = () => {
   const [Country, setCountry] = useState<any>(null);
   const [states, setStates] = useState<any[]>([]);
   const [serviceData, setServiceData] = useState<any>(null);
+
+  // Create a ref to store Country for validation
+  const countryRef = useRef(Country);
   const [customServiceInput, setCustomServiceInput] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [services, setServices] = useState<any[]>([]);
@@ -681,7 +735,35 @@ const UserProfilePage = () => {
         address: yup.string(),
         state: yup.string(),
         city: yup.string(),
-        postalCode: yup.string(),
+        postalCode: yup
+          .string()
+          .test("is-valid-postal-code", "Enter a valid postal code", function (value) {
+            // Allow empty values (field isn't required)
+            if (!value) return true;
+
+            // Get the country data from ref
+            const countryArray = countryRef.current;
+            const countryId = this.parent.country;
+
+            if (!countryId || !countryArray) return true; // Skip validation if no country selected
+
+            try {
+              // Find the country object from the Country array
+              const selectedCountry = countryArray.find((c: any) => String(c.id) === String(countryId));
+              if (!selectedCountry || !selectedCountry.name) return true;
+
+              // Map country name to ISO code
+              const isoCode = countryNameToISO[selectedCountry.name];
+              if (!isoCode) return true; // Skip validation if country not in our mapping
+
+              // Validate the postal code using ISO code
+              const isValid = postalCodes.validate(isoCode, value.toUpperCase());
+              return isValid === true;
+            } catch (error) {
+              // If validation throws an error, consider it valid (country might not be supported)
+              return true;
+            }
+          }),
         communication: yup.object().shape({
           sms: yup.boolean(),
           email: yup.boolean(),
@@ -1591,6 +1673,11 @@ const UserProfilePage = () => {
   };
 
   const hasFetched = useRef(false);
+
+  // Update countryRef whenever Country changes
+  useEffect(() => {
+    countryRef.current = Country;
+  }, [Country]);
 
   useEffect(() => {
     if (!hasFetched.current) {
@@ -2800,9 +2887,25 @@ const UserProfilePage = () => {
                             handleFormChange("contact"); // Track changes
                           }}
                           placeholder="Enter postal code"
-                          className="w-full px-4 py-2 border h-[41px] bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 uppercase"
+                          className={`w-full px-4 py-2 border h-[41px] bg-white ${
+                            contactInfoForm.formState.errors.postalCode
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                            contactInfoForm.formState.errors.postalCode
+                              ? "focus:ring-red-500"
+                              : "focus:ring-purple-500"
+                          } uppercase`}
                           style={{ textTransform: "uppercase" }}
                         />
+                        {contactInfoForm.formState.errors.postalCode && (
+                          <p className="text-sm text-red-500 mt-1">
+                            {
+                              contactInfoForm.formState.errors.postalCode
+                                .message as string
+                            }
+                          </p>
+                        )}
                       </div>
 
                       {/* Communication Preferences */}
