@@ -471,7 +471,7 @@ export default function SellerDashboard() {
         <div className="col-span-12 xl:col-span-8 space-y-5">
           <TrueProfileCard
             avatar={userDetails?.profile_picture}
-            completion={user?.profile_progress || 100}
+            completion={user?.profile_progress || 0}
             onUpdateProfile={() => navigate(`/dashboard/user-profile`)}
             onOpen={() => console.log("Open True Profile")}
           />

@@ -1146,7 +1146,7 @@ export function TrueProfileCard({
   //title = "True Profile Created",
   //description = "Your profile is now complete with all the essential details added. This allows us to customize your experience!",
 
-  completion = 100,
+  completion = 0,
   avatar,
   onUpdateProfile,
 }: // onOpen,
