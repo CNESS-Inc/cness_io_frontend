@@ -465,6 +465,7 @@ const DirectoryProfile = () => {
   const bestPractices = profileData.best_practies || [];
   const products = profileData.products || [];
 
+
   const formatBusinessHours = () => {
     if (businessHours.business_status === 1 && businessHours.weekly_hours) {
       const dayNames = [
@@ -1768,7 +1769,7 @@ const DirectoryProfile = () => {
                           className="bg-[#7077FE] text-white px-6 py-2 sm:px-8 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] capitalize w-full sm:w-auto"
                           onClick={() =>
                             navigate(
-                              `/dashboard/product-detail/${products?.id}`
+                              `/dashboard/product-detail/${product?.id}`
                             )
                           }
                         >
