@@ -27,6 +27,8 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Select from "react-select";
+import LocationSearchDropdown from "../components/LocationSearch/LocationSearchDropdown";
 import CreatableSelect from "react-select/creatable";
 // import { useNavigate } from "react-router-dom";
 
@@ -47,7 +49,6 @@ interface WeeklyHour {
 interface DirectoryFormData {
   bussiness_name: string;
   services: string[];
-  country_id: string;
   contact: string;
   website: string;
   email: string;
@@ -65,6 +66,13 @@ const EditDirectory: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [serviceData, setServiceData] = useState<any>(null);
   const [countryData, setCountryData] = useState<any[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    placeId: string;
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [phoneDialCode, setPhoneDialCode] = useState<string>("");
   const [logoUrl, setLogoUrl] = useState<string>("");
   const [logoPreview, setLogoPreview] = useState<string>("");
@@ -134,7 +142,6 @@ const EditDirectory: React.FC = () => {
       .array()
       .of(yup.string())
       .min(1, "At least one service is required"),
-    country_id: yup.string().required("Country is required"),
     contact: yup.string().required("Contact number is required"),
     email: yup
       .string()
@@ -201,7 +208,6 @@ const EditDirectory: React.FC = () => {
     defaultValues: {
       bussiness_name: "",
       services: [],
-      country_id: "",
       contact: "",
       website: "",
       email: "",
@@ -434,7 +440,7 @@ const EditDirectory: React.FC = () => {
       // Transform form data to match API payload structure
       const payload = {
         bussiness_name: data.bussiness_name,
-        country_id: data.country_id,
+        location: selectedLocation || null,
         website: data.website || null,
         mobile_no: mobile_no,
         mobile_code: mobile_code,
@@ -822,7 +828,6 @@ const EditDirectory: React.FC = () => {
         }
 
         setValue("bussiness_name", data.bussiness_name || "");
-        setValue("country_id", data.country_id || "");
         // Reconstruct phone number from mobile_code and mobile_no
         if (data.mobile_code && data.mobile_no) {
           const phoneNumber = `+${data.mobile_code}${data.mobile_no}`;
@@ -922,6 +927,10 @@ const EditDirectory: React.FC = () => {
           if (data.temporary_end_date) {
             setValue("temporaryEndDate", data.temporary_end_date);
           }
+        }
+        // Load location data
+        if (data.location) {
+          setSelectedLocation(data.location);
         }
         // Set logo URL for preview
         if (data.logo_url) {
@@ -1533,7 +1542,7 @@ const EditDirectory: React.FC = () => {
                     Services <span className="text-red-500">*</span>
                   </label>
 
-                  <CreatableSelect
+                  <Select
                     isMulti
                     options={
                       serviceData?.map((service: any) => ({
@@ -1564,20 +1573,8 @@ const EditDirectory: React.FC = () => {
                     }}
                     styles={customStyles}
                     classNamePrefix="react-select"
-                    placeholder="Select services or type to add custom..."
-                    noOptionsMessage={({ inputValue }) =>
-                      inputValue
-                        ? `Press Enter to add "${inputValue}" as custom service`
-                        : "No options"
-                    }
-                    formatCreateLabel={(inputValue) =>
-                      `Add "${inputValue}" as custom service`
-                    }
-                    isValidNewOption={(inputValue) =>
-                      inputValue.trim().length > 0 &&
-                      inputValue.trim().length <= 50 &&
-                      !services.includes(inputValue.trim().toLowerCase())
-                    }
+                    placeholder="Select services..."
+                    noOptionsMessage={() => "No services available"}
                     menuPortalTarget={document.body}
                     menuPosition="fixed"
                   />
@@ -1597,41 +1594,11 @@ const EditDirectory: React.FC = () => {
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
                     Location <span className="text-red-500">*</span>
                   </label>
-                  <div className="relative w-full">
-                    <select
-                      {...register("country_id")}
-                      className={`h-[43px] w-full border rounded-lg px-3
-                      text-[#081021] font-semibold text-sm sm:text-base
-                      outline-none bg-white appearance-none ${
-                        errors.country_id
-                          ? "border-red-500"
-                          : "border-[#CBD5E1]"
-                      }`}
-                    >
-                      <option value="">Select Location</option>
-                      {countryData.map((country: any) => (
-                        <option key={country.id} value={country.id}>
-                          {country.name}
-                        </option>
-                      ))}
-                    </select>
-
-                    {/* Custom dropdown arrow */}
-                    <svg
-                      width="10"
-                      height="6"
-                      viewBox="0 0 10 6"
-                      fill="#081021"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                    >
-                      <path d="M0 0 L5 6 L10 0 Z" />
-                    </svg>
-                  </div>
-                  {errors.country_id && (
-                    <span className="text-red-500 text-xs sm:text-sm">
-                      {errors.country_id.message}
-                    </span>
-                  )}
+                  <LocationSearchDropdown
+                    value={selectedLocation}
+                    onChange={setSelectedLocation}
+                    placeholder="Search for a location..."
+                  />
                 </div>
 
                 {/* Contact */}
