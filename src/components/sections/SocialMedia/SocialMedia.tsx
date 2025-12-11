@@ -41,7 +41,7 @@ export default function SocialMedia() {
               , Reimagined for Conscious Expression
             </h2>
           </div>
-          <div className="lg:w-6/12 md:w-6/12 w-full">
+<div className="lg:w-6/12 md:w-6/12 w-full flex flex-col items-center md:items-start">
             <p style={{ fontFamily: "Open Sans, sans-serif" }} 
               className="font-light text-[15px] sm:text-[16px] leading-[26px] text-[#242424] mt-4">
               Share reflections, life moments, and conscious thoughts.

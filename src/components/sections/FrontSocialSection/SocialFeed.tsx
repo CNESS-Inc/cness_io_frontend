@@ -293,6 +293,7 @@ export default function SocialFeed() {
   const [activeView] = useState<"posts" | "following" | "collection">("posts");
   const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
   const [collectionItems] = useState<CollectionItem[]>([]);
+const storyScrollRef = useRef<HTMLDivElement>(null);
 
   const [_isPostsLoading, setIsPostsLoading] = useState(false);
   const [isFollowingLoading] = useState(false);
@@ -903,94 +904,64 @@ export default function SocialFeed() {
               </div>
 
               {/* Story Strip Wrapper */}
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium">Reflections</h4>
-                <button
-                  type="button"
-                  onClick={() => setIsTopicsOpen(true)}
-                  className="xl:hidden inline-flex items-center gap-2 rounded-full border bg-white border-gray-200 px-3 py-1.5 text-sm text-black hover:bg-gray-50"
-                >
-                  <img
-                    src={iconMap["socialtrending"]}
-                    alt="topics"
-                    className="w-4 h-4"
-                  />
-                  Topics
-                </button>
-              </div>
-              <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4">
-                {/* Create Story Card */}
-                <div
-                  onClick={() => setOpenSignup(true)}
-                  className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start"
-                >
-                  <img
-                    src="/profile.png"
-                    alt="Create Story Background"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/profile.png";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
-                  <svg
-                    viewBox="0 0 162 70"
-                    preserveAspectRatio="none"
-                    className="absolute bottom-0 left-0 w-full h-[70px] z-10"
-                  >
-                    <path
-                      d="M0,0 H61 C65,0 81,22 81,22 C81,22 97,0 101,0 H162 V70 H0 Z"
-                      fill="#7C81FF"
-                    />
-                  </svg>
-                  <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
-                    <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl  border-5">
-                      <img
-                        src={iconMap["storyplus"]}
-                        alt="storyplus"
-                        className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert"
-                      />
-                    </div>
-                  </div>
-                  <div className="absolute bottom-3.5 w-full text-center text-white text-xs md:text-[15px] font-medium z-20">
-                    Create Story
-                  </div>
-                  <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
-                </div>
+              <h4 className="font-medium">Reflections</h4>
+            <div className="relative mt-3 md:mt-4">
 
-                {
-                  storiesData.map((story) => (
-                    <div
-                      key={story.id}
-                      className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative mohan"
-                      onClick={() => setOpenSignup(true)}
-                    >
-                      <StoryCard
-                        id={story.id}
-                        userIcon={story.profile.profile_picture}
-                        userName={`${story.profile.first_name} ${story.profile.last_name}`}
-                        title={story.stories[0].description || "Untitled Story"}
-                        videoSrc={story.stories[0].thumbnail}
-                      />
+  {/* LEFT ARROW */}
+  <button
+  onClick={() => storyScrollRef.current?.scrollBy({ left: -300, behavior: "smooth" })}
+  className="absolute -left-3 top-1/2 -translate-y-1/2 bg-white shadow-md 
+             w-[38px] h-[38px] rounded-full flex items-center justify-center
+             z-50 pointer-events-auto"
+>
+  <ChevronLeft size={20} />
+</button>
 
-                      <div className="absolute bottom-2 left-2 flex items-center gap-2 z-20 text-white">
-                        <img
-                          src={story.profile.profile_picture || "./public.png"}
-                          alt={`${story.profile.first_name} ${story.profile.last_name}`}
-                          className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/profile.png";
-                          }}
-                        />
-                        <span className="text-xs md:text-[13px] font-medium drop-shadow-sm">
-                          {story.username}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-              </div>
+  {/* SCROLL WRAPPER */}
+  <div
+    ref={storyScrollRef}
+    className="flex gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-2"
+  >
+
+
+
+    {/* STORY CARDS */}
+    {storiesData.map((story) => (
+      <div
+        key={story.id}
+        onClick={() => setOpenSignup(true)}
+        className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] rounded-xl overflow-hidden relative snap-start shrink-0"
+      >
+        <StoryCard
+          id={story.id}
+          userIcon={story.profile.profile_picture}
+          userName={`${story.profile.first_name} ${story.profile.last_name}`}
+          title={story.stories[0].description}
+          videoSrc={story.stories[0].thumbnail}
+        />
+
+        {/* Bottom label */}
+        <div className="absolute bottom-2 left-2 flex items-center gap-2 text-white z-20">
+          <img
+            src={story.profile.profile_picture || "/profile.png"}
+            className="w-6 h-6 rounded-full border border-white"
+          />
+          <span className="text-xs font-medium">{story.username}</span>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {/* RIGHT ARROW */}
+<button
+  onClick={() => storyScrollRef.current?.scrollBy({ left: 300, behavior: "smooth" })}
+  className="absolute -right-3 top-1/2 -translate-y-1/2 bg-white shadow-md 
+             w-[38px] h-[38px] rounded-full flex items-center justify-center
+             z-50 pointer-events-auto"
+>
+  <ChevronRight size={20} />
+</button>
+</div>
               <div className="w-full border-t border-[#C8C8C8] mt-4 md:mt-6"></div>
 
               {/* Posts Section */}

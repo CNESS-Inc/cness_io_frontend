@@ -868,7 +868,7 @@ const InspiredAssessment = () => {
               onClick={() => handleToggle(section.id)}
               className="w-full flex justify-between items-center px-4 sm:px-6 py-5 sm:py-6 text-left"
             >
-              <span className="font-[poppins] font-semibold text-[18px] sm:text-[18px] leading-[100%] text-gray-900">
+              <span className="font-[poppins] font-semibold text-[18px] sm:text-[18px] leading-[150%] text-gray-900 block break-words">
                 {section.order_number}. {section.name}
               </span>
               <div className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm">
@@ -906,50 +906,48 @@ const InspiredAssessment = () => {
                       </p>
                     </div>
                   )}
+<ul className="space-y-6 px-2 sm:px-8 mb-6 mt-5">
+  {section.checkboxes.map((checkbox) => (
+    <li
+      key={checkbox.id}
+      className="flex items-start gap-3 relative max-w-full"
+    >
+      <input
+        type="checkbox"
+        id={`checkbox-${checkbox.id}`}
+        checked={checked[section.id]?.includes(checkbox.id) || false}
+        onChange={() => handleCheck(section.id, checkbox.id)}
+        className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer appearance-none
+    border border-gray-400 rounded-sm
+    checked:bg-[#22C55E] checked:border-[#22C55E]
+    checked:bg-size-[100%_100%]
+    relative custom-checkbox"
+      />
 
-                  <ul className="space-y-6 px-4 sm:px-8 mb-6 mt-5">
-                    {section.checkboxes.map((checkbox) => (
-                      <li
-                        key={checkbox.id}
-                        className="flex items-start space-x-3 relative"
-                      >
-                        <input
-                          type="checkbox"
-                          id={`checkbox-${checkbox.id}`}
-                          checked={
-                            checked[section.id]?.includes(checkbox.id) || false
-                          }
-                          onChange={() => handleCheck(section.id, checkbox.id)}
-                          className="w-5 h-5 cursor-pointer appearance-none border border-gray-400 rounded-sm checked:bg-[#22C55E] relative"
-                        />
-                        <label
-                          htmlFor={`checkbox-${checkbox.id}`}
-                          className="font-['Open_Sans'] font-normal text-[16px] leading-[140%] text-[#1E1E1E] cursor-pointer"
-                        >
-                          {checkbox.option}
-                        </label>
+      <label
+        htmlFor={`checkbox-${checkbox.id}`}
+        className="font-['Open_Sans'] text-[15px] leading-[150%] text-[#1E1E1E] cursor-pointer break-words flex-1"
+      >
+        {checkbox.option}
+      </label>
 
-                        {checked[section.id]?.includes(checkbox.id) && (
-                          <span className="absolute left-[1px] top-[2px] w-5 h-5 flex items-center justify-center pointer-events-none">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-3.5 h-3.5 text-white"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="white"
-                              strokeWidth="3"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          </span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
+      {checked[section.id]?.includes(checkbox.id) && (
+        <span className="absolute left-[1px] top-[2px] w-5 h-5 flex items-center justify-center pointer-events-none">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-3.5 h-3.5 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="white"
+            strokeWidth="3"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </span>
+      )}
+    </li>
+  ))}
+</ul>
                 </div>
 
                 {/* Upload Box */}
