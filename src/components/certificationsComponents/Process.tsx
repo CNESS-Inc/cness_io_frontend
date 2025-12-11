@@ -8,8 +8,8 @@ import Button from "../ui/Button";
 import SignupModel from "../OnBoarding/Signup";
 
 export default function Process() {
-    const [openSignup, setOpenSignup] = useState(false);
-  
+  const [openSignup, setOpenSignup] = useState(false);
+
   const steps = [
     {
       step: "STEP–01",
@@ -39,7 +39,7 @@ export default function Process() {
 
   return (
     <div className="flex items-start w-full max-w-7xl mx-auto pt-24 md:pt-42 pb-10 px-4 md:px-6">
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_40px_1fr] gap-10 md:gap-8 items-stretch w-full">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_40px_1fr] md:gap-8 items-stretch w-full">
         {/* Left Content */}
         <div className="w-full flex flex-col items-center justify-center md:justify-start md:items-start text-center md:text-left">
           <span
@@ -79,7 +79,7 @@ export default function Process() {
               className="rounded-[20px] w-full"
             />
 
-            
+
           </div>
           <div className="flex w-full">
             <span className="ml-auto text-right text-[#64748B] text-xs font-normal">
@@ -89,8 +89,8 @@ export default function Process() {
         </div>
 
         {/* middle */}
-        <div className="grid grid-cols-[40px_1fr] gap-6 md:contents ">
-<div className="flex justify-center self-center md:col-start-2 md:row-start-1 mt-20 md:mt-20">
+        <div className="grid grid-cols-[40px_1fr] gap-6 md:contents">
+          <div className="flex justify-center self-center md:col-start-2 md:row-start-1 md:mt-20">
             <div className="relative flex flex-col justify-between items-center w-[60px] h-[35rem] ">
               <div className="absolute inset-0 left-1/2 -translate-x-1/2 w-[2px] border-l-2 border-dashed border-[#E9E9E9] z-0"></div>
 
@@ -107,7 +107,7 @@ export default function Process() {
           </div>
 
           {/* Right Steps */}
-          <div className="flex flex-col space-y-6 md:col-start-3 md:row-start-1 mt-20">
+          <div className="flex flex-col space-y-6 md:col-start-3 md:row-start-1 mt-10 md:mt-20">
             {steps.map((step, i) => (
               <div
                 key={i}
