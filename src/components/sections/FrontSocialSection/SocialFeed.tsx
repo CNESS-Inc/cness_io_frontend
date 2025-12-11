@@ -975,19 +975,22 @@ const storyScrollRef = useRef<HTMLDivElement>(null);
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 md:gap-3">
                       <Link to={`/dashboard/userprofile/${post?.profile?.id}`}>
+                      <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 md:w-[55px] md:h-[55px] lg:w-[63px] lg:h-[63px]">
+
                         <img
                           src={
                             post.profile.profile_picture
                               ? post.profile.profile_picture
                               : "/profile.png"
                           }
-                          className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
-                          alt="User"
+ className="w-full h-full rounded-full object-cover"                   
+    alt="User"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.src = "/profile.png";
                           }}
                         />
+                        </div>
                       </Link>
                       <div>
                         <p className="font-semibold text-sm md:text-base text-gray-800">
