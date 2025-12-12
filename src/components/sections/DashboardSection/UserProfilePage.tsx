@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Tab } from "@headlessui/react";
-import { useForm ,Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
   GetCountryDetails,
@@ -44,50 +44,50 @@ getCountries().forEach((iso) => {
 const countryNameToISO: Record<string, string> = {
   "United States": "US",
   "United Kingdom": "GB",
-  "Canada": "CA",
-  "Australia": "AU",
-  "Germany": "DE",
-  "France": "FR",
-  "Italy": "IT",
-  "Spain": "ES",
-  "Netherlands": "NL",
-  "Belgium": "BE",
-  "Switzerland": "CH",
-  "Austria": "AT",
-  "Sweden": "SE",
-  "Norway": "NO",
-  "Denmark": "DK",
-  "Finland": "FI",
-  "Poland": "PL",
+  Canada: "CA",
+  Australia: "AU",
+  Germany: "DE",
+  France: "FR",
+  Italy: "IT",
+  Spain: "ES",
+  Netherlands: "NL",
+  Belgium: "BE",
+  Switzerland: "CH",
+  Austria: "AT",
+  Sweden: "SE",
+  Norway: "NO",
+  Denmark: "DK",
+  Finland: "FI",
+  Poland: "PL",
   "Czech Republic": "CZ",
-  "Portugal": "PT",
-  "Greece": "GR",
-  "Ireland": "IE",
+  Portugal: "PT",
+  Greece: "GR",
+  Ireland: "IE",
   "New Zealand": "NZ",
-  "Japan": "JP",
+  Japan: "JP",
   "South Korea": "KR",
-  "China": "CN",
-  "India": "IN",
-  "Brazil": "BR",
-  "Mexico": "MX",
-  "Argentina": "AR",
-  "Chile": "CL",
-  "Colombia": "CO",
-  "Peru": "PE",
+  China: "CN",
+  India: "IN",
+  Brazil: "BR",
+  Mexico: "MX",
+  Argentina: "AR",
+  Chile: "CL",
+  Colombia: "CO",
+  Peru: "PE",
   "South Africa": "ZA",
-  "Singapore": "SG",
-  "Malaysia": "MY",
-  "Thailand": "TH",
-  "Indonesia": "ID",
-  "Philippines": "PH",
-  "Vietnam": "VN",
-  "Turkey": "TR",
-  "Russia": "RU",
-  "Ukraine": "UA",
-  "Israel": "IL",
+  Singapore: "SG",
+  Malaysia: "MY",
+  Thailand: "TH",
+  Indonesia: "ID",
+  Philippines: "PH",
+  Vietnam: "VN",
+  Turkey: "TR",
+  Russia: "RU",
+  Ukraine: "UA",
+  Israel: "IL",
   "United Arab Emirates": "AE",
   "Saudi Arabia": "SA",
-  "Egypt": "EG",
+  Egypt: "EG",
 };
 
 const tabNames = [
@@ -319,7 +319,6 @@ const countryCode = [
   "+998",
 ];
 
-
 interface SocialLink {
   platform: string;
   url: string;
@@ -405,8 +404,8 @@ const customSelectStyles = {
     backgroundColor: state.isSelected
       ? "#E0E7FF"
       : state.isFocused
-      ? "#F3F4F6"
-      : "white",
+        ? "#F3F4F6"
+        : "white",
     color: "#111827",
     padding: "10px 12px",
     fontSize: "14px",
@@ -588,9 +587,8 @@ const UserProfilePage = () => {
       const isValid = validateSocialUrl(platform, url);
       if (!isValid) {
         showToast({
-          message: `Please enter a valid ${
-            socialPlatforms.find((p) => p.value === platform)?.label
-          } URL`,
+          message: `Please enter a valid ${socialPlatforms.find((p) => p.value === platform)?.label
+            } URL`,
           type: "error",
           duration: 5000,
         });
@@ -607,9 +605,8 @@ const UserProfilePage = () => {
       handleFormChange("social"); // Track changes
 
       showToast({
-        message: `${
-          socialPlatforms.find((p) => p.value === platform)?.label
-        } link added successfully`,
+        message: `${socialPlatforms.find((p) => p.value === platform)?.label
+          } link added successfully`,
         type: "success",
         duration: 3000,
       });
@@ -737,33 +734,42 @@ const UserProfilePage = () => {
         city: yup.string(),
         postalCode: yup
           .string()
-          .test("is-valid-postal-code", "Enter a valid postal code", function (value) {
-            // Allow empty values (field isn't required)
-            if (!value) return true;
+          .test(
+            "is-valid-postal-code",
+            "Enter a valid postal code",
+            function (value) {
+              // Allow empty values (field isn't required)
+              if (!value) return true;
 
-            // Get the country data from ref
-            const countryArray = countryRef.current;
-            const countryId = this.parent.country;
+              // Get the country data from ref
+              const countryArray = countryRef.current;
+              const countryId = this.parent.country;
 
-            if (!countryId || !countryArray) return true; // Skip validation if no country selected
+              if (!countryId || !countryArray) return true; // Skip validation if no country selected
 
-            try {
-              // Find the country object from the Country array
-              const selectedCountry = countryArray.find((c: any) => String(c.id) === String(countryId));
-              if (!selectedCountry || !selectedCountry.name) return true;
+              try {
+                // Find the country object from the Country array
+                const selectedCountry = countryArray.find(
+                  (c: any) => String(c.id) === String(countryId)
+                );
+                if (!selectedCountry || !selectedCountry.name) return true;
 
-              // Map country name to ISO code
-              const isoCode = countryNameToISO[selectedCountry.name];
-              if (!isoCode) return true; // Skip validation if country not in our mapping
+                // Map country name to ISO code
+                const isoCode = countryNameToISO[selectedCountry.name];
+                if (!isoCode) return true; // Skip validation if country not in our mapping
 
-              // Validate the postal code using ISO code
-              const isValid = postalCodes.validate(isoCode, value.toUpperCase());
-              return isValid === true;
-            } catch (error) {
-              // If validation throws an error, consider it valid (country might not be supported)
-              return true;
+                // Validate the postal code using ISO code
+                const isValid = postalCodes.validate(
+                  isoCode,
+                  value.toUpperCase()
+                );
+                return isValid === true;
+              } catch (error) {
+                // If validation throws an error, consider it valid (country might not be supported)
+                return true;
+              }
             }
-          }),
+          ),
         communication: yup.object().shape({
           sms: yup.boolean(),
           email: yup.boolean(),
@@ -912,6 +918,12 @@ const UserProfilePage = () => {
       type: cropModal.type,
       message: "Uploading cropped image...",
     });
+    setCropModal({
+      open: false,
+      src: "",
+      type: null,
+      setter: undefined,
+    });
 
     try {
       const formData = new FormData();
@@ -923,12 +935,6 @@ const UserProfilePage = () => {
       }
 
       const res = await SubmitProfileDetails(formData);
-
-      showToast({
-        message: res?.success?.message,
-        type: "success",
-        duration: 5000,
-      });
 
       // Fetch updated user profile
       const response = await MeDetails();
@@ -942,6 +948,11 @@ const UserProfilePage = () => {
       if (cropModal.type === "banner" && userData.profile_banner) {
         cropModal.setter(userData.profile_banner);
       }
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
     } catch (err: any) {
       showToast({
         message: err?.response?.data?.error?.message || "Image upload failed",
@@ -1492,12 +1503,12 @@ const UserProfilePage = () => {
             "",
           country:
             response.data.data?.country_id !== undefined &&
-            response.data.data?.country_id !== null
+              response.data.data?.country_id !== null
               ? String(response.data.data?.country_id)
               : "",
           state:
             response.data.data?.state_id !== undefined &&
-            response.data.data?.state_id !== null
+              response.data.data?.state_id !== null
               ? String(response.data.data?.state_id)
               : "",
           city: response.data.data?.location?.city || "",
@@ -1696,10 +1707,12 @@ const UserProfilePage = () => {
 
   useEffect(() => {
     if (selectedCountry) {
-      GetState(selectedCountry).then(() => {
-        // ensure the selected state value is preserved after states load
+      const countryObj = Country?.find(
+        (c: any) => String(c.id) === String(selectedCountry)
+      );
+      GetState(countryObj?.id).then(() => {
         if (selectedState) {
-          console.log("🚀 ~ UserProfilePage ~ selectedState:", selectedState)
+          console.log("🚀 ~ UserProfilePage ~ selectedState:", selectedState);
           contactInfoForm.setValue("state", selectedState);
         }
       });
@@ -1708,21 +1721,6 @@ const UserProfilePage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCountry]);
-
-  const workCountries = useMemo(() => {
-    const workExperiences = workExperienceForm.watch("workExperiences");
-    return (
-      workExperiences?.map((exp) => exp.work_country).filter(Boolean) || []
-    );
-  }, [workExperienceForm.watch("workExperiences")]); // This watches the entire object
-
-  useEffect(() => {
-    workCountries.forEach((countryId) => {
-      if (countryId) {
-        GetState(countryId);
-      }
-    });
-  }, [workCountries]); // Now this only changes when countries actually change
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   /*const fetchVerifyOrganizationNumber = async (file: File) => {
@@ -1785,7 +1783,6 @@ const UserProfilePage = () => {
     }
   }, [basicData, contactInfoForm]);
 
-  
   return (
     <>
       <section className="w-full px-1 sm:px-2 lg:px-1 pt-2 pb-10">
@@ -1851,17 +1848,17 @@ const UserProfilePage = () => {
               <img
                 src={
                   banner &&
-                  banner !== "null" &&
-                  banner !== "undefined" &&
-                  banner.startsWith("blob:")
+                    banner !== "null" &&
+                    banner !== "undefined" &&
+                    banner.startsWith("blob:")
                     ? banner // This will show the blob URL preview
                     : banner &&
                       banner !== "null" &&
                       banner !== "undefined" &&
                       banner.startsWith("http") &&
                       banner !== "http://localhost:5026/file/"
-                    ? banner
-                    : "https://cdn.cness.io/userprofilebanner.svg"
+                      ? banner
+                      : "https://cdn.cness.io/userprofilebanner.svg"
                 }
                 alt="Banner"
                 className="w-full h-full object-cover"
@@ -1928,10 +1925,10 @@ const UserProfilePage = () => {
                   <img
                     src={
                       !logoPreview ||
-                      logoPreview === "null" ||
-                      logoPreview === "undefined" ||
-                      !logoPreview.startsWith("http") ||
-                      logoPreview === "http://localhost:5026/file/"
+                        logoPreview === "null" ||
+                        logoPreview === "undefined" ||
+                        !logoPreview.startsWith("http") ||
+                        logoPreview === "http://localhost:5026/file/"
                         ? "/profile.jpg"
                         : logoPreview
                     }
@@ -2012,11 +2009,10 @@ const UserProfilePage = () => {
                                   duration-200 
                                   focus:outline-none
                                   border
-                                  ${
-                                    selected
-                                      ? "text-purple-600 h-[45px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
-                                      : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                                  }`
+                                  ${selected
+                              ? "text-purple-600 h-[45px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
+                              : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                            }`
                           }
                         >
                           {tab}
@@ -2040,7 +2036,7 @@ const UserProfilePage = () => {
                       }
                     }}
                   >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 bg-[#F8F3FF] mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* First Name */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -2054,15 +2050,13 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Enter your First Name"
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                            basicInfoForm.formState.errors.firstName
+                          className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.firstName
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.firstName
+                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.firstName
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          }`}
+                            }`}
                           maxLength={40}
                         />
                         {basicInfoForm.formState.errors.firstName && (
@@ -2084,15 +2078,13 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Enter your Last Name"
-                          className={`w-full px-4 py-2 border h-[41px] bg-white ${
-                            basicInfoForm.formState.errors.lastName
+                          className={`w-full px-4 py-2 border h-[41px] bg-white ${basicInfoForm.formState.errors.lastName
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.lastName
+                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.lastName
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          }`}
+                            }`}
                           maxLength={40}
                         />
                         {basicInfoForm.formState.errors.lastName && (
@@ -2183,7 +2175,7 @@ const UserProfilePage = () => {
                                 (interest: any) =>
                                   typeof interest === "string" &&
                                   interest.toLowerCase() ===
-                                    inputValue.trim().toLowerCase()
+                                  inputValue.trim().toLowerCase()
                               )
                           }
                         />
@@ -2268,7 +2260,7 @@ const UserProfilePage = () => {
                                 (prof: any) =>
                                   typeof prof === "string" &&
                                   prof.toLowerCase() ===
-                                    inputValue.trim().toLowerCase()
+                                  inputValue.trim().toLowerCase()
                               )
                           }
                         />
@@ -2439,8 +2431,8 @@ const UserProfilePage = () => {
                             )}
                           </div> */}
                       {/* Gender Dropdown - Styled like the Interests Field */}
-                      <div className="w-full">
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
+                      <div className="w-full col-span-1">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
                           Gender
                         </label>
                         <Select
@@ -2464,8 +2456,8 @@ const UserProfilePage = () => {
                         )}
                       </div>
                       {/* Date of Birth */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
+                      <div className="col-span-1">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
                           Date of Birth
                           <span className="text-red-500">*</span>
                         </label>
@@ -2481,15 +2473,13 @@ const UserProfilePage = () => {
                           onClick={(e: React.MouseEvent<HTMLInputElement>) =>
                             e.currentTarget.showPicker()
                           }
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                            basicInfoForm.formState.errors.dob
+                          className={`w-full px-3 sm:px-4 py-2 h-10 sm:h-[41px] text-sm border bg-white ${basicInfoForm.formState.errors.dob
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.dob
+                            } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.dob
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          }`}
+                            }`}
                         />
                         {basicInfoForm.formState.errors.dob && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2511,15 +2501,13 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Enter your quote"
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                            basicInfoForm.formState.errors.quote
+                          className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.quote
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.quote
+                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.quote
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          }`}
+                            }`}
                         />
                         {basicInfoForm.formState.errors.quote && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2540,15 +2528,13 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Add a short professional bio"
-                          className={`w-full px-4 py-2 border bg-white ${
-                            basicInfoForm.formState.errors.bio
+                          className={`w-full px-4 py-2 border bg-white ${basicInfoForm.formState.errors.bio
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl min-h-[100px] resize-y text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.bio
+                            } rounded-xl min-h-[100px] resize-y text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.bio
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          }`}
+                            }`}
                         />
                         {basicInfoForm.formState.errors.bio && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2569,15 +2555,13 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="What is your conscious vision?"
-                          className={`w-full px-4 py-3 border bg-white ${
-                            basicInfoForm.formState.errors.vision
+                          className={`w-full px-4 py-3 border bg-white ${basicInfoForm.formState.errors.vision
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 
-                            focus:outline-none focus:ring-2 ${
-                              basicInfoForm.formState.errors.vision
-                                ? "focus:ring-red-500"
-                                : "focus:ring-purple-500"
+                            } rounded-xl text-sm placeholder-gray-400 
+                            focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.vision
+                              ? "focus:ring-red-500"
+                              : "focus:ring-purple-500"
                             } transition-all`}
                         />
                         {basicInfoForm.formState.errors.vision && (
@@ -2587,13 +2571,19 @@ const UserProfilePage = () => {
                         )}
                       </div>
                     </div>
-                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-                                   hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-                                    shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
-                        onClick={() => basicInfoForm.reset()}
+            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+                        type="button"
+                        onClick={() => {
+                          const currentEmail = contactInfoForm.getValues("email");
+                          contactInfoForm.reset();
+                          // Restore the email after reset
+                          contactInfoForm.setValue("email", currentEmail);
+                        }}
                       >
                         Reset
                       </Button>
@@ -2616,25 +2606,32 @@ const UserProfilePage = () => {
                       handleContactInfoSubmit
                     )}
                   >
-                    
-                    <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative">
-                        {/* Privacy note inside the box */}
-    <p className="text-xs text-gray-500 col-span-2">
-      Your phone number and email are never displayed on your public profile.
-    </p>
+             <div className="grid grid-cols-1 md:grid-cols-2 bg-[#F8F3FF] gap-3 sm:gap-4 md:gap-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
+                      {/* Privacy note - full width on mobile, spans 2 columns on desktop */}
+                      <div className="col-span-1 md:col-span-2">
+                        <p className="text-xs text-gray-500 text-center sm:text-left px-2 sm:px-0">
+                          Your phone number and email are never displayed on
+                          your public profile.
+                        </p>
+                      </div>
+
                       {/* Phone Number */}
-                      
-                      <div>
-                        
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
+                      <div className="col-span-1 md:col-span-2 lg:col-span-1">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
                           Phone Number <span className="text-red-500">*</span>
                         </label>
-                        
-                        <div className="flex gap-2">
-                          <div className="w-32">
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                          <div className="w-full sm:w-32 mb-2 sm:mb-0">
                             <Select
                               options={countryCodeOptions}
-                              styles={customSelectStyles}
+                              styles={{
+                                ...customSelectStyles,
+                                control: (base) => ({
+                                  ...base,
+                                  minHeight: "44px",
+                                  fontSize: "14px",
+                                }),
+                              }}
                               value={
                                 countryCodeOptions.find(
                                   (opt) =>
@@ -2646,10 +2643,60 @@ const UserProfilePage = () => {
                                 const value =
                                   selectedOption?.value || countryCode[0];
                                 contactInfoForm.setValue("country_code", value);
-                                handleFormChange("contact"); // Track changes
+                                handleFormChange("contact");
                               }}
                               isSearchable={true}
                               placeholder="Code"
+                              menuPortalTarget={document.body}
+                              menuPosition="fixed"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <input
+                              type="tel"
+                              placeholder="Enter Your Phone Number"
+                              value={contactInfoForm.watch("phone") || ""}
+                              onChange={(e) => {
+                                const selectedCallingCode =
+                                  contactInfoForm.watch("country_code") ||
+                                  "+91";
+                                const isoCountry =
+                                  callingCodeToISO[selectedCallingCode] || "IN";
+                                let digits = e.target.value.replace(/\D/g, "");
+                                const maxDigits = getMaxDigits(isoCountry);
+                                if (digits.length > maxDigits)
+                                  digits = digits.slice(0, maxDigits);
+                                const formatted = formatPhoneForCountry(
+                                  digits,
+                                  isoCountry
+                                );
+                                contactInfoForm.setValue("phone", formatted, {
+                                  shouldValidate: true,
+                                  shouldDirty: true,
+                                });
+                                handleFormChange("contact");
+                              }}
+                              onKeyDown={(e) => {
+                                if (
+                                  !/^\d$/.test(e.key) &&
+                                  e.key !== "Backspace" &&
+                                  e.key !== "Delete" &&
+                                  e.key !== "ArrowLeft" &&
+                                  e.key !== "ArrowRight" &&
+                                  e.key !== "Tab"
+                                ) {
+                                  e.preventDefault();
+                                }
+                              }}
+                              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border bg-white ${
+                                contactInfoForm.formState.errors.phone
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl h-11 sm:h-[46px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
+                                contactInfoForm.formState.errors.phone
+                                  ? "focus:ring-red-500"
+                                  : "focus:ring-purple-500"
+                              }`}
                             />
                           </div>
                           <input
@@ -2687,15 +2734,13 @@ const UserProfilePage = () => {
                                 e.preventDefault();
                               }
                             }}
-                            className={`w-full px-4 py-2 border bg-white ${
-                              contactInfoForm.formState.errors.phone
+                            className={`w-full px-4 py-2 border bg-white ${contactInfoForm.formState.errors.phone
                                 ? "border-red-500"
                                 : "border-gray-300"
-                            } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
-                              contactInfoForm.formState.errors.phone
+                              } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${contactInfoForm.formState.errors.phone
                                 ? "focus:ring-red-500"
                                 : "focus:ring-purple-500"
-                            }`}
+                              }`}
                           />
                         </div>
                         {contactInfoForm.formState.errors.phone && (
@@ -2709,8 +2754,8 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* Email */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <div className="col-span-1 md:col-span-2 lg:col-span-1">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                           Email <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -2719,16 +2764,15 @@ const UserProfilePage = () => {
                           {...contactInfoForm.register("email")}
                           onChange={(e) => {
                             contactInfoForm.setValue("email", e.target.value);
-                            handleFormChange("contact"); // Track changes
+                            handleFormChange("contact");
                           }}
                           readOnly
-                          className={`w-full px-4 py-2 border bg-gray-100 text-gray-600 cursor-not-allowed ${
+                          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border bg-gray-100 text-gray-600 cursor-not-allowed ${
                             contactInfoForm.formState.errors.email
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl h-[41px] focus:outline-none`}
+                          } rounded-xl h-11 sm:h-[46px] focus:outline-none`}
                         />
-
                         {contactInfoForm.formState.errors.email && (
                           <p className="text-sm text-red-500 mt-1">
                             {
@@ -2740,8 +2784,8 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* Address */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <div className="col-span-1 md:col-span-2 lg:col-span-1">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                           Address
                         </label>
                         <input
@@ -2749,15 +2793,15 @@ const UserProfilePage = () => {
                           {...contactInfoForm.register("address")}
                           onChange={(e) => {
                             contactInfoForm.setValue("address", e.target.value);
-                            handleFormChange("contact"); // Track changes
+                            handleFormChange("contact");
                           }}
                           placeholder="Enter your address"
-                          className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full h-11 sm:h-[46px] px-3 sm:px-4 py-2 sm:py-3 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
 
                       {/* Country */}
-                      <div className="w-full">
+                      <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Country <span className="text-red-500">*</span>
                         </label>
@@ -2765,27 +2809,27 @@ const UserProfilePage = () => {
                           options={
                             Country
                               ? Country.map((country: any) => ({
-                                  value: String(country.id),
-                                  label: country.name,
-                                }))
+                                value: String(country.id),
+                                label: country.name,
+                              }))
                               : []
                           }
                           value={
                             Country
                               ? Country.find(
-                                  (c: any) =>
-                                    String(c.id) ===
-                                    contactInfoForm.watch("country")
-                                )
+                                (c: any) =>
+                                  String(c.id) ===
+                                  contactInfoForm.watch("country")
+                              )
                                 ? {
-                                    value: contactInfoForm.watch("country"),
-                                    label:
-                                      Country.find(
-                                        (c: any) =>
-                                          String(c.id) ===
-                                          contactInfoForm.watch("country")
-                                      )?.name || "Select your country",
-                                  }
+                                  value: contactInfoForm.watch("country"),
+                                  label:
+                                    Country.find(
+                                      (c: any) =>
+                                        String(c.id) ===
+                                        contactInfoForm.watch("country")
+                                    )?.name || "Select your country",
+                                }
                                 : null
                               : null
                           }
@@ -2794,13 +2838,26 @@ const UserProfilePage = () => {
                               ? String(selectedOption.value)
                               : "";
                             contactInfoForm.setValue("country", value);
-                            handleFormChange("contact"); // Track changes
+                            handleFormChange("contact");
                           }}
                           onBlur={() => contactInfoForm.trigger("country")}
-                          styles={customSelectStyles}
+                          styles={{
+                            ...customSelectStyles,
+                            control: (base) => ({
+                              ...base,
+                              minHeight: "44px",
+                              fontSize: "14px",
+                            }),
+                            menu: (provided) => ({
+                              ...provided,
+                              fontSize: "14px",
+                            }),
+                          }}
                           placeholder="Select your country"
                           isSearchable
                           classNamePrefix="react-select"
+                          menuPortalTarget={document.body}
+                          menuPosition="fixed"
                         />
                         {contactInfoForm.formState.errors.country && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2813,49 +2870,65 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* State */}
-                      {/* State */}
-<div className="w-full relative">
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    State
-  </label>
-  <Select
-    isDisabled={!contactInfoForm.watch("country")}
-    options={
-      states.length > 0
-        ? states.map((state: any) => ({
-            value: String(state.id),
-            label: state.name,
-          }))
-        : []
-    }
-    value={
-      contactInfoForm.watch("state") && states.length > 0
-        ? states.find((s: any) => String(s.id) === String(contactInfoForm.watch("state")))
-          ? {
-              value: String(contactInfoForm.watch("state")),
-              label: states.find((s: any) => String(s.id) === String(contactInfoForm.watch("state")))?.name,
-            }
-          : null
-        : null
-    }
-    onChange={(selectedOption) => {
-      // FIX: Use the string value directly, not the object
-      const value = selectedOption?.value ? String(selectedOption.value) : "";
-      contactInfoForm.setValue("state", value);
-      handleFormChange("contact");
-    }}
-    styles={customSelectStyles}
-    placeholder="Select your state"
-    isSearchable
-    classNamePrefix="react-select"
-    menuPortalTarget={document.body}
-    menuPosition="fixed"
-    maxMenuHeight={200}
-  />
-</div>
+                      <div className="col-span-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          State
+                        </label>
+                        <Select
+                          isDisabled={!contactInfoForm.watch("country")}
+                          options={
+                            states.length > 0
+                              ? states.map((state: any) => ({
+                                  value: String(state.id),
+                                  label: state.name,
+                                }))
+                              : []
+                          }
+                          value={
+                            contactInfoForm.watch("state") && states.length > 0
+                              ? states.find(
+                                  (s: any) =>
+                                    String(s.id) ===
+                                    String(contactInfoForm.watch("state"))
+                                )
+                                ? {
+                                    value: String(
+                                      contactInfoForm.watch("state")
+                                    ),
+                                    label: states.find(
+                                      (s: any) =>
+                                        String(s.id) ===
+                                        String(contactInfoForm.watch("state"))
+                                    )?.name,
+                                  }
+                                : null
+                              : null
+                          }
+                          onChange={(selectedOption) => {
+                            const value = selectedOption?.value
+                              ? String(selectedOption.value)
+                              : "";
+                            contactInfoForm.setValue("state", value);
+                            handleFormChange("contact");
+                          }}
+                          styles={{
+                            ...customSelectStyles,
+                            control: (base) => ({
+                              ...base,
+                              minHeight: "44px",
+                              fontSize: "14px",
+                            }),
+                          }}
+                          placeholder="Select your state"
+                          isSearchable
+                          classNamePrefix="react-select"
+                          menuPortalTarget={document.body}
+                          menuPosition="fixed"
+                        />
+                      </div>
 
                       {/* City */}
-                      <div>
+                      <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           City
                         </label>
@@ -2864,15 +2937,15 @@ const UserProfilePage = () => {
                           {...contactInfoForm.register("city")}
                           onChange={(e) => {
                             contactInfoForm.setValue("city", e.target.value);
-                            handleFormChange("contact"); // Track changes
+                            handleFormChange("contact");
                           }}
                           placeholder="Enter city"
-                          className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full h-11 sm:h-[46px] px-3 sm:px-4 py-2 sm:py-3 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
 
                       {/* Postal Code */}
-                      <div>
+                      <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Postal Code
                         </label>
@@ -2884,18 +2957,17 @@ const UserProfilePage = () => {
                               "postalCode",
                               e.target.value
                             );
-                            handleFormChange("contact"); // Track changes
+                            handleFormChange("contact");
                           }}
                           placeholder="Enter postal code"
-                          className={`w-full px-4 py-2 border h-[41px] bg-white ${
+                          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border h-11 sm:h-[46px] bg-white ${
                             contactInfoForm.formState.errors.postalCode
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            contactInfoForm.formState.errors.postalCode
+                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${contactInfoForm.formState.errors.postalCode
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          } uppercase`}
+                            } uppercase`}
                           style={{ textTransform: "uppercase" }}
                         />
                         {contactInfoForm.formState.errors.postalCode && (
@@ -2909,11 +2981,11 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* Communication Preferences */}
-                      <div className="md:col-span-2">
+                      <div className="col-span-1 md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Preferred Method of Communication
                         </label>
-                        <div className="flex gap-6">
+                        <div className="flex flex-wrap gap-4 sm:gap-6">
                           <label className="inline-flex items-center gap-2">
                             <input
                               type="checkbox"
@@ -2929,9 +3001,9 @@ const UserProfilePage = () => {
                                   "communication",
                                   updatedCommunication
                                 );
-                                handleFormChange("contact"); // Track changes
+                                handleFormChange("contact");
                               }}
-                              className="accent-[#9747FF]"
+                              className="accent-[#9747FF] w-4 h-4 sm:w-5 sm:h-5"
                             />
                             <span className="text-sm text-gray-700">SMS</span>
                           </label>
@@ -2952,9 +3024,9 @@ const UserProfilePage = () => {
                                   "communication",
                                   updatedCommunication
                                 );
-                                handleFormChange("contact"); // Track changes
+                                handleFormChange("contact");
                               }}
-                              className="accent-[#9747FF]"
+                              className="accent-[#9747FF] w-4 h-4 sm:w-5 sm:h-5"
                             />
                             <span className="text-sm text-gray-700">Email</span>
                           </label>
@@ -2975,9 +3047,9 @@ const UserProfilePage = () => {
                                   "communication",
                                   updatedCommunication
                                 );
-                                handleFormChange("contact"); // Track changes
+                                handleFormChange("contact");
                               }}
-                              className="accent-[#9747FF]"
+                              className="accent-[#9747FF] w-4 h-4 sm:w-5 sm:h-5"
                             />
                             <span className="text-sm text-gray-700">
                               WhatsApp
@@ -2986,12 +3058,12 @@ const UserProfilePage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-6">
                       <Button
                         variant="white-outline"
-                        className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+                        className="font-['Plus Jakarta Sans'] text-sm sm:text-[14px] px-4 sm:px-6 py-2.5 sm:py-2 rounded-full border border-gray-300 text-black bg-white hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => contactInfoForm.reset()}
                       >
@@ -2999,7 +3071,7 @@ const UserProfilePage = () => {
                       </Button>
                       <Button
                         variant="gradient-primary"
-                        className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                        className="font-['Plus Jakarta Sans'] text-sm sm:text-[14px] w-full sm:w-auto rounded-full py-2.5 sm:py-2 px-4 sm:px-6 flex justify-center transition-colors duration-500 ease-in-out"
                         type="submit"
                         disabled={isSubmitting.contact}
                       >
@@ -3016,7 +3088,7 @@ const UserProfilePage = () => {
                       handleSocialLinksSubmit
                     )}
                   >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 bg-[#F8F3FF] mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* Render social links that have values OR custom social links */}
                       {socialPlatforms
                         .filter((platform) => socialLinks[platform.value])
@@ -3144,11 +3216,10 @@ const UserProfilePage = () => {
                                   url: e.target.value,
                                 }))
                               }
-                              placeholder={`Enter ${
-                                socialPlatforms.find(
-                                  (p) => p.value === newSocialLink.platform
-                                )?.label || "social media"
-                              } URL`}
+                              placeholder={`Enter ${socialPlatforms.find(
+                                (p) => p.value === newSocialLink.platform
+                              )?.label || "social media"
+                                } URL`}
                               className="w-full px-4 py-2 h-[41px] border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                             />
                           </div>
@@ -3188,7 +3259,7 @@ const UserProfilePage = () => {
                       </div>
                     </Modal>
 
-                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
@@ -3240,12 +3311,8 @@ const UserProfilePage = () => {
                             educationErrors.start_date ||
                             educationErrors.end_date);
 
-
                         return (
-                          <div
-                            key={index}
-                            className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative overflow-visible"
-                          >
+                            <div className="grid grid-cols-1 md:grid-cols-2 bg-[#F8F3FF] gap-3 sm:gap-4 md:gap-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative overflow-visible">
                             {/* Add remove button */}
                             {index > 0 && (
                               <button
@@ -3298,15 +3365,13 @@ const UserProfilePage = () => {
                                   handleFormChange("education"); // Track changes
                                 }}
                                 placeholder="Enter your degree"
-                                className={`w-full px-4 py-2 border bg-white ${
-                                  educationErrors?.degree
+                                className={`w-full px-4 py-2 border bg-white ${educationErrors?.degree
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  educationErrors?.degree
+                                  } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationErrors?.degree
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {educationErrors?.degree && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3333,15 +3398,13 @@ const UserProfilePage = () => {
                                   handleFormChange("education"); // Track changes
                                 }}
                                 placeholder="Enter institution name"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  educationErrors?.institution
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${educationErrors?.institution
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  educationErrors?.institution
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationErrors?.institution
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {educationErrors?.institution && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3352,103 +3415,131 @@ const UserProfilePage = () => {
 
                             {/* Start Date */}
                             <div className="relative">
-  <label className="block text-sm font-medium text-gray-800 mb-2">Start Date</label>
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                Start Date
+                              </label>
 
-  {!educationForm.watch(`educations.${index}.start_date`) && (
-    <span className="absolute left-4 top-[38px] text-gray-400 pointer-events-none text-sm">
-      Select month & year
-    </span>
-  )}
+                              {!educationForm.watch(
+                                `educations.${index}.start_date`
+                              ) && (
+                                <span className="absolute left-4 top-[38px] text-gray-400 pointer-events-none text-sm">
+                                  Select month & year
+                                </span>
+                              )}
 
-  <Controller
-    control={educationForm.control}
-    name={`educations.${index}.start_date`}
-    rules={{
-      required: "Start date is required",
-     validate: (startVal) => {
-  const endVal = educationForm.getValues(`educations.${index}.end_date`);
+                              <Controller
+                                control={educationForm.control}
+                                name={`educations.${index}.start_date`}
+                                rules={{
+                                  required: "Start date is required",
+                                  validate: (startVal) => {
+                                    const endVal = educationForm.getValues(
+                                      `educations.${index}.end_date`
+                                    );
 
-  if (!startVal || !endVal) return true;
+                                    if (!startVal || !endVal) return true;
 
-  const start = parseMonthYear(startVal);
-  const end   = parseMonthYear(endVal);
+                                    const start = parseMonthYear(startVal);
+                                    const end = parseMonthYear(endVal);
 
-  if (!start || !end) return "";
+                                    if (!start || !end) return "";
 
-  if (start >= end)
-    return "Start date must be earlier than end date";
+                                    if (start >= end)
+                                      return "Start date must be earlier than end date";
 
-  return true;
-}
-    }}
-    render={({ field }) => (
-      <Monthpicker
-        value={field.value || ""}
-        onChange={(val) => {
-          field.onChange(val);
-          // force validation for both so cross-check runs
-          educationForm.trigger(`educations.${index}.start_date`);
-          educationForm.trigger(`educations.${index}.end_date`);
-          handleFormChange("education");
-        }}
-       // placeholder="Select Month & Year"
-      />
-    )}
-  />
+                                    return true;
+                                  },
+                                }}
+                                render={({ field }) => (
+                                  <Monthpicker
+                                    value={field.value || ""}
+                                    onChange={(val) => {
+                                      field.onChange(val);
+                                      // force validation for both so cross-check runs
+                                      educationForm.trigger(
+                                        `educations.${index}.start_date`
+                                      );
+                                      educationForm.trigger(
+                                        `educations.${index}.end_date`
+                                      );
+                                      handleFormChange("education");
+                                    }}
+                                    // placeholder="Select Month & Year"
+                                  />
+                                )}
+                              />
 
-  {educationErrors?.start_date && <p className="text-sm text-red-500 mt-1">{educationErrors.start_date.message}</p>}
-</div>
+                              {educationErrors?.start_date && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {educationErrors.start_date.message}
+                                </p>
+                              )}
+                            </div>
 
- {/* End Date */}
-<div className="relative">
-  <label className="block text-sm font-medium text-gray-800 mb-2">End Date</label>
+                            {/* End Date */}
+                            <div className="relative">
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                End Date
+                              </label>
 
-  {!educationForm.watch(`educations.${index}.end_date`) && (
-    <span className="absolute left-4 top-[38px] text-gray-400 pointer-events-none text-sm">
-      Select month & year
-    </span>
-  )}
+                              {!educationForm.watch(
+                                `educations.${index}.end_date`
+                              ) && (
+                                <span className="absolute left-4 top-[38px] text-gray-400 pointer-events-none text-sm">
+                                  Select month & year
+                                </span>
+                              )}
 
-  <Controller
-    control={educationForm.control}
-    name={`educations.${index}.end_date`}
-    rules={{
-      required: "End date is required",
-     validate: (endVal) => {
-  const startVal = educationForm.getValues(`educations.${index}.start_date`);
+                              <Controller
+                                control={educationForm.control}
+                                name={`educations.${index}.end_date`}
+                                rules={{
+                                  required: "End date is required",
+                                  validate: (endVal) => {
+                                    const startVal = educationForm.getValues(
+                                      `educations.${index}.start_date`
+                                    );
 
-  if (!startVal || !endVal) return true;
+                                    if (!startVal || !endVal) return true;
 
-  const start = parseMonthYear(startVal);
-  const end   = parseMonthYear(endVal);
+                                    const start = parseMonthYear(startVal);
+                                    const end = parseMonthYear(endVal);
 
-  if (!start || !end) return "";
+                                    if (!start || !end) return "";
 
-  const minEnd = new Date(start);
-  minEnd.setMonth(minEnd.getMonth() + 1);
+                                    const minEnd = new Date(start);
+                                    minEnd.setMonth(minEnd.getMonth() + 1);
 
-  if (end < minEnd)
-    return "End date must be at least 1 month after start date";
+                                    if (end < minEnd)
+                                      return "End date must be at least 1 month after start date";
 
-  return true;
-}
-    }}
-    render={({ field }) => (
-      <Monthpicker
-        value={field.value || ""}
-        onChange={(val) => {
-          field.onChange(val);
-          educationForm.trigger(`educations.${index}.start_date`);
-          educationForm.trigger(`educations.${index}.end_date`);
-          handleFormChange("education");
-        }}
-        //placeholder="Select Month & Year"
-      />
-    )}
-  />
+                                    return true;
+                                  },
+                                }}
+                                render={({ field }) => (
+                                  <Monthpicker
+                                    value={field.value || ""}
+                                    onChange={(val) => {
+                                      field.onChange(val);
+                                      educationForm.trigger(
+                                        `educations.${index}.start_date`
+                                      );
+                                      educationForm.trigger(
+                                        `educations.${index}.end_date`
+                                      );
+                                      handleFormChange("education");
+                                    }}
+                                    //placeholder="Select Month & Year"
+                                  />
+                                )}
+                              />
 
-  {educationErrors?.end_date && <p className="text-sm text-red-500 mt-1">{educationErrors.end_date.message}</p>}
-</div>
+                              {educationErrors?.end_date && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {educationErrors.end_date.message}
+                                </p>
+                              )}
+                            </div>
                             {/* Individual education entry error */}
                             {hasEducationError && (
                               <div className="md:col-span-2">
@@ -3510,7 +3601,7 @@ const UserProfilePage = () => {
                       </button>
                     </div>
 
-                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
@@ -3604,7 +3695,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             )}
 
                             {/* Company */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                            <div className="w-full lg:w-[48%]">
                               <label className="block text-sm font-medium text-gray-800 mb-2">
                                 Company
                               </label>
@@ -3629,15 +3720,13 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   );
                                 }}
                                 placeholder="Enter Company Name"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  experienceErrors?.company
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${experienceErrors?.company
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  experienceErrors?.company
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.company
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {experienceErrors?.company && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3647,7 +3736,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </div>
 
                             {/* Position */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                            <div className="lg:w-[48%] w-full">
                               <label className="block text-sm font-medium text-gray-800 mb-2">
                                 Position
                               </label>
@@ -3665,15 +3754,13 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   handleFormChange("work");
                                 }}
                                 placeholder="Enter your Designation"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  experienceErrors?.position
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${experienceErrors?.position
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  experienceErrors?.position
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.position
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {experienceErrors?.position && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3683,7 +3770,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </div>
 
                             {/* Roles & Responsibilities */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                            <div className="lg:w-[48%] w-full">
                               <label className="block text-sm font-medium text-gray-800 mb-2">
                                 Roles & Responsibilities
                               </label>
@@ -3700,15 +3787,13 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   handleFormChange("work");
                                 }}
                                 placeholder="Describe your key roles and responsibilities"
-                                className={`w-full px-4 py-2 border bg-white ${
-                                  experienceErrors?.roles_responsibilities
+                                className={`w-full px-4 py-2 border bg-white ${experienceErrors?.roles_responsibilities
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  experienceErrors?.roles_responsibilities
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.roles_responsibilities
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {experienceErrors?.roles_responsibilities && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3721,7 +3806,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </div>
 
                             {/* City */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                            <div className="lg:w-[48%] w-full">
                               <label className="block text-sm font-medium text-gray-700 mb-2">
                                 City
                               </label>
@@ -3738,15 +3823,13 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   handleFormChange("work");
                                 }}
                                 placeholder="Enter city"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  experienceErrors?.work_city
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${experienceErrors?.work_city
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  experienceErrors?.work_city
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.work_city
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {experienceErrors?.work_city && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3756,108 +3839,119 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </div>
 
                             {/* Start Date */}
-                           <div className="lg:w-[48%] md:w-[48%] w-full">
-  <label className="block text-sm font-medium text-gray-800 mb-2">
-    Start Date
-  </label>
+                            <div className="lg:w-[48%] w-full">
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                Start Date
+                              </label>
 
-  <Controller
-    control={workExperienceForm.control}
-    name={`workExperiences.${index}.start_date`}
-    rules={{
-      validate: (startVal) => {
-        const endVal = workExperienceForm.getValues(
-          `workExperiences.${index}.end_date`
-        );
+                              <Controller
+                                control={workExperienceForm.control}
+                                name={`workExperiences.${index}.start_date`}
+                                rules={{
+                                  validate: (startVal) => {
+                                    const endVal = workExperienceForm.getValues(
+                                      `workExperiences.${index}.end_date`
+                                    );
 
-        if (!startVal || !endVal) return true;
+                                    if (!startVal || !endVal) return true;
 
-        const start = new Date(startVal);
-        const end = new Date(endVal);
+                                    const start = new Date(startVal);
+                                    const end = new Date(endVal);
 
-        if (start > end) {
-          return "Start date cannot be after end date";
-        }
+                                    if (start > end) {
+                                      return "Start date cannot be after end date";
+                                    }
 
-        return true;
-      },
-    }}
-    render={({ field }) => (
-      <Monthpicker
-        value={field.value || ""}
-        onChange={(val) => {
-          field.onChange(val);
-          workExperienceForm.trigger(`workExperiences.${index}.start_date`);
-          workExperienceForm.trigger(`workExperiences.${index}.end_date`);
-          handleFormChange("work");
-        }}
-        placeholder="Select Month & Year"
-      />
-    )}
-  />
+                                    return true;
+                                  },
+                                }}
+                                render={({ field }) => (
+                                  <Monthpicker
+                                    value={field.value || ""}
+                                    onChange={(val) => {
+                                      field.onChange(val);
+                                      workExperienceForm.trigger(
+                                        `workExperiences.${index}.start_date`
+                                      );
+                                      workExperienceForm.trigger(
+                                        `workExperiences.${index}.end_date`
+                                      );
+                                      handleFormChange("work");
+                                    }}
+                                    placeholder="Select Month & Year"
+                                  />
+                                )}
+                              />
 
-  {experienceErrors?.start_date && (
-    <p className="text-sm text-red-500 mt-1">
-      {experienceErrors.start_date.message}
-    </p>
-  )}
-</div>
+                              {experienceErrors?.start_date && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {experienceErrors.start_date.message}
+                                </p>
+                              )}
+                            </div>
 
                             {/* End Date (hide when currently working) */}
-                            {!workExperienceForm.watch(`workExperiences.${index}.currently_working`) && (
-  <div className="lg:w-[48%] md:w-[48%] w-full">
-    <label className="block text-sm font-medium text-gray-800 mb-2">
-      End Date
-    </label>
+                            {!workExperienceForm.watch(
+                              `workExperiences.${index}.currently_working`
+                            ) && (
+                              <div className="lg:w-[48%] md:w-[48%] w-full">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  End Date
+                                </label>
 
-    <Controller
-      control={workExperienceForm.control}
-      name={`workExperiences.${index}.end_date`}
-      rules={{
-        validate: (endVal) => {
-          const startVal = workExperienceForm.getValues(
-            `workExperiences.${index}.start_date`
-          );
-          if (!startVal || !endVal) return true;
+                                <Controller
+                                  control={workExperienceForm.control}
+                                  name={`workExperiences.${index}.end_date`}
+                                  rules={{
+                                    validate: (endVal) => {
+                                      const startVal =
+                                        workExperienceForm.getValues(
+                                          `workExperiences.${index}.start_date`
+                                        );
+                                      if (!startVal || !endVal) return true;
 
-          const start = new Date(startVal);
-          const end = new Date(endVal);
+                                      const start = new Date(startVal);
+                                      const end = new Date(endVal);
 
-          if (end < start) {
-            return "End date cannot be before start date";
-          }
+                                      if (end < start) {
+                                        return "End date cannot be before start date";
+                                      }
 
-          // Optional: enforce at least 1 month difference
-          const minEnd = new Date(start);
-          minEnd.setMonth(minEnd.getMonth() + 1);
-          if (end < minEnd) {
-            return "End date must be at least 1 month after start date";
-          }
+                                      // Optional: enforce at least 1 month difference
+                                      const minEnd = new Date(start);
+                                      minEnd.setMonth(minEnd.getMonth() + 1);
+                                      if (end < minEnd) {
+                                        return "End date must be at least 1 month after start date";
+                                      }
 
-          return true;
-        }
-      }}
-      render={({ field }) => (
-        <Monthpicker
-          value={field.value || ""}
-          onChange={(val) => {
-            field.onChange(val);
-            workExperienceForm.trigger(`workExperiences.${index}.end_date`);
-            workExperienceForm.trigger(`workExperiences.${index}.start_date`);
-            handleFormChange("work");
-          }}
-          placeholder="Select Month & Year"
-        />
-      )}
-    />
+                                      return true;
+                                    },
+                                  }}
+                                  render={({ field }) => (
+                                    <Monthpicker
+                                      value={field.value || ""}
+                                      onChange={(val) => {
+                                        field.onChange(val);
+                                        workExperienceForm.trigger(
+                                          `workExperiences.${index}.end_date`
+                                        );
+                                        workExperienceForm.trigger(
+                                          `workExperiences.${index}.start_date`
+                                        );
+                                        handleFormChange("work");
+                                      }}
+                                      placeholder="Select Month & Year"
+                                    />
+                                  )}
+                                />
 
-    {experienceErrors?.end_date && (
-      <p className="text-sm text-red-500 mt-1">
-        {experienceErrors.end_date.message}
-      </p>
-    )}
-  </div>
-)}
+                                {experienceErrors?.end_date && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {experienceErrors.end_date.message}
+                                  </p>
+                                )}
+                              </div>
+                            )}
                             {/* Currently Working */}
                             <div className="w-full flex items-center gap-1">
                               <input
@@ -3988,10 +4082,10 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                       handlePublicProfileSubmit
                     )}
                   >
-                    <div className="bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
+                <div className="bg-[#F8F3FF] space-y-4 md:space-y-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* Title */}
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
+                      <div className="w-full">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
                           Title
                         </label>
                         <textarea
@@ -4089,7 +4183,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </button>
                             <span className="flex-1 truncate text-gray-500">
                               {publicProfileForm.watch("featuredImage") &&
-                              publicProfileForm.watch("featuredImage").length >
+                                publicProfileForm.watch("featuredImage").length >
                                 0 ? (
                                 publicProfileForm.watch("featuredImage")[0]
                                   ?.name
@@ -4140,9 +4234,9 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             value={
                               serviceInput
                                 ? {
-                                    value: serviceInput,
-                                    label: serviceInput,
-                                  }
+                                  value: serviceInput,
+                                  label: serviceInput,
+                                }
                                 : undefined
                             }
                             onChange={(selectedOption) => {
@@ -4338,7 +4432,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                         )}
                       </div>*/}
                     </div>
-                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 

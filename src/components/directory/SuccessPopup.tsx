@@ -1,12 +1,20 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface SuccessModalProps {
   open: boolean;
   onClose: () => void;
+  basicInfoServices: any;
+  services: any;
 }
 
-const SuccessModal: React.FC<SuccessModalProps> = ({ open, onClose }) => {
+const SuccessModal: React.FC<SuccessModalProps> = ({ open, onClose, basicInfoServices = [], services = [] }) => {
   if (!open) return null;
+  let navigate = useNavigate()
+
+  const navigateAllServices = () => {
+    navigate('/dashboard/all-services', { state: { services: services || [] } })
+  }
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-[999]">
@@ -42,7 +50,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ open, onClose }) => {
 
         {/* GO HOME BUTTON */}
         <div className="mt-5 flex justify-center">
-          <button className="w-full py-3 bg-[#7077FE] text-white rounded-full font-semibold">
+          <button onClick={()=>navigate('/dashboard')} className="w-full py-3 bg-[#7077FE] text-white rounded-full font-semibold">
             Go Home
           </button>
         </div>
@@ -51,19 +59,23 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ open, onClose }) => {
         <div className="mt-6">
           <div className="flex justify-between items-center">
             <h3 className="font-semibold text-[#081021] text-base">Similar Services</h3>
-            <span className="text-[#7077FE] text-sm cursor-pointer">View All</span>
+            <span className="text-[#7077FE] text-sm cursor-pointer">
+              <button onClick={navigateAllServices}>View All</button>
+            </span>
           </div>
 
           <div className="flex gap-3 overflow-x-auto mt-3 pb-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="min-w-[120px]">
-                <div className="w-full h-[80px] bg-gray-200 rounded-md"></div>
-                <h4 className="font-semibold text-sm mt-1">White House</h4>
+            {basicInfoServices?.map((el: any) => (
+              <div key={el.id} className="min-w-[120px]">
+                <div className="w-full h-[80px] bg-gray-200 rounded-md">
+                  {el?.logo_url && <img src={el.logo_url} alt={el.bussiness_name} className="w-full h-full object-cover rounded-md" />}
+                </div>
+                <h4 className="font-semibold text-sm mt-1">{el.bussiness_name}</h4>
 
                 <div className="flex items-center gap-1 text-xs text-gray-600">
-                  ⭐ 4.7
+                  ⭐ {el.rating_average}
                 </div>
-                <p className="text-[11px] text-[#64748B]">Responds in 20 mins</p>
+                <p className="text-[11px] text-[#64748B]">Responds in {el.responseTime || '20 mins'}</p>
               </div>
             ))}
           </div>

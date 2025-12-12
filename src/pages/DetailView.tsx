@@ -6,6 +6,7 @@ import {
   EnquiryStatus,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
+import { Building2 } from "lucide-react";
 
 export type Enquiry = {
   id: string;
@@ -27,6 +28,24 @@ export type Enquiry = {
     name: string;
     slug: string;
   }>;
+  directory_info?: {
+    id: string;
+    bussiness_name: string;
+    logo_url: string | null;
+    location?: {
+      lat: number;
+      lng: number;
+      name: string;
+      address: string;
+      placeId: string;
+    };
+  };
+  user_profile?: {
+    user_id: string;
+    first_name: string;
+    last_name: string;
+    profile_picture: string | null;
+  };
   [key: string]: any;
 };
 
@@ -289,11 +308,17 @@ export default function DetailViewDesigned() {
       <div className="border-b border-b-[#E5E5E5] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         {/* Avatar + Info */}
         <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto">
-          <img
-            src="/images/build-your-dream/user.png"
-            alt="avatar"
-            className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-white shadow"
-          />
+          {enquiry.directory_info?.logo_url ? (
+            <img
+              src={enquiry.directory_info.logo_url}
+              alt="business logo"
+              className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-gray-200 shadow"
+            />
+          ) : (
+            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 border-2 border-gray-200 shadow flex items-center justify-center">
+              <Building2 className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <h2 className="text-lg md:text-xl font-semibold truncate">
               {enquiry.name || "N/A"}
@@ -337,7 +362,7 @@ export default function DetailViewDesigned() {
           </h3>
 
           <div className="text-sm text-gray-700 space-y-3 md:space-y-4">
-            <div>
+          <div>
               <div className="text-gray-400 font-[poppins] text-xs">
                 Service
               </div>
@@ -348,7 +373,6 @@ export default function DetailViewDesigned() {
                   "N/A"}
               </div>
             </div>
-
             <div>
               <div className="text-gray-400 font-[poppins] text-xs">
                 Contact
@@ -394,7 +418,11 @@ export default function DetailViewDesigned() {
               <div className="text-gray-400 font-[poppins] text-xs">
                 Location
               </div>
-              <div className=" text-[15px]font-medium">New York</div>
+              <div className="text-[15px] font-medium wrap-break-word">
+                {enquiry.directory_info?.location?.name || 
+                 enquiry.directory_info?.location?.address || 
+                 "N/A"}
+              </div>
             </div>
 
             <div>
