@@ -38,8 +38,6 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
     "Sydney"
   ];
 
-  // Display value text
-  const displayValue = value ? `${value.name}, ${value.address}` : "";
 
   // Close dropdown when clicking outside
   useEffect(() => {
