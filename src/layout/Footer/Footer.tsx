@@ -64,6 +64,16 @@ useEffect(() => {
         setShowCommunityModal(true);
       };
     });
+ const termsLinks = document.querySelectorAll(".open-termsandconditions");
+    termsLinks.forEach((el) => {
+      const link = el as HTMLElement;
+      link.onclick = (e: MouseEvent) => {
+        e.preventDefault();
+        //setShowTermModal(false);
+        setShowTermModal(true);
+      };
+    });
+    
   }, 50);
 
   return () => {

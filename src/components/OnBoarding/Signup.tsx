@@ -896,7 +896,7 @@ export default function SignupModal({
 
   
 useEffect(() => {
-  const links = document.querySelectorAll(".open-privacy, .open-community, .open-terms");
+  const links = document.querySelectorAll(".open-privacy, .open-community, .open-termsandconditions");
 
   links.forEach((element: Element) => {
     element.addEventListener("click", (e) => {
