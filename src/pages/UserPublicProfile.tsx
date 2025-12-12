@@ -1695,7 +1695,7 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
                       <>
                         {isOwnProfile ? (
                           <>
-                            <h2>Best Practices</h2>
+                            <h2 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">My Best Practices</h2>
                           </>
                         ) : (
                           ""
@@ -2038,7 +2038,7 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
                       <>
                         <div className="pt-6 pb-12 border-b border-[#ECEEF2]">
                           <h3 className="text-lg font-semibold text-black-700 mb-4 flex items-center gap-2">
-                            Best Practices
+                            Followed Best Practices
                           </h3>
 
                           {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
