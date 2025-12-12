@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
+import Button from "./Button";
 
 interface CropProps {
   imageSrc: string;
@@ -73,7 +74,7 @@ const LinkedInCropper: React.FC<CropProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-[99999] animate-fadeIn">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-99999 animate-fadeIn">
       <div className="bg-white rounded-xl overflow-hidden w-[90%] md:w-[600px] shadow-2xl border border-gray-200">
 
         {/* Crop area */}
@@ -115,24 +116,23 @@ const LinkedInCropper: React.FC<CropProps> = ({
 
           {/* Buttons */}
           <div className="flex justify-end gap-3 mt-4">
-            <button
+            <Button
+              type="button"
               onClick={onClose}
-              disabled={saving}
-              className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+              variant="white-outline"
+              className="w-[104px] h-[39px] rounded-[100px] text-[12px] font-medium flex items-center justify-center border border-[#CBD0DC] text-[#54575C] hover:bg-gray-50"
             >
-              Cancel
-            </button>
-            <button
-              onClick={saveCropped}
+              Close
+            </Button>
+            <Button
+              type="submit"
+              variant="gradient-primary"
+              className="w-[104px] h-[39px] rounded-[100px] text-[12px] font-medium flex items-center justify-center"
               disabled={saving}
-              className={`px-4 py-2 rounded-md text-white ${
-                saving
-                  ? "bg-[#0A66C2]/60 cursor-not-allowed"
-                  : "bg-[#0A66C2] hover:bg-[#0852A0]"
-              }`}
+              onClick={saveCropped}
             >
               {saving ? "Saving..." : "Save"}
-            </button>
+            </Button>
           </div>
         </div>
 

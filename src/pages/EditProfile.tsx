@@ -576,7 +576,8 @@ const UserProfileForm: React.FC = () => {
           </div>
 
           {/* ROW 1 */}
-          <div className="flex flex-col md:flex-row gap-[26px] w-full">
+<div className="flex flex-col md:flex-row gap-[26px] w-full">
+  
             <InputField
               label="First name"
               value={firstName}

@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Tab } from "@headlessui/react";
-import { useForm ,Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/solid";
 import {
   GetCountryDetails,
@@ -44,50 +44,50 @@ getCountries().forEach((iso) => {
 const countryNameToISO: Record<string, string> = {
   "United States": "US",
   "United Kingdom": "GB",
-  "Canada": "CA",
-  "Australia": "AU",
-  "Germany": "DE",
-  "France": "FR",
-  "Italy": "IT",
-  "Spain": "ES",
-  "Netherlands": "NL",
-  "Belgium": "BE",
-  "Switzerland": "CH",
-  "Austria": "AT",
-  "Sweden": "SE",
-  "Norway": "NO",
-  "Denmark": "DK",
-  "Finland": "FI",
-  "Poland": "PL",
+  Canada: "CA",
+  Australia: "AU",
+  Germany: "DE",
+  France: "FR",
+  Italy: "IT",
+  Spain: "ES",
+  Netherlands: "NL",
+  Belgium: "BE",
+  Switzerland: "CH",
+  Austria: "AT",
+  Sweden: "SE",
+  Norway: "NO",
+  Denmark: "DK",
+  Finland: "FI",
+  Poland: "PL",
   "Czech Republic": "CZ",
-  "Portugal": "PT",
-  "Greece": "GR",
-  "Ireland": "IE",
+  Portugal: "PT",
+  Greece: "GR",
+  Ireland: "IE",
   "New Zealand": "NZ",
-  "Japan": "JP",
+  Japan: "JP",
   "South Korea": "KR",
-  "China": "CN",
-  "India": "IN",
-  "Brazil": "BR",
-  "Mexico": "MX",
-  "Argentina": "AR",
-  "Chile": "CL",
-  "Colombia": "CO",
-  "Peru": "PE",
+  China: "CN",
+  India: "IN",
+  Brazil: "BR",
+  Mexico: "MX",
+  Argentina: "AR",
+  Chile: "CL",
+  Colombia: "CO",
+  Peru: "PE",
   "South Africa": "ZA",
-  "Singapore": "SG",
-  "Malaysia": "MY",
-  "Thailand": "TH",
-  "Indonesia": "ID",
-  "Philippines": "PH",
-  "Vietnam": "VN",
-  "Turkey": "TR",
-  "Russia": "RU",
-  "Ukraine": "UA",
-  "Israel": "IL",
+  Singapore: "SG",
+  Malaysia: "MY",
+  Thailand: "TH",
+  Indonesia: "ID",
+  Philippines: "PH",
+  Vietnam: "VN",
+  Turkey: "TR",
+  Russia: "RU",
+  Ukraine: "UA",
+  Israel: "IL",
   "United Arab Emirates": "AE",
   "Saudi Arabia": "SA",
-  "Egypt": "EG",
+  Egypt: "EG",
 };
 
 const tabNames = [
@@ -318,7 +318,6 @@ const countryCode = [
   "+996",
   "+998",
 ];
-
 
 interface SocialLink {
   platform: string;
@@ -737,33 +736,42 @@ const UserProfilePage = () => {
         city: yup.string(),
         postalCode: yup
           .string()
-          .test("is-valid-postal-code", "Enter a valid postal code", function (value) {
-            // Allow empty values (field isn't required)
-            if (!value) return true;
+          .test(
+            "is-valid-postal-code",
+            "Enter a valid postal code",
+            function (value) {
+              // Allow empty values (field isn't required)
+              if (!value) return true;
 
-            // Get the country data from ref
-            const countryArray = countryRef.current;
-            const countryId = this.parent.country;
+              // Get the country data from ref
+              const countryArray = countryRef.current;
+              const countryId = this.parent.country;
 
-            if (!countryId || !countryArray) return true; // Skip validation if no country selected
+              if (!countryId || !countryArray) return true; // Skip validation if no country selected
 
-            try {
-              // Find the country object from the Country array
-              const selectedCountry = countryArray.find((c: any) => String(c.id) === String(countryId));
-              if (!selectedCountry || !selectedCountry.name) return true;
+              try {
+                // Find the country object from the Country array
+                const selectedCountry = countryArray.find(
+                  (c: any) => String(c.id) === String(countryId)
+                );
+                if (!selectedCountry || !selectedCountry.name) return true;
 
-              // Map country name to ISO code
-              const isoCode = countryNameToISO[selectedCountry.name];
-              if (!isoCode) return true; // Skip validation if country not in our mapping
+                // Map country name to ISO code
+                const isoCode = countryNameToISO[selectedCountry.name];
+                if (!isoCode) return true; // Skip validation if country not in our mapping
 
-              // Validate the postal code using ISO code
-              const isValid = postalCodes.validate(isoCode, value.toUpperCase());
-              return isValid === true;
-            } catch (error) {
-              // If validation throws an error, consider it valid (country might not be supported)
-              return true;
+                // Validate the postal code using ISO code
+                const isValid = postalCodes.validate(
+                  isoCode,
+                  value.toUpperCase()
+                );
+                return isValid === true;
+              } catch (error) {
+                // If validation throws an error, consider it valid (country might not be supported)
+                return true;
+              }
             }
-          }),
+          ),
         communication: yup.object().shape({
           sms: yup.boolean(),
           email: yup.boolean(),
@@ -912,6 +920,12 @@ const UserProfilePage = () => {
       type: cropModal.type,
       message: "Uploading cropped image...",
     });
+    setCropModal({
+      open: false,
+      src: "",
+      type: null,
+      setter: undefined,
+    });
 
     try {
       const formData = new FormData();
@@ -923,12 +937,6 @@ const UserProfilePage = () => {
       }
 
       const res = await SubmitProfileDetails(formData);
-
-      showToast({
-        message: res?.success?.message,
-        type: "success",
-        duration: 5000,
-      });
 
       // Fetch updated user profile
       const response = await MeDetails();
@@ -942,6 +950,11 @@ const UserProfilePage = () => {
       if (cropModal.type === "banner" && userData.profile_banner) {
         cropModal.setter(userData.profile_banner);
       }
+      showToast({
+        message: res?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
     } catch (err: any) {
       showToast({
         message: err?.response?.data?.error?.message || "Image upload failed",
@@ -1696,10 +1709,12 @@ const UserProfilePage = () => {
 
   useEffect(() => {
     if (selectedCountry) {
-      GetState(selectedCountry).then(() => {
-        // ensure the selected state value is preserved after states load
+      const countryObj = Country?.find(
+        (c: any) => String(c.id) === String(selectedCountry)
+      );
+      GetState(countryObj?.id).then(() => {
         if (selectedState) {
-          console.log("🚀 ~ UserProfilePage ~ selectedState:", selectedState)
+          console.log("🚀 ~ UserProfilePage ~ selectedState:", selectedState);
           contactInfoForm.setValue("state", selectedState);
         }
       });
@@ -1708,21 +1723,6 @@ const UserProfilePage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCountry]);
-
-  const workCountries = useMemo(() => {
-    const workExperiences = workExperienceForm.watch("workExperiences");
-    return (
-      workExperiences?.map((exp) => exp.work_country).filter(Boolean) || []
-    );
-  }, [workExperienceForm.watch("workExperiences")]); // This watches the entire object
-
-  useEffect(() => {
-    workCountries.forEach((countryId) => {
-      if (countryId) {
-        GetState(countryId);
-      }
-    });
-  }, [workCountries]); // Now this only changes when countries actually change
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   /*const fetchVerifyOrganizationNumber = async (file: File) => {
@@ -1785,7 +1785,6 @@ const UserProfilePage = () => {
     }
   }, [basicData, contactInfoForm]);
 
-  
   return (
     <>
       <section className="w-full px-1 sm:px-2 lg:px-1 pt-2 pb-10">
@@ -2616,25 +2615,32 @@ const UserProfilePage = () => {
                       handleContactInfoSubmit
                     )}
                   >
-                    
-                    <div className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative">
-                        {/* Privacy note inside the box */}
-    <p className="text-xs text-gray-500 col-span-2">
-      Your phone number and email are never displayed on your public profile.
-    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 bg-[#F8F3FF] gap-4 sm:gap-6 mb-8 p-4 sm:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
+                      {/* Privacy note - full width on mobile, spans 2 columns on desktop */}
+                      <div className="col-span-1 md:col-span-2">
+                        <p className="text-xs text-gray-500 text-center sm:text-left px-2 sm:px-0">
+                          Your phone number and email are never displayed on
+                          your public profile.
+                        </p>
+                      </div>
+
                       {/* Phone Number */}
-                      
-                      <div>
-                        
+                      <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Phone Number <span className="text-red-500">*</span>
                         </label>
-                        
-                        <div className="flex gap-2">
-                          <div className="w-32">
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                          <div className="w-full sm:w-32 mb-2 sm:mb-0">
                             <Select
                               options={countryCodeOptions}
-                              styles={customSelectStyles}
+                              styles={{
+                                ...customSelectStyles,
+                                control: (base) => ({
+                                  ...base,
+                                  minHeight: "44px",
+                                  fontSize: "14px",
+                                }),
+                              }}
                               value={
                                 countryCodeOptions.find(
                                   (opt) =>
@@ -2646,57 +2652,62 @@ const UserProfilePage = () => {
                                 const value =
                                   selectedOption?.value || countryCode[0];
                                 contactInfoForm.setValue("country_code", value);
-                                handleFormChange("contact"); // Track changes
+                                handleFormChange("contact");
                               }}
                               isSearchable={true}
                               placeholder="Code"
+                              menuPortalTarget={document.body}
+                              menuPosition="fixed"
                             />
                           </div>
-                          <input
-                            type="tel"
-                            placeholder="Enter Your Phone Number"
-                            value={contactInfoForm.watch("phone") || ""}
-                            onChange={(e) => {
-                              const selectedCallingCode =
-                                contactInfoForm.watch("country_code") || "+91";
-                              const isoCountry =
-                                callingCodeToISO[selectedCallingCode] || "IN";
-                              let digits = e.target.value.replace(/\D/g, "");
-                              const maxDigits = getMaxDigits(isoCountry);
-                              if (digits.length > maxDigits)
-                                digits = digits.slice(0, maxDigits);
-                              const formatted = formatPhoneForCountry(
-                                digits,
-                                isoCountry
-                              );
-                              contactInfoForm.setValue("phone", formatted, {
-                                shouldValidate: true,
-                                shouldDirty: true,
-                              });
-                              handleFormChange("contact"); // Track changes
-                            }}
-                            onKeyDown={(e) => {
-                              if (
-                                !/^\d$/.test(e.key) &&
-                                e.key !== "Backspace" &&
-                                e.key !== "Delete" &&
-                                e.key !== "ArrowLeft" &&
-                                e.key !== "ArrowRight" &&
-                                e.key !== "Tab"
-                              ) {
-                                e.preventDefault();
-                              }
-                            }}
-                            className={`w-full px-4 py-2 border bg-white ${
-                              contactInfoForm.formState.errors.phone
-                                ? "border-red-500"
-                                : "border-gray-300"
-                            } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
-                              contactInfoForm.formState.errors.phone
-                                ? "focus:ring-red-500"
-                                : "focus:ring-purple-500"
-                            }`}
-                          />
+                          <div className="flex-1">
+                            <input
+                              type="tel"
+                              placeholder="Enter Your Phone Number"
+                              value={contactInfoForm.watch("phone") || ""}
+                              onChange={(e) => {
+                                const selectedCallingCode =
+                                  contactInfoForm.watch("country_code") ||
+                                  "+91";
+                                const isoCountry =
+                                  callingCodeToISO[selectedCallingCode] || "IN";
+                                let digits = e.target.value.replace(/\D/g, "");
+                                const maxDigits = getMaxDigits(isoCountry);
+                                if (digits.length > maxDigits)
+                                  digits = digits.slice(0, maxDigits);
+                                const formatted = formatPhoneForCountry(
+                                  digits,
+                                  isoCountry
+                                );
+                                contactInfoForm.setValue("phone", formatted, {
+                                  shouldValidate: true,
+                                  shouldDirty: true,
+                                });
+                                handleFormChange("contact");
+                              }}
+                              onKeyDown={(e) => {
+                                if (
+                                  !/^\d$/.test(e.key) &&
+                                  e.key !== "Backspace" &&
+                                  e.key !== "Delete" &&
+                                  e.key !== "ArrowLeft" &&
+                                  e.key !== "ArrowRight" &&
+                                  e.key !== "Tab"
+                                ) {
+                                  e.preventDefault();
+                                }
+                              }}
+                              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border bg-white ${
+                                contactInfoForm.formState.errors.phone
+                                  ? "border-red-500"
+                                  : "border-gray-300"
+                              } rounded-xl h-11 sm:h-[46px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${
+                                contactInfoForm.formState.errors.phone
+                                  ? "focus:ring-red-500"
+                                  : "focus:ring-purple-500"
+                              }`}
+                            />
+                          </div>
                         </div>
                         {contactInfoForm.formState.errors.phone && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2709,7 +2720,7 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* Email */}
-                      <div>
+                      <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Email <span className="text-red-500">*</span>
                         </label>
@@ -2719,16 +2730,15 @@ const UserProfilePage = () => {
                           {...contactInfoForm.register("email")}
                           onChange={(e) => {
                             contactInfoForm.setValue("email", e.target.value);
-                            handleFormChange("contact"); // Track changes
+                            handleFormChange("contact");
                           }}
                           readOnly
-                          className={`w-full px-4 py-2 border bg-gray-100 text-gray-600 cursor-not-allowed ${
+                          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border bg-gray-100 text-gray-600 cursor-not-allowed ${
                             contactInfoForm.formState.errors.email
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl h-[41px] focus:outline-none`}
+                          } rounded-xl h-11 sm:h-[46px] focus:outline-none`}
                         />
-
                         {contactInfoForm.formState.errors.email && (
                           <p className="text-sm text-red-500 mt-1">
                             {
@@ -2740,7 +2750,7 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* Address */}
-                      <div>
+                      <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Address
                         </label>
@@ -2749,15 +2759,15 @@ const UserProfilePage = () => {
                           {...contactInfoForm.register("address")}
                           onChange={(e) => {
                             contactInfoForm.setValue("address", e.target.value);
-                            handleFormChange("contact"); // Track changes
+                            handleFormChange("contact");
                           }}
                           placeholder="Enter your address"
-                          className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full h-11 sm:h-[46px] px-3 sm:px-4 py-2 sm:py-3 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
 
                       {/* Country */}
-                      <div className="w-full">
+                      <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Country <span className="text-red-500">*</span>
                         </label>
@@ -2794,13 +2804,26 @@ const UserProfilePage = () => {
                               ? String(selectedOption.value)
                               : "";
                             contactInfoForm.setValue("country", value);
-                            handleFormChange("contact"); // Track changes
+                            handleFormChange("contact");
                           }}
                           onBlur={() => contactInfoForm.trigger("country")}
-                          styles={customSelectStyles}
+                          styles={{
+                            ...customSelectStyles,
+                            control: (base) => ({
+                              ...base,
+                              minHeight: "44px",
+                              fontSize: "14px",
+                            }),
+                            menu: (provided) => ({
+                              ...provided,
+                              fontSize: "14px",
+                            }),
+                          }}
                           placeholder="Select your country"
                           isSearchable
                           classNamePrefix="react-select"
+                          menuPortalTarget={document.body}
+                          menuPosition="fixed"
                         />
                         {contactInfoForm.formState.errors.country && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2813,49 +2836,65 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* State */}
-                      {/* State */}
-<div className="w-full relative">
-  <label className="block text-sm font-medium text-gray-700 mb-2">
-    State
-  </label>
-  <Select
-    isDisabled={!contactInfoForm.watch("country")}
-    options={
-      states.length > 0
-        ? states.map((state: any) => ({
-            value: String(state.id),
-            label: state.name,
-          }))
-        : []
-    }
-    value={
-      contactInfoForm.watch("state") && states.length > 0
-        ? states.find((s: any) => String(s.id) === String(contactInfoForm.watch("state")))
-          ? {
-              value: String(contactInfoForm.watch("state")),
-              label: states.find((s: any) => String(s.id) === String(contactInfoForm.watch("state")))?.name,
-            }
-          : null
-        : null
-    }
-    onChange={(selectedOption) => {
-      // FIX: Use the string value directly, not the object
-      const value = selectedOption?.value ? String(selectedOption.value) : "";
-      contactInfoForm.setValue("state", value);
-      handleFormChange("contact");
-    }}
-    styles={customSelectStyles}
-    placeholder="Select your state"
-    isSearchable
-    classNamePrefix="react-select"
-    menuPortalTarget={document.body}
-    menuPosition="fixed"
-    maxMenuHeight={200}
-  />
-</div>
+                      <div className="col-span-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          State
+                        </label>
+                        <Select
+                          isDisabled={!contactInfoForm.watch("country")}
+                          options={
+                            states.length > 0
+                              ? states.map((state: any) => ({
+                                  value: String(state.id),
+                                  label: state.name,
+                                }))
+                              : []
+                          }
+                          value={
+                            contactInfoForm.watch("state") && states.length > 0
+                              ? states.find(
+                                  (s: any) =>
+                                    String(s.id) ===
+                                    String(contactInfoForm.watch("state"))
+                                )
+                                ? {
+                                    value: String(
+                                      contactInfoForm.watch("state")
+                                    ),
+                                    label: states.find(
+                                      (s: any) =>
+                                        String(s.id) ===
+                                        String(contactInfoForm.watch("state"))
+                                    )?.name,
+                                  }
+                                : null
+                              : null
+                          }
+                          onChange={(selectedOption) => {
+                            const value = selectedOption?.value
+                              ? String(selectedOption.value)
+                              : "";
+                            contactInfoForm.setValue("state", value);
+                            handleFormChange("contact");
+                          }}
+                          styles={{
+                            ...customSelectStyles,
+                            control: (base) => ({
+                              ...base,
+                              minHeight: "44px",
+                              fontSize: "14px",
+                            }),
+                          }}
+                          placeholder="Select your state"
+                          isSearchable
+                          classNamePrefix="react-select"
+                          menuPortalTarget={document.body}
+                          menuPosition="fixed"
+                        />
+                      </div>
 
                       {/* City */}
-                      <div>
+                      <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           City
                         </label>
@@ -2864,15 +2903,15 @@ const UserProfilePage = () => {
                           {...contactInfoForm.register("city")}
                           onChange={(e) => {
                             contactInfoForm.setValue("city", e.target.value);
-                            handleFormChange("contact"); // Track changes
+                            handleFormChange("contact");
                           }}
                           placeholder="Enter city"
-                          className="w-full h-[41px] px-4 py-2 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full h-11 sm:h-[46px] px-3 sm:px-4 py-2 sm:py-3 border bg-white border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
 
                       {/* Postal Code */}
-                      <div>
+                      <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Postal Code
                         </label>
@@ -2884,10 +2923,10 @@ const UserProfilePage = () => {
                               "postalCode",
                               e.target.value
                             );
-                            handleFormChange("contact"); // Track changes
+                            handleFormChange("contact");
                           }}
                           placeholder="Enter postal code"
-                          className={`w-full px-4 py-2 border h-[41px] bg-white ${
+                          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border h-11 sm:h-[46px] bg-white ${
                             contactInfoForm.formState.errors.postalCode
                               ? "border-red-500"
                               : "border-gray-300"
@@ -2909,11 +2948,11 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* Communication Preferences */}
-                      <div className="md:col-span-2">
+                      <div className="col-span-1 md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Preferred Method of Communication
                         </label>
-                        <div className="flex gap-6">
+                        <div className="flex flex-wrap gap-4 sm:gap-6">
                           <label className="inline-flex items-center gap-2">
                             <input
                               type="checkbox"
@@ -2929,9 +2968,9 @@ const UserProfilePage = () => {
                                   "communication",
                                   updatedCommunication
                                 );
-                                handleFormChange("contact"); // Track changes
+                                handleFormChange("contact");
                               }}
-                              className="accent-[#9747FF]"
+                              className="accent-[#9747FF] w-4 h-4 sm:w-5 sm:h-5"
                             />
                             <span className="text-sm text-gray-700">SMS</span>
                           </label>
@@ -2952,9 +2991,9 @@ const UserProfilePage = () => {
                                   "communication",
                                   updatedCommunication
                                 );
-                                handleFormChange("contact"); // Track changes
+                                handleFormChange("contact");
                               }}
-                              className="accent-[#9747FF]"
+                              className="accent-[#9747FF] w-4 h-4 sm:w-5 sm:h-5"
                             />
                             <span className="text-sm text-gray-700">Email</span>
                           </label>
@@ -2975,9 +3014,9 @@ const UserProfilePage = () => {
                                   "communication",
                                   updatedCommunication
                                 );
-                                handleFormChange("contact"); // Track changes
+                                handleFormChange("contact");
                               }}
-                              className="accent-[#9747FF]"
+                              className="accent-[#9747FF] w-4 h-4 sm:w-5 sm:h-5"
                             />
                             <span className="text-sm text-gray-700">
                               WhatsApp
@@ -2986,12 +3025,12 @@ const UserProfilePage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-6">
                       <Button
                         variant="white-outline"
-                        className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+                        className="font-['Plus Jakarta Sans'] text-sm sm:text-[14px] px-4 sm:px-6 py-2.5 sm:py-2 rounded-full border border-gray-300 text-black bg-white hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => contactInfoForm.reset()}
                       >
@@ -2999,7 +3038,7 @@ const UserProfilePage = () => {
                       </Button>
                       <Button
                         variant="gradient-primary"
-                        className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                        className="font-['Plus Jakarta Sans'] text-sm sm:text-[14px] w-full sm:w-auto rounded-full py-2.5 sm:py-2 px-4 sm:px-6 flex justify-center transition-colors duration-500 ease-in-out"
                         type="submit"
                         disabled={isSubmitting.contact}
                       >
@@ -3240,7 +3279,6 @@ const UserProfilePage = () => {
                             educationErrors.start_date ||
                             educationErrors.end_date);
 
-
                         return (
                           <div
                             key={index}
@@ -3352,103 +3390,131 @@ const UserProfilePage = () => {
 
                             {/* Start Date */}
                             <div className="relative">
-  <label className="block text-sm font-medium text-gray-800 mb-2">Start Date</label>
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                Start Date
+                              </label>
 
-  {!educationForm.watch(`educations.${index}.start_date`) && (
-    <span className="absolute left-4 top-[38px] text-gray-400 pointer-events-none text-sm">
-      Select month & year
-    </span>
-  )}
+                              {!educationForm.watch(
+                                `educations.${index}.start_date`
+                              ) && (
+                                <span className="absolute left-4 top-[38px] text-gray-400 pointer-events-none text-sm">
+                                  Select month & year
+                                </span>
+                              )}
 
-  <Controller
-    control={educationForm.control}
-    name={`educations.${index}.start_date`}
-    rules={{
-      required: "Start date is required",
-     validate: (startVal) => {
-  const endVal = educationForm.getValues(`educations.${index}.end_date`);
+                              <Controller
+                                control={educationForm.control}
+                                name={`educations.${index}.start_date`}
+                                rules={{
+                                  required: "Start date is required",
+                                  validate: (startVal) => {
+                                    const endVal = educationForm.getValues(
+                                      `educations.${index}.end_date`
+                                    );
 
-  if (!startVal || !endVal) return true;
+                                    if (!startVal || !endVal) return true;
 
-  const start = parseMonthYear(startVal);
-  const end   = parseMonthYear(endVal);
+                                    const start = parseMonthYear(startVal);
+                                    const end = parseMonthYear(endVal);
 
-  if (!start || !end) return "";
+                                    if (!start || !end) return "";
 
-  if (start >= end)
-    return "Start date must be earlier than end date";
+                                    if (start >= end)
+                                      return "Start date must be earlier than end date";
 
-  return true;
-}
-    }}
-    render={({ field }) => (
-      <Monthpicker
-        value={field.value || ""}
-        onChange={(val) => {
-          field.onChange(val);
-          // force validation for both so cross-check runs
-          educationForm.trigger(`educations.${index}.start_date`);
-          educationForm.trigger(`educations.${index}.end_date`);
-          handleFormChange("education");
-        }}
-       // placeholder="Select Month & Year"
-      />
-    )}
-  />
+                                    return true;
+                                  },
+                                }}
+                                render={({ field }) => (
+                                  <Monthpicker
+                                    value={field.value || ""}
+                                    onChange={(val) => {
+                                      field.onChange(val);
+                                      // force validation for both so cross-check runs
+                                      educationForm.trigger(
+                                        `educations.${index}.start_date`
+                                      );
+                                      educationForm.trigger(
+                                        `educations.${index}.end_date`
+                                      );
+                                      handleFormChange("education");
+                                    }}
+                                    // placeholder="Select Month & Year"
+                                  />
+                                )}
+                              />
 
-  {educationErrors?.start_date && <p className="text-sm text-red-500 mt-1">{educationErrors.start_date.message}</p>}
-</div>
+                              {educationErrors?.start_date && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {educationErrors.start_date.message}
+                                </p>
+                              )}
+                            </div>
 
- {/* End Date */}
-<div className="relative">
-  <label className="block text-sm font-medium text-gray-800 mb-2">End Date</label>
+                            {/* End Date */}
+                            <div className="relative">
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                End Date
+                              </label>
 
-  {!educationForm.watch(`educations.${index}.end_date`) && (
-    <span className="absolute left-4 top-[38px] text-gray-400 pointer-events-none text-sm">
-      Select month & year
-    </span>
-  )}
+                              {!educationForm.watch(
+                                `educations.${index}.end_date`
+                              ) && (
+                                <span className="absolute left-4 top-[38px] text-gray-400 pointer-events-none text-sm">
+                                  Select month & year
+                                </span>
+                              )}
 
-  <Controller
-    control={educationForm.control}
-    name={`educations.${index}.end_date`}
-    rules={{
-      required: "End date is required",
-     validate: (endVal) => {
-  const startVal = educationForm.getValues(`educations.${index}.start_date`);
+                              <Controller
+                                control={educationForm.control}
+                                name={`educations.${index}.end_date`}
+                                rules={{
+                                  required: "End date is required",
+                                  validate: (endVal) => {
+                                    const startVal = educationForm.getValues(
+                                      `educations.${index}.start_date`
+                                    );
 
-  if (!startVal || !endVal) return true;
+                                    if (!startVal || !endVal) return true;
 
-  const start = parseMonthYear(startVal);
-  const end   = parseMonthYear(endVal);
+                                    const start = parseMonthYear(startVal);
+                                    const end = parseMonthYear(endVal);
 
-  if (!start || !end) return "";
+                                    if (!start || !end) return "";
 
-  const minEnd = new Date(start);
-  minEnd.setMonth(minEnd.getMonth() + 1);
+                                    const minEnd = new Date(start);
+                                    minEnd.setMonth(minEnd.getMonth() + 1);
 
-  if (end < minEnd)
-    return "End date must be at least 1 month after start date";
+                                    if (end < minEnd)
+                                      return "End date must be at least 1 month after start date";
 
-  return true;
-}
-    }}
-    render={({ field }) => (
-      <Monthpicker
-        value={field.value || ""}
-        onChange={(val) => {
-          field.onChange(val);
-          educationForm.trigger(`educations.${index}.start_date`);
-          educationForm.trigger(`educations.${index}.end_date`);
-          handleFormChange("education");
-        }}
-        //placeholder="Select Month & Year"
-      />
-    )}
-  />
+                                    return true;
+                                  },
+                                }}
+                                render={({ field }) => (
+                                  <Monthpicker
+                                    value={field.value || ""}
+                                    onChange={(val) => {
+                                      field.onChange(val);
+                                      educationForm.trigger(
+                                        `educations.${index}.start_date`
+                                      );
+                                      educationForm.trigger(
+                                        `educations.${index}.end_date`
+                                      );
+                                      handleFormChange("education");
+                                    }}
+                                    //placeholder="Select Month & Year"
+                                  />
+                                )}
+                              />
 
-  {educationErrors?.end_date && <p className="text-sm text-red-500 mt-1">{educationErrors.end_date.message}</p>}
-</div>
+                              {educationErrors?.end_date && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {educationErrors.end_date.message}
+                                </p>
+                              )}
+                            </div>
                             {/* Individual education entry error */}
                             {hasEducationError && (
                               <div className="md:col-span-2">
@@ -3756,108 +3822,119 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </div>
 
                             {/* Start Date */}
-                           <div className="lg:w-[48%] md:w-[48%] w-full">
-  <label className="block text-sm font-medium text-gray-800 mb-2">
-    Start Date
-  </label>
+                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                              <label className="block text-sm font-medium text-gray-800 mb-2">
+                                Start Date
+                              </label>
 
-  <Controller
-    control={workExperienceForm.control}
-    name={`workExperiences.${index}.start_date`}
-    rules={{
-      validate: (startVal) => {
-        const endVal = workExperienceForm.getValues(
-          `workExperiences.${index}.end_date`
-        );
+                              <Controller
+                                control={workExperienceForm.control}
+                                name={`workExperiences.${index}.start_date`}
+                                rules={{
+                                  validate: (startVal) => {
+                                    const endVal = workExperienceForm.getValues(
+                                      `workExperiences.${index}.end_date`
+                                    );
 
-        if (!startVal || !endVal) return true;
+                                    if (!startVal || !endVal) return true;
 
-        const start = new Date(startVal);
-        const end = new Date(endVal);
+                                    const start = new Date(startVal);
+                                    const end = new Date(endVal);
 
-        if (start > end) {
-          return "Start date cannot be after end date";
-        }
+                                    if (start > end) {
+                                      return "Start date cannot be after end date";
+                                    }
 
-        return true;
-      },
-    }}
-    render={({ field }) => (
-      <Monthpicker
-        value={field.value || ""}
-        onChange={(val) => {
-          field.onChange(val);
-          workExperienceForm.trigger(`workExperiences.${index}.start_date`);
-          workExperienceForm.trigger(`workExperiences.${index}.end_date`);
-          handleFormChange("work");
-        }}
-        placeholder="Select Month & Year"
-      />
-    )}
-  />
+                                    return true;
+                                  },
+                                }}
+                                render={({ field }) => (
+                                  <Monthpicker
+                                    value={field.value || ""}
+                                    onChange={(val) => {
+                                      field.onChange(val);
+                                      workExperienceForm.trigger(
+                                        `workExperiences.${index}.start_date`
+                                      );
+                                      workExperienceForm.trigger(
+                                        `workExperiences.${index}.end_date`
+                                      );
+                                      handleFormChange("work");
+                                    }}
+                                    placeholder="Select Month & Year"
+                                  />
+                                )}
+                              />
 
-  {experienceErrors?.start_date && (
-    <p className="text-sm text-red-500 mt-1">
-      {experienceErrors.start_date.message}
-    </p>
-  )}
-</div>
+                              {experienceErrors?.start_date && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {experienceErrors.start_date.message}
+                                </p>
+                              )}
+                            </div>
 
                             {/* End Date (hide when currently working) */}
-                            {!workExperienceForm.watch(`workExperiences.${index}.currently_working`) && (
-  <div className="lg:w-[48%] md:w-[48%] w-full">
-    <label className="block text-sm font-medium text-gray-800 mb-2">
-      End Date
-    </label>
+                            {!workExperienceForm.watch(
+                              `workExperiences.${index}.currently_working`
+                            ) && (
+                              <div className="lg:w-[48%] md:w-[48%] w-full">
+                                <label className="block text-sm font-medium text-gray-800 mb-2">
+                                  End Date
+                                </label>
 
-    <Controller
-      control={workExperienceForm.control}
-      name={`workExperiences.${index}.end_date`}
-      rules={{
-        validate: (endVal) => {
-          const startVal = workExperienceForm.getValues(
-            `workExperiences.${index}.start_date`
-          );
-          if (!startVal || !endVal) return true;
+                                <Controller
+                                  control={workExperienceForm.control}
+                                  name={`workExperiences.${index}.end_date`}
+                                  rules={{
+                                    validate: (endVal) => {
+                                      const startVal =
+                                        workExperienceForm.getValues(
+                                          `workExperiences.${index}.start_date`
+                                        );
+                                      if (!startVal || !endVal) return true;
 
-          const start = new Date(startVal);
-          const end = new Date(endVal);
+                                      const start = new Date(startVal);
+                                      const end = new Date(endVal);
 
-          if (end < start) {
-            return "End date cannot be before start date";
-          }
+                                      if (end < start) {
+                                        return "End date cannot be before start date";
+                                      }
 
-          // Optional: enforce at least 1 month difference
-          const minEnd = new Date(start);
-          minEnd.setMonth(minEnd.getMonth() + 1);
-          if (end < minEnd) {
-            return "End date must be at least 1 month after start date";
-          }
+                                      // Optional: enforce at least 1 month difference
+                                      const minEnd = new Date(start);
+                                      minEnd.setMonth(minEnd.getMonth() + 1);
+                                      if (end < minEnd) {
+                                        return "End date must be at least 1 month after start date";
+                                      }
 
-          return true;
-        }
-      }}
-      render={({ field }) => (
-        <Monthpicker
-          value={field.value || ""}
-          onChange={(val) => {
-            field.onChange(val);
-            workExperienceForm.trigger(`workExperiences.${index}.end_date`);
-            workExperienceForm.trigger(`workExperiences.${index}.start_date`);
-            handleFormChange("work");
-          }}
-          placeholder="Select Month & Year"
-        />
-      )}
-    />
+                                      return true;
+                                    },
+                                  }}
+                                  render={({ field }) => (
+                                    <Monthpicker
+                                      value={field.value || ""}
+                                      onChange={(val) => {
+                                        field.onChange(val);
+                                        workExperienceForm.trigger(
+                                          `workExperiences.${index}.end_date`
+                                        );
+                                        workExperienceForm.trigger(
+                                          `workExperiences.${index}.start_date`
+                                        );
+                                        handleFormChange("work");
+                                      }}
+                                      placeholder="Select Month & Year"
+                                    />
+                                  )}
+                                />
 
-    {experienceErrors?.end_date && (
-      <p className="text-sm text-red-500 mt-1">
-        {experienceErrors.end_date.message}
-      </p>
-    )}
-  </div>
-)}
+                                {experienceErrors?.end_date && (
+                                  <p className="text-sm text-red-500 mt-1">
+                                    {experienceErrors.end_date.message}
+                                  </p>
+                                )}
+                              </div>
+                            )}
                             {/* Currently Working */}
                             <div className="w-full flex items-center gap-1">
                               <input

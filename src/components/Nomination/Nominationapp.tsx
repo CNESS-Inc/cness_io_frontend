@@ -341,7 +341,7 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
                 name="certificationLevel"
                 value={formData.certificationLevel}
                 onChange={handleChange}
-                className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-2.5 py-3 border border-[#CBD0DC] rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 required
               >
                 <option value="">Choose your certification level</option>
@@ -367,7 +367,7 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
                 value={formData.nominatorName}
                 onChange={handleChange}
                 placeholder="For peer nominations"
-                className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                className="w-full px-2.5 py-3 border border-[#CBD0DC] rounded-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
               />
             </div>
           </div>
@@ -388,7 +388,7 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
               value={formData.reason}
               onChange={handleChange}
               placeholder="Reflective answer (min. 100 words)"
-              className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
+              className="w-full px-2.5 py-3 border border-[#CBD0DC] rounded-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
               required
             />
           </div>
@@ -408,7 +408,7 @@ const NominationFormModal: React.FC<NominationFormModalProps> = ({
               value={formData.project}
               onChange={handleChange}
               placeholder="Showcase measurable impact"
-              className="w-full px-[10px] py-3 border border-[#CBD0DC] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
+              className="w-full px-2.5 py-3 border border-[#CBD0DC] rounded-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
               required
             />
           </div>

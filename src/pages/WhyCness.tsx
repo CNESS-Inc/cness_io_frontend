@@ -396,7 +396,7 @@ text-[14px] sm:text-[16px] font-['Plus Jakarta Sans'] font-medium text-[16px] le
                   <p
                     className="max-w-[620px] text-[14px] sm:text-[15px] md:text-[16px]
   leading-[24.4px] text-[#242424] capitalize font-['Open_Sans'] font-light
-  text-center lg:text-left mx-auto lg:mx-0"
+  text-justify mx-auto lg:mx-0"
                   >
                     CNESS was born from the vision of our founder, Nandiji,
                     whose life and teachings embody conscious living. He

@@ -163,6 +163,7 @@ export const EndPoint = {
   get_front_all_post: "/user/posts/get/front/all",
   get_all_post: "/user/posts/get/all",
   get_all_feed_post: "/user/posts/feed",
+  get_topic_tag_post: "/user/posts/feed/search",
   create_post: "/user/posts",
   delete_post: "/user/posts",
   postComments: "/user/post/comments",
@@ -197,6 +198,7 @@ export const EndPoint = {
   story_user: "/story/user",
   following_followers: "/user/following-followers",
   connection: "/friend",
+  friend_search: "/friend/by-search",
   user_connection: "/friend/get-friend-status",
   connection_request: "/friend/request",
   suggested_connection: "/friend/suggestions",
@@ -1372,6 +1374,19 @@ export const FeedPostsDetails = (page: any) => {
     params
   );
 };
+export const TagTopicPostsDetails = (page: any,tag?:any,topic?:any) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  params["tag"] = tag;
+  params["topic"] = topic;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.get_topic_tag_post,
+    params
+  );
+};
 
 export const AddPost = (formData: any): ApiResponse => {
   // console.log('POST FORMDATA----->', Object.fromEntries(formData.entries()));
@@ -1612,6 +1627,19 @@ export const GetConnectionUser = (
   if (limit) params["limit"] = limit;
 
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection, params);
+};
+export const GetSearchFriend = (
+  search?: string,
+  page?: number,
+  limit?: number
+) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["search"] = search;
+  if (page) params["page"] = page;
+  if (limit) params["limit"] = limit;
+
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.friend_search, params);
 };
 export const SendConnectionRequest = (formattedData: any) => {
   return executeAPI(
