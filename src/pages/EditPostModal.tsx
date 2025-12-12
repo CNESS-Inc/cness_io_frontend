@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CirclePlus, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { EditPost, GetSinglePost, getTopics, GetConnectionUser, GetCountryDetails } from "../Common/ServerAPI";
+import { EditPost, GetSinglePost, getTopics, GetConnectionUser, SearchLocation } from "../Common/ServerAPI";
 import { Link } from "react-router-dom";
 
 interface EditPostModalProps {
@@ -78,8 +78,13 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   // New fields: feeling, location, tags
   const [feeling, setFeeling] = useState<string>("");
   const [feelingEmoji, setFeelingEmoji] = useState<string>("");
-  const [location, setLocation] = useState<string>("");
-  const [locationId, setLocationId] = useState<string>("");
+  const [selectedLocation, setSelectedLocation] = useState<{
+    placeId: string;
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [tagIds, setTagIds] = useState<string[]>([]);
 
@@ -88,13 +93,16 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   const [isLocationPopupOpen, setIsLocationPopupOpen] = useState(false);
   const [isTagsPopupOpen, setIsTagsPopupOpen] = useState(false);
   const [feelingSearchQuery, setFeelingSearchQuery] = useState<string>("");
-  const [locationSearchQuery, setLocationSearchQuery] = useState<string>("");
 
-  // Friends and countries list state
+  // Location search state
+  const [locationSearchQuery, setLocationSearchQuery] = useState<string>("");
+  const [locationResults, setLocationResults] = useState<any[]>([]);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(false);
+
+  // Friends list state
   const [friends, setFriends] = useState<any[]>([]);
   const [selectedFriends, setSelectedFriends] = useState<any[]>([]);
   const [friendSearchQuery, setFriendSearchQuery] = useState<string>("");
-  const [countries, setCountries] = useState<any[]>([]);
 
   const topicDropdownRef = useRef<HTMLDivElement>(null);
   const topicButtonRef = useRef<HTMLButtonElement>(null);
@@ -118,20 +126,6 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
     { emoji: "😤", label: "Frustrated" },
   ];
 
-  // Helper function to fetch and set location name from location_id
-  const fetchAndSetLocation = async (locationId: string) => {
-    try {
-      const response = await GetCountryDetails();
-      if (response?.data?.data) {
-        const country = response.data.data.find((c: any) => c.id === locationId);
-        if (country) {
-          setLocation(country.name);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching location:", error);
-    }
-  };
 
   // Fetch post details when modal opens
   useEffect(() => {
@@ -183,10 +177,8 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           }
 
           // Load location
-          if (p.location_id) {
-            setLocationId(p.location_id.toString());
-            // Fetch country name from GetCountryDetails API
-            fetchAndSetLocation(p.location_id);
+          if (p.location) {
+            setSelectedLocation(p.location);
           }
 
           // Load tagged users
@@ -255,6 +247,72 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
     fetchTopics();
   }, []);
 
+  // Load default location suggestions
+  const loadDefaultLocationSuggestions = async () => {
+    const defaultCities = ["New York", "London", "Tokyo", "Paris", "Sydney"];
+    setIsLoadingLocations(true);
+    try {
+      const allSuggestions: any[] = [];
+
+      for (const city of defaultCities) {
+        try {
+          const response = await SearchLocation(city);
+          if (response?.data?.data && response.data.data.length > 0) {
+            allSuggestions.push(response.data.data[0]);
+          }
+        } catch (error) {
+          console.error(`Error fetching ${city}:`, error);
+        }
+      }
+
+      setLocationResults(allSuggestions);
+    } catch (error) {
+      console.error("Error loading default suggestions:", error);
+      setLocationResults([]);
+    } finally {
+      setIsLoadingLocations(false);
+    }
+  };
+
+  // Search locations based on query
+  const searchLocations = async (query: string) => {
+    setIsLoadingLocations(true);
+    try {
+      const response = await SearchLocation(query);
+      if (response?.data?.data) {
+        setLocationResults(response.data.data);
+      } else {
+        setLocationResults([]);
+      }
+    } catch (error) {
+      console.error("Error searching locations:", error);
+      setLocationResults([]);
+    } finally {
+      setIsLoadingLocations(false);
+    }
+  };
+
+  // Debounced search effect for location
+  useEffect(() => {
+    if (!isLocationPopupOpen) return;
+
+    if (locationSearchQuery.trim().length === 0) {
+      loadDefaultLocationSuggestions();
+      return;
+    }
+
+    if (locationSearchQuery.trim().length < 3) {
+      setLocationResults([]);
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      searchLocations(locationSearchQuery);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [locationSearchQuery, isLocationPopupOpen]);
+
   // Fetch friends for tagging
   useEffect(() => {
     const fetchFriends = async () => {
@@ -276,23 +334,6 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
     }
   }, [isOpen, isTagsPopupOpen, friendSearchQuery]);
 
-  // Fetch countries for location
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await GetCountryDetails();
-        if (response?.data?.data) {
-          setCountries(response.data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching countries:", error);
-      }
-    };
-
-    if (isOpen && isLocationPopupOpen) {
-      fetchCountries();
-    }
-  }, [isOpen, isLocationPopupOpen]);
 
   // Handle body overflow
   useEffect(() => {
@@ -394,11 +435,6 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
     feeling.label.toLowerCase().includes(feelingSearchQuery.toLowerCase())
   );
 
-  // Filter countries based on search query
-  const filteredCountries = countries.filter((country) =>
-    country.name.toLowerCase().includes(locationSearchQuery.toLowerCase())
-  );
-
   // Handle selecting a feeling
   const handleSelectFeeling = (feelingLabel: string, emoji: string) => {
     setFeeling(feelingLabel);
@@ -413,18 +449,9 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
     setFeelingSearchQuery("");
   };
 
-  // Handle selecting a location
-  const handleSelectLocation = (country: any) => {
-    setLocation(country.name);
-    setLocationId(country.id.toString());
-    setIsLocationPopupOpen(false);
-    setLocationSearchQuery("");
-  };
-
   // Handle closing location popup
   const handleCloseLocationPopup = () => {
     setIsLocationPopupOpen(false);
-    setLocationSearchQuery("");
   };
 
   // Handle toggling friend selection
@@ -519,8 +546,8 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
         formData.append("feeling", feeling);
       }
 
-      if (locationId) {
-        formData.append("location_id", locationId);
+      if (selectedLocation) {
+        formData.append("location", JSON.stringify(selectedLocation));
       }
 
       if (tagIds.length > 0) {
@@ -727,7 +754,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                             </span>
                           </>
                         )}
-                        {location && (
+                        {selectedLocation && (
                           <>
                             <span className="text-gray-600 text-xs md:text-sm">at</span>
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#FF6F61]/30 rounded-full font-medium text-gray-800 text-xs">
@@ -735,12 +762,11 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                                 onClick={() => setIsLocationPopupOpen(true)}
                                 className="hover:underline"
                               >
-                                {location}
+                                {selectedLocation.name}
                               </button>
                               <button
                                 onClick={() => {
-                                  setLocation("");
-                                  setLocationId("");
+                                  setSelectedLocation(null);
                                 }}
                                 className="hover:text-red-500"
                                 title="Remove location"
@@ -1180,7 +1206,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
               <div className="w-10"></div>
             </div>
 
-            {/* Search Bar */}
+            {/* Location Search */}
             <div className="px-4 pt-4 pb-4">
               <div className="relative">
                 <svg
@@ -1193,7 +1219,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 </svg>
                 <input
                   type="text"
-                  placeholder="Search"
+                  placeholder="Search for a location..."
                   value={locationSearchQuery}
                   onChange={(e) => setLocationSearchQuery(e.target.value)}
                   className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
@@ -1202,72 +1228,63 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
               </div>
             </div>
 
-            {/* Location List */}
-            <div className="px-4 pb-6 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-              {filteredCountries.length > 0 ? (
+            {/* Search Results */}
+            <div className="px-4 pb-6 max-h-[400px] overflow-y-auto">
+              {isLoadingLocations ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="w-8 h-8 border-2 border-[#7077FE] border-t-transparent rounded-full animate-spin mb-3"></div>
+                  <p className="text-sm text-gray-500">
+                    {locationSearchQuery.length === 0 ? "Loading suggestions..." : "Searching..."}
+                  </p>
+                </div>
+              ) : locationResults.length > 0 ? (
                 <div className="space-y-2">
-                  {filteredCountries.map((country) => {
-                    const isSelected = locationId === country.id.toString();
-                    return (
-                      <button
-                        key={country.id}
-                        onClick={() => handleSelectLocation(country)}
-                        className={`w-full flex items-center gap-4 px-2 py-2 rounded-2xl transition-all duration-200 ${
-                          isSelected
-                            ? "bg-[#7077FE]/8 shadow-sm ring-2 ring-[#7077FE]/30"
-                            : "bg-white/60 hover:bg-white/90 hover:shadow-sm"
-                        }`}
-                      >
-                      <div className="shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                        <svg
-                          className="w-6 h-6 text-gray-600"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <div className="flex-1 text-left min-w-0">
-                        <p className="font-bold text-gray-900 text-base truncate">{country.name}</p>
-                        <p className="text-sm text-gray-500 font-medium">{country.name}</p>
+                  {locationResults.map((location, index) => (
+                    <button
+                      key={location.placeId || index}
+                      onClick={() => {
+                        setSelectedLocation(location);
+                        handleCloseLocationPopup();
+                        setLocationSearchQuery("");
+                      }}
+                      className="w-full text-left px-4 py-3 bg-white hover:bg-[#897AFF1A] rounded-xl border border-gray-100 hover:border-[#7077FE]/30 transition-all group"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#897AFF1A] flex items-center justify-center flex-shrink-0 group-hover:bg-[#7077FE]/20 transition-colors">
+                          <svg className="w-5 h-5 text-[#7077FE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 truncate">
+                            {location.name}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                            {location.address}
+                          </p>
+                        </div>
                       </div>
                     </button>
-                    );
-                  })}
+                  ))}
                 </div>
               ) : (
-                <div className="text-center py-16 px-6">
-                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <svg className="w-10 h-10 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                      <path
-                        fillRule="evenodd"
-                        d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
-                        clipRule="evenodd"
-                      />
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
-                  <p className="text-gray-900 font-semibold text-base mb-1">
-                    {locationSearchQuery ? "No matches found" : "No locations available"}
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    {locationSearchQuery ? "Try searching with a different name" : "No locations to display"}
+                  <p className="text-sm text-gray-500">
+                    {locationSearchQuery.length === 0
+                      ? "No suggestions available"
+                      : locationSearchQuery.length < 3
+                      ? "Type at least 3 characters to search"
+                      : "No locations found. Try a different search."}
                   </p>
                 </div>
               )}
-            </div>
-
-            {/* Done Button */}
-            <div className="px-6 pb-6">
-              <button
-                onClick={handleCloseLocationPopup}
-                className="w-full py-3 bg-[#7077FE] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#7077FE]/25 hover:shadow-xl hover:shadow-[#7077FE]/30 hover:bg-[#5b63e6] transition-all"
-              >
-                Done
-              </button>
             </div>
           </div>
         </div>
