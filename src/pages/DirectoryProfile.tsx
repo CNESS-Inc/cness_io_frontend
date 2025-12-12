@@ -532,8 +532,8 @@ const DirectoryProfile = () => {
     } else if (businessHours.business_status === 2) {
       const startDate = businessHours.temporary_close_start_date
         ? new Date(
-            businessHours.temporary_close_start_date
-          ).toLocaleDateString()
+          businessHours.temporary_close_start_date
+        ).toLocaleDateString()
         : "";
       const endDate = businessHours.temporary_close_end_date
         ? new Date(businessHours.temporary_close_end_date).toLocaleDateString()
@@ -716,9 +716,9 @@ const DirectoryProfile = () => {
           prevReviews.map((review) =>
             review.id === reviewId
               ? {
-                  ...review,
-                  reply_count: (review.reply_count || 0) + 1,
-                }
+                ...review,
+                reply_count: (review.reply_count || 0) + 1,
+              }
               : review
           )
         );
@@ -769,12 +769,12 @@ const DirectoryProfile = () => {
         prevReviews.map((review) =>
           review.id === reviewId
             ? {
-                ...review,
-                is_liked: !review.is_liked,
-                likes_count: review.is_liked
-                  ? Math.max(0, (review.likes_count || 0) - 1)
-                  : (review.likes_count || 0) + 1,
-              }
+              ...review,
+              is_liked: !review.is_liked,
+              likes_count: review.is_liked
+                ? Math.max(0, (review.likes_count || 0) - 1)
+                : (review.likes_count || 0) + 1,
+            }
             : review
         )
       );
@@ -812,12 +812,12 @@ const DirectoryProfile = () => {
         const updatedReplies = currentReplies.map((reply: any) =>
           reply.id === replyId
             ? {
-                ...reply,
-                is_liked: !reply.is_liked,
-                likes_count: reply.is_liked
-                  ? Math.max(0, (reply.likes_count || 0) - 1)
-                  : (reply.likes_count || 0) + 1,
-              }
+              ...reply,
+              is_liked: !reply.is_liked,
+              likes_count: reply.is_liked
+                ? Math.max(0, (reply.likes_count || 0) - 1)
+                : (reply.likes_count || 0) + 1,
+            }
             : reply
         );
         return {
@@ -940,9 +940,9 @@ const DirectoryProfile = () => {
         prevReviews.map((review) =>
           review.id === reviewId
             ? {
-                ...review,
-                reply_count: Math.max(0, (review.reply_count || 0) - 1),
-              }
+              ...review,
+              reply_count: Math.max(0, (review.reply_count || 0) - 1),
+            }
             : review
         )
       );
@@ -1094,7 +1094,7 @@ const DirectoryProfile = () => {
 
   return (
     <>
-      <main className="flex-1 p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6">
+      <main className="flex-1 md:p-4 md:p-6 space-y-4 md:space-y-6">
         {/* Profile Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* Business Profile Section */}
@@ -1219,9 +1219,8 @@ const DirectoryProfile = () => {
 
               <div className="flex-1 text-center sm:text-left">
                 <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
-                  {`${userProfile.first_name || ""} ${
-                    userProfile.last_name || ""
-                  }`.trim() || "User Name"}
+                  {`${userProfile.first_name || ""} ${userProfile.last_name || ""
+                    }`.trim() || "User Name"}
                 </h3>
 
                 <div className="flex flex-col sm:flex-row items-center sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-[#64748B] font-['open_sans'] text-sm">
@@ -1277,7 +1276,7 @@ const DirectoryProfile = () => {
                 </h4>
                 <div className="flex flex-wrap gap-1 justify-center sm:justify-start">
                   {userProfile.professions &&
-                  userProfile.professions.length > 0 ? (
+                    userProfile.professions.length > 0 ? (
                     userProfile.professions
                       .slice(0, 2)
                       .map((profession: any) => (
@@ -1300,7 +1299,7 @@ const DirectoryProfile = () => {
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
               <div className="flex items-center -space-x-2">
                 {profileData.friend_profile_pics &&
-                profileData.friend_profile_pics.length > 0 ? (
+                  profileData.friend_profile_pics.length > 0 ? (
                   <>
                     {profileData.friend_profile_pics
                       .slice(0, 3)
@@ -1535,7 +1534,7 @@ const DirectoryProfile = () => {
         </section>
 
         {/* Best Practice and Products Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 xl:gap-6">
           {/* Best Practice Section */}
           {bestPractices.length > 0 && (
             <section className="bg-white rounded-xl p-4 md:p-6 space-y-4">
@@ -1549,7 +1548,7 @@ const DirectoryProfile = () => {
                       state: { activeTab: "best" },
                     })
                   }
-                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer hover:underline"
+                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer hover:underline shrink-0"
                 >
                   View all
                 </button>
@@ -1584,38 +1583,36 @@ const DirectoryProfile = () => {
                       <img
                         src={item.file}
                         alt="Practice"
-                        className="w-full sm:w-[150px] md:w-[216px] h-[150px] rounded-lg object-cover shrink-0"
+                        className="w-full sm:w-[140px] md:w-[180px] lg:w-[216px] h-[180px] sm:h-[140px] md:h-[160px] lg:h-[150px] rounded-lg object-cover shrink-0"
                       />
-                      <div className="flex-1 space-y-3">
+                      <div className="flex-1 space-y-3 min-w-0">
                         <div className="space-y-1">
-                          <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base">
+                          <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base break-words">
                             {item.title}
                           </h4>
-                          <p className="font-['open_sans'] font-normal text-[13px] sm:text-[14px] text-[#1F2937] leading-relaxed">
+                          <p className="font-['open_sans'] font-normal text-[13px] sm:text-[14px] text-[#1F2937] leading-relaxed break-words">
                             {displayText}
                             {shouldTruncate && (
                               <button
                                 onClick={toggleExpand}
-                                className="text-[#F07EFF] font-['open_sans'] font-semibold hover:underline ml-1"
+                                className="text-[#F07EFF] font-['open_sans'] font-semibold hover:underline ml-1 whitespace-nowrap"
                               >
                                 {isExpanded ? "Read Less" : "Read More"}
                               </button>
                             )}
                           </p>
                         </div>
-                        {/* Updated Follow Button */}
                         <button
                           onClick={() => toggleFollow(item.id)}
-                          className={`px-4 py-2 sm:px-6 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] text-center capitalize w-full sm:w-auto ${
-                            item.is_following
-                              ? "bg-[#F396FF] text-white"
-                              : "bg-[#7077FE] text-white hover:bg-[#6A6DEB]"
-                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                          className={`px-4 py-2 sm:px-5 md:px-6 sm:py-2.5 md:py-3 rounded-full font-Rubik font-normal text-[12px] sm:text-[13px] md:text-[14px] leading-[100%] text-center capitalize w-full sm:w-auto ${item.is_following
+                            ? "bg-[#F396FF] text-white"
+                            : "bg-[#7077FE] text-white hover:bg-[#6A6DEB]"
+                            } disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                           disabled={followLoading[item.id]}
                         >
                           {followLoading[item.id] ? (
-                            <div className="flex items-center justify-center">
-                              <div className="w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
+                            <div className="flex items-center justify-center gap-1">
+                              <div className="w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
                               <span>Loading...</span>
                             </div>
                           ) : item.is_following ? (
@@ -1640,7 +1637,7 @@ const DirectoryProfile = () => {
                   Products
                 </h3>
                 <span
-                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer"
+                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer hover:underline shrink-0"
                   onClick={() =>
                     navigate(`/dashboard/shop-detail/${profileData.shop_id}`)
                   }
@@ -1652,16 +1649,16 @@ const DirectoryProfile = () => {
                 {products.slice(0, 3).map((product: any, index: number) => (
                   <div
                     key={index}
-                    className="bg-linear-to-b from-[#F1F3FF] to-white border border-[#ECEEF2] rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4"
+                    className="bg-linear-to-b from-[#F1F3FF] to-white border border-[#ECEEF2] rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 md:space-x-4"
                   >
-                    <div className="relative w-full sm:w-[150px] md:w-[196px] shrink-0">
+                    <div className="relative w-full sm:w-[130px] md:w-[150px] lg:w-[196px] shrink-0">
                       <img
                         src={
                           product.thumbnail_url ||
                           "https://static.codia.ai/image/2025-12-04/LfjsJkrBT4.png"
                         }
                         alt={product.title}
-                        className="w-full h-[150px] sm:h-[156px] rounded-xl sm:rounded-3xl object-cover"
+                        className="w-full h-[180px] sm:h-[140px] md:h-[156px] rounded-xl sm:rounded-3xl object-cover"
                       />
                       <button className="absolute top-2 right-2 sm:top-3 sm:right-3 w-8 h-8 sm:w-10 sm:h-10 bg-[#1F2937] bg-opacity-90 rounded-full flex items-center justify-center shadow-md">
                         <svg
@@ -1673,15 +1670,14 @@ const DirectoryProfile = () => {
                         </svg>
                       </button>
                     </div>
-                    <div className="flex-1 space-y-2">
+                    <div className="flex-1 space-y-2 min-w-0">
                       <div className="space-y-1">
-                        <div className="inline-flex items-center space-x-2 bg-opacity-10 rounded-full px-2 py-1">
+                        <div className="inline-flex items-center space-x-1.5 sm:space-x-2 bg-opacity-10 rounded-full px-2 py-1">
                           <span
-                            className={`text-xs font-[Poppins] ${
-                              product.category === "Music"
-                                ? "text-[#F07EFF]"
-                                : "text-[#7077FE]"
-                            }`}
+                            className={`text-xs font-[Poppins] ${product.category === "Music"
+                              ? "text-[#F07EFF]"
+                              : "text-[#7077FE]"
+                              }`}
                           >
                             {product.category}
                           </span>
@@ -1697,7 +1693,7 @@ const DirectoryProfile = () => {
                             />
                           )}
                         </div>
-                        <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base">
+                        <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base break-words line-clamp-2">
                           {product.title}
                         </h4>
                         <div className="flex items-center space-x-2">
@@ -1740,32 +1736,31 @@ const DirectoryProfile = () => {
                               className="w-5 h-5 rounded-lg object-cover"
                             />
                             <span className="font-['open_sans'] font-semibold text-xs text-[#1F2937]">
-                              {`${product.profile.first_name || ""} ${
-                                product.profile.last_name || ""
-                              }`.trim()}
+                              {`${product.profile.first_name || ""} ${product.profile.last_name || ""
+                                }`.trim()}
                             </span>
                           </div>
                         )}
                       </div>
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
-                        <div className="space-y-1">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 gap-2">
+                        <div className="space-y-1 min-w-0">
                           {product.discount_percentage &&
                             parseFloat(product.discount_percentage) > 0 && (
-                              <div className="flex items-center space-x-2">
+                              <div className="flex items-center space-x-1.5 sm:space-x-2 flex-wrap">
                                 <span className="text-[#9CA3AF] font-[Poppins] font-medium text-xs sm:text-sm line-through">
                                   ${product.price}
                                 </span>
-                                <div className="bg-[#EBF2FF] px-2 py-1 rounded text-xs font-Inter font-medium text-[#1E3A8A]">
+                                <div className="bg-[#EBF2FF] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-Inter font-medium text-[#1E3A8A] whitespace-nowrap">
                                   -{product.discount_percentage}%
                                 </div>
                               </div>
                             )}
-                          <div className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#1F2937]">
+                          <div className="text-base sm:text-lg md:text-xl font-[Poppins] font-semibold text-[#1F2937]">
                             ${product.final_price || product.price}
                           </div>
                         </div>
                         <button
-                          className="bg-[#7077FE] text-white px-6 py-2 sm:px-8 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] capitalize w-full sm:w-auto"
+                          className="bg-[#7077FE] text-white px-4 py-2 sm:px-6 md:px-8 sm:py-2.5 md:py-3 rounded-full font-Rubik font-normal text-[12px] sm:text-[13px] md:text-[14px] leading-[100%] capitalize w-full sm:w-auto shrink-0 hover:bg-[#5b63e6] transition-colors whitespace-nowrap"
                           onClick={() =>
                             navigate(`/dashboard/product-detail/${product?.id}`)
                           }
@@ -1802,11 +1797,10 @@ const DirectoryProfile = () => {
                         className="focus:outline-none"
                       >
                         <Star
-                          className={`w-5 h-5 ${
-                            star <= reviewForm.rating
-                              ? "text-[#FACC15] fill-[#FACC15]"
-                              : "text-[#9CA3AF]"
-                          }`}
+                          className={`w-5 h-5 ${star <= reviewForm.rating
+                            ? "text-[#FACC15] fill-[#FACC15]"
+                            : "text-[#9CA3AF]"
+                            }`}
                           strokeWidth={1.5}
                         />
                       </button>
@@ -1892,13 +1886,13 @@ const DirectoryProfile = () => {
                     {reviews.map((review: any) => {
                       const reviewDate = review.createdAt
                         ? new Date(review.createdAt).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )
                         : "";
 
                       return (
@@ -1909,9 +1903,8 @@ const DirectoryProfile = () => {
                           <div className="space-y-2">
                             <div className="flex flex-wrap items-center gap-2">
                               <span className="font-[Poppins] font-semibold text-black text-sm sm:text-base">
-                                {`${review.profile?.first_name || ""} ${
-                                  review.profile?.last_name || ""
-                                }`.trim() || "Anonymous"}
+                                {`${review.profile?.first_name || ""} ${review.profile?.last_name || ""
+                                  }`.trim() || "Anonymous"}
                               </span>
                               <div className="w-1.5 h-1.5 bg-[#9CA3AF] rounded-full"></div>
                               <span className="font-['open_sans'] text-[#9CA3AF] text-xs">
@@ -1927,11 +1920,10 @@ const DirectoryProfile = () => {
                           <div className="flex items-center space-x-2 p-2">
                             <button
                               onClick={() => handleLikeReview(review.id)}
-                              className={`flex items-center space-x-1 ${
-                                review.is_liked
-                                  ? "text-[#7077FE]"
-                                  : "text-[#1F2937]"
-                              }`}
+                              className={`flex items-center space-x-1 ${review.is_liked
+                                ? "text-[#7077FE]"
+                                : "text-[#1F2937]"
+                                }`}
                             >
                               <svg
                                 className="w-5 h-5 sm:w-6 sm:h-6"
@@ -2049,12 +2041,12 @@ const DirectoryProfile = () => {
                                           const childReviewDate =
                                             childReview.createdAt
                                               ? new Date(
-                                                  childReview.createdAt
-                                                ).toLocaleDateString("en-US", {
-                                                  year: "numeric",
-                                                  month: "short",
-                                                  day: "numeric",
-                                                })
+                                                childReview.createdAt
+                                              ).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "short",
+                                                day: "numeric",
+                                              })
                                               : "";
 
                                           return (
@@ -2066,23 +2058,21 @@ const DirectoryProfile = () => {
                                                 <div className="flex items-center space-x-2">
                                                   {childReview.profile
                                                     ?.profile_picture && (
-                                                    <img
-                                                      src={
-                                                        childReview.profile
-                                                          .profile_picture
-                                                      }
-                                                      alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
-                                                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover"
-                                                    />
-                                                  )}
+                                                      <img
+                                                        src={
+                                                          childReview.profile
+                                                            .profile_picture
+                                                        }
+                                                        alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
+                                                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover"
+                                                      />
+                                                    )}
                                                   <span className="font-[Poppins] font-semibold text-sm text-black">
-                                                    {`${
-                                                      childReview.profile
-                                                        ?.first_name || ""
-                                                    } ${
-                                                      childReview.profile
+                                                    {`${childReview.profile
+                                                      ?.first_name || ""
+                                                      } ${childReview.profile
                                                         ?.last_name || ""
-                                                    }`.trim() || "Anonymous"}
+                                                      }`.trim() || "Anonymous"}
                                                   </span>
                                                   <div className="w-1 h-1 bg-[#9CA3AF] rounded-full"></div>
                                                   <span className="font-['open_sans'] text-[#9CA3AF] text-xs">
@@ -2091,20 +2081,20 @@ const DirectoryProfile = () => {
                                                 </div>
                                                 {childReview.is_my_reply &&
                                                   editingReplyId !==
-                                                    childReview.id && (
+                                                  childReview.id && (
                                                     <div className="flex items-center space-x-2">
                                                       <button
                                                         onClick={() =>
                                                           handleEditReply(
                                                             childReview.id,
                                                             childReview.text ||
-                                                              childReview.description
+                                                            childReview.description
                                                           )
                                                         }
                                                         className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
                                                         disabled={
                                                           deletingReply[
-                                                            childReview.id
+                                                          childReview.id
                                                           ]
                                                         }
                                                       >
@@ -2123,7 +2113,7 @@ const DirectoryProfile = () => {
                                                         className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
                                                         disabled={
                                                           deletingReply[
-                                                            childReview.id
+                                                          childReview.id
                                                           ]
                                                         }
                                                       >
@@ -2137,7 +2127,7 @@ const DirectoryProfile = () => {
                                                   )}
                                               </div>
                                               {editingReplyId ===
-                                              childReview.id ? (
+                                                childReview.id ? (
                                                 <div className="space-y-2">
                                                   <div className="border border-[#D1D5DB] rounded-xl sm:rounded-2xl p-3">
                                                     <textarea
@@ -2145,7 +2135,7 @@ const DirectoryProfile = () => {
                                                       placeholder="Edit your reply..."
                                                       value={
                                                         editReplyTexts[
-                                                          childReview.id
+                                                        childReview.id
                                                         ] || ""
                                                       }
                                                       onChange={(e) => {
@@ -2182,7 +2172,7 @@ const DirectoryProfile = () => {
                                                         className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100 w-full sm:w-auto"
                                                         disabled={
                                                           submittingEditReply[
-                                                            childReview.id
+                                                          childReview.id
                                                           ]
                                                         }
                                                       >
@@ -2197,7 +2187,7 @@ const DirectoryProfile = () => {
                                                         }
                                                         disabled={
                                                           submittingEditReply[
-                                                            childReview.id
+                                                          childReview.id
                                                           ] ||
                                                           !editReplyTexts[
                                                             childReview.id
@@ -2222,43 +2212,42 @@ const DirectoryProfile = () => {
                                               )}
                                               {editingReplyId !==
                                                 childReview.id && (
-                                                <div className="flex items-center pl-6 sm:pl-8 pt-1">
-                                                  <button
-                                                    onClick={() =>
-                                                      handleLikeReply(
-                                                        review.id,
-                                                        childReview.id
-                                                      )
-                                                    }
-                                                    className={`flex items-center space-x-1 ${
-                                                      childReview.is_liked
+                                                  <div className="flex items-center pl-6 sm:pl-8 pt-1">
+                                                    <button
+                                                      onClick={() =>
+                                                        handleLikeReply(
+                                                          review.id,
+                                                          childReview.id
+                                                        )
+                                                      }
+                                                      className={`flex items-center space-x-1 ${childReview.is_liked
                                                         ? "text-[#7077FE]"
                                                         : "text-[#1F2937]"
-                                                    }`}
-                                                  >
-                                                    <svg
-                                                      className="w-4 h-4 sm:w-5 sm:h-5"
-                                                      viewBox="0 0 24 24"
-                                                      fill={
-                                                        childReview.is_liked
-                                                          ? "currentColor"
-                                                          : "none"
-                                                      }
-                                                      stroke="currentColor"
+                                                        }`}
                                                     >
-                                                      <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
-                                                    </svg>
-                                                    {childReview.likes_count >
-                                                      0 && (
-                                                      <span className="font-['open_sans'] text-xs">
-                                                        {
-                                                          childReview.likes_count
+                                                      <svg
+                                                        className="w-4 h-4 sm:w-5 sm:h-5"
+                                                        viewBox="0 0 24 24"
+                                                        fill={
+                                                          childReview.is_liked
+                                                            ? "currentColor"
+                                                            : "none"
                                                         }
-                                                      </span>
-                                                    )}
-                                                  </button>
-                                                </div>
-                                              )}
+                                                        stroke="currentColor"
+                                                      >
+                                                        <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
+                                                      </svg>
+                                                      {childReview.likes_count >
+                                                        0 && (
+                                                          <span className="font-['open_sans'] text-xs">
+                                                            {
+                                                              childReview.likes_count
+                                                            }
+                                                          </span>
+                                                        )}
+                                                    </button>
+                                                  </div>
+                                                )}
                                             </div>
                                           );
                                         }
