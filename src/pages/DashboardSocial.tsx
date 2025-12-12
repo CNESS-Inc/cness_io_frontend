@@ -379,7 +379,6 @@ export default function SocialTopBar() {
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const postIdFromURL = queryParams.get("p");
-  const tagFromURL = queryParams.get("tag");
   const [singlePost, setSinglePost] = useState<any>(null);
   const [isLoadingSinglePost, setIsLoadingSinglePost] = useState(false);
   const { showToast } = useToast();
@@ -713,18 +712,6 @@ export default function SocialTopBar() {
       setSinglePost(null);
     }
   }, [postIdFromURL, singlePost]);
-  useEffect(() => {
-    // Reset states when tag changes
-    setPage(1);
-    setHasMore(true);
-    setUserPosts([]);
-
-    // Fetch posts with tag
-    getUserPosts(tagFromURL || undefined);
-
-    // Also fetch story
-    fetchStory();
-  }, [location.search]); // Add location.search as dependency
 
   const fetchSinglePost = async (postId: string) => {
     try {
@@ -796,14 +783,14 @@ export default function SocialTopBar() {
     }
   };
 
-  const getUserPosts = async (tag?: string) => {
+  const getUserPosts = async () => {
     if (isLoading || !hasMore) return;
 
     setIsLoading(true);
     setIsPostsLoading(true);
     try {
       // Call the API with tag parameter if available
-      const res = await FeedPostsDetails(page, tag); // Pass tag to API
+      const res = await FeedPostsDetails(page); // Pass tag to API
 
       if (res?.data) {
         const newPosts = res?.data.data.rows || [];

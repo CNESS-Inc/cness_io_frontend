@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import PostCard from "../components/Profile/Post";
 import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { FeedPostsDetails } from "../Common/ServerAPI";
+import { FeedPostsDetails, TagTopicPostsDetails } from "../Common/ServerAPI";
 
 type Post = React.ComponentProps<typeof PostCard>;
 
@@ -90,12 +90,9 @@ export default function Topic() {
 
       setIsLoading(true);
       try {
-        // Call FeedPostsDetails with both tag and topic parameters
         // The API should handle filtering by either or both
         const res = await FeedPostsDetails(
-          requestedPage,
-          tagSlug || null,  // Pass null if no tag
-          topicSlug || null  // Pass null if no topic
+          requestedPage
         );
 
         if (res?.data?.data?.rows) {
@@ -194,7 +191,7 @@ export default function Topic() {
     // Load first page immediately
     const loadFirstPage = async () => {
       try {
-        const res = await FeedPostsDetails(1, tagSlug || null, topicSlug || null);
+        const res = await TagTopicPostsDetails(1, tagSlug || null, topicSlug || null);
         console.log("Initial load response:", res);
 
         const rows: any[] = res?.data?.data?.rows ?? [];

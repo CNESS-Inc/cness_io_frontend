@@ -163,6 +163,7 @@ export const EndPoint = {
   get_front_all_post: "/user/posts/get/front/all",
   get_all_post: "/user/posts/get/all",
   get_all_feed_post: "/user/posts/feed",
+  get_topic_tag_post: "/user/posts/feed/search",
   create_post: "/user/posts",
   delete_post: "/user/posts",
   postComments: "/user/post/comments",
@@ -1362,7 +1363,18 @@ export const PostsDetails = (page: any) => {
   );
 };
 
-export const FeedPostsDetails = (page: any,tag?:any,topic?:any) => {
+export const FeedPostsDetails = (page: any) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["page_no"] = page;
+  return executeAPI(
+    ServerAPI.APIMethod.GET,
+    data,
+    EndPoint.get_all_feed_post,
+    params
+  );
+};
+export const TagTopicPostsDetails = (page: any,tag?:any,topic?:any) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
@@ -1371,7 +1383,7 @@ export const FeedPostsDetails = (page: any,tag?:any,topic?:any) => {
   return executeAPI(
     ServerAPI.APIMethod.GET,
     data,
-    EndPoint.get_all_feed_post,
+    EndPoint.get_topic_tag_post,
     params
   );
 };
