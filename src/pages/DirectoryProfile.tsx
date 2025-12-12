@@ -465,7 +465,6 @@ const DirectoryProfile = () => {
   const bestPractices = profileData.best_practies || [];
   const products = profileData.products || [];
 
-
   const formatBusinessHours = () => {
     if (businessHours.business_status === 1 && businessHours.weekly_hours) {
       const dayNames = [
@@ -1768,9 +1767,7 @@ const DirectoryProfile = () => {
                         <button
                           className="bg-[#7077FE] text-white px-6 py-2 sm:px-8 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] capitalize w-full sm:w-auto"
                           onClick={() =>
-                            navigate(
-                              `/dashboard/product-detail/${product?.id}`
-                            )
+                            navigate(`/dashboard/product-detail/${product?.id}`)
                           }
                         >
                           Buy
@@ -1785,520 +1782,545 @@ const DirectoryProfile = () => {
         </div>
 
         {/* Reviews Section */}
-        <section className="bg-white rounded-xl p-4 md:p-6 space-y-6">
-          {/* Post Review Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-[Poppins] font-semibold text-[#081021]">
-              Post your review
-            </h3>
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() =>
-                      setReviewForm((prev) => ({ ...prev, rating: star }))
-                    }
-                    className="focus:outline-none"
-                  >
-                    <Star
-                      className={`w-5 h-5 ${
-                        star <= reviewForm.rating
-                          ? "text-[#FACC15] fill-[#FACC15]"
-                          : "text-[#9CA3AF]"
-                      }`}
-                      strokeWidth={1.5}
-                    />
-                  </button>
-                ))}
-              </div>
-              {reviewForm.rating > 0 && (
-                <span className="text-black text-sm">{reviewForm.rating}</span>
-              )}
-            </div>
-            <div className="space-y-2">
-              <div className="border border-[#D1D5DB] rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 min-h-[150px] sm:min-h-[170px] flex flex-col justify-between">
-                <textarea
-                  className="w-full outline-none resize-none font-['open_sans'] text-[#1F2937] bg-transparent text-sm sm:text-base"
-                  placeholder="Post a comment..."
-                  value={reviewForm.description}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value.length <= 2000) {
-                      setReviewForm((prev) => ({
-                        ...prev,
-                        description: value,
-                      }));
-                    }
-                  }}
-                  rows={3}
-                />
-                <div className="flex flex-col sm:flex-row justify-end items-end space-y-2 sm:space-y-0 sm:space-x-3 mt-3 sm:mt-4">
-                  <div className="bg-white px-3 py-2 rounded-full w-full sm:w-auto text-center">
-                    <span className="font-['open_sans'] text-[#9CA3AF] text-[11px] sm:text-[12px]">
-                      {2000 - reviewForm.description.length} Characters
-                      remaining
-                    </span>
-                  </div>
-                  <button
-                    onClick={handleSubmitReview}
-                    className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-4 py-2 sm:px-5 sm:py-3 rounded-full font-[Poppins] font-semibold text-sm w-full sm:w-auto"
-                  >
-                    {submittingReview ? "Submitting..." : "Submit"}
-                  </button>
-                </div>
-              </div>
-              <p className="font-['open_sans'] text-xs sm:text-sm text-[#1F2937] leading-relaxed">
-                Please note that this community is actively moderated according
-                to
-                <span className="text-[#6B21A8]"> CNESS community rules</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Reviews List */}
-          {/* In the Reviews List section, modify the review rendering */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-[Poppins] font-semibold text-[#081021]">
-              All Reviews
-            </h3>
-            {loadingReviews ? (
-              <div className="text-center py-8 text-[#64748B]">
-                Loading reviews...
-              </div>
-            ) : reviews.length > 0 ? (
-              <div
-                className="space-y-4 max-h-[600px] sm:max-h-[800px] overflow-y-auto pr-2"
-                onScroll={(e) => {
-                  const target = e.target as HTMLElement;
-                  const scrollBottom =
-                    target.scrollHeight -
-                    target.scrollTop -
-                    target.clientHeight;
-                  if (
-                    scrollBottom < 100 &&
-                    reviewsPagination.hasMore &&
-                    !reviewsPagination.loadingMore
-                  ) {
-                    loadMoreReviews();
-                  }
-                }}
-              >
-                {reviews.map((review: any) => {
-                  const reviewDate = review.createdAt
-                    ? new Date(review.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })
-                    : "";
-
-                  return (
-                    <div
-                      key={review.id}
-                      className="bg-[#F9FAFB] rounded-lg p-3 sm:p-4 space-y-4"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-[Poppins] font-semibold text-black text-sm sm:text-base">
-                            {`${review.profile?.first_name || ""} ${
-                              review.profile?.last_name || ""
-                            }`.trim() || "Anonymous"}
-                          </span>
-                          <div className="w-1.5 h-1.5 bg-[#9CA3AF] rounded-full"></div>
-                          <span className="font-['open_sans'] text-[#9CA3AF] text-xs">
-                            {reviewDate}
-                          </span>
-                        </div>
-                        <p className="font-['open_sans'] text-xs sm:text-sm text-[#1F2937] leading-relaxed">
-                          {review.description}
-                        </p>
-                      </div>
-
-                      {/* Action buttons - Keep these */}
-                      <div className="flex items-center space-x-2 p-2">
-                        <button
-                          onClick={() => handleLikeReview(review.id)}
-                          className={`flex items-center space-x-1 ${
-                            review.is_liked
-                              ? "text-[#7077FE]"
-                              : "text-[#1F2937]"
-                          }`}
-                        >
-                          <svg
-                            className="w-5 h-5 sm:w-6 sm:h-6"
-                            viewBox="0 0 24 24"
-                            fill={review.is_liked ? "currentColor" : "none"}
-                            stroke="currentColor"
-                          >
-                            <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
-                          </svg>
-                          {review.likes_count > 0 && (
-                            <span className="font-['open_sans'] text-xs">
-                              {review.likes_count}
-                            </span>
-                          )}
-                        </button>
-                        <div className="w-px h-5 bg-[#D1D5DB]"></div>
-                        <button
-                          onClick={() => toggleReplyInput(review.id)}
-                          className="flex items-center space-x-1 bg-transparent px-2 py-1 rounded-full text-[#1F2937] hover:bg-gray-100"
-                        >
-                          <img src="/reply.png" />
-                          <span className="font-['open_sans'] text-xs">
-                            Reply{" "}
-                            {review.reply_count > 0 &&
-                              `(${review.reply_count})`}
-                          </span>
-                        </button>
-                      </div>
-
-                      {/* Reply input section - Only show when reply button is clicked */}
-                      {openReplyInputs.has(review.id) && (
-                        <div className="mt-4 space-y-3 pl-3 sm:pl-4 border-l-2 border-[#ECEEF2]">
-                          <div className="space-y-2">
-                            <div className="border border-[#D1D5DB] rounded-xl sm:rounded-2xl p-3 sm:p-4">
-                              <textarea
-                                className="w-full outline-none resize-none font-['open_sans'] text-[#1F2937] bg-transparent text-sm sm:text-base"
-                                placeholder="Write a reply..."
-                                value={replyTexts[review.id] || ""}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  if (value.length <= 1000) {
-                                    setReplyTexts((prev) => ({
-                                      ...prev,
-                                      [review.id]: value,
-                                    }));
-                                  }
-                                }}
-                                rows={2}
-                              />
-                              <div className="flex flex-col sm:flex-row justify-end items-end space-y-2 sm:space-y-0 sm:space-x-3 mt-2 sm:mt-3">
-                                <span className="font-['open_sans'] text-[#9CA3AF] text-[11px] sm:text-[12px]">
-                                  {1000 - (replyTexts[review.id]?.length || 0)}{" "}
-                                  Characters remaining
-                                </span>
-                                <button
-                                  onClick={() => toggleReplyInput(review.id)}
-                                  className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100 w-full sm:w-auto"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  onClick={() => handleSubmitReply(review.id)}
-                                  disabled={
-                                    submittingReply[review.id] ||
-                                    !replyTexts[review.id]?.trim()
-                                  }
-                                  className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-4 py-1.5 sm:px-5 sm:py-2 rounded-full font-[Poppins] font-semibold text-sm w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  {submittingReply[review.id]
-                                    ? "Submitting..."
-                                    : "Reply"}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Child reviews section - ALWAYS SHOW (moved outside openReplyInputs) */}
-                      {childReviews[review.id] &&
-                        childReviews[review.id].length > 0 && (
-                          <div className="space-y-3 pl-3 sm:pl-4 border-l-2 border-[#ECEEF2]">
-                            <div
-                              className="space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto pr-1"
-                              onScroll={(e) => {
-                                const target = e.target as HTMLElement;
-                                const scrollBottom =
-                                  target.scrollHeight -
-                                  target.scrollTop -
-                                  target.clientHeight;
-                                if (
-                                  scrollBottom < 100 &&
-                                  pagination[review.id]?.hasMore &&
-                                  !pagination[review.id]?.loadingMore
-                                ) {
-                                  loadMoreChildReviews(review.id);
-                                }
-                              }}
-                            >
-                              {loadingChildReviews[review.id] ? (
-                                <div className="text-center py-4 text-[#64748B] text-xs">
-                                  Loading replies...
-                                </div>
-                              ) : childReviews[review.id] &&
-                                childReviews[review.id].length > 0 ? (
-                                <>
-                                  {childReviews[review.id].map(
-                                    (childReview: any) => {
-                                      const childReviewDate =
-                                        childReview.createdAt
-                                          ? new Date(
-                                              childReview.createdAt
-                                            ).toLocaleDateString("en-US", {
-                                              year: "numeric",
-                                              month: "short",
-                                              day: "numeric",
-                                            })
-                                          : "";
-
-                                      return (
-                                        <div
-                                          key={childReview.id}
-                                          className="bg-white border border-[#ECEEF2] rounded-lg p-3 space-y-2"
-                                        >
-                                          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
-                                            <div className="flex items-center space-x-2">
-                                              {childReview.profile
-                                                ?.profile_picture && (
-                                                <img
-                                                  src={
-                                                    childReview.profile
-                                                      .profile_picture
-                                                  }
-                                                  alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
-                                                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover"
-                                                />
-                                              )}
-                                              <span className="font-[Poppins] font-semibold text-sm text-black">
-                                                {`${
-                                                  childReview.profile
-                                                    ?.first_name || ""
-                                                } ${
-                                                  childReview.profile
-                                                    ?.last_name || ""
-                                                }`.trim() || "Anonymous"}
-                                              </span>
-                                              <div className="w-1 h-1 bg-[#9CA3AF] rounded-full"></div>
-                                              <span className="font-['open_sans'] text-[#9CA3AF] text-xs">
-                                                {childReviewDate}
-                                              </span>
-                                            </div>
-                                            {childReview.is_my_reply &&
-                                              editingReplyId !==
-                                                childReview.id && (
-                                                <div className="flex items-center space-x-2">
-                                                  <button
-                                                    onClick={() =>
-                                                      handleEditReply(
-                                                        childReview.id,
-                                                        childReview.text ||
-                                                          childReview.description
-                                                      )
-                                                    }
-                                                    className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
-                                                    disabled={
-                                                      deletingReply[
-                                                        childReview.id
-                                                      ]
-                                                    }
-                                                  >
-                                                    Edit
-                                                  </button>
-                                                  <span className="text-[#D1D5DB]">
-                                                    |
-                                                  </span>
-                                                  <button
-                                                    onClick={() =>
-                                                      showDeleteConfirmation(
-                                                        review.id,
-                                                        childReview.id
-                                                      )
-                                                    }
-                                                    className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
-                                                    disabled={
-                                                      deletingReply[
-                                                        childReview.id
-                                                      ]
-                                                    }
-                                                  >
-                                                    {deletingReply[
-                                                      childReview.id
-                                                    ]
-                                                      ? "Deleting..."
-                                                      : "Delete"}
-                                                  </button>
-                                                </div>
-                                              )}
-                                          </div>
-                                          {editingReplyId === childReview.id ? (
-                                            <div className="space-y-2">
-                                              <div className="border border-[#D1D5DB] rounded-xl sm:rounded-2xl p-3">
-                                                <textarea
-                                                  className="w-full outline-none resize-none font-['open_sans'] text-[#1F2937] bg-transparent text-sm sm:text-base"
-                                                  placeholder="Edit your reply..."
-                                                  value={
-                                                    editReplyTexts[
-                                                      childReview.id
-                                                    ] || ""
-                                                  }
-                                                  onChange={(e) => {
-                                                    const value =
-                                                      e.target.value;
-                                                    if (value.length <= 1000) {
-                                                      setEditReplyTexts(
-                                                        (prev) => ({
-                                                          ...prev,
-                                                          [childReview.id]:
-                                                            value,
-                                                        })
-                                                      );
-                                                    }
-                                                  }}
-                                                  rows={2}
-                                                />
-                                                <div className="flex flex-col sm:flex-row justify-end items-end space-y-2 sm:space-y-0 sm:space-x-3 mt-2">
-                                                  <span className="font-['open_sans'] text-[#9CA3AF] text-[11px] sm:text-[12px]">
-                                                    {1000 -
-                                                      (editReplyTexts[
-                                                        childReview.id
-                                                      ]?.length || 0)}{" "}
-                                                    Characters remaining
-                                                  </span>
-                                                  <button
-                                                    onClick={() =>
-                                                      handleCancelEdit(
-                                                        childReview.id
-                                                      )
-                                                    }
-                                                    className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100 w-full sm:w-auto"
-                                                    disabled={
-                                                      submittingEditReply[
-                                                        childReview.id
-                                                      ]
-                                                    }
-                                                  >
-                                                    Cancel
-                                                  </button>
-                                                  <button
-                                                    onClick={() =>
-                                                      handleUpdateReply(
-                                                        review.id,
-                                                        childReview.id
-                                                      )
-                                                    }
-                                                    disabled={
-                                                      submittingEditReply[
-                                                        childReview.id
-                                                      ] ||
-                                                      !editReplyTexts[
-                                                        childReview.id
-                                                      ]?.trim()
-                                                    }
-                                                    className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-4 py-1.5 sm:px-5 sm:py-2 rounded-full font-[Poppins] font-semibold text-sm w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                                                  >
-                                                    {submittingEditReply[
-                                                      childReview.id
-                                                    ]
-                                                      ? "Updating..."
-                                                      : "Update"}
-                                                  </button>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <p className="font-['open_sans'] text-xs sm:text-sm text-[#1F2937] leading-relaxed pl-6 sm:pl-8">
-                                              {childReview.text ||
-                                                childReview.description}
-                                            </p>
-                                          )}
-                                          {editingReplyId !==
-                                            childReview.id && (
-                                            <div className="flex items-center pl-6 sm:pl-8 pt-1">
-                                              <button
-                                                onClick={() =>
-                                                  handleLikeReply(
-                                                    review.id,
-                                                    childReview.id
-                                                  )
-                                                }
-                                                className={`flex items-center space-x-1 ${
-                                                  childReview.is_liked
-                                                    ? "text-[#7077FE]"
-                                                    : "text-[#1F2937]"
-                                                }`}
-                                              >
-                                                <svg
-                                                  className="w-4 h-4 sm:w-5 sm:h-5"
-                                                  viewBox="0 0 24 24"
-                                                  fill={
-                                                    childReview.is_liked
-                                                      ? "currentColor"
-                                                      : "none"
-                                                  }
-                                                  stroke="currentColor"
-                                                >
-                                                  <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
-                                                </svg>
-                                                {childReview.likes_count >
-                                                  0 && (
-                                                  <span className="font-['open_sans'] text-xs">
-                                                    {childReview.likes_count}
-                                                  </span>
-                                                )}
-                                              </button>
-                                            </div>
-                                          )}
-                                        </div>
-                                      );
-                                    }
-                                  )}
-                                  {pagination[review.id]?.loadingMore && (
-                                    <div className="text-center py-4 text-[#64748B] text-xs">
-                                      Loading more replies...
-                                    </div>
-                                  )}
-                                  {pagination[review.id]?.hasMore &&
-                                    !pagination[review.id]?.loadingMore && (
-                                      <div className="text-center py-2">
-                                        <button
-                                          onClick={() =>
-                                            loadMoreChildReviews(review.id)
-                                          }
-                                          className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
-                                        >
-                                          Load more replies
-                                        </button>
-                                      </div>
-                                    )}
-                                </>
-                              ) : (
-                                <div className="text-center py-2 text-[#64748B] text-xs">
-                                  No replies yet
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                    </div>
-                  );
-                })}
-                {reviewsPagination.loadingMore && (
-                  <div className="text-center py-4 text-[#64748B] text-xs">
-                    Loading more reviews...
-                  </div>
-                )}
-                {reviewsPagination.hasMore &&
-                  !reviewsPagination.loadingMore && (
-                    <div className="text-center py-2">
+        {businessProfile.id ? (
+          <>
+            <section className="bg-white rounded-xl p-4 md:p-6 space-y-6">
+              {/* Post Review Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-[Poppins] font-semibold text-[#081021]">
+                  Post your review
+                </h3>
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
                       <button
-                        onClick={loadMoreReviews}
-                        className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
+                        key={star}
+                        type="button"
+                        onClick={() =>
+                          setReviewForm((prev) => ({ ...prev, rating: star }))
+                        }
+                        className="focus:outline-none"
                       >
-                        Load more reviews
+                        <Star
+                          className={`w-5 h-5 ${
+                            star <= reviewForm.rating
+                              ? "text-[#FACC15] fill-[#FACC15]"
+                              : "text-[#9CA3AF]"
+                          }`}
+                          strokeWidth={1.5}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  {reviewForm.rating > 0 && (
+                    <span className="text-black text-sm">
+                      {reviewForm.rating}
+                    </span>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <div className="border border-[#D1D5DB] rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 min-h-[150px] sm:min-h-[170px] flex flex-col justify-between">
+                    <textarea
+                      className="w-full outline-none resize-none font-['open_sans'] text-[#1F2937] bg-transparent text-sm sm:text-base"
+                      placeholder="Post a comment..."
+                      value={reviewForm.description}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value.length <= 2000) {
+                          setReviewForm((prev) => ({
+                            ...prev,
+                            description: value,
+                          }));
+                        }
+                      }}
+                      rows={3}
+                    />
+                    <div className="flex flex-col sm:flex-row justify-end items-end space-y-2 sm:space-y-0 sm:space-x-3 mt-3 sm:mt-4">
+                      <div className="bg-white px-3 py-2 rounded-full w-full sm:w-auto text-center">
+                        <span className="font-['open_sans'] text-[#9CA3AF] text-[11px] sm:text-[12px]">
+                          {2000 - reviewForm.description.length} Characters
+                          remaining
+                        </span>
+                      </div>
+                      <button
+                        onClick={handleSubmitReview}
+                        className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-4 py-2 sm:px-5 sm:py-3 rounded-full font-[Poppins] font-semibold text-sm w-full sm:w-auto"
+                      >
+                        {submittingReview ? "Submitting..." : "Submit"}
                       </button>
                     </div>
-                  )}
+                  </div>
+                  <p className="font-['open_sans'] text-xs sm:text-sm text-[#1F2937] leading-relaxed">
+                    Please note that this community is actively moderated
+                    according to
+                    <span className="text-[#6B21A8]">
+                      {" "}
+                      CNESS community rules
+                    </span>
+                  </p>
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-8 text-[#64748B]">
-                No reviews yet
+
+              {/* Reviews List */}
+              {/* In the Reviews List section, modify the review rendering */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-[Poppins] font-semibold text-[#081021]">
+                  All Reviews
+                </h3>
+                {loadingReviews ? (
+                  <div className="text-center py-8 text-[#64748B]">
+                    Loading reviews...
+                  </div>
+                ) : reviews.length > 0 ? (
+                  <div
+                    className="space-y-4 max-h-[600px] sm:max-h-[800px] overflow-y-auto pr-2"
+                    onScroll={(e) => {
+                      const target = e.target as HTMLElement;
+                      const scrollBottom =
+                        target.scrollHeight -
+                        target.scrollTop -
+                        target.clientHeight;
+                      if (
+                        scrollBottom < 100 &&
+                        reviewsPagination.hasMore &&
+                        !reviewsPagination.loadingMore
+                      ) {
+                        loadMoreReviews();
+                      }
+                    }}
+                  >
+                    {reviews.map((review: any) => {
+                      const reviewDate = review.createdAt
+                        ? new Date(review.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            }
+                          )
+                        : "";
+
+                      return (
+                        <div
+                          key={review.id}
+                          className="bg-[#F9FAFB] rounded-lg p-3 sm:p-4 space-y-4"
+                        >
+                          <div className="space-y-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-[Poppins] font-semibold text-black text-sm sm:text-base">
+                                {`${review.profile?.first_name || ""} ${
+                                  review.profile?.last_name || ""
+                                }`.trim() || "Anonymous"}
+                              </span>
+                              <div className="w-1.5 h-1.5 bg-[#9CA3AF] rounded-full"></div>
+                              <span className="font-['open_sans'] text-[#9CA3AF] text-xs">
+                                {reviewDate}
+                              </span>
+                            </div>
+                            <p className="font-['open_sans'] text-xs sm:text-sm text-[#1F2937] leading-relaxed">
+                              {review.description}
+                            </p>
+                          </div>
+
+                          {/* Action buttons - Keep these */}
+                          <div className="flex items-center space-x-2 p-2">
+                            <button
+                              onClick={() => handleLikeReview(review.id)}
+                              className={`flex items-center space-x-1 ${
+                                review.is_liked
+                                  ? "text-[#7077FE]"
+                                  : "text-[#1F2937]"
+                              }`}
+                            >
+                              <svg
+                                className="w-5 h-5 sm:w-6 sm:h-6"
+                                viewBox="0 0 24 24"
+                                fill={review.is_liked ? "currentColor" : "none"}
+                                stroke="currentColor"
+                              >
+                                <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
+                              </svg>
+                              {review.likes_count > 0 && (
+                                <span className="font-['open_sans'] text-xs">
+                                  {review.likes_count}
+                                </span>
+                              )}
+                            </button>
+                            <div className="w-px h-5 bg-[#D1D5DB]"></div>
+                            <button
+                              onClick={() => toggleReplyInput(review.id)}
+                              className="flex items-center space-x-1 bg-transparent px-2 py-1 rounded-full text-[#1F2937] hover:bg-gray-100"
+                            >
+                              <img src="/reply.png" />
+                              <span className="font-['open_sans'] text-xs">
+                                Reply{" "}
+                                {review.reply_count > 0 &&
+                                  `(${review.reply_count})`}
+                              </span>
+                            </button>
+                          </div>
+
+                          {/* Reply input section - Only show when reply button is clicked */}
+                          {openReplyInputs.has(review.id) && (
+                            <div className="mt-4 space-y-3 pl-3 sm:pl-4 border-l-2 border-[#ECEEF2]">
+                              <div className="space-y-2">
+                                <div className="border border-[#D1D5DB] rounded-xl sm:rounded-2xl p-3 sm:p-4">
+                                  <textarea
+                                    className="w-full outline-none resize-none font-['open_sans'] text-[#1F2937] bg-transparent text-sm sm:text-base"
+                                    placeholder="Write a reply..."
+                                    value={replyTexts[review.id] || ""}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      if (value.length <= 1000) {
+                                        setReplyTexts((prev) => ({
+                                          ...prev,
+                                          [review.id]: value,
+                                        }));
+                                      }
+                                    }}
+                                    rows={2}
+                                  />
+                                  <div className="flex flex-col sm:flex-row justify-end items-end space-y-2 sm:space-y-0 sm:space-x-3 mt-2 sm:mt-3">
+                                    <span className="font-['open_sans'] text-[#9CA3AF] text-[11px] sm:text-[12px]">
+                                      {1000 -
+                                        (replyTexts[review.id]?.length ||
+                                          0)}{" "}
+                                      Characters remaining
+                                    </span>
+                                    <button
+                                      onClick={() =>
+                                        toggleReplyInput(review.id)
+                                      }
+                                      className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100 w-full sm:w-auto"
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleSubmitReply(review.id)
+                                      }
+                                      disabled={
+                                        submittingReply[review.id] ||
+                                        !replyTexts[review.id]?.trim()
+                                      }
+                                      className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-4 py-1.5 sm:px-5 sm:py-2 rounded-full font-[Poppins] font-semibold text-sm w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                      {submittingReply[review.id]
+                                        ? "Submitting..."
+                                        : "Reply"}
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Child reviews section - ALWAYS SHOW (moved outside openReplyInputs) */}
+                          {childReviews[review.id] &&
+                            childReviews[review.id].length > 0 && (
+                              <div className="space-y-3 pl-3 sm:pl-4 border-l-2 border-[#ECEEF2]">
+                                <div
+                                  className="space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto pr-1"
+                                  onScroll={(e) => {
+                                    const target = e.target as HTMLElement;
+                                    const scrollBottom =
+                                      target.scrollHeight -
+                                      target.scrollTop -
+                                      target.clientHeight;
+                                    if (
+                                      scrollBottom < 100 &&
+                                      pagination[review.id]?.hasMore &&
+                                      !pagination[review.id]?.loadingMore
+                                    ) {
+                                      loadMoreChildReviews(review.id);
+                                    }
+                                  }}
+                                >
+                                  {loadingChildReviews[review.id] ? (
+                                    <div className="text-center py-4 text-[#64748B] text-xs">
+                                      Loading replies...
+                                    </div>
+                                  ) : childReviews[review.id] &&
+                                    childReviews[review.id].length > 0 ? (
+                                    <>
+                                      {childReviews[review.id].map(
+                                        (childReview: any) => {
+                                          const childReviewDate =
+                                            childReview.createdAt
+                                              ? new Date(
+                                                  childReview.createdAt
+                                                ).toLocaleDateString("en-US", {
+                                                  year: "numeric",
+                                                  month: "short",
+                                                  day: "numeric",
+                                                })
+                                              : "";
+
+                                          return (
+                                            <div
+                                              key={childReview.id}
+                                              className="bg-white border border-[#ECEEF2] rounded-lg p-3 space-y-2"
+                                            >
+                                              <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
+                                                <div className="flex items-center space-x-2">
+                                                  {childReview.profile
+                                                    ?.profile_picture && (
+                                                    <img
+                                                      src={
+                                                        childReview.profile
+                                                          .profile_picture
+                                                      }
+                                                      alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
+                                                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover"
+                                                    />
+                                                  )}
+                                                  <span className="font-[Poppins] font-semibold text-sm text-black">
+                                                    {`${
+                                                      childReview.profile
+                                                        ?.first_name || ""
+                                                    } ${
+                                                      childReview.profile
+                                                        ?.last_name || ""
+                                                    }`.trim() || "Anonymous"}
+                                                  </span>
+                                                  <div className="w-1 h-1 bg-[#9CA3AF] rounded-full"></div>
+                                                  <span className="font-['open_sans'] text-[#9CA3AF] text-xs">
+                                                    {childReviewDate}
+                                                  </span>
+                                                </div>
+                                                {childReview.is_my_reply &&
+                                                  editingReplyId !==
+                                                    childReview.id && (
+                                                    <div className="flex items-center space-x-2">
+                                                      <button
+                                                        onClick={() =>
+                                                          handleEditReply(
+                                                            childReview.id,
+                                                            childReview.text ||
+                                                              childReview.description
+                                                          )
+                                                        }
+                                                        className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
+                                                        disabled={
+                                                          deletingReply[
+                                                            childReview.id
+                                                          ]
+                                                        }
+                                                      >
+                                                        Edit
+                                                      </button>
+                                                      <span className="text-[#D1D5DB]">
+                                                        |
+                                                      </span>
+                                                      <button
+                                                        onClick={() =>
+                                                          showDeleteConfirmation(
+                                                            review.id,
+                                                            childReview.id
+                                                          )
+                                                        }
+                                                        className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
+                                                        disabled={
+                                                          deletingReply[
+                                                            childReview.id
+                                                          ]
+                                                        }
+                                                      >
+                                                        {deletingReply[
+                                                          childReview.id
+                                                        ]
+                                                          ? "Deleting..."
+                                                          : "Delete"}
+                                                      </button>
+                                                    </div>
+                                                  )}
+                                              </div>
+                                              {editingReplyId ===
+                                              childReview.id ? (
+                                                <div className="space-y-2">
+                                                  <div className="border border-[#D1D5DB] rounded-xl sm:rounded-2xl p-3">
+                                                    <textarea
+                                                      className="w-full outline-none resize-none font-['open_sans'] text-[#1F2937] bg-transparent text-sm sm:text-base"
+                                                      placeholder="Edit your reply..."
+                                                      value={
+                                                        editReplyTexts[
+                                                          childReview.id
+                                                        ] || ""
+                                                      }
+                                                      onChange={(e) => {
+                                                        const value =
+                                                          e.target.value;
+                                                        if (
+                                                          value.length <= 1000
+                                                        ) {
+                                                          setEditReplyTexts(
+                                                            (prev) => ({
+                                                              ...prev,
+                                                              [childReview.id]:
+                                                                value,
+                                                            })
+                                                          );
+                                                        }
+                                                      }}
+                                                      rows={2}
+                                                    />
+                                                    <div className="flex flex-col sm:flex-row justify-end items-end space-y-2 sm:space-y-0 sm:space-x-3 mt-2">
+                                                      <span className="font-['open_sans'] text-[#9CA3AF] text-[11px] sm:text-[12px]">
+                                                        {1000 -
+                                                          (editReplyTexts[
+                                                            childReview.id
+                                                          ]?.length || 0)}{" "}
+                                                        Characters remaining
+                                                      </span>
+                                                      <button
+                                                        onClick={() =>
+                                                          handleCancelEdit(
+                                                            childReview.id
+                                                          )
+                                                        }
+                                                        className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100 w-full sm:w-auto"
+                                                        disabled={
+                                                          submittingEditReply[
+                                                            childReview.id
+                                                          ]
+                                                        }
+                                                      >
+                                                        Cancel
+                                                      </button>
+                                                      <button
+                                                        onClick={() =>
+                                                          handleUpdateReply(
+                                                            review.id,
+                                                            childReview.id
+                                                          )
+                                                        }
+                                                        disabled={
+                                                          submittingEditReply[
+                                                            childReview.id
+                                                          ] ||
+                                                          !editReplyTexts[
+                                                            childReview.id
+                                                          ]?.trim()
+                                                        }
+                                                        className="bg-linear-to-r from-[#7077FE] to-[#F07EFF] text-white px-4 py-1.5 sm:px-5 sm:py-2 rounded-full font-[Poppins] font-semibold text-sm w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                                                      >
+                                                        {submittingEditReply[
+                                                          childReview.id
+                                                        ]
+                                                          ? "Updating..."
+                                                          : "Update"}
+                                                      </button>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              ) : (
+                                                <p className="font-['open_sans'] text-xs sm:text-sm text-[#1F2937] leading-relaxed pl-6 sm:pl-8">
+                                                  {childReview.text ||
+                                                    childReview.description}
+                                                </p>
+                                              )}
+                                              {editingReplyId !==
+                                                childReview.id && (
+                                                <div className="flex items-center pl-6 sm:pl-8 pt-1">
+                                                  <button
+                                                    onClick={() =>
+                                                      handleLikeReply(
+                                                        review.id,
+                                                        childReview.id
+                                                      )
+                                                    }
+                                                    className={`flex items-center space-x-1 ${
+                                                      childReview.is_liked
+                                                        ? "text-[#7077FE]"
+                                                        : "text-[#1F2937]"
+                                                    }`}
+                                                  >
+                                                    <svg
+                                                      className="w-4 h-4 sm:w-5 sm:h-5"
+                                                      viewBox="0 0 24 24"
+                                                      fill={
+                                                        childReview.is_liked
+                                                          ? "currentColor"
+                                                          : "none"
+                                                      }
+                                                      stroke="currentColor"
+                                                    >
+                                                      <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
+                                                    </svg>
+                                                    {childReview.likes_count >
+                                                      0 && (
+                                                      <span className="font-['open_sans'] text-xs">
+                                                        {
+                                                          childReview.likes_count
+                                                        }
+                                                      </span>
+                                                    )}
+                                                  </button>
+                                                </div>
+                                              )}
+                                            </div>
+                                          );
+                                        }
+                                      )}
+                                      {pagination[review.id]?.loadingMore && (
+                                        <div className="text-center py-4 text-[#64748B] text-xs">
+                                          Loading more replies...
+                                        </div>
+                                      )}
+                                      {pagination[review.id]?.hasMore &&
+                                        !pagination[review.id]?.loadingMore && (
+                                          <div className="text-center py-2">
+                                            <button
+                                              onClick={() =>
+                                                loadMoreChildReviews(review.id)
+                                              }
+                                              className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
+                                            >
+                                              Load more replies
+                                            </button>
+                                          </div>
+                                        )}
+                                    </>
+                                  ) : (
+                                    <div className="text-center py-2 text-[#64748B] text-xs">
+                                      No replies yet
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                        </div>
+                      );
+                    })}
+                    {reviewsPagination.loadingMore && (
+                      <div className="text-center py-4 text-[#64748B] text-xs">
+                        Loading more reviews...
+                      </div>
+                    )}
+                    {reviewsPagination.hasMore &&
+                      !reviewsPagination.loadingMore && (
+                        <div className="text-center py-2">
+                          <button
+                            onClick={loadMoreReviews}
+                            className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
+                          >
+                            Load more reviews
+                          </button>
+                        </div>
+                      )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-[#64748B]">
+                    No reviews yet
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </section>
+            </section>
+          </>
+        ) : (
+          ""
+        )}
       </main>
       <EnquiryModal
         open={showEnquiry}
