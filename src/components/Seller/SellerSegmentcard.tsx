@@ -3646,7 +3646,7 @@ export function DirectorySection({
             {/* Right: button */}
             <button
               onClick={() => onView?.(it)}
-              className={`w-full sm:w-[127px] h-[35px] rounded-full px-4 pt-1 text-center font-opensans text-[14px] text-white flex items-center justify-center ${GRADIENT}`}
+              className={`w-full sm:w-[127px] h-[35px] rounded-full px-4 text-center font-opensans text-[14px] text-white flex items-center justify-center ${GRADIENT}`}
             >
               View Details
             </button>
