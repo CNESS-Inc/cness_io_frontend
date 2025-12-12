@@ -11,7 +11,7 @@ import {
   UserRoundMinus,
   UserRoundPlus,
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import EnquiryModal from "../components/directory/Enquire";
 import {
@@ -117,9 +117,58 @@ const DirectoryProfile = () => {
     replyId: null,
   });
 
+  // Add state for photo modal
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const badgeImg = profileData?.badge?.level
     ? levels.find((el) => el.key === profileData.badge?.level)?.img
     : "";
+
+  // Ref for the thumbnail container
+  const thumbnailContainerRef = useRef<HTMLDivElement>(null);
+
+  // Function to open photo modal
+  const openPhotoModal = (index: number) => {
+    setSelectedPhotoIndex(index);
+    setShowPhotoModal(true);
+  };
+
+  // Scroll to selected thumbnail when it changes
+  useEffect(() => {
+    if (thumbnailContainerRef.current) {
+      const selectedThumbnail = thumbnailContainerRef.current.children[selectedPhotoIndex] as HTMLElement;
+      if (selectedThumbnail) {
+        const container = thumbnailContainerRef.current;
+        const scrollLeft = selectedThumbnail.offsetLeft - container.offsetWidth / 2 + selectedThumbnail.offsetWidth / 2;
+        container.scrollTo({
+          left: scrollLeft,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [selectedPhotoIndex]);
+
+  // Function to close photo modal
+  const closePhotoModal = () => {
+    setShowPhotoModal(false);
+    setSelectedPhotoIndex(0);
+  };
+
+  // Function to navigate to next photo
+  const nextPhoto = () => {
+    const photos = profileData?.photos || [];
+    setSelectedPhotoIndex((prevIndex) =>
+      prevIndex === photos.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  // Function to navigate to previous photo
+  const prevPhoto = () => {
+    const photos = profileData?.photos || [];
+    setSelectedPhotoIndex((prevIndex) =>
+      prevIndex === 0 ? photos.length - 1 : prevIndex - 1
+    );
+  };
 
   useEffect(() => {
     const fetchDirectoryProfile = async () => {
@@ -229,6 +278,8 @@ const DirectoryProfile = () => {
       }
     });
   }, [reviews]);
+
+
 
   if (loading) {
     return (
@@ -1411,8 +1462,11 @@ const DirectoryProfile = () => {
               Photos
             </h3>
             {photos.length > 4 && (
-              <div className="flex items-center space-x-1.5 text-[#7077FE] self-end">
-                <span className="font-[Poppins] font-medium text-sm cursor-pointer">
+              <div
+                className="flex items-center space-x-1.5 text-[#7077FE] self-end cursor-pointer"
+                onClick={() => openPhotoModal(0)}
+              >
+                <span className="font-[Poppins] font-medium text-sm">
                   See all {photos.length} photos
                 </span>
                 <svg
@@ -1425,12 +1479,25 @@ const DirectoryProfile = () => {
               </div>
             )}
           </div>
+
           {photos.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
-              {photos.slice(0, 4).map((photo: any) => (
+            <div className="flex flex-wrap gap-3">
+              {photos.slice(0, 4).map((photo: any, index: number) => (
                 <div
                   key={photo.id}
-                  className="aspect-square bg-[#FFE4F5] rounded-lg overflow-hidden"
+                  className="
+        w-full 
+        sm:w-[calc(50%-6px)]
+        lg:w-[calc(25%-9px)]
+        h-[184px] 
+        lg:h-[220px] 
+        bg-[#F8F0F0] 
+        rounded-lg 
+        relative 
+        overflow-hidden
+        cursor-pointer
+      "
+                  onClick={() => openPhotoModal(index)}
                 >
                   <img
                     src={photo.file}
@@ -1440,13 +1507,13 @@ const DirectoryProfile = () => {
                 </div>
               ))}
             </div>
+
           ) : (
             <div className="text-[#64748B] text-center py-8">
               No photos available
             </div>
           )}
         </section>
-
         {/* Contact Information Section */}
         <section className="bg-white rounded-xl p-4 md:p-6 space-y-4">
           <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
@@ -2378,8 +2445,140 @@ const DirectoryProfile = () => {
           </div>
         </div>
       </Modal>
-    </>
+
+      {/* Photo Gallery Modal */}
+      <Modal
+        isOpen={showPhotoModal}
+        onClose={closePhotoModal}
+        position="center"
+      >
+        <div className="fixed inset-0 bg-white flex flex-col">
+          {photos.length > 0 && (
+            <div className="flex flex-col h-full">
+              {/* Top Controls - Photo Counter and Close Button */}
+              <div className="flex justify-between items-center p-6">
+                <div className="px-5 py-3 bg-gray-100 backdrop-blur-xl rounded-full shadow-xl">
+                  <span className="text-lg font-bold text-gray-800">{selectedPhotoIndex + 1}</span>
+                  <span className="mx-2 text-gray-500">/</span>
+                  <span className="text-gray-600">{photos.length}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={closePhotoModal}
+                  className="p-3 bg-gray-100 backdrop-blur-xl rounded-full hover:bg-gray-200 hover:scale-110 transition-all duration-300 shadow-xl"
+                  aria-label="Close photo viewer"
+                >
+                  <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Main Content Area - Navigation Arrows and Photo */}
+              <div className="flex-grow flex items-center justify-center px-4 relative py-4">
+                {/* Navigation Arrows */}
+
+                {/* Main Photo */}
+                <div className="max-w-7xl max-h-full p-4">
+                  <img
+                    src={photos[selectedPhotoIndex]?.file}
+                    alt={`Photo ${selectedPhotoIndex + 1}`}
+                    className="max-h-[70vh] max-w-full object-contain rounded-2xl shadow-xl transition-all duration-500 ease-in-out transform hover:scale-[1.02]"
+                    style={{
+                      filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.1))'
+                    }}
+                  />
+                </div>
+              </div>              {/* Navigation Arrows */}
+              {photos.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className="absolute left-8 top-1/2 transform -translate-y-1/2 p-4 bg-gray-100 backdrop-blur-xl rounded-full hover:bg-gray-200 hover:scale-110 transition-all duration-300 shadow-xl group"
+                    onClick={prevPhoto}
+                    aria-label="Previous photo"
+                  >
+                    <svg className="w-7 h-7 text-gray-700 group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="absolute right-8 top-1/2 transform -translate-y-1/2 p-4 bg-gray-100 backdrop-blur-xl rounded-full hover:bg-gray-200 hover:scale-110 transition-all duration-300 shadow-xl group"
+                    onClick={nextPhoto}
+                    aria-label="Next photo"
+                  >
+                    <svg className="w-7 h-7 text-gray-700 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </>
+              )}
+
+              {/* Thumbnails */}
+              {photos.length > 1 && (
+                <div className="px-6 py-4 bg-gradient-to-t from-gray-100 via-gray-50 to-transparent backdrop-blur-sm border-t border-gray-200">
+                  <div className="w-full flex justify-center relative">
+    
+                    <div 
+                      ref={thumbnailContainerRef}
+                      className="w-full max-w-6xl px-3 flex overflow-x-auto space-x-4 py-2 scrollbar-hide draggable-thumbnails" 
+                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                      onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+                        e.preventDefault(); // Prevent default behavior
+                        const slider = e.currentTarget;
+                        const startX = e.pageX - slider.offsetLeft;
+                        const scrollLeft = slider.scrollLeft;
+                        
+                        let isDragging = false;
+                        
+                        const mouseMoveHandler = (moveEvent: MouseEvent) => {
+                          if (!isDragging) {
+                            isDragging = true;
+                            slider.classList.add('active');
+                          }
+                          const x = moveEvent.pageX - slider.offsetLeft;
+                          const walk = (x - startX) * 2; // Adjust multiplier for sensitivity
+                          slider.scrollLeft = scrollLeft - walk;
+                        };
+                        
+                        const mouseUpHandler = () => {
+                          if (isDragging) {
+                            slider.classList.remove('active');
+                          }
+                          document.removeEventListener('mousemove', mouseMoveHandler);
+                          document.removeEventListener('mouseup', mouseUpHandler);
+                        };
+                        
+                        document.addEventListener('mousemove', mouseMoveHandler);
+                        document.addEventListener('mouseup', mouseUpHandler);
+                      }}
+                    >
+                      {photos.map((photo: any, index: any) => (
+                        <div
+                          key={photo.id}
+                          className={`flex-shrink-0 w-19 h-19 cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ${index === selectedPhotoIndex
+                              ? 'ring-4 ring-blue-500 shadow-xl scale-110'
+                              : 'ring-2 ring-gray-300 hover:ring-blue-300 hover:scale-105 opacity-70 hover:opacity-100'
+                            }`}
+                          onClick={() => setSelectedPhotoIndex(index)}
+                        >
+                          <img
+                            src={photo.file}
+                            alt={`Thumbnail ${index + 1}`}
+                            className="w-full h-full object-cover transition-transform duration-300"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Modal>    </>
   );
 };
-
 export default DirectoryProfile;

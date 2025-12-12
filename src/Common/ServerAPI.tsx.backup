@@ -85,8 +85,8 @@ export const ServerAPI = {
 
 export const API = {
   //  BaseUrl: "http://192.168.1.18:5025/api", //local
-  // BaseUrl: "http://localhost:5025/api", //local
-  BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
+  BaseUrl: "http://localhost:5025/api", //local
+  // BaseUrl: import.meta.env.VITE_API_BASE_URL || "https://z3z1ppsdij.execute-api.us-east-1.amazonaws.com/api",
   MarketplaceBaseUrl: "http://localhost:3000/",
 };
 
@@ -143,7 +143,6 @@ export const EndPoint = {
   basic_info_update_business_hour: "/directory-basic-info/update-bussiness-hour",
   basic_info_get_by_user_id: "/directory-basic-info/get-by-user-id",
   basic_info_search_location: "/directory-basic-info/search-location",
-  basic_info_get_by_services: "/directory-basic-info/get-by-services",
   state: "/state",
   company_profile: "/organization-profile/company-profile",
   user_profile: "/profile/user-profile",
@@ -1296,19 +1295,6 @@ export const GetDirectoryProfileByUserId = (userId: string): ApiResponse => {
   );
 };
 
-export const GetDirectoryByServices = (services: string[] = [], page: number = 1, limit: number = 10): ApiResponse => {
-  const data: Partial<any> = {
-    services: services,
-    page_no: page,
-    limit: limit,
-  };
-  return executeAPI(
-    ServerAPI.APIMethod.POST,
-    data,
-    EndPoint.basic_info_get_by_services
-  );
-};
-
 export const GetUsersearchProfileDetails = (
   selectedDomain: any,
   searchQuery: any,
@@ -1389,7 +1375,7 @@ export const FeedPostsDetails = (page: any) => {
     params
   );
 };
-export const TagTopicPostsDetails = (page: any, tag?: any, topic?: any) => {
+export const TagTopicPostsDetails = (page: any,tag?:any,topic?:any) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
@@ -1535,7 +1521,7 @@ export const GetUserPost = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.user_post);
 };
-export const GetUserPostById = (postId: any) => {
+export const GetUserPostById = (postId:any) => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_post_by_id}/${postId}`);
 };

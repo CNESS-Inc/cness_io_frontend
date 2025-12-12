@@ -82,138 +82,130 @@ if (item.id === "directory") {
     setOpenDropdown(newOpenDropdown);
   }, [location.pathname]);
 
-  const mainNavItems = [
+const mainNavItems = [
+  {
+    id: "dashboard",
+    icon: <img src={iconMap["home"]} alt="Home Icon" className="w-5 h-5" />,
+    label: "Home",
+    active: true,
+    path: "/dashboard",
+  },
+  {
+    id: "TrueProfile",
+    icon: (
+      <img src={iconMap["usericon"]} alt="Home Icon" className="w-5 h-5" />
+    ),
+    label: "True Profile",
+    active: false,
+    isProfileDropdown: true,
+    childPaths: ["/dashboard/user-profile", "/dashboard/company-profile", `/dashboard/userprofile/${loggedInUserID}`],
+  },
+  {
+    id: "Certifications",
+    icon: (
+      <img src={iconMap["certify"]} alt="Home Icon" className="w-5 h-5" />
+    ),
+    label: "Certifications",
+    active: false,
+    isCertificationsDropdown: true,
+    childPaths: [
+      "/dashboard/assesment",
+      "/dashboard/score-result",
+      "/dashboard/upgrade-badge",
+      "/dashboard/assesmentcertification"
+    ],
+    children: [
+      { label: "Get Certified", path: "/dashboard/assesmentcertification" },
+      { label: "Score & Results", path: "/dashboard/score-result" },
+      { label: "Upgrade Badge", path: "/dashboard/upgrade-badge" },
+    ],
+  },
+  {
+    id: "directory",
+    icon: (
+      <img
+        src={iconMap["directory"]}
+        alt="Directory Icon"
+        className="w-5 h-5"
+      />
+    ),
+    label: "Directory",
+    active: true,
+    isDirectoryDropdown: true,
+    childPaths: ["/dashboard/search-listing", "/dashboard/DashboardDirectory", "/dashboard/editpubliclisting" ],
+    children: [
+      { label: "Search Listing", path: "/dashboard/DashboardDirectory" },
+      // { label: "Edit Public Listing", path: "/dashboard/editpubliclisting" },
+      //  { label: "DirectoryProfile", path: "/dashboard/directory-profile" },
+        { label: "Edit Directory", path: "/dashboard/edit-profile" },
+        { label: "My Enquiry", path: "/dashboard/my-enquiry" },
+    ],
+  },
+  {
+    id: "Best Practices Hub",
+    icon: <TrendingUp className="w-5 h-5 text-[#64748B]" />,
+    label: "Best Practices Hub",
+    active: false,
+    isbestpractices: true,
+    childPaths: ["/dashboard/bestpractices", "/dashboard/manage_bestpractices"],
+    children: [
+      {
+        label: "Best Practices",
+        path: "/dashboard/bestpractices",
+      },
+      {
+        label: "Manage Best Practices",
+        path: "/dashboard/manage_bestpractices",
+      },
+    ],
+  },
+  {
+    id: "Social",
+    icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
+    label: "Social",
+    active: false,
+    isSocialDropdown: true,
+    childPaths: ["/dashboard/Feed", "/dashboard/Profile", "/dashboard/MyConnection", "/dashboard/Certification"],
+    children: [
+      { label: "Feed", path: "/dashboard/feed" },
+      { label: "Profile", path: "/dashboard/Profile" },
+      // { label: "Certification", path: "/dashboard/Certification" },
+      { label: "Connections", path: "/dashboard/MyConnection" },
+    ],
+  },
+  // Conditionally include marketplace item
+  ...(import.meta.env.VITE_ENV_STAGE === "test" || import.meta.env.VITE_ENV_STAGE === "uat" ? [
     {
-      id: "dashboard",
-      icon: <img src={iconMap["home"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Home",
-      active: true,
-      path: "/dashboard",
-    },
-    {
-      id: "TrueProfile",
-      icon: (
-        <img src={iconMap["usericon"]} alt="Home Icon" className="w-5 h-5" />
-      ),
-      label: "True Profile",
+      id: "market-place",
+      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
+      label: "Marketplace",
       active: false,
-      isProfileDropdown: true,
-      childPaths: ["/dashboard/user-profile", "/dashboard/company-profile", `/dashboard/userprofile/${loggedInUserID}`],
-    },
-    {
-      id: "Certifications",
-      icon: (
-        <img src={iconMap["certify"]} alt="Home Icon" className="w-5 h-5" />
-      ),
-      label: "Certifications",
-      active: false,
-      isCertificationsDropdown: true,
-      childPaths: [
-        "/dashboard/assesment",
-        "/dashboard/score-result",
-        "/dashboard/upgrade-badge",
-        "/dashboard/assesmentcertification"
-      ],
+      path: "/dashboard/market-place",
+      isMarketplaceDropdown: true,
+      childPaths: ["/dashboard/market-place", "/dashboard/createshop", "/dashboard/Tracking", "/dashboard/CreatorGuideline", "/dashboard/seller-dashboard"],
       children: [
-        { label: "Get Certified", path: "/dashboard/assesmentcertification" },
-        { label: "Score & Results", path: "/dashboard/score-result" },
-        { label: "Upgrade Badge", path: "/dashboard/upgrade-badge" },
-      ],
-    },
-    {
-      id: "directory",
-      icon: (
-        <img
-          src={iconMap["directory"]}
-          alt="Directory Icon"
-          className="w-5 h-5"
-        />
-      ),
-      label: "Directory",
-      active: true,
-      isDirectoryDropdown: true,
-      childPaths: ["/dashboard/search-listing", "/dashboard/DashboardDirectory", "/dashboard/editpubliclisting" ],
-      children: [
-        { label: "Search Listing", path: "/dashboard/DashboardDirectory" },
-        // { label: "Edit Public Listing", path: "/dashboard/editpubliclisting" },
-        //  { label: "DirectoryProfile", path: "/dashboard/directory-profile" },
-          { label: "Edit Directory", path: "/dashboard/edit-profile" },
-          { label: "My Enquiry", path: "/dashboard/my-enquiry" },
-      ],
-    },
-    {
-      id: "Best Practices Hub",
-      icon: <TrendingUp className="w-5 h-5 text-[#64748B]" />,
-      label: "Best Practices Hub",
-      active: false,
-      isbestpractices: true,
-      childPaths: ["/dashboard/bestpractices", "/dashboard/manage_bestpractices"],
-      children: [
-        {
-          label: "Best Practices",
-          path: "/dashboard/bestpractices",
-        },
-        {
-          label: "Manage Best Practices",
-          path: "/dashboard/manage_bestpractices",
-        },
-      ],
-    },
-    {
-      id: "Social",
-      icon: <img src={iconMap["social"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Social",
-      active: false,
-      isSocialDropdown: true,
-      childPaths: ["/dashboard/Feed", "/dashboard/Profile", "/dashboard/MyConnection", "/dashboard/Certification"],
-      children: [
-        { label: "Feed", path: "/dashboard/feed" },
-        { label: "Profile", path: "/dashboard/Profile" },
-        // { label: "Certification", path: "/dashboard/Certification" },
-        { label: "Connections", path: "/dashboard/MyConnection" },
-      ],
-    },
-    //{
-     // id: "marketplace",
-     // icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-     // label: "Marketplace (Beta)",
-    //  active: true,
-    //  path: "/dashboard/marketplace",
-  //  },
- 
-    
-        {
-          id: "market-place",
-          icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-          label: "Marketplace",
-          active: false,
-          path: "/dashboard/market-place",
-          isMarketplaceDropdown: true,
-          childPaths: ["/dashboard/market-place", "/dashboard/createshop", "/dashboard/Tracking", "/dashboard/CreatorGuideline", "/dashboard/seller-dashboard"],
-          children: [
-            { label: "Buy Digital Products", path: "/dashboard/market-place" },
-            { label: "Sell your Products", path: "/dashboard/createshop" },
-           // { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
-          //  { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
-            ...(isSeller ? [{ label: "Seller Dashboard", path: "/dashboard/seller-dashboard" }] : [])
-          ]
-        },
-      
-  
-    {
-      id: "MentorPartnerHub",
-      icon: <Zap className="w-5 h-5 text-gray-500" />,
-      label: "Business Hub",
-      active: false,
-      isMentorDropdown: true,
-      childPaths: ["/dashboard/become-mentor", "/dashboard/Become_partner", "/dashboard/affiliate"],
-      children: [
-        { label: "Mentor", path: "/dashboard/become-mentor" },
-        { label: "Partner", path: "/dashboard/Become_partner" },
-        { label: "Affiliate", path: "/dashboard/affiliate" },
-      ],
-    },
-  ];
+        { label: "Buy Digital Products", path: "/dashboard/market-place" },
+        { label: "Sell your Products", path: "/dashboard/createshop" },
+        // { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
+        // { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
+        ...(isSeller ? [{ label: "Seller Dashboard", path: "/dashboard/seller-dashboard" }] : [])
+      ]
+    }
+  ] : []),
+  {
+    id: "MentorPartnerHub",
+    icon: <Zap className="w-5 h-5 text-gray-500" />,
+    label: "Business Hub",
+    active: false,
+    isMentorDropdown: true,
+    childPaths: ["/dashboard/become-mentor", "/dashboard/Become_partner", "/dashboard/affiliate"],
+    children: [
+      { label: "Mentor", path: "/dashboard/become-mentor" },
+      { label: "Partner", path: "/dashboard/Become_partner" },
+      { label: "Affiliate", path: "/dashboard/affiliate" },
+    ],
+  },
+];
 
 
   const isViewingOtherUserProfile = () => {
