@@ -13,17 +13,81 @@ const Footer = () => {
   const [content, setContent] = useState("");
   const [privacyContent, privacySetContent] = useState("");
   const userId = localStorage.getItem("Id");
+const [showCommunityModal, setShowCommunityModal] = useState(false);
+const [communityContent, setCommunityContent] = useState("");
 
   useEffect(() => {
-    fetch("/terms and conditions new.html")
+    fetch("/cness_terms_latest.html")
       .then((res) => res.text())
       .then((data) => setContent(data));
   }, []);
   useEffect(() => {
-    fetch("/CNESS privacy policy.htm")
+    fetch("/cness_privacy_latest.html")
       .then((res) => res.text())
       .then((data) => privacySetContent(data));
   }, []);
+
+  useEffect(() => {
+  fetch("/community_guideline_latest.html")
+    .then((res) => res.text())
+    .then((data) => setCommunityContent(data));
+}, []);
+
+
+useEffect(() => {
+  if (!showTermModal) return;
+
+  const timer = setTimeout(() => {
+    // Privacy
+    const privacyLinks = document.querySelectorAll(".open-privacy");
+    privacyLinks.forEach((el) => {
+      const link = el as HTMLElement;
+      link.onclick = (e: MouseEvent) => {
+        e.preventDefault();
+        setShowTermModal(false);
+        setShowPrivacyModal(true);
+      };
+    });
+
+    // Community Guidelines
+    const communityLinks = document.querySelectorAll(".open-community");
+    communityLinks.forEach((el) => {
+      const link = el as HTMLElement;
+      link.onclick = (e: MouseEvent) => {
+        e.preventDefault();
+        setShowTermModal(false);
+        setShowCommunityModal(true);
+      };
+    });
+
+    const termsLinks = document.querySelectorAll(".open-termsandconditions");
+    termsLinks.forEach((el) => {
+      const link = el as HTMLElement;
+      link.onclick = (e: MouseEvent) => {
+        e.preventDefault();
+        //setShowTermModal(false);
+        setShowTermModal(true);
+      };
+    });
+  }, 50);
+
+  return () => {
+    clearTimeout(timer);
+
+    document.querySelectorAll(".open-privacy").forEach((el) => {
+      (el as HTMLElement).onclick = null;
+    });
+
+    document.querySelectorAll(".open-community").forEach((el) => {
+      (el as HTMLElement).onclick = null;
+    });
+
+    document.querySelectorAll(".open-termsandconditions").forEach((el) => {
+      (el as HTMLElement).onclick = null;
+    });
+
+  };
+}, [showTermModal]);
 
   return (
     <>
@@ -208,14 +272,14 @@ const Footer = () => {
             CNESS TERMS AND CONDITIONS
           </h3>
           <div
-            className="bg-white bg-opacity-90 backdrop-blur-lg p-4 sm:p-6 rounded-lg w-full max-h-[60vh] sm:max-h-[70vh] overflow-y-auto content-container"
-            style={{
-              fontFamily: "'Open Sans', 'Poppins', sans-serif",
-              fontSize: "14px sm:text-base",
-              textAlign: "justify",
-              lineHeight: "1.6",
-              color: "#333",
-            }}
+            className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
+                  style={{
+                    fontFamily: "'Open Sans', 'Poppins', sans-serif",
+                    fontSize: "16px",
+                    textAlign: "justify",
+                    lineHeight: "1.6",
+                    color: "#333",
+                  }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
         </div>
@@ -231,15 +295,36 @@ const Footer = () => {
             CNESS PRIVACY POLICY
           </h3>
           <div
-            className="bg-white bg-opacity-90 backdrop-blur-lg p-4 sm:p-6 rounded-lg w-full max-h-[60vh] sm:max-h-[70vh] overflow-y-auto content-container"
-            style={{
-              fontFamily: "'Open Sans', 'Poppins', sans-serif",
-              fontSize: "14px sm:text-base",
-              textAlign: "justify",
-              lineHeight: "1.6",
-              color: "#333",
-            }}
+           className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
+                  style={{
+                    fontFamily: "'Open Sans', 'Poppins', sans-serif",
+                    fontSize: "16px",
+                    textAlign: "justify",
+                    lineHeight: "1.6",
+                    color: "#333",
+                  }}
             dangerouslySetInnerHTML={{ __html: privacyContent }}
+          />
+        </div>
+      </ContentModal>
+
+      <ContentModal
+        isOpen={showCommunityModal}
+        onClose={() => setShowCommunityModal(false)}
+      >
+        <div className="p-0 min-w-[300px] lg:min-w-[450px]">
+          <h3 className="text-[24px] md:text-[30px] lg:text-[36px] font-medium text-black mb-4 text-center">
+            CNESS COMMUNITY GUIDELINES &  CODE OF CONDUCT
+          </h3>
+          <div
+       className="bg-white bg-opacity-90 backdrop-blur-lg lg:p-6 p-0 rounded-lg w-full max-w-7xl max-h-[500px] overflow-y-auto content-container"
+                  style={{
+                    fontFamily: "'Open Sans', 'Poppins', sans-serif",
+                    fontSize: "16px",
+                    textAlign: "justify",
+                    lineHeight: "1.6",
+                    color: "#333",
+                  }}      dangerouslySetInnerHTML={{ __html: communityContent }}
           />
         </div>
       </ContentModal>

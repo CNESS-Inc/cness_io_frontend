@@ -875,24 +875,59 @@ export default function SignupModal({
   const [consentCommunityContent, setConsentCommunityContent] = useState("");
 
   useEffect(() => {
-    fetch("/terms and conditions new.html")
+    fetch("/cness_terms_latest.html")
       .then((res) => res.text())
       .then((data) => setConsentTermsContent(data));
   }, []);
 
   // Privacy
   useEffect(() => {
-    fetch("/CNESS privacy policy.htm")
+    fetch("/cness_privacy_latest.html")
       .then((res) => res.text())
       .then((data) => setConsentPrivacyContent(data));
   }, []);
 
   // Community Guideline
   useEffect(() => {
-    fetch("/community_guideline.html")
+    fetch("/community_guideline_latest.html")
       .then((res) => res.text())
       .then((data) => setConsentCommunityContent(data));
   }, []);
+
+  
+useEffect(() => {
+  const links = document.querySelectorAll(".open-privacy, .open-community, .open-terms");
+
+  links.forEach((element: Element) => {
+    element.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      if (element.classList.contains("open-privacy")) {
+        setShowConsentTerms(false);
+        setShowConsentPrivacy(true);
+      }
+
+      if (element.classList.contains("open-community")) {
+        setShowConsentTerms(false);
+        setShowConsentCommunity(true);
+      }
+
+      if (element.classList.contains("open-terms")) {
+        setShowConsentPrivacy(false);
+        setShowConsentCommunity(false);
+        setShowConsentTerms(true);
+      }
+    });
+  });
+
+  return () => {
+    links.forEach((el: Element) => {
+      el.replaceWith(el.cloneNode(true)); // cleanup
+    });
+  };
+}, [consentTermsContent, showConsentTerms]);
+
+  
 
   return (
     <>
