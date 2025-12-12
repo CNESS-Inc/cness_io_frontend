@@ -8,7 +8,6 @@ import {
 import { NavLink, useLocation, Link } from "react-router-dom";
 import { iconMap } from "../../assets/icons";
 import hambur from "../../assets/hambur.png";
-import ComingSoon from "../../pages/ComingSoon";
 
 const DashboardNavbar = ({
   isMobileNavOpen,
