@@ -36,6 +36,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const [_isFollowing, setIsFollowing] = useState(false);
   const { showToast } = useToast();
   const loggedInUserId = localStorage.getItem("Id");
+  const [buttonsLoading, setButtonsLoading] = useState(true);
 
   useEffect(() => {
     if (friend.id) {
@@ -61,6 +62,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
 
   const fetchFriendData = async () => {
     setLoading(true);
+    setButtonsLoading(true);
     try {
       // Fetch all data in parallel
       const [profileResponse, followingResponse, postsResponse] =
@@ -147,6 +149,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
       console.error("Error fetching friend data:", error);
     } finally {
       setLoading(false);
+       setButtonsLoading(false);
     }
   };
 
@@ -475,11 +478,12 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                   <img
                     src={
                       !profileData?.profile_picture ||
-                        profileData?.profile_picture === "null" ||
-                        profileData?.profile_picture === "undefined" ||
-                        (profileData?.profile_picture &&
-                          !profileData?.profile_picture.startsWith("http")) ||
-                        profileData?.profile_picture === "http://localhost:5026/file/"
+                      profileData?.profile_picture === "null" ||
+                      profileData?.profile_picture === "undefined" ||
+                      (profileData?.profile_picture &&
+                        !profileData?.profile_picture.startsWith("http")) ||
+                      profileData?.profile_picture ===
+                        "http://localhost:5026/file/"
                         ? !friend.image ||
                           friend.image === "null" ||
                           friend.image === "undefined" ||
@@ -505,7 +509,9 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                         ? `${profileData.first_name} ${profileData.last_name}`
                         : friend.name}
                     </h2>
-                    <p className="text-gray-500 text-xs sm:text-sm">@{friend.username}</p>
+                    <p className="text-gray-500 text-xs sm:text-sm">
+                      @{friend.username}
+                    </p>
                     <div className="flex gap-3 sm:gap-4 text-xs sm:text-sm mt-1">
                       <span className="text-indigo-500">
                         {followingFollowers?.followingCount || 0} Following
@@ -518,18 +524,25 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                 </div>
 
                 {/* Right: Buttons */}
+                {/* Right: Buttons */}
                 <div className="flex gap-2 w-full sm:w-auto sm:mt-8">
                   <div className="w-full">
                     {/* Show Accept/Reject buttons when user has received a pending request */}
-                    {profileData?.reciver_request_status === "PENDING" ? (
+                    {buttonsLoading ? (
+                      // Loader for Connect button
+                      <div className="flex justify-center items-center h-9">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600"></div>
+                      </div>
+                    ) : profileData?.reciver_request_status === "PENDING" ? (
+                      // Existing Accept/Reject buttons
                       <div className="flex gap-2">
                         <button
                           onClick={() =>
                             handleAcceptRequest(profileData?.user_id)
                           }
                           className="h-9 px-4 rounded-full bg-green-500 
-        font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-        text-white flex items-center justify-center gap-2 hover:bg-green-600 min-w-[100px]"
+            font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+            text-white flex items-center justify-center gap-2 hover:bg-green-600 min-w-[100px]"
                         >
                           <UserRoundPlus className="w-4 h-4" />
                           Accept
@@ -539,8 +552,8 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                             handleRejectRequest(profileData?.user_id)
                           }
                           className="h-9 px-4 rounded-full bg-red-500 
-        font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-        text-white flex items-center justify-center gap-2 hover:bg-red-600 min-w-[100px]"
+            font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+            text-white flex items-center justify-center gap-2 hover:bg-red-600 min-w-[100px]"
                         >
                           <UserRoundMinus className="w-4 h-4" />
                           Reject
@@ -552,51 +565,61 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                         onClick={() => handleFriend(profileData?.user_id)}
                         disabled={profileData?.user_id === loggedInUserId}
                         className={`w-full h-9 rounded-full px-3 border border-[#ECEEF2] 
-                          font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
-                          flex items-center justify-center gap-2
-                          ${profileData?.user_id === loggedInUserId
-                            ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                            : profileData?.if_friend &&
-                              profileData?.friend_request_status === "ACCEPT"
-                              ? "bg-green-100 text-green-700"
-                              : !profileData?.if_friend &&
-                                profileData?.friend_request_status === "PENDING"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-[#FFFFFF] text-[#0B3449]"
-                          }`}
+          font-['Open_Sans'] font-semibold text-[14px] leading-[150%] 
+          flex items-center justify-center gap-2
+          ${
+            profileData?.user_id === loggedInUserId
+              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+              : profileData?.if_friend &&
+                profileData?.friend_request_status === "ACCEPT"
+              ? "bg-green-100 text-green-700"
+              : !profileData?.if_friend &&
+                profileData?.friend_request_status === "PENDING"
+              ? "bg-yellow-100 text-yellow-700"
+              : "bg-[#FFFFFF] text-[#0B3449]"
+          }`}
                       >
                         <UserRoundPlus className="w-4 h-4" />
                         {profileData?.if_friend &&
-                          profileData?.friend_request_status === "ACCEPT"
+                        profileData?.friend_request_status === "ACCEPT"
                           ? "Connected"
                           : !profileData?.if_friend &&
                             profileData?.friend_request_status === "PENDING"
-                            ? "Requested..."
-                            : "Connect"}
+                          ? "Requested..."
+                          : "Connect"}
                       </button>
                     )}
                   </div>
-                  {/* Follow Button */}
-                  <button
-                    onClick={() => handleFollow(profileData?.user_id)}
-                    className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                      ${profileData?.if_following
-                        ? "bg-[#7077FE] text-white hover:bg-indigo-600 "
-                        : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
-                      }`}
-                  >
-                    {profileData?.if_following ? (
-                      <>
-                        <TrendingUp />
-                        Resonating
-                      </>
-                    ) : (
-                      <>
-                        <span>+</span>
-                        <span>Resonate</span>
-                      </>
-                    )}
-                  </button>
+
+                  {/* Resonate/Follow Button */}
+                  {buttonsLoading ? (
+                    // Loader for Resonate button
+                    <div className="flex w-[100px] justify-center items-center h-[35px]">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => handleFollow(profileData?.user_id)}
+                      className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+        ${
+          profileData?.if_following
+            ? "bg-[#7077FE] text-white hover:bg-indigo-600"
+            : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
+        }`}
+                    >
+                      {profileData?.if_following ? (
+                        <>
+                          <TrendingUp />
+                          Resonating
+                        </>
+                      ) : (
+                        <>
+                          <span>+</span>
+                          <span>Resonate</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                   {/* <button
                     onClick={handleFollowToggle}
                     disabled={followLoading}
@@ -624,7 +647,9 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
 
             {/* Scrollable Posts */}
             <div className="flex-1 overflow-y-auto p-3 sm:p-4">
-              <h3 className="text-sm sm:text-[14px] font-medium text-gray-800 mb-3">Posts</h3>
+              <h3 className="text-sm sm:text-[14px] font-medium text-gray-800 mb-3">
+                Posts
+              </h3>
 
               {loading ? (
                 <div className="flex justify-center items-center py-8">
