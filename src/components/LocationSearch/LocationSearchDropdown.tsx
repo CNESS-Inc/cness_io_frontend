@@ -29,6 +29,16 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Default popular locations
+  const defaultLocations = [
+    "New York",
+    "London",
+    "Tokyo",
+    "Paris",
+    "Sydney"
+  ];
+
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,10 +53,22 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
     };
   }, []);
 
+  // Load default suggestions when dropdown opens
+  useEffect(() => {
+    if (isOpen && searchQuery.trim().length === 0) {
+      loadDefaultSuggestions();
+    }
+  }, [isOpen]);
+
   // Debounced search
   useEffect(() => {
     if (searchQuery.trim().length < 3) {
-      setLocations([]);
+      if (searchQuery.trim().length === 0 && isOpen) {
+        // Show default suggestions if query is empty
+        loadDefaultSuggestions();
+      } else {
+        setLocations([]);
+      }
       return;
     }
 
@@ -66,6 +88,33 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
       }
     };
   }, [searchQuery]);
+
+  const loadDefaultSuggestions = async () => {
+    setIsLoading(true);
+    try {
+      // Load popular locations as default suggestions
+      const allSuggestions: Location[] = [];
+
+      for (const city of defaultLocations) {
+        try {
+          const response = await SearchLocation(city);
+          if (response?.data?.data && response.data.data.length > 0) {
+            // Take the first result for each city
+            allSuggestions.push(response.data.data[0]);
+          }
+        } catch (error) {
+          console.error(`Error fetching ${city}:`, error);
+        }
+      }
+
+      setLocations(allSuggestions);
+    } catch (error) {
+      console.error("Error loading default suggestions:", error);
+      setLocations([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const searchLocations = async (query: string) => {
     setIsLoading(true);
@@ -169,12 +218,12 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
       </div>
 
       {/* Dropdown */}
-      {isOpen && !value && searchQuery.length >= 3 && (
+      {isOpen && !value && (searchQuery.length === 0 || searchQuery.length >= 3) && (
         <div className="absolute z-50 w-full mt-2 bg-white border border-gray-300 rounded-xl shadow-lg max-h-60 overflow-y-auto">
           {isLoading ? (
             <div className="p-4 text-center text-gray-500">
               <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-              Searching...
+              {searchQuery.length === 0 ? "Loading suggestions..." : "Searching..."}
             </div>
           ) : locations.length > 0 ? (
             <ul className="py-2">
@@ -195,7 +244,7 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
             </ul>
           ) : (
             <div className="p-4 text-center text-gray-500 text-sm">
-              No locations found. Try a different search.
+              {searchQuery.length === 0 ? "No suggestions available" : "No locations found. Try a different search."}
             </div>
           )}
         </div>

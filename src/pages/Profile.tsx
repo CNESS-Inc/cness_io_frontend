@@ -38,7 +38,7 @@ import {
   GetSavedPosts,
   SavePost,
   GetUserReel,
-  // GetFollowingUser,
+  GetFollowingUser,
   GetConnectionUser,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -95,7 +95,7 @@ const profiles = [
       { label: "Conscious Acts", icon: <Copy size={16} /> },
       { label: "Inspiration Reels", icon: <PlayCircle size={16} /> },
       { label: "Connections", icon: <Users size={16} /> },
-      { label: "Collections", icon: <Copy size={16} /> },
+      { label: "Favorites", icon: <Copy size={16} /> },
       //{ label: "About", icon: <AtSign size={16} /> },
     ],
   },
@@ -228,6 +228,7 @@ export default function Profile() {
 
   const [userPosts, setUserPosts] = useState<MyPostProps[]>([]);
   const [followingUsers, setFollowingUsers] = useState<FollowedUser[]>([]);
+  const [usersFriend, setUsersFriend] = useState<any[]>([]);
   const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
   const [collectionItems, setCollectionItems] = useState<any[]>([]);
   const [userReels, setUserReels] = useState<any[]>([]);
@@ -290,10 +291,36 @@ export default function Profile() {
       type: "success",
       duration: 3000,
     });
-    fetchFollowingUsers();
+    fetchFriendUsers();
   };
 
   const fetchFollowingUsers = async () => {
+    try {
+      // const res = await GetConnectionUser();
+      const res = await GetFollowingUser();
+      // Transform the API response to match FollowedUser interface
+      const transformedUsers = res.data.data.rows.map((item: any) => ({
+        id: item.following_id,
+        username: item.following_user.username,
+        first_name: item.following_user.profile.first_name || "",
+        last_name: item.following_user.profile.last_name || "",
+        profile_picture: item.following_user.profile.profile_picture,
+        is_following: true, // Since these are users you're following
+      }));
+
+      setFollowingUsers(transformedUsers);
+    } catch (error) {
+      console.error("Error fetching followed users:", error);
+      // Optional: Show error to user
+      showToast({
+        message: "Failed to load followed users",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const fetchFriendUsers = async () => {
     try {
       // const res = await GetConnectionUser();
       const res = await GetConnectionUser();
@@ -307,7 +334,7 @@ export default function Profile() {
         is_following: true, // Since these are users you're following
       }));
 
-      setFollowingUsers(transformedUsers);
+      setUsersFriend(transformedUsers);
     } catch (error) {
       console.error("Error fetching followed users:", error);
       // Optional: Show error to user
@@ -597,12 +624,12 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    if (activeTab === "Collections" && boards.length === 0) {
+    if (activeTab === "Favorites" && boards.length === 0) {
       // setBoards(demoBoards);
       fetchCollectionItems();
     }
     if (activeTab === "Connections") {
-      fetchFollowingUsers();
+      fetchFriendUsers();
     }
     if (activeTab === "Inspiration Reels") {
       fetchUsersReel();
@@ -729,19 +756,19 @@ export default function Profile() {
                 fetchUserPosts();
               } else if (activeTab === "Inspiration Reels") {
                 fetchUsersReel();
-              } else if (activeTab === "Collections") {
+              } else if (activeTab === "Favorites") {
                 fetchCollectionItems();
               }
               // Close the popup
               setSelectedPost(null);
             }}
-            collection={activeTab === "Collections"}
+            collection={activeTab === "Favorites"}
             likesCount={selectedPost.likes ?? 0}
             insightsCount={selectedPost.reflections ?? 0}
           />
         )}
 
-        {activeTab === "Collections" &&
+        {activeTab === "Favorites" &&
           (collectionItems.length === 0 ? (
             // Empty state without any button
             <div className="border border-dashed border-[#C4B5FD] rounded-xl bg-[#F8F6FF] py-8 sm:py-12 flex items-center justify-center">
@@ -854,9 +881,9 @@ export default function Profile() {
         )}
 
         {activeTab === "Connections" &&
-          (followingUsers.length > 0 ? (
+          (usersFriend.length > 0 ? (
             <Connections
-              connections={followingUsers.map((f) => ({
+              connections={usersFriend.map((f) => ({
                 id: f.id,
                 name: `${f.first_name} ${f.last_name}`.trim(),
                 username: f.username,

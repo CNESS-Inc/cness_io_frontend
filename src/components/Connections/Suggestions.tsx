@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import FriendCard from "../Profile/Friendcard";
-import { GetSuggestedFriend } from "../../Common/ServerAPI";
+import { GetSearchFriend, GetSuggestedFriend } from "../../Common/ServerAPI";
 import { useToast } from "../ui/Toast/ToastProvider";
 
 type Connection = {
@@ -39,7 +39,12 @@ const Suggestions = ({ searchTerm, onSelect }: Props) => {
   ) => {
     try {
       setIsLoading(true);
-      const response = await GetSuggestedFriend(search, pageNo, PAGE_SIZE);
+      let response
+      if(searchTerm !== ""){
+        response = await GetSearchFriend(search, pageNo, PAGE_SIZE);
+      }else{
+        response = await GetSuggestedFriend(search, pageNo, PAGE_SIZE);
+      }
       const rows = response?.data?.data?.rows || [];
       const formatted = rows.map((item: any) => ({
         id: item.id,
