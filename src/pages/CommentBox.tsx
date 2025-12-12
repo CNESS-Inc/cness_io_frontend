@@ -422,7 +422,7 @@ const CommentBox = ({
         ]);
 
         setUserPosts((prevPosts: any) =>
-          prevPosts.map((post: any) =>
+          prevPosts?.map((post: any) =>
             post.id === postId
               ? {
                   ...post,

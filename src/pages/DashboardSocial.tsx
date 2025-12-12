@@ -225,9 +225,8 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${
-              index === current ? "block" : "hidden"
-            }`}
+            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
+              }`}
           >
             {item.type === "image" ? (
               <img
@@ -279,9 +278,8 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                idx === current ? "bg-indigo-500" : "bg-gray-300"
-              }`}
+              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
+                }`}
             ></button>
           ))}
         </div>
@@ -489,11 +487,11 @@ export default function SocialTopBar() {
           prev.map((p) =>
             p.user_id === userId
               ? {
-                  ...p,
-                  if_friend: false,
-                  friend_request_status: "PENDING",
-                  is_requested: true,
-                }
+                ...p,
+                if_friend: false,
+                friend_request_status: "PENDING",
+                is_requested: true,
+              }
               : p
           )
         );
@@ -524,11 +522,11 @@ export default function SocialTopBar() {
           prev.map((p) =>
             p.user_id === userId
               ? {
-                  ...p,
-                  if_friend: false,
-                  friend_request_status: null,
-                  is_requested: false,
-                }
+                ...p,
+                if_friend: false,
+                friend_request_status: null,
+                is_requested: false,
+              }
               : p
           )
         );
@@ -559,11 +557,11 @@ export default function SocialTopBar() {
           prev.map((p) =>
             p.user_id === userId
               ? {
-                  ...p,
-                  if_friend: false,
-                  friend_request_status: null,
-                  is_requested: false,
-                }
+                ...p,
+                if_friend: false,
+                friend_request_status: null,
+                is_requested: false,
+              }
               : p
           )
         );
@@ -636,7 +634,7 @@ export default function SocialTopBar() {
         // Get the first image URL if available, or use profile picture as fallback
         const firstImageUrl =
           item.file &&
-          item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
+            item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
             ? item.file.split(",")[0].trim()
             : item.profile.profile_picture;
 
@@ -752,8 +750,7 @@ export default function SocialTopBar() {
         // Check if friend_request_status exists in the response
         // If not, we need to determine it based on existing data
         if (postData.friend_request_status !== undefined) {
-          transformedPost.friend_request_status =
-            postData.friend_request_status;
+          transformedPost.friend_request_status = postData.friend_request_status;
         } else {
           // Determine status based on existing fields
           if (postData.if_friend) {
@@ -1232,12 +1229,12 @@ export default function SocialTopBar() {
         prevPosts.map((post) =>
           post.id === postId
             ? {
-                ...post,
-                is_liked: !post.is_liked,
-                likes_count: post.is_liked
-                  ? post.likes_count - 1
-                  : post.likes_count + 1,
-              }
+              ...post,
+              is_liked: !post.is_liked,
+              likes_count: post.is_liked
+                ? post.likes_count - 1
+                : post.likes_count + 1,
+            }
             : post
         )
       );
@@ -1496,8 +1493,10 @@ export default function SocialTopBar() {
   // const topicDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // fetchUserSelectedTopics();
-  }, []);
+    if (topics.length > 0) {
+      fetchUserSelectedTopics();
+    }
+  }, [topics]);
 
   useEffect(() => {
     fetchTopics();
@@ -1541,14 +1540,16 @@ export default function SocialTopBar() {
       ) {
         setUserSelectedTopics(response?.data?.data);
       } else {
+        // No topics selected yet - show modal
         console.warn(
-          "Error during fetch user selected topics details",
-          response
+          "No user selected topics found, showing topic selection modal"
         );
+        setShowTopicModal(true);
       }
     } catch (error: any) {
       console.error("Error fetching user selected topic details:", error);
-      if (error?.response?.status === 404) {
+      // On 404 or any error, show the topic selection modal
+      if (error?.response?.status === 404 || error?.response?.status === 400) {
         setShowTopicModal(true);
       } else {
         showToast({
@@ -1783,9 +1784,9 @@ export default function SocialTopBar() {
                         <img
                           src={
                             !userProfilePicture ||
-                            userProfilePicture === "null" ||
-                            userProfilePicture === "undefined" ||
-                            !userProfilePicture.startsWith("http")
+                              userProfilePicture === "null" ||
+                              userProfilePicture === "undefined" ||
+                              !userProfilePicture.startsWith("http")
                               ? "/profile.png"
                               : userProfilePicture
                           }
@@ -1861,12 +1862,12 @@ export default function SocialTopBar() {
                             <img
                               src={
                                 !singlePost.profile.profile_picture ||
-                                singlePost.profile.profile_picture === "null" ||
-                                singlePost.profile.profile_picture ===
+                                  singlePost.profile.profile_picture === "null" ||
+                                  singlePost.profile.profile_picture ===
                                   "undefined" ||
-                                !singlePost.profile.profile_picture.startsWith(
-                                  "http"
-                                )
+                                  !singlePost.profile.profile_picture.startsWith(
+                                    "http"
+                                  )
                                   ? "/profile.png"
                                   : singlePost.profile.profile_picture
                               }
@@ -1907,37 +1908,35 @@ export default function SocialTopBar() {
                             {/* Connect Button */}
                             <button
                               onClick={() => handleConnect(singlePost.user_id)}
-                              className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${
-                                singlePost.if_friend &&
+                              className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${singlePost.if_friend &&
                                 singlePost.friend_request_status === "ACCEPT"
-                                  ? "bg-green-100 text-green-700 border border-green-300"
-                                  : !singlePost.if_friend &&
-                                    singlePost.friend_request_status ===
-                                      "PENDING"
+                                ? "bg-green-100 text-green-700 border border-green-300"
+                                : !singlePost.if_friend &&
+                                  singlePost.friend_request_status ===
+                                  "PENDING"
                                   ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
                                   : "bg-white text-black border border-gray-200"
-                              }`}
+                                }`}
                             >
                               <span className="flex items-center gap-1">
                                 <UserRoundPlus className="w-4 h-4" />
                                 {singlePost.if_friend &&
-                                singlePost.friend_request_status === "ACCEPT"
+                                  singlePost.friend_request_status === "ACCEPT"
                                   ? "Connected"
                                   : !singlePost.if_friend &&
                                     singlePost.friend_request_status ===
-                                      "PENDING"
-                                  ? "Requested"
-                                  : "Connect"}
+                                    "PENDING"
+                                    ? "Requested"
+                                    : "Connect"}
                               </span>
                             </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => handleFollow(singlePost.user_id)}
                               className={`flex justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors h-[35px]
-                                ${
-                                  singlePost.if_following
-                                    ? "bg-[#7077FE] text-white hover:bg-indigo-600"
-                                    : "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                ${singlePost.if_following
+                                  ? "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                  : "bg-[#7077FE] text-white hover:bg-indigo-600"
                                 }`}
                             >
                               {singlePost.if_following ? (
@@ -1981,7 +1980,7 @@ export default function SocialTopBar() {
                                           }
                                           disabled={
                                             connectingUsers[
-                                              singlePost.user_id
+                                            singlePost.user_id
                                             ] || false
                                           }
                                           className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
@@ -1994,10 +1993,10 @@ export default function SocialTopBar() {
                                           {connectingUsers[singlePost.user_id]
                                             ? "Loading..."
                                             : getFriendStatus(
-                                                singlePost.user_id
-                                              ) === "requested"
-                                            ? "Requested" // This will now change back to "Connect" when clicked again
-                                            : "Connect"}
+                                              singlePost.user_id
+                                            ) === "requested"
+                                              ? "Requested" // This will now change back to "Connect" when clicked again
+                                              : "Connect"}
                                         </button>
                                       </li>
                                       <li>
@@ -2133,16 +2132,16 @@ export default function SocialTopBar() {
                         <p className="text-gray-800 font-[poppins] text-sm md:text-base mb-2 md:mb-3 space-y-1">
                           <span>
                             {expandedPosts[singlePost.id] ||
-                            singlePost?.content?.length <= CONTENT_LIMIT
+                              singlePost?.content?.length <= CONTENT_LIMIT
                               ? renderContentWithHashtags(
-                                  singlePost.content || ""
-                                )
+                                singlePost.content || ""
+                              )
                               : renderContentWithHashtags(
-                                  `${singlePost?.content?.substring(
-                                    0,
-                                    CONTENT_LIMIT
-                                  )}...`
-                                )}
+                                `${singlePost?.content?.substring(
+                                  0,
+                                  CONTENT_LIMIT
+                                )}...`
+                              )}
                           </span>
                           {singlePost?.content?.length > CONTENT_LIMIT && (
                             <button
@@ -2266,9 +2265,8 @@ export default function SocialTopBar() {
                         <button
                           onClick={(e) => handleLike(singlePost.id, e)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${
-                            isLoading ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
                         >
                           <span className="hidden sm:flex text-lg text-black">
                             {singlePost.likes_count}
@@ -2280,11 +2278,10 @@ export default function SocialTopBar() {
                           />
 
                           <span
-                            className={`hidden sm:flex ${
-                              singlePost.is_liked
-                                ? "text-[#7077FE]"
-                                : "text-black"
-                            }`}
+                            className={`hidden sm:flex ${singlePost.is_liked
+                              ? "text-[#7077FE]"
+                              : "text-black"
+                              }`}
                           >
                             Appreciate
                           </span>
@@ -2302,11 +2299,10 @@ export default function SocialTopBar() {
                             setSelectedPostId(singlePost.id);
                             setShowCommentBox(true);
                           }}
-                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${
-                            selectedPostId === singlePost.id
-                              ? "text-[#7077FE]"
-                              : "text-black"
-                          }`}
+                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${selectedPostId === singlePost.id
+                            ? "text-[#7077FE]"
+                            : "text-black"
+                            }`}
                         >
                           <MessageSquare
                             className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
@@ -2322,11 +2318,10 @@ export default function SocialTopBar() {
                             }
                           />{" "}
                           <span
-                            className={`hidden sm:flex ${
-                              selectedPostId === singlePost.id
-                                ? "#7077FE"
-                                : "text-black"
-                            }`}
+                            className={`hidden sm:flex ${selectedPostId === singlePost.id
+                              ? "#7077FE"
+                              : "text-black"
+                              }`}
                           >
                             Reflections
                           </span>
@@ -2500,11 +2495,9 @@ export default function SocialTopBar() {
                                     : "/profile.png"
                                 }
                                 userName={
-                                  `${
-                                    story.storyuser?.profile?.first_name || ""
-                                  } ${
-                                    story.storyuser?.profile?.last_name || ""
-                                  }`.trim() || ""
+                                  `${story.storyuser?.profile?.first_name || ""
+                                    } ${story.storyuser?.profile?.last_name || ""
+                                    }`.trim() || ""
                                 }
                                 title={story.description || "Untitled Story"}
                                 videoSrc={story?.thumbnail || ""}
@@ -2515,7 +2508,7 @@ export default function SocialTopBar() {
                                   src={
                                     story.storyuser?.profile?.profile_picture
                                       ? story.storyuser?.profile
-                                          ?.profile_picture
+                                        ?.profile_picture
                                       : "/profile.png"
                                   }
                                   alt="user"
@@ -2610,12 +2603,12 @@ export default function SocialTopBar() {
                                 <img
                                   src={
                                     !post.profile.profile_picture ||
-                                    post.profile.profile_picture === "null" ||
-                                    post.profile.profile_picture ===
+                                      post.profile.profile_picture === "null" ||
+                                      post.profile.profile_picture ===
                                       "undefined" ||
-                                    !post.profile.profile_picture.startsWith(
-                                      "http"
-                                    )
+                                      !post.profile.profile_picture.startsWith(
+                                        "http"
+                                      )
                                       ? "/profile.png"
                                       : post.profile.profile_picture
                                   }
@@ -2656,36 +2649,34 @@ export default function SocialTopBar() {
                                 {/* Connect Button */}
                                 <button
                                   onClick={() => handleConnect(post.user_id)}
-                                  className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${
-                                    post.if_friend &&
+                                  className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${post.if_friend &&
                                     post.friend_request_status === "ACCEPT"
-                                      ? "bg-green-100 text-green-700 border border-green-300"
-                                      : !post.if_friend &&
-                                        post.friend_request_status === "PENDING"
+                                    ? "bg-green-100 text-green-700 border border-green-300"
+                                    : !post.if_friend &&
+                                      post.friend_request_status === "PENDING"
                                       ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
                                       : "bg-white text-black border border-gray-200"
-                                  }`}
+                                    }`}
                                 >
                                   <span className="flex items-center gap-1">
                                     <UserRoundPlus className="w-4 h-4" />
                                     {post.if_friend &&
-                                    post.friend_request_status === "ACCEPT"
+                                      post.friend_request_status === "ACCEPT"
                                       ? "Connected"
                                       : !post.if_friend &&
                                         post.friend_request_status === "PENDING"
-                                      ? "Requested"
-                                      : "Connect"}
+                                        ? "Requested"
+                                        : "Connect"}
                                   </span>
                                 </button>
                                 {/* Follow Button */}
                                 <button
                                   onClick={() => handleFollow(post.user_id)}
                                   className={`flex justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors h-[35px]
-                                ${
-                                  post.if_following
-                                    ? "bg-[#7077FE] text-white hover:bg-indigo-600"
-                                    : "bg-[#7077FE] text-white hover:bg-indigo-600"
-                                }`}
+                                ${post.if_following
+                                      ? "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                      : "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                    }`}
                                 >
                                   {post.if_following ? (
                                     <>
@@ -2740,10 +2731,10 @@ export default function SocialTopBar() {
                                               {connectingUsers[post.user_id]
                                                 ? "Loading..."
                                                 : getFriendStatus(
-                                                    post.user_id
-                                                  ) === "requested"
-                                                ? "Requested" // This will now change back to "Connect" when clicked again
-                                                : "Connect"}
+                                                  post.user_id
+                                                ) === "requested"
+                                                  ? "Requested" // This will now change back to "Connect" when clicked again
+                                                  : "Connect"}
                                             </button>
                                           </li>
                                           <li>
@@ -2879,16 +2870,16 @@ export default function SocialTopBar() {
                             <p className="text-gray-800 font-[poppins] text-sm md:text-base mb-2 md:mb-3 space-y-1">
                               <span>
                                 {expandedPosts[post.id] ||
-                                post?.content?.length <= CONTENT_LIMIT
+                                  post?.content?.length <= CONTENT_LIMIT
                                   ? renderContentWithHashtags(
-                                      post.content || ""
-                                    )
+                                    post.content || ""
+                                  )
                                   : renderContentWithHashtags(
-                                      `${post?.content?.substring(
-                                        0,
-                                        CONTENT_LIMIT
-                                      )}...`
-                                    )}
+                                    `${post?.content?.substring(
+                                      0,
+                                      CONTENT_LIMIT
+                                    )}...`
+                                  )}
                               </span>
                               {post?.content?.length > CONTENT_LIMIT && (
                                 <button
@@ -3022,9 +3013,8 @@ export default function SocialTopBar() {
                             <button
                               onClick={(e) => handleLike(post.id, e)}
                               disabled={isLoading}
-                              className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${
-                                isLoading ? "opacity-50 cursor-not-allowed" : ""
-                              }`}
+                              className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                                }`}
                             >
                               <span className="hidden sm:flex text-lg text-black">
                                 {post.likes_count}
@@ -3036,11 +3026,10 @@ export default function SocialTopBar() {
                               />
 
                               <span
-                                className={`hidden sm:flex ${
-                                  post.is_liked
-                                    ? "text-[#7077FE]"
-                                    : "text-black"
-                                }`}
+                                className={`hidden sm:flex ${post.is_liked
+                                  ? "text-[#7077FE]"
+                                  : "text-black"
+                                  }`}
                               >
                                 Appreciate
                               </span>
@@ -3058,11 +3047,10 @@ export default function SocialTopBar() {
                                 setSelectedPostId(post.id);
                                 setShowCommentBox(true);
                               }}
-                              className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${
-                                selectedPostId === post.id
-                                  ? "text-[#7077FE]"
-                                  : "text-black"
-                              }`}
+                              className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${selectedPostId === post.id
+                                ? "text-[#7077FE]"
+                                : "text-black"
+                                }`}
                             >
                               <MessageSquare
                                 className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
@@ -3078,11 +3066,10 @@ export default function SocialTopBar() {
                                 }
                               />{" "}
                               <span
-                                className={`hidden sm:flex ${
-                                  selectedPostId === post.id
-                                    ? "#7077FE"
-                                    : "text-black"
-                                }`}
+                                className={`hidden sm:flex ${selectedPostId === post.id
+                                  ? "#7077FE"
+                                  : "text-black"
+                                  }`}
                               >
                                 Reflections
                               </span>
@@ -3339,11 +3326,10 @@ export default function SocialTopBar() {
           )}
 
           <div
-            className={`fixed xl:static top-0 right-0 h-full xl:h-auto w-[280px] sm:w-[320px] xl:w-[25%] max-w-[90vw] xl:max-w-none bg-white xl:bg-transparent shadow-xl xl:shadow-none transform transition-transform duration-300 ease-in-out ${
-              isSidebarOpen
-                ? "translate-x-0 p-3"
-                : "translate-x-full xl:translate-x-0"
-            } z-50 xl:z-auto overflow-y-auto pt-0 flex flex-col gap-4`}
+            className={`fixed xl:static top-0 right-0 h-full xl:h-auto w-[280px] sm:w-[320px] xl:w-[25%] max-w-[90vw] xl:max-w-none bg-white xl:bg-transparent shadow-xl xl:shadow-none transform transition-transform duration-300 ease-in-out ${isSidebarOpen
+              ? "translate-x-0 p-3"
+              : "translate-x-full xl:translate-x-0"
+              } z-50 xl:z-auto overflow-y-auto pt-0 flex flex-col gap-4`}
           >
             {/* Close button for mobile */}
             <div className="xl:hidden flex justify-between items-center px-4 pb-4 border-b border-gray-200 sticky top-0 bg-white z-10 pt-4">
@@ -3438,10 +3424,15 @@ export default function SocialTopBar() {
                         });
                         setIsSidebarOpen(false);
                       }}
-                      className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                      className="flex items-center gap-2 hover:text-purple-700 cursor-pointer w-full text-left"
+                      title={topic.topic_name}
                     >
-                      <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                      {topic.topic_name}
+                      <span className="w-2 h-2 bg-purple-500 rounded-full shrink-0"></span>
+                      <span className="truncate">
+                        {topic.topic_name.length > 25
+                          ? `${topic.topic_name.substring(0, 25)}...`
+                          : topic.topic_name}
+                      </span>
                     </button>
                   ))}
                 </ul>
@@ -3467,26 +3458,28 @@ export default function SocialTopBar() {
                       });
                       setIsSidebarOpen(false);
                     }}
-                    className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                    className="flex items-center gap-2 hover:text-purple-700 cursor-pointer w-full text-left"
+                    title={topic.topic_name}
                   >
-                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                    {topic.topic_name}
+                    <span className="w-2 h-2 bg-purple-500 rounded-full shrink-0"></span>
+                    <span className="truncate">
+                      {topic.topic_name.length > 25
+                        ? `${topic.topic_name.substring(0, 25)}...`
+                        : topic.topic_name}
+                    </span>
                   </button>
                 ))}
-                {visibleTopic < topics?.length && (
-                  <button
-                    onClick={() => setVisibleTopic((pre) => pre + 10)}
-                    className="text-sm text-blue-500 hover:underline hover:text-blue-600 transition cursor-pointer"
-                  >
-                    See more
-                  </button>
-                )}
-                {topics?.length === 0 && (
-                  <button disabled className="text-gray-400 italic">
-                    No topics available
-                  </button>
-                )}
               </ul>
+              {topics.length > visibleTopic && (
+                <div className="px-4 mt-3">
+                  <button
+                    onClick={() => setVisibleTopic((prev) => prev + 10)}
+                    className="text-sm text-[#7077FE] hover:underline font-medium w-full text-left"
+                  >
+                    See More Topics ({topics.length - visibleTopic} more)
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
