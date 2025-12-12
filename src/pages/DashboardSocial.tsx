@@ -379,6 +379,7 @@ export default function SocialTopBar() {
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const postIdFromURL = queryParams.get("p");
+  const tagFromURL = queryParams.get("tag");
   const [singlePost, setSinglePost] = useState<any>(null);
   const [isLoadingSinglePost, setIsLoadingSinglePost] = useState(false);
   const { showToast } = useToast();
@@ -712,85 +713,98 @@ export default function SocialTopBar() {
       setSinglePost(null);
     }
   }, [postIdFromURL, singlePost]);
+  useEffect(() => {
+    // Reset states when tag changes
+    setPage(1);
+    setHasMore(true);
+    setUserPosts([]);
+
+    // Fetch posts with tag
+    getUserPosts(tagFromURL || undefined);
+
+    // Also fetch story
+    fetchStory();
+  }, [location.search]); // Add location.search as dependency
 
   const fetchSinglePost = async (postId: string) => {
-  try {
-    const response = await GetUserPostById(postId);
+    try {
+      const response = await GetUserPostById(postId);
 
-    if (response?.success?.status) {
-      const postData = response.data.data;
+      if (response?.success?.status) {
+        const postData = response.data.data;
 
-      const transformedPost: any = {
-        id: postData.id,
-        user_id: postData.user_id,
-        content: postData.content,
-        file: postData.file,
-        file_type: postData.file_type,
-        is_poll: !!postData.poll,
-        poll_id: postData.poll?.id || null,
-        createdAt: postData.createdAt,
-        likes_count: postData.likes_count || 0,
-        comments_count: postData.total_comment_count || 0,
-        if_following: postData.if_following || false,
-        if_friend: postData.if_friend || false,
-        is_liked: postData.is_liked || false,
-        is_saved: postData.is_saved || false,
-        is_requested: postData.is_requested || false,
-        user: {
-          id: postData.user.id,
-          username: postData.user.username,
-        },
-        profile: {
-          id: postData.profile.id,
-          user_id: postData.profile.user_id,
-          first_name: postData.profile.first_name,
-          last_name: postData.profile.last_name,
-          profile_picture: postData.profile.profile_picture,
-        },
-      };
+        const transformedPost: any = {
+          id: postData.id,
+          user_id: postData.user_id,
+          content: postData.content,
+          file: postData.file,
+          file_type: postData.file_type,
+          is_poll: !!postData.poll,
+          poll_id: postData.poll?.id || null,
+          createdAt: postData.createdAt,
+          likes_count: postData.likes_count || 0,
+          comments_count: postData.total_comment_count || 0,
+          if_following: postData.if_following || false,
+          if_friend: postData.if_friend || false,
+          is_liked: postData.is_liked || false,
+          is_saved: postData.is_saved || false,
+          is_requested: postData.is_requested || false,
+          user: {
+            id: postData.user.id,
+            username: postData.user.username,
+          },
+          profile: {
+            id: postData.profile.id,
+            user_id: postData.profile.user_id,
+            first_name: postData.profile.first_name,
+            last_name: postData.profile.last_name,
+            profile_picture: postData.profile.profile_picture,
+          },
+        };
 
-      // Check if friend_request_status exists in the response
-      // If not, we need to determine it based on existing data
-      if (postData.friend_request_status !== undefined) {
-        transformedPost.friend_request_status = postData.friend_request_status;
-      } else {
-        // Determine status based on existing fields
-        if (postData.if_friend) {
-          transformedPost.friend_request_status = "ACCEPT";
-        } else if (postData.is_requested) {
-          transformedPost.friend_request_status = "PENDING";
+        // Check if friend_request_status exists in the response
+        // If not, we need to determine it based on existing data
+        if (postData.friend_request_status !== undefined) {
+          transformedPost.friend_request_status =
+            postData.friend_request_status;
         } else {
-          transformedPost.friend_request_status = null;
+          // Determine status based on existing fields
+          if (postData.if_friend) {
+            transformedPost.friend_request_status = "ACCEPT";
+          } else if (postData.is_requested) {
+            transformedPost.friend_request_status = "PENDING";
+          } else {
+            transformedPost.friend_request_status = null;
+          }
         }
-      }
 
-      setSinglePost(transformedPost);
-    } else {
+        setSinglePost(transformedPost);
+      } else {
+        showToast({
+          type: "error",
+          message: "Post not found",
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching single post:", error);
       showToast({
         type: "error",
-        message: "Post not found",
+        message: "Failed to load post",
         duration: 2000,
       });
     }
-  } catch (error) {
-    console.error("Error fetching single post:", error);
-    showToast({
-      type: "error",
-      message: "Failed to load post",
-      duration: 2000,
-    });
-  }
-};
+  };
 
-  const getUserPosts = async () => {
+  const getUserPosts = async (tag?: string) => {
     if (isLoading || !hasMore) return;
 
     setIsLoading(true);
     setIsPostsLoading(true);
     try {
-      // Call the API to get the posts for the current page
-      const res = await FeedPostsDetails(page);
-      // const res = await PostsDetails(page);
+      // Call the API with tag parameter if available
+      const res = await FeedPostsDetails(page, tag); // Pass tag to API
+
       if (res?.data) {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
@@ -798,7 +812,13 @@ export default function SocialTopBar() {
         if (newPosts.length === 0) {
           setHasMore(false); // No more posts to load
         } else {
-          setUserPosts([...userPosts, ...newPosts]);
+          // If it's the first page with a tag, replace posts
+          // If it's subsequent pages, append posts
+          if (page === 1) {
+            setUserPosts(newPosts);
+          } else {
+            setUserPosts([...userPosts, ...newPosts]);
+          }
 
           // Check if the current page is the last page
           if (page >= totalPages) {
@@ -810,6 +830,11 @@ export default function SocialTopBar() {
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
+      showToast({
+        message: "Failed to load posts",
+        type: "error",
+        duration: 3000,
+      });
     } finally {
       setIsLoading(false);
       setIsPostsLoading(false);
@@ -1666,7 +1691,7 @@ export default function SocialTopBar() {
           <button
             key={`${part}-${idx}`}
             onClick={() =>
-              navigate(`/dashboard/feed?tag=${encodeURIComponent(tag)}`)
+              navigate(`/dashboard/feed/search?tag=${encodeURIComponent(tag)}`)
             }
             className="text-[#7077FE] hover:underline"
             type="button"
@@ -3184,7 +3209,7 @@ export default function SocialTopBar() {
                       {hasMore && userPosts.length >= 10 && (
                         <div className="flex justify-center mt-6">
                           <button
-                            onClick={getUserPosts}
+                            onClick={() => getUserPosts()}
                             disabled={isLoading}
                             className="px-6 py-2 bg-[#7077FE] text-white rounded-full hover:bg-[#5b63e6] disabled:opacity-50"
                           >
@@ -3447,7 +3472,7 @@ export default function SocialTopBar() {
                   <button
                     key={topic.id}
                     onClick={() => {
-                      navigate(`/dashboard/${topic.slug}`, {
+                      navigate(`/dashboard/feed/search?topic=${topic.slug}`, {
                         state: {
                           topics,
                           userSelectedTopics,

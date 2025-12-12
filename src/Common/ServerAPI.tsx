@@ -197,6 +197,7 @@ export const EndPoint = {
   story_user: "/story/user",
   following_followers: "/user/following-followers",
   connection: "/friend",
+  friend_search: "/friend/by-search",
   user_connection: "/friend/get-friend-status",
   connection_request: "/friend/request",
   suggested_connection: "/friend/suggestions",
@@ -1361,10 +1362,12 @@ export const PostsDetails = (page: any) => {
   );
 };
 
-export const FeedPostsDetails = (page: any) => {
+export const FeedPostsDetails = (page: any,tag?:any,topic?:any) => {
   let data = {};
   let params: { [key: string]: any } = {};
   params["page_no"] = page;
+  params["tag"] = tag;
+  params["topic"] = topic;
   return executeAPI(
     ServerAPI.APIMethod.GET,
     data,
@@ -1612,6 +1615,19 @@ export const GetConnectionUser = (
   if (limit) params["limit"] = limit;
 
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection, params);
+};
+export const GetSearchFriend = (
+  search?: string,
+  page?: number,
+  limit?: number
+) => {
+  let data = {};
+  let params: { [key: string]: any } = {};
+  params["search"] = search;
+  if (page) params["page"] = page;
+  if (limit) params["limit"] = limit;
+
+  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.friend_search, params);
 };
 export const SendConnectionRequest = (formattedData: any) => {
   return executeAPI(

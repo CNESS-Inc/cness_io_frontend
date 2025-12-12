@@ -550,10 +550,10 @@ export const router = createBrowserRouter([
               },
             ],
           },
-          {
-            path: ":slug",
-            element: <TopicPost />,
-          },
+          // {
+          //   path: ":slug",
+          //   element: <TopicPost />,
+          // },
 
           {
             path: "SearchExplore",
@@ -644,6 +644,10 @@ export const router = createBrowserRouter([
           {
             path: "feed",
             element: <DashboardSocial />,
+          },
+          {
+            path: "feed/search",
+            element: <TopicPost />,
           },
           {
             path: "DashboardDirectory",
