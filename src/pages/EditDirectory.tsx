@@ -26,8 +26,8 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Select from "react-select";
 import LocationSearchDropdown from "../components/LocationSearch/LocationSearchDropdown";
+import CreatableSelect from "react-select/creatable";
 
 interface DayType {
   name: string;
@@ -1523,7 +1523,7 @@ const EditDirectory: React.FC = () => {
                     Services <span className="text-red-500">*</span>
                   </label>
 
-                  <Select
+                  <CreatableSelect
                     isMulti
                     options={
                       serviceData?.map((service: any) => ({
