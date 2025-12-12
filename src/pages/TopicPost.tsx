@@ -1,9 +1,9 @@
 import { ChevronLeft, TrendingUp } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import PostCard from "../components/Profile/Post";
 import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { getPostByTopicId } from "../Common/ServerAPI";
+import { FeedPostsDetails, TagTopicPostsDetails } from "../Common/ServerAPI";
 
 type Post = React.ComponentProps<typeof PostCard>;
 
@@ -16,9 +16,15 @@ const PAGE_LIMIT = 10;
 
 export default function Topic() {
   const nav = useNavigate();
-  const { slug } = useParams();
   const location = useLocation();
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // Get both topic and tag from URL search params
+  const topicSlug = searchParams.get("topic");
+  const tagSlug = searchParams.get("tag");
+  
+  console.log("🚀 ~ Topic ~ tagSlug:", tagSlug);
+  console.log("🚀 ~ Topic ~ topicSlug:", topicSlug);
 
   const topics: Topic[] = location.state?.topics || [];
   const userSelectedTopics: Topic[] = location.state?.userSelectedTopics || [];
@@ -35,9 +41,33 @@ export default function Topic() {
   const openTopics = () => setIsTopicsOpen(true);
   const closeTopics = () => setIsTopicsOpen(false);
 
-  const clickedTopic: Topic | undefined = topics?.find(
-    (item) => item?.slug === slug
-  );
+  // Determine which type of feed we're showing
+  const isTagFeed = !!tagSlug;
+  const isTopicFeed = !!topicSlug;
+  
+  // Get the display title based on what we're showing
+  const getDisplayTitle = () => {
+    if (isTagFeed) {
+      return `#${tagSlug}`;
+    }
+    if (isTopicFeed) {
+      const topic = topics?.find(item => item?.slug === topicSlug);
+      return topic?.topic_name || "Topic";
+    }
+    return "Posts";
+  };
+
+  // Get the description based on what we're showing
+  const getDescription = () => {
+    if (isTagFeed) {
+      return `Explore posts tagged with #${tagSlug}.`;
+    }
+    if (isTopicFeed) {
+      const topic = topics?.find(item => item?.slug === topicSlug);
+      return `Join the community sharing insights about ${topic?.topic_name || "this topic"}.`;
+    }
+    return "Explore posts from the community.";
+  };
 
   const mapApiRowToPost = (el: any): Post => ({
     avatar: el?.profile?.profile_picture || null,
@@ -55,14 +85,14 @@ export default function Topic() {
 
   const getUserPosts = useCallback(
     async (requestedPage = page) => {
-      if (!clickedTopic?.id || isLoading || !hasMore) return;
+      // Don't fetch if loading, no more data, or no parameters
+      if (isLoading || !hasMore || (!tagSlug && !topicSlug)) return;
 
       setIsLoading(true);
       try {
-        const res = await getPostByTopicId(
-          clickedTopic.id,
-          requestedPage,
-          PAGE_LIMIT
+        // The API should handle filtering by either or both
+        const res = await FeedPostsDetails(
+          requestedPage
         );
 
         if (res?.data?.data?.rows) {
@@ -90,7 +120,7 @@ export default function Topic() {
               return [...prevPosts, ...filteredNewPosts];
             });
 
-            if (page >= totalPages) {
+            if (requestedPage >= totalPages) {
               setHasMore(false);
             } else {
               setPage((prev) => Math.max(prev, requestedPage + 1));
@@ -105,7 +135,7 @@ export default function Topic() {
         initialLoad.current = false;
       }
     },
-    [page, isLoading, hasMore, clickedTopic]
+    [page, isLoading, hasMore, tagSlug, topicSlug]
   );
 
   // Set up intersection observer for infinite scroll
@@ -127,7 +157,7 @@ export default function Topic() {
           !isLoading &&
           hasMore
         ) {
-          getUserPosts(); // loads using current `page`
+          getUserPosts();
         }
       },
       { root: null, rootMargin: "100px", threshold: 0.1 }
@@ -138,18 +168,20 @@ export default function Topic() {
     return () => {
       observer.current?.disconnect();
     };
-  }, [posts.length, clickedTopic?.id, isLoading, hasMore, getUserPosts]);
+  }, [posts.length, isLoading, hasMore, getUserPosts]);
 
-  // Initial load
+  // Initial load when component mounts or parameters change
   useEffect(() => {
-    if (!clickedTopic?.id) {
+    // Reset state when there are no parameters
+    if (!tagSlug && !topicSlug) {
       setPosts([]);
       setHasMore(false);
       setPage(1);
+      setIsLoading(false);
       return;
     }
 
-    // Reset state when component mounts
+    // Reset state when parameters change
     setPosts([]);
     setPage(1);
     setHasMore(true);
@@ -159,7 +191,7 @@ export default function Topic() {
     // Load first page immediately
     const loadFirstPage = async () => {
       try {
-        const res = await getPostByTopicId(clickedTopic.id, 1, PAGE_LIMIT);
+        const res = await TagTopicPostsDetails(1, tagSlug || null, topicSlug || null);
         console.log("Initial load response:", res);
 
         const rows: any[] = res?.data?.data?.rows ?? [];
@@ -188,7 +220,21 @@ export default function Topic() {
     };
 
     loadFirstPage();
-  }, [clickedTopic]);
+  }, [tagSlug, topicSlug]);
+
+  // Navigation handler for topic clicks
+  const handleTopicClick = (topic: Topic) => {
+    nav(`/dashboard/feed/search?topic=${topic.slug}`, {
+      state: { topics, userSelectedTopics },
+    });
+  };
+
+  // Navigation handler for "My Picks" topics
+  const handleMyPickClick = (topic: Topic) => {
+    nav(`/dashboard/feed/search?topic=${topic.slug}`, {
+      state: { topics, userSelectedTopics },
+    });
+  };
 
   const TopicsPanel = () => (
     <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm min-h-[560px]">
@@ -200,15 +246,11 @@ export default function Topic() {
             {userSelectedTopics?.map((topic) => (
               <button
                 key={topic.id}
-                onClick={() =>
-                  navigate(`/dashboard/${topic.slug}`, {
-                    state: { topics, userSelectedTopics },
-                  })
-                }
-                className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+                onClick={() => handleMyPickClick(topic)}
+                className="flex items-center gap-2 hover:text-purple-700 cursor-pointer w-full text-left"
               >
-                <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                {topic.topic_name}
+                <span className="w-2 h-2 bg-purple-500 rounded-full shrink-0"></span>
+                <span className="truncate">{topic.topic_name}</span>
               </button>
             ))}
           </ul>
@@ -221,19 +263,15 @@ export default function Topic() {
         {topics?.map((topic) => (
           <button
             key={topic.id}
-            onClick={() =>
-              navigate(`/dashboard/${topic.slug}`, {
-                state: { topics, userSelectedTopics },
-              })
-            }
-            className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
+            onClick={() => handleTopicClick(topic)}
+            className="flex items-center gap-2 hover:text-purple-700 cursor-pointer w-full text-left"
           >
-            <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-            {topic.topic_name}
+            <span className="w-2 h-2 bg-purple-500 rounded-full shrink-0"></span>
+            <span className="truncate">{topic.topic_name}</span>
           </button>
         ))}
         {topics?.length === 0 && (
-          <button disabled className="text-gray-400 italic">
+          <button disabled className="text-gray-400 italic w-full text-left">
             No topics available
           </button>
         )}
@@ -249,7 +287,7 @@ export default function Topic() {
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold text-gray-900">
-            {clickedTopic?.topic_name} Posts
+            {getDisplayTitle()} Posts
           </h1>
         </div>
 
@@ -273,7 +311,7 @@ export default function Topic() {
       </div>
 
       <p className="mb-6 text-sm text-gray-500">
-        Join the community sharing insights about {clickedTopic?.topic_name}.
+        {getDescription()}
       </p>
 
       {/* Full-width 2-col layout */}

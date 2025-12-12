@@ -1,8 +1,8 @@
-import Button from "../components/ui/Button";
+//import Button from "../components/ui/Button";
 import list1 from "../assets/list1.svg";
 import list2 from "../assets/list2.svg";
-import list3 from "../assets/list3.svg";
-import list4 from "../assets/list4.svg";
+//import list3 from "../assets/list3.svg";
+//import list4 from "../assets/list4.svg";
 import { useNavigate, useLocation } from "react-router-dom";
 import Nomimationmodel from "../components/Nomination/Nominationapp";
 import { useEffect, useState, useRef } from "react";
@@ -214,7 +214,7 @@ const AssessmentCertification = () => {
   };
 
   // Helper function specifically for Leader nomination button
-  const renderLeaderNominationButton = () => {
+  {/*const renderLeaderNominationButton = () => {
     const leaderCert = getCertificationBySlug("leader");
     const aspiringCert = getCertificationBySlug("aspiring");
 
@@ -246,7 +246,7 @@ const AssessmentCertification = () => {
       </Button>
     );
   };
-
+  */}
   const isAspiringCompleted = () => {
     const cert = getCertificationBySlug("aspiring");
     return cert && (cert.status === 1 || cert.status === 2);
@@ -678,18 +678,19 @@ const AssessmentCertification = () => {
                   "/dashboard/leader-application"
                 )}
 
-                {/* Use the separate helper for nomination button */}
-                {renderLeaderNominationButton()}
+                {/* Use the separate helper for nomination button 
+                {renderLeaderNominationButton()}*/}
               </div>
 
               {/* Nomination Process */}
               <div className="w-full max-w-[639px] rounded-[30px] border border-gray-200 bg-[#FAFAFA] flex flex-col gap-3.5 p-6 md:p-[30px] px-10 mt-10">
-                <h4 className="font-[poppins] font-semibold text-[18px] leading-[120%] text[#000000] mb-3">
+                <h4 className="font-[poppins] font-semibold text-[18px] leading-[120%] text[#000000] mb-1">
                   Nomination Process
                 </h4>
 
                 <p className="font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-1">
-                  There are two paths to becoming a Leader:
+                  The process for becoming a Leader is outlined below:
+                  
                 </p>
 
                 {/* Apply as a Leader */}
@@ -724,7 +725,7 @@ const AssessmentCertification = () => {
                   </ul>
                 </div>
 
-                {/* Nominate a Leader */}
+                {/* Nominate a Leader 
                 <div>
                   <h5 className="font-[poppins] font-medium text-[16px] leading-[120%] text[#000000] mb-2">
                     Nominate a Leader:
@@ -753,7 +754,7 @@ const AssessmentCertification = () => {
                       </span>
                     </li>
                   </ul>
-                </div>
+                </div> */}
               </div>
 
               {/* Description */}
@@ -802,7 +803,7 @@ const AssessmentCertification = () => {
             </div>
           </div>
 
-          {/* Footer Info */}
+          {/* Footer Info 
           <div className="mt-10">
             <h5 className="font-[poppins] font-semibold text-[20px] leading-[100%] tracking-[0] text[#000000] mb-4">
               Unlocks Trust, Growth, and Purpose
@@ -871,7 +872,7 @@ const AssessmentCertification = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </div>*/}
         </section>
       </div>
       {isModalOpen && (

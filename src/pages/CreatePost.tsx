@@ -924,7 +924,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </button>
 
                 {isTopicDropdownOpen && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-[#ECEEF2] rounded-md shadow-lg max-h-64 overflow-hidden">
+  <div className="absolute bottom-full mb-1 z-10 w-full bg-white border border-[#ECEEF2] rounded-md shadow-lg max-h-64 overflow-hidden">
                     <div className="p-2 border-b border-[#ECEEF2] sticky top-0 bg-white">
                       <input
                         type="text"

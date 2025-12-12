@@ -786,9 +786,9 @@ export default function SocialTopBar() {
     setIsLoading(true);
     setIsPostsLoading(true);
     try {
-      // Call the API to get the posts for the current page
-      const res = await FeedPostsDetails(page);
-      // const res = await PostsDetails(page);
+      // Call the API with tag parameter if available
+      const res = await FeedPostsDetails(page); // Pass tag to API
+
       if (res?.data) {
         const newPosts = res?.data.data.rows || [];
         const totalPages = res?.data?.data?.count / 10 || 0;
@@ -796,7 +796,13 @@ export default function SocialTopBar() {
         if (newPosts.length === 0) {
           setHasMore(false); // No more posts to load
         } else {
-          setUserPosts([...userPosts, ...newPosts]);
+          // If it's the first page with a tag, replace posts
+          // If it's subsequent pages, append posts
+          if (page === 1) {
+            setUserPosts(newPosts);
+          } else {
+            setUserPosts([...userPosts, ...newPosts]);
+          }
 
           // Check if the current page is the last page
           if (page >= totalPages) {
@@ -808,6 +814,11 @@ export default function SocialTopBar() {
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
+      showToast({
+        message: "Failed to load posts",
+        type: "error",
+        duration: 3000,
+      });
     } finally {
       setIsLoading(false);
       setIsPostsLoading(false);
@@ -1668,7 +1679,7 @@ export default function SocialTopBar() {
           <button
             key={`${part}-${idx}`}
             onClick={() =>
-              navigate(`/dashboard/feed?tag=${encodeURIComponent(tag)}`)
+              navigate(`/dashboard/feed/search?tag=${encodeURIComponent(tag)}`)
             }
             className="text-[#7077FE] hover:underline"
             type="button"
@@ -3172,7 +3183,7 @@ export default function SocialTopBar() {
                       {hasMore && userPosts.length >= 10 && (
                         <div className="flex justify-center mt-6">
                           <button
-                            onClick={getUserPosts}
+                            onClick={() => getUserPosts()}
                             disabled={isLoading}
                             className="px-6 py-2 bg-[#7077FE] text-white rounded-full hover:bg-[#5b63e6] disabled:opacity-50"
                           >
@@ -3439,7 +3450,7 @@ export default function SocialTopBar() {
                   <button
                     key={topic.id}
                     onClick={() => {
-                      navigate(`/dashboard/${topic.slug}`, {
+                      navigate(`/dashboard/feed/search?topic=${topic.slug}`, {
                         state: {
                           topics,
                           userSelectedTopics,

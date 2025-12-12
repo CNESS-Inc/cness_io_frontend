@@ -534,8 +534,6 @@ export default function SocialFeed() {
           message: "Post not found",
           duration: 2000,
         });
-        // Optionally navigate back to feed
-        navigate("/social");
       }
     } catch (error) {
       console.error("Error fetching single post:", error);
@@ -544,8 +542,6 @@ export default function SocialFeed() {
         message: "Failed to load post",
         duration: 2000,
       });
-      // Optionally navigate back to feed
-      navigate("/social");
     } finally {
       setIsLoadingSinglePost(false);
     }
@@ -980,8 +976,8 @@ export default function SocialFeed() {
                               ? singlePost.profile.profile_picture
                               : "/profile.png"
                           }
-                          className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
-                          alt="User"
+ className="w-full h-full rounded-full object-cover"                   
+    alt="User"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.src = "/profile.png";
@@ -1365,19 +1361,27 @@ export default function SocialFeed() {
                           <Link
                             to={`/dashboard/userprofile/${post?.profile?.id}`}
                           >
+                            <div
+    className="
+      w-8 aspect-square
+      md:w-[55px] lg:w-[63px]
+      flex-shrink-0 overflow-hidden rounded-full
+    "
+  >
                             <img
                               src={
                                 post.profile.profile_picture
                                   ? post.profile.profile_picture
                                   : "/profile.png"
                               }
-                              className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
+      className="w-full h-full object-cover rounded-full"
                               alt="User"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.src = "/profile.png";
                               }}
                             />
+                            </div>
                           </Link>
                           <div>
                             <p className="font-semibold text-sm md:text-base text-gray-800">

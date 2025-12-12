@@ -429,17 +429,16 @@ export default function DashboardDirectory() {
 
           {/* CENTER CONTENT - Mobile Responsive */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 pb-8 sm:pb-10">
-            <h1
-              className="text-center font-[poppins] font-semibold mb-4 sm:mb-6
-                text-xl sm:text-2xl lg:text-[32px] leading-[1.3] sm:leading-[1.4]
-                bg-linear-to-b from-[#4E4E4E] to-[#232323] 
-                bg-clip-text text-transparent"
-            >
-              Connect with professionals and
-              {!isMobile && <br />}
-              like-minded individuals.
-            </h1>
-
+           <h1
+  className="text-center font-[poppins] font-semibold mb-4 sm:mb-6
+    text-xl sm:text-2xl lg:text-[32px] leading-[1.3] sm:leading-[1.4]
+    bg-linear-to-b from-[#4E4E4E] to-[#232323] 
+    bg-clip-text text-transparent"
+>
+  Connect with professionals and{" "}
+  {!isMobile && <br />}
+  like-minded individuals.
+</h1>
             {/* Search Bar Wrapper - Mobile Responsive */}
             <div className="w-full flex flex-col gap-2 justify-center items-center mb-4 sm:mb-6">
               <div
