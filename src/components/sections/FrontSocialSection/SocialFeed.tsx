@@ -534,8 +534,6 @@ export default function SocialFeed() {
           message: "Post not found",
           duration: 2000,
         });
-        // Optionally navigate back to feed
-        navigate("/social");
       }
     } catch (error) {
       console.error("Error fetching single post:", error);
@@ -544,8 +542,6 @@ export default function SocialFeed() {
         message: "Failed to load post",
         duration: 2000,
       });
-      // Optionally navigate back to feed
-      navigate("/social");
     } finally {
       setIsLoadingSinglePost(false);
     }

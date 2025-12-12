@@ -35,14 +35,12 @@ const MyConnection = () => {
   }, [location.state]);
 
   // keep search in sync with ?s= query param
-  useEffect(() => {
+ useEffect(() => {
     const params = new URLSearchParams(location.search);
     const urlSearch = params.get("s") || "";
-    if (urlSearch !== searchTerm) {
-      setSearchValue(urlSearch);
-      setSearchTerm(urlSearch);
-    }
-  }, [location.search, searchTerm]);
+    setSearchValue(urlSearch);
+    setSearchTerm(urlSearch);
+  }, [location.search]);
 
   // Support query param ?t=friendrequest / ?t=suggestion to set the tab
   useEffect(() => {
@@ -88,7 +86,7 @@ const MyConnection = () => {
   };
 
   const handleSearch = () => {
-    setSearchTerm(searchValue);
+    // Update URL first
     const params = new URLSearchParams(location.search);
     if (searchValue) {
       params.set("s", searchValue);
@@ -96,9 +94,15 @@ const MyConnection = () => {
       params.delete("s");
     }
     const newSearch = params.toString();
-    const newUrl = `${location.pathname}${newSearch ? `?${newSearch}` : ""}${location.hash || ""
-      }`;
+    const newUrl = `${location.pathname}${newSearch ? `?${newSearch}` : ""}${
+      location.hash || ""
+    }`;
+    
+    // Update URL without triggering extra state updates
     window.history.pushState(null, "", newUrl);
+    
+    // Manually update searchTerm to avoid race conditions
+    setSearchTerm(searchValue);
   };
 
   return (
