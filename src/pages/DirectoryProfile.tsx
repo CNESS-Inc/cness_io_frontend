@@ -1145,7 +1145,7 @@ const DirectoryProfile = () => {
 
   return (
     <>
-      <main className="flex-1 p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6">
+      <main className="flex-1 md:p-4 md:p-6 space-y-4 md:space-y-6">
         {/* Profile Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* Business Profile Section */}
@@ -1601,7 +1601,7 @@ const DirectoryProfile = () => {
         </section>
 
         {/* Best Practice and Products Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 xl:gap-6">
           {/* Best Practice Section */}
           {bestPractices.length > 0 && (
             <section className="bg-white rounded-xl p-4 md:p-6 space-y-4">
@@ -1615,7 +1615,7 @@ const DirectoryProfile = () => {
                       state: { activeTab: "best" },
                     })
                   }
-                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer hover:underline"
+                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer hover:underline shrink-0"
                 >
                   View all
                 </button>
@@ -1650,37 +1650,36 @@ const DirectoryProfile = () => {
                       <img
                         src={item.file}
                         alt="Practice"
-                        className="w-full sm:w-[150px] md:w-[216px] h-[150px] rounded-lg object-cover shrink-0"
+                        className="w-full sm:w-[140px] md:w-[180px] lg:w-[216px] h-[180px] sm:h-[140px] md:h-[160px] lg:h-[150px] rounded-lg object-cover shrink-0"
                       />
-                      <div className="flex-1 space-y-3">
+                      <div className="flex-1 space-y-3 min-w-0">
                         <div className="space-y-1">
-                          <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base">
+                          <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base break-words">
                             {item.title}
                           </h4>
-                          <p className="font-['open_sans'] font-normal text-[13px] sm:text-[14px] text-[#1F2937] leading-relaxed">
+                          <p className="font-['open_sans'] font-normal text-[13px] sm:text-[14px] text-[#1F2937] leading-relaxed break-words">
                             {displayText}
                             {shouldTruncate && (
                               <button
                                 onClick={toggleExpand}
-                                className="text-[#F07EFF] font-['open_sans'] font-semibold hover:underline ml-1"
+                                className="text-[#F07EFF] font-['open_sans'] font-semibold hover:underline ml-1 whitespace-nowrap"
                               >
                                 {isExpanded ? "Read Less" : "Read More"}
                               </button>
                             )}
                           </p>
                         </div>
-                        {/* Updated Follow Button */}
                         <button
                           onClick={() => toggleFollow(item.id)}
-                          className={`px-4 py-2 sm:px-6 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] text-center capitalize w-full sm:w-auto ${item.is_following
+                          className={`px-4 py-2 sm:px-5 md:px-6 sm:py-2.5 md:py-3 rounded-full font-Rubik font-normal text-[12px] sm:text-[13px] md:text-[14px] leading-[100%] text-center capitalize w-full sm:w-auto ${item.is_following
                             ? "bg-[#F396FF] text-white"
                             : "bg-[#7077FE] text-white hover:bg-[#6A6DEB]"
-                            } disabled:opacity-50 disabled:cursor-not-allowed`}
+                            } disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                           disabled={followLoading[item.id]}
                         >
                           {followLoading[item.id] ? (
-                            <div className="flex items-center justify-center">
-                              <div className="w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-b-2 border-white rounded-full animate-spin mr-1"></div>
+                            <div className="flex items-center justify-center gap-1">
+                              <div className="w-3 h-3 sm:w-4 sm:h-4 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
                               <span>Loading...</span>
                             </div>
                           ) : item.is_following ? (
@@ -1705,7 +1704,7 @@ const DirectoryProfile = () => {
                   Products
                 </h3>
                 <span
-                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer"
+                  className="text-[#F07EFF] font-semibold text-xs cursor-pointer hover:underline shrink-0"
                   onClick={() =>
                     navigate(`/dashboard/shop-detail/${profileData.shop_id}`)
                   }
@@ -1717,16 +1716,16 @@ const DirectoryProfile = () => {
                 {products.slice(0, 3).map((product: any, index: number) => (
                   <div
                     key={index}
-                    className="bg-linear-to-b from-[#F1F3FF] to-white border border-[#ECEEF2] rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4"
+                    className="bg-linear-to-b from-[#F1F3FF] to-white border border-[#ECEEF2] rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 md:space-x-4"
                   >
-                    <div className="relative w-full sm:w-[150px] md:w-[196px] shrink-0">
+                    <div className="relative w-full sm:w-[130px] md:w-[150px] lg:w-[196px] shrink-0">
                       <img
                         src={
                           product.thumbnail_url ||
                           "https://static.codia.ai/image/2025-12-04/LfjsJkrBT4.png"
                         }
                         alt={product.title}
-                        className="w-full h-[150px] sm:h-[156px] rounded-xl sm:rounded-3xl object-cover"
+                        className="w-full h-[180px] sm:h-[140px] md:h-[156px] rounded-xl sm:rounded-3xl object-cover"
                       />
                       <button className="absolute top-2 right-2 sm:top-3 sm:right-3 w-8 h-8 sm:w-10 sm:h-10 bg-[#1F2937] bg-opacity-90 rounded-full flex items-center justify-center shadow-md">
                         <svg
@@ -1738,9 +1737,9 @@ const DirectoryProfile = () => {
                         </svg>
                       </button>
                     </div>
-                    <div className="flex-1 space-y-2">
+                    <div className="flex-1 space-y-2 min-w-0">
                       <div className="space-y-1">
-                        <div className="inline-flex items-center space-x-2 bg-opacity-10 rounded-full px-2 py-1">
+                        <div className="inline-flex items-center space-x-1.5 sm:space-x-2 bg-opacity-10 rounded-full px-2 py-1">
                           <span
                             className={`text-xs font-[Poppins] ${product.category === "Music"
                               ? "text-[#F07EFF]"
@@ -1761,7 +1760,7 @@ const DirectoryProfile = () => {
                             />
                           )}
                         </div>
-                        <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base">
+                        <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base break-words line-clamp-2">
                           {product.title}
                         </h4>
                         <div className="flex items-center space-x-2">
@@ -1810,25 +1809,25 @@ const DirectoryProfile = () => {
                           </div>
                         )}
                       </div>
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
-                        <div className="space-y-1">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 gap-2">
+                        <div className="space-y-1 min-w-0">
                           {product.discount_percentage &&
                             parseFloat(product.discount_percentage) > 0 && (
-                              <div className="flex items-center space-x-2">
+                              <div className="flex items-center space-x-1.5 sm:space-x-2 flex-wrap">
                                 <span className="text-[#9CA3AF] font-[Poppins] font-medium text-xs sm:text-sm line-through">
                                   ${product.price}
                                 </span>
-                                <div className="bg-[#EBF2FF] px-2 py-1 rounded text-xs font-Inter font-medium text-[#1E3A8A]">
+                                <div className="bg-[#EBF2FF] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-Inter font-medium text-[#1E3A8A] whitespace-nowrap">
                                   -{product.discount_percentage}%
                                 </div>
                               </div>
                             )}
-                          <div className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#1F2937]">
+                          <div className="text-base sm:text-lg md:text-xl font-[Poppins] font-semibold text-[#1F2937]">
                             ${product.final_price || product.price}
                           </div>
                         </div>
                         <button
-                          className="bg-[#7077FE] text-white px-6 py-2 sm:px-8 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] capitalize w-full sm:w-auto"
+                          className="bg-[#7077FE] text-white px-4 py-2 sm:px-6 md:px-8 sm:py-2.5 md:py-3 rounded-full font-Rubik font-normal text-[12px] sm:text-[13px] md:text-[14px] leading-[100%] capitalize w-full sm:w-auto shrink-0 hover:bg-[#5b63e6] transition-colors whitespace-nowrap"
                           onClick={() =>
                             navigate(`/dashboard/product-detail/${product?.id}`)
                           }

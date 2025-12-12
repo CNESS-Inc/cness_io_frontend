@@ -2135,10 +2135,10 @@ export function BestPracticesSection({
                 </button>
               ) : (
                 <button
-                  className="w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
+                  className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
                        font-opensans text-[14px] font-semibold text-white
                        shadow hover:bg-[#5A61E8] transition flex items-center justify-center gap-2
-                       disabled:opacity-50 disabled:cursor-not-allowed mt-[10px]"
+                       disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleFollowPost(bp.id);
@@ -3089,14 +3089,14 @@ export function SocialStackCard({
         </div>
 
         {/* list */}
-        <div className="space-y-3 flex-1">
+        <div className="space-y-3 flex-1 overflow-hidden">
           {list && list.length > 0 ? (
             list.slice(0, 4).map((f: any) => (
               <div
                 key={f.id}
-                className="flex items-center justify-between gap-3"
+                className="flex items-center justify-between gap-2 min-w-0"
               >
-                <div className="flex items-center min-w-0">
+                <div className="flex items-center min-w-0 flex-1 overflow-hidden">
                   <img
                     src={
                       !f.avatar ||
@@ -3106,13 +3106,13 @@ export function SocialStackCard({
                         ? "/profile.png"
                         : f.avatar
                     }
-                    className="h-9 w-9 rounded-full object-cover me-1"
+                    className="h-9 w-9 rounded-full object-cover shrink-0 mr-2"
                   />
-                  <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold text-[#0F1728]">
+                  <div className="min-w-0 flex-1 overflow-hidden">
+                    <div className="truncate text-sm font-semibold text-[#0F1728] max-w-[120px] sm:max-w-[150px]">
                       {f.name}
                     </div>
-                    <div className="truncate text-xs text-[#667085]">
+                    <div className="truncate text-xs text-[#667085] max-w-[120px] sm:max-w-[150px]">
                       {f.handle}
                     </div>
                   </div>
@@ -3128,43 +3128,54 @@ export function SocialStackCard({
                   <button
                     onClick={() => handleConnect(f.id)}
                     disabled={connectingUsers[f.id]}
-                    className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px]
+                    className={`flex justify-center items-center gap-1 text-[11px] sm:text-xs px-2 sm:px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[32px] sm:h-[35px] shrink-0 whitespace-nowrap
                       ${["connected", "requested"].includes(getFriendStatus(f.id))
                         ? "bg-gray-400 text-white cursor-not-allowed"
                         : "bg-white text-black shadow-md"
                       }`}
                   >
-                    <span className="flex items-center gap-2 text-[#0B3449]">
+                    <span className="flex items-center gap-1 sm:gap-2 text-[#0B3449]">
                       <img
                         src={iconMap["userplus"]}
                         alt="userplus"
-                        className="w-4 h-4"
+                        className="w-3 h-3 sm:w-4 sm:h-4 shrink-0"
                       />
-                      {connectingUsers[f.id]
-                        ? "Loading..."
-                        : getFriendStatus(f.id) === "connected"
-                          ? "Connected"
-                          : getFriendStatus(f.id) === "requested"
-                            ? "Requested"
-                            : "Connect"}
+                      <span className="hidden sm:inline">
+                        {connectingUsers[f.id]
+                          ? "Loading..."
+                          : getFriendStatus(f.id) === "connected"
+                            ? "Connected"
+                            : getFriendStatus(f.id) === "requested"
+                              ? "Requested"
+                              : "Connect"}
+                      </span>
+                      <span className="inline sm:hidden">
+                        {connectingUsers[f.id]
+                          ? "..."
+                          : getFriendStatus(f.id) === "connected"
+                            ? "✓"
+                            : getFriendStatus(f.id) === "requested"
+                              ? "Sent"
+                              : "Add"}
+                      </span>
                     </span>
                   </button>
                 ) : (
                   // Requested tab - Show Accept/Decline buttons
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 sm:gap-2 shrink-0">
                     <button
                       onClick={() => handleAcceptRequest(f.id)}
-                      className="p-2 rounded-lg bg-[#31C48D] text-white hover:opacity-90"
+                      className="p-1.5 sm:p-2 rounded-lg bg-[#31C48D] text-white hover:opacity-90 shrink-0"
                       aria-label="Accept"
                     >
-                      <CircleCheckBig size={16} />
+                      <CircleCheckBig size={14} className="sm:w-4 sm:h-4" />
                     </button>
                     <button
                       onClick={() => handleDeclineRequest(f.id)}
-                      className="p-2 rounded-lg bg-[#F87171] text-white hover:opacity-90"
+                      className="p-1.5 sm:p-2 rounded-lg bg-[#F87171] text-white hover:opacity-90 shrink-0"
                       aria-label="Reject"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={14} className="sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 )}
