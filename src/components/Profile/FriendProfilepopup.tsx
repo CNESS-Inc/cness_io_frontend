@@ -32,7 +32,6 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const [profileData, setProfileData] = useState<any>(null);
   const [followingFollowers, setFollowingFollowers] = useState<any>(null);
   const [userPosts, setUserPosts] = useState<any[]>([]);
-  console.log("🚀 ~ FriendProfileModal ~ userPosts:", userPosts)
   const [loading, setLoading] = useState(false);
   const [_isFollowing, setIsFollowing] = useState(false);
   const { showToast } = useToast();
@@ -48,10 +47,6 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
   const checkFollowStatus = async () => {
     try {
       const response = await GetFollowStatus(friend.id.toString());
-
-      // Get the logged-in user's ID from localStorage or wherever you store it
-
-      // Check if the logged-in user is in the followers list
       const followers = response.data?.data?.rows || [];
       const isUserFollowing = followers.some(
         (follower: any) => follower.follower_id === loggedInUserId
@@ -586,7 +581,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
                     onClick={() => handleFollow(profileData?.user_id)}
                     className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
                       ${profileData?.if_following
-                        ? "bg-[#7077FE] text-white hover:text-[#7077FE]/80"
+                        ? "bg-[#7077FE] text-white hover:bg-indigo-600 "
                         : "bg-[#7077FE] text-white hover:bg-indigo-600 h-[35px]"
                       }`}
                   >
