@@ -196,9 +196,8 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${
-              index === current ? "block" : "hidden"
-            }`}
+            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
+              }`}
           >
             {item.type === "image" ? (
               <img
@@ -250,9 +249,8 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                idx === current ? "bg-indigo-500" : "bg-gray-300"
-              }`}
+              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
+                }`}
             ></button>
           ))}
         </div>
@@ -287,6 +285,11 @@ export default function SocialFeed() {
   const [postVideoPreviewUrl, setPostVideoPreviewUrl] = useState<string | null>(
     null
   );
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
   // const [openMenuPostId, setOpenMenuPostId] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<{
     postId: string | null;
@@ -1107,9 +1110,8 @@ export default function SocialFeed() {
                     <button
                       onClick={() => setOpenSignup(true)}
                       disabled={isLoading}
-                      className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${
-                        isLoading ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
+                      className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                     >
                       <ThumbsUp
                         className="w-5 h-5 md:w-6 md:h-6 shrink-0"
@@ -1117,9 +1119,8 @@ export default function SocialFeed() {
                         stroke={singlePost.is_liked ? "#7077FE" : "#000"} // keeps border visible
                       />
                       <span
-                        className={`hidden sm:flex ${
-                          singlePost.is_liked ? "#7077FE" : "text-black"
-                        }`}
+                        className={`hidden sm:flex ${singlePost.is_liked ? "#7077FE" : "text-black"
+                          }`}
                       >
                         {" "}
                         Appreciate
@@ -1139,11 +1140,10 @@ export default function SocialFeed() {
                         }
                       />{" "}
                       <span
-                        className={`hidden sm:flex ${
-                          selectedPostId === singlePost.id
-                            ? "#7077FE"
-                            : "text-black"
-                        }`}
+                        className={`hidden sm:flex ${selectedPostId === singlePost.id
+                          ? "#7077FE"
+                          : "text-black"
+                          }`}
                       >
                         Reflections
                       </span>
@@ -1230,7 +1230,7 @@ export default function SocialFeed() {
               {!singlePost && !isLoadingSinglePost && (
                 <>
                   {/* Start a Post */}
-                  <div className="bg-linear-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-6 rounded-xl mb-4 md:mb-5">
+                  <div className="bg-linear-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-10 rounded-xl mb-4 md:mb-5">
                     <div className="flex flex-col gap-2 md:gap-3">
                       <div className="flex items-center gap-3">
                         <img
@@ -1248,38 +1248,36 @@ export default function SocialFeed() {
                           onClick={() => setOpenSignup(true)}
                           readOnly
                         />
-                      </div>
-                      <div className="flex justify-center gap-10 text-xs md:text-[15px] text-gray-700 mt-2 md:mt-3">
-                        <button
-                          className="flex items-center gap-1 md:gap-2"
-                          onClick={() => setOpenSignup(true)}
-                        >
-                          <Image
-                            src="/youtube.png"
-                            alt="youtube"
-                            width={20}
-                            height={14}
-                            className="object-contain rounded-0 w-5 md:w-6"
-                          />
-                          <span className="text-black text-xs md:text-sm">
-                            Video
-                          </span>
-                        </button>
-                        <button
-                          className="flex items-center gap-1 md:gap-2"
-                          onClick={() => setOpenSignup(true)}
-                        >
-                          <Image
-                            src="/picture.png"
-                            alt="picture"
-                            width={20}
-                            height={16}
-                            className="object-contain rounded-0 w-5 md:w-6"
-                          />
-                          <span className="text-black text-xs md:text-sm">
-                            Photo
-                          </span>
-                        </button>
+                        {/* Mobile sidebar toggle button */}
+                        <div className="xl:hidden z-40">
+                          <button
+                            onClick={toggleSidebar}
+                            className="bg-[#7077FE] text-white p-4 rounded-full shadow-lg hover:bg-[#5b63e6] transition-all"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              {isSidebarOpen ? (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              ) : (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 6h16M4 12h16M4 18h16"
+                                />
+                              )}
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1413,12 +1411,12 @@ export default function SocialFeed() {
                               disabled={connectingUsers[post.user_id] || false}
                               className={`hidden sm:flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
                                 ${
-                                  // getFriendStatus(post.user_id) === "connected"
-                                  //   ? "bg-red-500 text-white hover:bg-red-600"
-                                  //   :
-                                  getFriendStatus(post.user_id) === "requested"
-                                    ? "bg-gray-400 text-white cursor-not-allowed"
-                                    : "bg-white text-black shadow-md"
+                                // getFriendStatus(post.user_id) === "connected"
+                                //   ? "bg-red-500 text-white hover:bg-red-600"
+                                //   :
+                                getFriendStatus(post.user_id) === "requested"
+                                  ? "bg-gray-400 text-white cursor-not-allowed"
+                                  : "bg-white text-black shadow-md"
                                 }`}
                             >
                               <img
@@ -1431,17 +1429,16 @@ export default function SocialFeed() {
                                 : // : getFriendStatus(post.user_id) === "connected"
                                 // ? "Connected"
                                 getFriendStatus(post.user_id) === "requested"
-                                ? "Requested"
-                                : "Connect"}
+                                  ? "Requested"
+                                  : "Connect"}
                             </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => setOpenSignup(true)}
                               className={`flex w-[100px] justify-center items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${
-                                  post.if_following
-                                    ? "bg-transparent text-blue-500 hover:text-blue-600"
-                                    : "bg-[#7C81FF] text-white hover:bg-indigo-600"
+                                ${post.if_following
+                                  ? "bg-transparent text-blue-500 hover:text-blue-600"
+                                  : "bg-[#7C81FF] text-white hover:bg-indigo-600"
                                 }`}
                             >
                               {post.if_following ? (
@@ -1493,8 +1490,8 @@ export default function SocialFeed() {
                                             ? "Loading..."
                                             : getFriendStatus(post.user_id) ===
                                               "requested"
-                                            ? "Requested"
-                                            : "Connect"}
+                                              ? "Requested"
+                                              : "Connect"}
                                         </button>
                                       </li>
                                       <li>
@@ -1545,16 +1542,16 @@ export default function SocialFeed() {
                                       </li>
                                       {getFriendStatus(post.user_id) ===
                                         "connected" && (
-                                        <li>
-                                          <button
-                                            onClick={() => setOpenSignup(true)}
-                                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                                          >
-                                            <CiCircleRemove className="w-4 h-4 text-black" />
-                                            Remove Connection
-                                          </button>
-                                        </li>
-                                      )}
+                                          <li>
+                                            <button
+                                              onClick={() => setOpenSignup(true)}
+                                              className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                            >
+                                              <CiCircleRemove className="w-4 h-4 text-black" />
+                                              Remove Connection
+                                            </button>
+                                          </li>
+                                        )}
                                     </ul>
                                   </div>
                                 )}
@@ -1617,12 +1614,12 @@ export default function SocialFeed() {
                       <div className="mt-3 md:mt-4">
                         <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
                           {expandedPosts[post.id] ||
-                          post?.content?.length <= CONTENT_LIMIT
+                            post?.content?.length <= CONTENT_LIMIT
                             ? post.content
                             : `${post?.content?.substring(
-                                0,
-                                CONTENT_LIMIT
-                              )}...`}
+                              0,
+                              CONTENT_LIMIT
+                            )}...`}
                           {post?.content?.length > CONTENT_LIMIT && (
                             <button
                               onClick={() => setOpenSignup(true)}
@@ -1725,9 +1722,8 @@ export default function SocialFeed() {
                         <button
                           onClick={() => setOpenSignup(true)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${
-                            isLoading ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
                         >
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6 shrink-0"
@@ -1735,9 +1731,8 @@ export default function SocialFeed() {
                             stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
                           />
                           <span
-                            className={`hidden sm:flex ${
-                              post.is_liked ? "#7077FE" : "text-black"
-                            }`}
+                            className={`hidden sm:flex ${post.is_liked ? "#7077FE" : "text-black"
+                              }`}
                           >
                             {" "}
                             Appreciate
@@ -1757,11 +1752,10 @@ export default function SocialFeed() {
                             }
                           />{" "}
                           <span
-                            className={`hidden sm:flex ${
-                              selectedPostId === post.id
-                                ? "#7077FE"
-                                : "text-black"
-                            }`}
+                            className={`hidden sm:flex ${selectedPostId === post.id
+                              ? "#7077FE"
+                              : "text-black"
+                              }`}
                           >
                             Reflections
                           </span>
@@ -1915,8 +1909,43 @@ export default function SocialFeed() {
         </div>
 
         {/* Right Sidebar Container */}
-        <div className="hidden xl:flex w-full xl:w-[25%] flex-col gap-4">
-          <div className="w-full bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm">
+        {isSidebarOpen && (
+          <div
+            className="xl:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={toggleSidebar}
+          />
+        )}
+
+        {/* Right Sidebar Container */}
+        <div
+          className={`fixed xl:static top-0 right-0 h-full xl:h-auto w-[280px] sm:w-[320px] xl:w-[25%] max-w-[90vw] xl:max-w-none bg-white xl:bg-transparent shadow-xl xl:shadow-none transform transition-transform duration-300 ease-in-out ${isSidebarOpen
+            ? "translate-x-0 p-3"
+            : "translate-x-full xl:translate-x-0"
+            } z-50 xl:z-auto overflow-y-auto flex flex-col gap-4`}
+        >
+          {/* Close button for mobile */}
+          <div className="xl:hidden flex justify-between items-center px-4 pb-4 border-b border-gray-200 sticky top-0 bg-white z-10 pt-4">
+            <h3 className="text-lg font-semibold text-gray-800">Menu</h3>
+            <button
+              onClick={toggleSidebar}
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <svg
+                className="w-6 h-6 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <div className="w-full bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm mb-20 lg:mb-0">
             <h3 className="text-black flex items-center gap-2 font-semibold text-base md:text-lg mb-3 md:mb-4 px-4">
               <img
                 src={iconMap["socialtrending"]}
@@ -1930,7 +1959,10 @@ export default function SocialFeed() {
               {topics?.slice(0, 10)?.map((topic, index) => (
                 <li
                   key={index}
-                  onClick={() => setOpenSignup(true)}
+                  onClick={() => {
+                    setOpenSignup(true);
+                    setIsSidebarOpen(false); // Close sidebar on click
+                  }}
                   className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
                 >
                   {index + 1}. #{topic.topic_name}
@@ -1952,9 +1984,8 @@ export default function SocialFeed() {
           />
         )}
         <div
-          className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${
-            isTopicsOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+          className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${isTopicsOpen ? "translate-x-0" : "translate-x-full"
+            }`}
           role="dialog"
           aria-modal="true"
           aria-label="Trending topics"

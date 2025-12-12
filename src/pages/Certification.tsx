@@ -135,23 +135,23 @@ const Certification: React.FC = () => {
             you toward deeper personal development.
           </p>
 
-          <button
+          {/* <button
             type="button"
             className="mt-6 inline-flex items-center justify-center rounded-full bg-linear-to-r from-[#7077FE] to-[#F07EFF] px-6 py-2 text-sm font-medium text-white shadow-md hover:brightness-105 transition-colors border-0 font-[Poppins]"
             onClick={() => setSelectedPlan("yearly")}
           >
             Start Your Conscious Journey
-          </button>
+          </button> */}
         </div>
 
         <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 md:gap-10 mb-16">
           {/* Yearly Plan Card */}
           <div
-            className="relative w-full max-w-sm cursor-pointer"
+            className="relative w-full max-w-sm cursor-pointer flex"
             onClick={() => setSelectedPlan("yearly")}
           >
             <div
-              className={`rounded-[22px] pt-1 pr-1 pl-1 pb-1 ${
+              className={`rounded-[22px] pt-1 pr-1 pl-1 pb-1 flex-1 flex flex-col ${
                 selectedPlan === "yearly"
                   ? "bg-linear-to-b from-[#F07EFF] to-[#6745FF]"
                   : "bg-transparent"
@@ -165,8 +165,8 @@ const Certification: React.FC = () => {
                 </div>
               )}
 
-              <div
-                className={`relative bg-white rounded-[18px] shadow-[0_18px_45px_rgba(49,45,119,0.18)] px-8 pt-6 pb-6 ${
+<div
+                className={`relative bg-white rounded-[18px] shadow-[0_18px_45px_rgba(49,45,119,0.18)] px-8 pt-6 pb-6 flex-1 flex flex-col ${
                   selectedPlan !== "yearly" ? "border-2 border-[#E5E7EB]" : ""
                 }`}
               >
@@ -222,7 +222,7 @@ const Certification: React.FC = () => {
                 </button>
 
                 {/* Features */}
-                <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
+                <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins] flex-1">
                   {yearlyPlan?.features && yearlyPlan.features.length > 0 ? (
                     yearlyPlan.features.map(
                       (feature: string, index: number) => (
@@ -259,11 +259,11 @@ const Certification: React.FC = () => {
 
           {/* Monthly Plan Card */}
           <div
-            className="relative w-full max-w-sm cursor-pointer"
+            className="relative w-full max-w-sm cursor-pointer flex"
             onClick={() => setSelectedPlan("monthly")}
           >
             <div
-              className={`rounded-[22px] pt-1 pr-1 pl-1 pb-1 ${
+              className={`rounded-[22px] pt-1 pr-1 pl-1 pb-1 flex-1 flex flex-col ${
                 selectedPlan === "monthly"
                   ? "bg-linear-to-b from-[#F07EFF] to-[#6745FF]"
                   : "bg-transparent"
@@ -277,7 +277,7 @@ const Certification: React.FC = () => {
                 </div>
               )}
               <div
-                className={`relative bg-white rounded-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] px-8 pt-6 pb-6 ${
+                className={`relative bg-white rounded-[18px] shadow-[0_10px_30px_rgba(15,23,42,0.08)] px-8 pt-6 pb-6 flex-1 flex flex-col ${
                   selectedPlan !== "monthly" ? "border-2 border-[#E5E7EB]" : ""
                 }`}
               >
@@ -331,7 +331,7 @@ const Certification: React.FC = () => {
                 </button>
 
                 {/* Features */}
-                <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins]">
+                <ul className="mt-6 space-y-4 text-xs text-[#4C4F64] font-[Poppins] flex-1">
                   {monthlyPlan?.features && monthlyPlan.features.length > 0 ? (
                     monthlyPlan.features.map(
                       (feature: string, index: number) => (
