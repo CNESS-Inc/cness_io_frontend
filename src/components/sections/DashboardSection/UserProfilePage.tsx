@@ -404,8 +404,8 @@ const customSelectStyles = {
     backgroundColor: state.isSelected
       ? "#E0E7FF"
       : state.isFocused
-      ? "#F3F4F6"
-      : "white",
+        ? "#F3F4F6"
+        : "white",
     color: "#111827",
     padding: "10px 12px",
     fontSize: "14px",
@@ -587,9 +587,8 @@ const UserProfilePage = () => {
       const isValid = validateSocialUrl(platform, url);
       if (!isValid) {
         showToast({
-          message: `Please enter a valid ${
-            socialPlatforms.find((p) => p.value === platform)?.label
-          } URL`,
+          message: `Please enter a valid ${socialPlatforms.find((p) => p.value === platform)?.label
+            } URL`,
           type: "error",
           duration: 5000,
         });
@@ -606,9 +605,8 @@ const UserProfilePage = () => {
       handleFormChange("social"); // Track changes
 
       showToast({
-        message: `${
-          socialPlatforms.find((p) => p.value === platform)?.label
-        } link added successfully`,
+        message: `${socialPlatforms.find((p) => p.value === platform)?.label
+          } link added successfully`,
         type: "success",
         duration: 3000,
       });
@@ -1505,12 +1503,12 @@ const UserProfilePage = () => {
             "",
           country:
             response.data.data?.country_id !== undefined &&
-            response.data.data?.country_id !== null
+              response.data.data?.country_id !== null
               ? String(response.data.data?.country_id)
               : "",
           state:
             response.data.data?.state_id !== undefined &&
-            response.data.data?.state_id !== null
+              response.data.data?.state_id !== null
               ? String(response.data.data?.state_id)
               : "",
           city: response.data.data?.location?.city || "",
@@ -1850,17 +1848,17 @@ const UserProfilePage = () => {
               <img
                 src={
                   banner &&
-                  banner !== "null" &&
-                  banner !== "undefined" &&
-                  banner.startsWith("blob:")
+                    banner !== "null" &&
+                    banner !== "undefined" &&
+                    banner.startsWith("blob:")
                     ? banner // This will show the blob URL preview
                     : banner &&
                       banner !== "null" &&
                       banner !== "undefined" &&
                       banner.startsWith("http") &&
                       banner !== "http://localhost:5026/file/"
-                    ? banner
-                    : "https://cdn.cness.io/userprofilebanner.svg"
+                      ? banner
+                      : "https://cdn.cness.io/userprofilebanner.svg"
                 }
                 alt="Banner"
                 className="w-full h-full object-cover"
@@ -1927,10 +1925,10 @@ const UserProfilePage = () => {
                   <img
                     src={
                       !logoPreview ||
-                      logoPreview === "null" ||
-                      logoPreview === "undefined" ||
-                      !logoPreview.startsWith("http") ||
-                      logoPreview === "http://localhost:5026/file/"
+                        logoPreview === "null" ||
+                        logoPreview === "undefined" ||
+                        !logoPreview.startsWith("http") ||
+                        logoPreview === "http://localhost:5026/file/"
                         ? "/profile.jpg"
                         : logoPreview
                     }
@@ -2011,11 +2009,10 @@ const UserProfilePage = () => {
                                   duration-200 
                                   focus:outline-none
                                   border
-                                  ${
-                                    selected
-                                      ? "text-purple-600 h-[45px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
-                                      : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                                  }`
+                                  ${selected
+                              ? "text-purple-600 h-[45px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
+                              : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                            }`
                           }
                         >
                           {tab}
@@ -2039,7 +2036,7 @@ const UserProfilePage = () => {
                       }
                     }}
                   >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 bg-[#F8F3FF] mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* First Name */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -2053,15 +2050,13 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Enter your First Name"
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                            basicInfoForm.formState.errors.firstName
+                          className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.firstName
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.firstName
+                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.firstName
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          }`}
+                            }`}
                           maxLength={40}
                         />
                         {basicInfoForm.formState.errors.firstName && (
@@ -2083,15 +2078,13 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Enter your Last Name"
-                          className={`w-full px-4 py-2 border h-[41px] bg-white ${
-                            basicInfoForm.formState.errors.lastName
+                          className={`w-full px-4 py-2 border h-[41px] bg-white ${basicInfoForm.formState.errors.lastName
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.lastName
+                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.lastName
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          }`}
+                            }`}
                           maxLength={40}
                         />
                         {basicInfoForm.formState.errors.lastName && (
@@ -2182,7 +2175,7 @@ const UserProfilePage = () => {
                                 (interest: any) =>
                                   typeof interest === "string" &&
                                   interest.toLowerCase() ===
-                                    inputValue.trim().toLowerCase()
+                                  inputValue.trim().toLowerCase()
                               )
                           }
                         />
@@ -2267,7 +2260,7 @@ const UserProfilePage = () => {
                                 (prof: any) =>
                                   typeof prof === "string" &&
                                   prof.toLowerCase() ===
-                                    inputValue.trim().toLowerCase()
+                                  inputValue.trim().toLowerCase()
                               )
                           }
                         />
@@ -2438,8 +2431,8 @@ const UserProfilePage = () => {
                             )}
                           </div> */}
                       {/* Gender Dropdown - Styled like the Interests Field */}
-                      <div className="w-full">
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
+                      <div className="w-full col-span-1">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
                           Gender
                         </label>
                         <Select
@@ -2463,8 +2456,8 @@ const UserProfilePage = () => {
                         )}
                       </div>
                       {/* Date of Birth */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
+                      <div className="col-span-1">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
                           Date of Birth
                           <span className="text-red-500">*</span>
                         </label>
@@ -2480,15 +2473,13 @@ const UserProfilePage = () => {
                           onClick={(e: React.MouseEvent<HTMLInputElement>) =>
                             e.currentTarget.showPicker()
                           }
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                            basicInfoForm.formState.errors.dob
+                          className={`w-full px-3 sm:px-4 py-2 h-10 sm:h-[41px] text-sm border bg-white ${basicInfoForm.formState.errors.dob
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.dob
+                            } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.dob
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          }`}
+                            }`}
                         />
                         {basicInfoForm.formState.errors.dob && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2510,15 +2501,13 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Enter your quote"
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
-                            basicInfoForm.formState.errors.quote
+                          className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.quote
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.quote
+                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.quote
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          }`}
+                            }`}
                         />
                         {basicInfoForm.formState.errors.quote && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2539,15 +2528,13 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Add a short professional bio"
-                          className={`w-full px-4 py-2 border bg-white ${
-                            basicInfoForm.formState.errors.bio
+                          className={`w-full px-4 py-2 border bg-white ${basicInfoForm.formState.errors.bio
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl min-h-[100px] resize-y text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            basicInfoForm.formState.errors.bio
+                            } rounded-xl min-h-[100px] resize-y text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.bio
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          }`}
+                            }`}
                         />
                         {basicInfoForm.formState.errors.bio && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2568,15 +2555,13 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="What is your conscious vision?"
-                          className={`w-full px-4 py-3 border bg-white ${
-                            basicInfoForm.formState.errors.vision
+                          className={`w-full px-4 py-3 border bg-white ${basicInfoForm.formState.errors.vision
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 
-                            focus:outline-none focus:ring-2 ${
-                              basicInfoForm.formState.errors.vision
-                                ? "focus:ring-red-500"
-                                : "focus:ring-purple-500"
+                            } rounded-xl text-sm placeholder-gray-400 
+                            focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.vision
+                              ? "focus:ring-red-500"
+                              : "focus:ring-purple-500"
                             } transition-all`}
                         />
                         {basicInfoForm.formState.errors.vision && (
@@ -2586,13 +2571,19 @@ const UserProfilePage = () => {
                         )}
                       </div>
                     </div>
-                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-                                   hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-                                    shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
-                        onClick={() => basicInfoForm.reset()}
+            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+                        type="button"
+                        onClick={() => {
+                          const currentEmail = contactInfoForm.getValues("email");
+                          contactInfoForm.reset();
+                          // Restore the email after reset
+                          contactInfoForm.setValue("email", currentEmail);
+                        }}
                       >
                         Reset
                       </Button>
@@ -2615,7 +2606,7 @@ const UserProfilePage = () => {
                       handleContactInfoSubmit
                     )}
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-2 bg-[#F8F3FF] gap-4 sm:gap-6 mb-8 p-4 sm:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
+             <div className="grid grid-cols-1 md:grid-cols-2 bg-[#F8F3FF] gap-3 sm:gap-4 md:gap-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* Privacy note - full width on mobile, spans 2 columns on desktop */}
                       <div className="col-span-1 md:col-span-2">
                         <p className="text-xs text-gray-500 text-center sm:text-left px-2 sm:px-0">
@@ -2625,8 +2616,8 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* Phone Number */}
-                      <div className="col-span-1">
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
+                      <div className="col-span-1 md:col-span-2 lg:col-span-1">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
                           Phone Number <span className="text-red-500">*</span>
                         </label>
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -2708,6 +2699,49 @@ const UserProfilePage = () => {
                               }`}
                             />
                           </div>
+                          <input
+                            type="tel"
+                            placeholder="Enter Your Phone Number"
+                            value={contactInfoForm.watch("phone") || ""}
+                            onChange={(e) => {
+                              const selectedCallingCode =
+                                contactInfoForm.watch("country_code") || "+91";
+                              const isoCountry =
+                                callingCodeToISO[selectedCallingCode] || "IN";
+                              let digits = e.target.value.replace(/\D/g, "");
+                              const maxDigits = getMaxDigits(isoCountry);
+                              if (digits.length > maxDigits)
+                                digits = digits.slice(0, maxDigits);
+                              const formatted = formatPhoneForCountry(
+                                digits,
+                                isoCountry
+                              );
+                              contactInfoForm.setValue("phone", formatted, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                              });
+                              handleFormChange("contact"); // Track changes
+                            }}
+                            onKeyDown={(e) => {
+                              if (
+                                !/^\d$/.test(e.key) &&
+                                e.key !== "Backspace" &&
+                                e.key !== "Delete" &&
+                                e.key !== "ArrowLeft" &&
+                                e.key !== "ArrowRight" &&
+                                e.key !== "Tab"
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                            className={`w-full px-4 py-2 border bg-white ${contactInfoForm.formState.errors.phone
+                                ? "border-red-500"
+                                : "border-gray-300"
+                              } rounded-xl h-[41px] focus:outline-none focus:ring-2 placeholder:text-sm placeholder:text-gray-400 ${contactInfoForm.formState.errors.phone
+                                ? "focus:ring-red-500"
+                                : "focus:ring-purple-500"
+                              }`}
+                          />
                         </div>
                         {contactInfoForm.formState.errors.phone && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2720,8 +2754,8 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* Email */}
-                      <div className="col-span-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <div className="col-span-1 md:col-span-2 lg:col-span-1">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                           Email <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -2750,8 +2784,8 @@ const UserProfilePage = () => {
                       </div>
 
                       {/* Address */}
-                      <div className="col-span-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <div className="col-span-1 md:col-span-2 lg:col-span-1">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                           Address
                         </label>
                         <input
@@ -2775,27 +2809,27 @@ const UserProfilePage = () => {
                           options={
                             Country
                               ? Country.map((country: any) => ({
-                                  value: String(country.id),
-                                  label: country.name,
-                                }))
+                                value: String(country.id),
+                                label: country.name,
+                              }))
                               : []
                           }
                           value={
                             Country
                               ? Country.find(
-                                  (c: any) =>
-                                    String(c.id) ===
-                                    contactInfoForm.watch("country")
-                                )
+                                (c: any) =>
+                                  String(c.id) ===
+                                  contactInfoForm.watch("country")
+                              )
                                 ? {
-                                    value: contactInfoForm.watch("country"),
-                                    label:
-                                      Country.find(
-                                        (c: any) =>
-                                          String(c.id) ===
-                                          contactInfoForm.watch("country")
-                                      )?.name || "Select your country",
-                                  }
+                                  value: contactInfoForm.watch("country"),
+                                  label:
+                                    Country.find(
+                                      (c: any) =>
+                                        String(c.id) ===
+                                        contactInfoForm.watch("country")
+                                    )?.name || "Select your country",
+                                }
                                 : null
                               : null
                           }
@@ -2930,11 +2964,10 @@ const UserProfilePage = () => {
                             contactInfoForm.formState.errors.postalCode
                               ? "border-red-500"
                               : "border-gray-300"
-                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                            contactInfoForm.formState.errors.postalCode
+                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${contactInfoForm.formState.errors.postalCode
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                          } uppercase`}
+                            } uppercase`}
                           style={{ textTransform: "uppercase" }}
                         />
                         {contactInfoForm.formState.errors.postalCode && (
@@ -3055,7 +3088,7 @@ const UserProfilePage = () => {
                       handleSocialLinksSubmit
                     )}
                   >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#F8F3FF] mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 bg-[#F8F3FF] mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* Render social links that have values OR custom social links */}
                       {socialPlatforms
                         .filter((platform) => socialLinks[platform.value])
@@ -3183,11 +3216,10 @@ const UserProfilePage = () => {
                                   url: e.target.value,
                                 }))
                               }
-                              placeholder={`Enter ${
-                                socialPlatforms.find(
-                                  (p) => p.value === newSocialLink.platform
-                                )?.label || "social media"
-                              } URL`}
+                              placeholder={`Enter ${socialPlatforms.find(
+                                (p) => p.value === newSocialLink.platform
+                              )?.label || "social media"
+                                } URL`}
                               className="w-full px-4 py-2 h-[41px] border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                             />
                           </div>
@@ -3227,7 +3259,7 @@ const UserProfilePage = () => {
                       </div>
                     </Modal>
 
-                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
@@ -3280,10 +3312,7 @@ const UserProfilePage = () => {
                             educationErrors.end_date);
 
                         return (
-                          <div
-                            key={index}
-                            className="grid grid-cols-1 lg:grid-cols-2 bg-[#F8F3FF] gap-6 mb-8 p-4 rounded-lg rounded-tl-none rounded-tr-none relative overflow-visible"
-                          >
+                            <div className="grid grid-cols-1 md:grid-cols-2 bg-[#F8F3FF] gap-3 sm:gap-4 md:gap-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative overflow-visible">
                             {/* Add remove button */}
                             {index > 0 && (
                               <button
@@ -3336,15 +3365,13 @@ const UserProfilePage = () => {
                                   handleFormChange("education"); // Track changes
                                 }}
                                 placeholder="Enter your degree"
-                                className={`w-full px-4 py-2 border bg-white ${
-                                  educationErrors?.degree
+                                className={`w-full px-4 py-2 border bg-white ${educationErrors?.degree
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  educationErrors?.degree
+                                  } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationErrors?.degree
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {educationErrors?.degree && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3371,15 +3398,13 @@ const UserProfilePage = () => {
                                   handleFormChange("education"); // Track changes
                                 }}
                                 placeholder="Enter institution name"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  educationErrors?.institution
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${educationErrors?.institution
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  educationErrors?.institution
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationErrors?.institution
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {educationErrors?.institution && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3576,7 +3601,7 @@ const UserProfilePage = () => {
                       </button>
                     </div>
 
-                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
@@ -3670,7 +3695,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             )}
 
                             {/* Company */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                            <div className="w-full lg:w-[48%]">
                               <label className="block text-sm font-medium text-gray-800 mb-2">
                                 Company
                               </label>
@@ -3695,15 +3720,13 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   );
                                 }}
                                 placeholder="Enter Company Name"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  experienceErrors?.company
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${experienceErrors?.company
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  experienceErrors?.company
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.company
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {experienceErrors?.company && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3713,7 +3736,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </div>
 
                             {/* Position */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                            <div className="lg:w-[48%] w-full">
                               <label className="block text-sm font-medium text-gray-800 mb-2">
                                 Position
                               </label>
@@ -3731,15 +3754,13 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   handleFormChange("work");
                                 }}
                                 placeholder="Enter your Designation"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  experienceErrors?.position
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${experienceErrors?.position
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  experienceErrors?.position
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.position
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {experienceErrors?.position && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3749,7 +3770,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </div>
 
                             {/* Roles & Responsibilities */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                            <div className="lg:w-[48%] w-full">
                               <label className="block text-sm font-medium text-gray-800 mb-2">
                                 Roles & Responsibilities
                               </label>
@@ -3766,15 +3787,13 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   handleFormChange("work");
                                 }}
                                 placeholder="Describe your key roles and responsibilities"
-                                className={`w-full px-4 py-2 border bg-white ${
-                                  experienceErrors?.roles_responsibilities
+                                className={`w-full px-4 py-2 border bg-white ${experienceErrors?.roles_responsibilities
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  experienceErrors?.roles_responsibilities
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.roles_responsibilities
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {experienceErrors?.roles_responsibilities && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3787,7 +3806,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </div>
 
                             {/* City */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                            <div className="lg:w-[48%] w-full">
                               <label className="block text-sm font-medium text-gray-700 mb-2">
                                 City
                               </label>
@@ -3804,15 +3823,13 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   handleFormChange("work");
                                 }}
                                 placeholder="Enter city"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
-                                  experienceErrors?.work_city
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${experienceErrors?.work_city
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
-                                  experienceErrors?.work_city
+                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.work_city
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                }`}
+                                  }`}
                               />
                               {experienceErrors?.work_city && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3822,7 +3839,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </div>
 
                             {/* Start Date */}
-                            <div className="lg:w-[48%] md:w-[48%] w-full">
+                            <div className="lg:w-[48%] w-full">
                               <label className="block text-sm font-medium text-gray-800 mb-2">
                                 Start Date
                               </label>
@@ -4065,10 +4082,10 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                       handlePublicProfileSubmit
                     )}
                   >
-                    <div className="bg-[#F8F3FF] gap-6 mb-8 p-4  rounded-lg rounded-tl-none rounded-tr-none relative">
+                <div className="bg-[#F8F3FF] space-y-4 md:space-y-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* Title */}
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-800 mb-2">
+                      <div className="w-full">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
                           Title
                         </label>
                         <textarea
@@ -4166,7 +4183,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </button>
                             <span className="flex-1 truncate text-gray-500">
                               {publicProfileForm.watch("featuredImage") &&
-                              publicProfileForm.watch("featuredImage").length >
+                                publicProfileForm.watch("featuredImage").length >
                                 0 ? (
                                 publicProfileForm.watch("featuredImage")[0]
                                   ?.name
@@ -4217,9 +4234,9 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             value={
                               serviceInput
                                 ? {
-                                    value: serviceInput,
-                                    label: serviceInput,
-                                  }
+                                  value: serviceInput,
+                                  label: serviceInput,
+                                }
                                 : undefined
                             }
                             onChange={(selectedOption) => {
@@ -4415,7 +4432,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                         )}
                       </div>*/}
                     </div>
-                    <div className="md:col-span-2 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
