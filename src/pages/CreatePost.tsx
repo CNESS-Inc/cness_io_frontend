@@ -5,7 +5,7 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import {
   AddPost,
   GetConnectionUser,
-  GetCountryDetails,
+  SearchLocation,
 } from "../Common/ServerAPI";
 import {
   CirclePlus,
@@ -55,8 +55,13 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
   // New fields: feeling, location, tags
   const [feeling, setFeeling] = useState<string>("");
   const [feelingEmoji, setFeelingEmoji] = useState<string>("");
-  const [location, setLocation] = useState<string>("");
-  const [locationId, setLocationId] = useState<string>("");
+  const [selectedLocation, setSelectedLocation] = useState<{
+    placeId: string;
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [tagIds, setTagIds] = useState<string[]>([]);
   // const [tagInput, setTagInput] = useState<string>("");
@@ -67,14 +72,15 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const [isTagsPopupOpen, setIsTagsPopupOpen] = useState(false);
   const [feelingSearchQuery, setFeelingSearchQuery] = useState<string>("");
 
+  // Location search state
+  const [locationSearchQuery, setLocationSearchQuery] = useState<string>("");
+  const [locationResults, setLocationResults] = useState<any[]>([]);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(false);
+
   // Friends list state
   const [friends, setFriends] = useState<any[]>([]);
   const [selectedFriends, setSelectedFriends] = useState<any[]>([]);
   const [friendSearchQuery, setFriendSearchQuery] = useState<string>("");
-
-  // Countries list state
-  const [countries, setCountries] = useState<any[]>([]);
-  const [locationSearchQuery, setLocationSearchQuery] = useState<string>("");
 
   const topicDropdownRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -160,24 +166,6 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
       return () => clearTimeout(timeoutId);
     }
   }, [isOpen, isTagsPopupOpen, friendSearchQuery]);
-
-  // Fetch countries for location
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await GetCountryDetails();
-        if (response?.data?.data) {
-          setCountries(response.data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching countries:", error);
-      }
-    };
-
-    if (isOpen || isLocationPopupOpen) {
-      fetchCountries();
-    }
-  }, [isOpen, isLocationPopupOpen]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -291,24 +279,81 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     feeling.label.toLowerCase().includes(feelingSearchQuery.toLowerCase())
   );
 
-  // Handle selecting a location
-  const handleSelectLocation = (country: any) => {
-    setLocation(country.name);
-    setLocationId(country.id.toString());
-    setIsLocationPopupOpen(false);
-    setLocationSearchQuery("");
-  };
-
   // Handle closing location popup
   const handleCloseLocationPopup = () => {
     setIsLocationPopupOpen(false);
     setLocationSearchQuery("");
+    setLocationResults([]);
   };
 
-  // Filter countries based on search query
-  const filteredCountries = countries.filter((country) =>
-    country.name.toLowerCase().includes(locationSearchQuery.toLowerCase())
-  );
+  // Load default location suggestions
+  const loadDefaultLocationSuggestions = async () => {
+    const defaultCities = ["New York", "London", "Tokyo", "Paris", "Sydney"];
+    setIsLoadingLocations(true);
+    try {
+      const allSuggestions: any[] = [];
+      for (const city of defaultCities) {
+        try {
+          const response = await SearchLocation(city);
+          if (response?.data?.data && response.data.data.length > 0) {
+            allSuggestions.push(response.data.data[0]);
+          }
+        } catch (error) {
+          console.error(`Error fetching ${city}:`, error);
+        }
+      }
+      setLocationResults(allSuggestions);
+    } catch (error) {
+      console.error("Error loading default suggestions:", error);
+    } finally {
+      setIsLoadingLocations(false);
+    }
+  };
+
+  // Search locations based on query
+  const searchLocations = async (query: string) => {
+    if (query.trim().length < 3) {
+      return;
+    }
+
+    setIsLoadingLocations(true);
+    try {
+      const response = await SearchLocation(query);
+      if (response?.data?.data) {
+        setLocationResults(response.data.data);
+      } else {
+        setLocationResults([]);
+      }
+    } catch (error) {
+      console.error("Error searching locations:", error);
+      setLocationResults([]);
+    } finally {
+      setIsLoadingLocations(false);
+    }
+  };
+
+  // Handle location search with debouncing
+  useEffect(() => {
+    if (!isLocationPopupOpen) return;
+
+    if (locationSearchQuery.trim().length === 0) {
+      // Load default suggestions when query is empty
+      loadDefaultLocationSuggestions();
+      return;
+    }
+
+    if (locationSearchQuery.trim().length < 3) {
+      setLocationResults([]);
+      return;
+    }
+
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      searchLocations(locationSearchQuery);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [locationSearchQuery, isLocationPopupOpen]);
 
   // Handle toggling friend selection
   const handleToggleFriend = (friend: any) => {
@@ -435,8 +480,8 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
       formData.append("feeling", feeling);
     }
 
-    if (locationId) {
-      formData.append("location_id", locationId);
+    if (selectedLocation) {
+      formData.append("location", JSON.stringify(selectedLocation));
     }
 
     if (tagIds.length > 0) {
@@ -527,8 +572,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     setTopicSearchQuery("");
     setFeeling("");
     setFeelingEmoji("");
-    setLocation("");
-    setLocationId("");
+    setSelectedLocation(null);
     setTags([]);
     setTagIds([]);
     // setTagInput("");
@@ -668,7 +712,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                         </span>
                       </>
                     )}
-                    {location && (
+                    {selectedLocation && (
                       <>
                         <span className="text-gray-600 text-xs md:text-sm">
                           at
@@ -678,12 +722,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                             onClick={() => setIsLocationPopupOpen(true)}
                             className="hover:underline"
                           >
-                            {location}
+                            {selectedLocation.name}
                           </button>
                           <button
                             onClick={() => {
-                              setLocation("");
-                              setLocationId("");
+                              setSelectedLocation(null);
                             }}
                             className="hover:text-red-500"
                             title="Remove location"
@@ -1183,7 +1226,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </svg>
                 <input
                   type="text"
-                  placeholder="Search"
+                  placeholder="Search for a location..."
                   value={locationSearchQuery}
                   onChange={(e) => setLocationSearchQuery(e.target.value)}
                   className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200/60 rounded-2xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7077FE]/20 focus:border-[#7077FE]/40 transition-all"
@@ -1192,15 +1235,23 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
               </div>
             </div>
 
-            {/* Location List */}
-            <div className="px-4 pb-6 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-              {filteredCountries.length > 0 ? (
+            {/* Location Results */}
+            <div className="px-4 pb-6 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+              {isLoadingLocations ? (
+                <div className="p-4 text-center text-gray-500">
+                  <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                  {locationSearchQuery.length === 0 ? "Loading suggestions..." : "Searching..."}
+                </div>
+              ) : locationResults.length > 0 ? (
                 <div className="space-y-2">
-                  {filteredCountries.map((country) => (
+                  {locationResults.map((location) => (
                     <button
-                      key={country.id}
-                      onClick={() => handleSelectLocation(country)}
-                      className="w-full flex items-center gap-4 px-4 py-4 rounded-3xl transition-all duration-200 bg-white/60 hover:bg-white/90 hover:shadow-sm"
+                      key={location.placeId}
+                      onClick={() => {
+                        setSelectedLocation(location);
+                        handleCloseLocationPopup();
+                      }}
+                      className="w-full flex items-center gap-4 px-4 py-3 rounded-3xl transition-all duration-200 bg-white/60 hover:bg-white/90 hover:shadow-sm"
                     >
                       {/* Circular icon container */}
                       <div className="shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
@@ -1219,10 +1270,10 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                       {/* Location text */}
                       <div className="flex-1 text-left min-w-0">
                         <p className="font-bold text-gray-900 text-base truncate">
-                          {country.name}
+                          {location.name}
                         </p>
-                        <p className="text-sm text-gray-500 font-medium">
-                          {country.name}
+                        <p className="text-sm text-gray-500 font-medium truncate">
+                          {location.address}
                         </p>
                       </div>
                     </button>
@@ -1230,7 +1281,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </div>
               ) : (
                 <div className="text-center py-16 px-6">
-                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gray-100 flex items-center justify-center">
                     <svg
                       className="w-10 h-10 text-gray-400"
                       fill="currentColor"
@@ -1244,27 +1295,21 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     </svg>
                   </div>
                   <p className="text-gray-900 font-semibold text-base mb-1">
-                    {locationSearchQuery
-                      ? "No matches found"
-                      : "No locations available"}
+                    {locationSearchQuery.length > 0 && locationSearchQuery.length < 3
+                      ? "Type at least 3 characters"
+                      : locationSearchQuery.length >= 3
+                      ? "No locations found"
+                      : "No suggestions available"}
                   </p>
                   <p className="text-gray-500 text-sm">
-                    {locationSearchQuery
+                    {locationSearchQuery.length > 0 && locationSearchQuery.length < 3
+                      ? "Continue typing to search"
+                      : locationSearchQuery.length >= 3
                       ? "Try searching with a different name"
-                      : "No locations to display"}
+                      : "Start typing to search for a location"}
                   </p>
                 </div>
               )}
-            </div>
-
-            {/* Done Button - Primary button color #7077FE */}
-            <div className="px-6 pb-6">
-              <button
-                onClick={handleCloseLocationPopup}
-                className="w-full py-3 bg-[#7077FE] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#7077FE]/25 hover:shadow-xl hover:shadow-[#7077FE]/30 hover:bg-[#5b63e6] transition-all"
-              >
-                Done
-              </button>
             </div>
           </div>
         </div>
