@@ -869,7 +869,7 @@ const InspiredAssessment = () => {
               onClick={() => handleToggle(section.id)}
               className="w-full flex justify-between items-center px-4 sm:px-6 py-5 sm:py-6 text-left"
             >
-              <span className="font-[poppins] font-semibold text-[18px] sm:text-[18px] leading-[150%] text-gray-900 block break-words">
+              <span className="font-[poppins] font-semibold text-[18px] sm:text-[18px] leading-[150%] text-gray-900 block wrap-break-word">
                 {section.order_number}. {section.name}
               </span>
               <div className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm">
@@ -927,13 +927,13 @@ const InspiredAssessment = () => {
 
       <label
         htmlFor={`checkbox-${checkbox.id}`}
-        className="font-['Open_Sans'] text-[15px] leading-[150%] text-[#1E1E1E] cursor-pointer break-words flex-1"
+        className="font-['Open_Sans'] text-[15px] leading-[150%] text-[#1E1E1E] cursor-pointer wrap-break-word flex-1"
       >
         {checkbox.option}
       </label>
 
       {checked[section.id]?.includes(checkbox.id) && (
-        <span className="absolute left-[1px] top-[2px] w-5 h-5 flex items-center justify-center pointer-events-none">
+        <span className="absolute left-px top-0.5 w-5 h-5 flex items-center justify-center pointer-events-none">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-3.5 h-3.5 text-white"
@@ -962,7 +962,7 @@ const InspiredAssessment = () => {
                     </p>
 
                     <div
-                      className="relative text-center py-6 px-4 rounded-[26px] flex flex-col items-center justify-center cursor-pointer bg-white mb-6 gap-[10px]"
+                      className="relative text-center py-6 px-4 rounded-[26px] flex flex-col items-center justify-center cursor-pointer bg-white mb-6 gap-2.5"
                       onDrop={(e) => handleDrop(e, section.id)}
                       onDragOver={(e) => {
                         e.preventDefault();
@@ -1026,7 +1026,7 @@ const InspiredAssessment = () => {
                         className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 overflow-hidden"
                       >
                         <div className="flex items-center space-x-3 min-w-0">
-                          <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-[#FFECEC] rounded-md">
+                          <div className="w-8 h-8 shrink-0 flex items-center justify-center bg-[#FFECEC] rounded-md">
                             <img
                               src="https://cdn-icons-png.flaticon.com/512/337/337946.png"
                               alt="PDF"
@@ -1042,7 +1042,7 @@ const InspiredAssessment = () => {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2 flex-shrink-0">
+                        <div className="flex items-center space-x-2 shrink-0">
                           {file.status === "Uploading..." && (
                             <Loader2 className="w-4 h-4 text-[#7077FE] animate-spin" />
                           )}
@@ -1084,7 +1084,7 @@ const InspiredAssessment = () => {
         <button
           onClick={handleSubmitAllAnswers}
           disabled={submitting}
-          className="px-6 py-2 rounded-full bg-gradient-to-r from-[#7077FE] to-[#A066FF] text-white font-[poppins] font-medium text-[16px] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+          className="px-6 py-2 rounded-full bg-linear-to-r from-[#7077FE] to-[#A066FF] text-white font-[poppins] font-medium text-[16px] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
         >
           {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
           {submitting ? "Submitting..." : "Submit"}
@@ -1104,7 +1104,7 @@ const InspiredAssessment = () => {
                 className={`rounded-lg p-4 hover:shadow-md transition-shadow ${plan.borderClass} relative`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
+                  <div className="absolute top-0 right-0 bg-linear-to-r from-[#7077FE] to-[#9747FF] text-white text-xs px-2 py-1 rounded-bl rounded-tr z-10">
                     Popular
                   </div>
                 )}
@@ -1151,7 +1151,7 @@ const InspiredAssessment = () => {
                   checked={isAnnual}
                   onChange={() => setIsAnnual(!isAnnual)}
                 />
-                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r from-[#7077FE] to-[#9747FF]"></div>
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-linear-to-r from-[#7077FE] to-[#9747FF]"></div>
               </div>
               <span className="ml-3 text-sm font-medium text-gray-700">
                 Annual billing
