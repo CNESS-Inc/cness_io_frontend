@@ -152,14 +152,14 @@ export default function BestPracticesHub() {
       currentPage: 1,
       totalPages: 1,
       totalItems: 0,
-      itemsPerPage: isMobile ? 4 : isTablet ? 6 : 9,
+      itemsPerPage: isMobile ? 4 : isTablet ? 6 : 12,
     });
 
   const [paginationInterest, setPaginationInterest] = useState<PaginationData>({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: isMobile ? 4 : isTablet ? 6 : 9,
+    itemsPerPage: isMobile ? 4 : isTablet ? 6 : 12,
   });
 
   // Separate loading states
