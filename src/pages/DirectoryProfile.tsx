@@ -11,7 +11,7 @@ import {
   UserRoundMinus,
   UserRoundPlus,
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import EnquiryModal from "../components/directory/Enquire";
 import {
@@ -117,9 +117,58 @@ const DirectoryProfile = () => {
     replyId: null,
   });
 
+  // Add state for photo modal
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const badgeImg = profileData?.badge?.level
     ? levels.find((el) => el.key === profileData.badge?.level)?.img
     : "";
+
+  // Ref for the thumbnail container
+  const thumbnailContainerRef = useRef<HTMLDivElement>(null);
+
+  // Function to open photo modal
+  const openPhotoModal = (index: number) => {
+    setSelectedPhotoIndex(index);
+    setShowPhotoModal(true);
+  };
+
+  // Scroll to selected thumbnail when it changes
+  useEffect(() => {
+    if (thumbnailContainerRef.current) {
+      const selectedThumbnail = thumbnailContainerRef.current.children[selectedPhotoIndex] as HTMLElement;
+      if (selectedThumbnail) {
+        const container = thumbnailContainerRef.current;
+        const scrollLeft = selectedThumbnail.offsetLeft - container.offsetWidth / 2 + selectedThumbnail.offsetWidth / 2;
+        container.scrollTo({
+          left: scrollLeft,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [selectedPhotoIndex]);
+
+  // Function to close photo modal
+  const closePhotoModal = () => {
+    setShowPhotoModal(false);
+    setSelectedPhotoIndex(0);
+  };
+
+  // Function to navigate to next photo
+  const nextPhoto = () => {
+    const photos = profileData?.photos || [];
+    setSelectedPhotoIndex((prevIndex) =>
+      prevIndex === photos.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  // Function to navigate to previous photo
+  const prevPhoto = () => {
+    const photos = profileData?.photos || [];
+    setSelectedPhotoIndex((prevIndex) =>
+      prevIndex === 0 ? photos.length - 1 : prevIndex - 1
+    );
+  };
 
   useEffect(() => {
     const fetchDirectoryProfile = async () => {
@@ -229,6 +278,8 @@ const DirectoryProfile = () => {
       }
     });
   }, [reviews]);
+
+
 
   if (loading) {
     return (
@@ -532,8 +583,8 @@ const DirectoryProfile = () => {
     } else if (businessHours.business_status === 2) {
       const startDate = businessHours.temporary_close_start_date
         ? new Date(
-            businessHours.temporary_close_start_date
-          ).toLocaleDateString()
+          businessHours.temporary_close_start_date
+        ).toLocaleDateString()
         : "";
       const endDate = businessHours.temporary_close_end_date
         ? new Date(businessHours.temporary_close_end_date).toLocaleDateString()
@@ -716,9 +767,9 @@ const DirectoryProfile = () => {
           prevReviews.map((review) =>
             review.id === reviewId
               ? {
-                  ...review,
-                  reply_count: (review.reply_count || 0) + 1,
-                }
+                ...review,
+                reply_count: (review.reply_count || 0) + 1,
+              }
               : review
           )
         );
@@ -769,12 +820,12 @@ const DirectoryProfile = () => {
         prevReviews.map((review) =>
           review.id === reviewId
             ? {
-                ...review,
-                is_liked: !review.is_liked,
-                likes_count: review.is_liked
-                  ? Math.max(0, (review.likes_count || 0) - 1)
-                  : (review.likes_count || 0) + 1,
-              }
+              ...review,
+              is_liked: !review.is_liked,
+              likes_count: review.is_liked
+                ? Math.max(0, (review.likes_count || 0) - 1)
+                : (review.likes_count || 0) + 1,
+            }
             : review
         )
       );
@@ -812,12 +863,12 @@ const DirectoryProfile = () => {
         const updatedReplies = currentReplies.map((reply: any) =>
           reply.id === replyId
             ? {
-                ...reply,
-                is_liked: !reply.is_liked,
-                likes_count: reply.is_liked
-                  ? Math.max(0, (reply.likes_count || 0) - 1)
-                  : (reply.likes_count || 0) + 1,
-              }
+              ...reply,
+              is_liked: !reply.is_liked,
+              likes_count: reply.is_liked
+                ? Math.max(0, (reply.likes_count || 0) - 1)
+                : (reply.likes_count || 0) + 1,
+            }
             : reply
         );
         return {
@@ -940,9 +991,9 @@ const DirectoryProfile = () => {
         prevReviews.map((review) =>
           review.id === reviewId
             ? {
-                ...review,
-                reply_count: Math.max(0, (review.reply_count || 0) - 1),
-              }
+              ...review,
+              reply_count: Math.max(0, (review.reply_count || 0) - 1),
+            }
             : review
         )
       );
@@ -1219,9 +1270,8 @@ const DirectoryProfile = () => {
 
               <div className="flex-1 text-center sm:text-left">
                 <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
-                  {`${userProfile.first_name || ""} ${
-                    userProfile.last_name || ""
-                  }`.trim() || "User Name"}
+                  {`${userProfile.first_name || ""} ${userProfile.last_name || ""
+                    }`.trim() || "User Name"}
                 </h3>
 
                 <div className="flex flex-col sm:flex-row items-center sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-[#64748B] font-['open_sans'] text-sm">
@@ -1277,7 +1327,7 @@ const DirectoryProfile = () => {
                 </h4>
                 <div className="flex flex-wrap gap-1 justify-center sm:justify-start">
                   {userProfile.professions &&
-                  userProfile.professions.length > 0 ? (
+                    userProfile.professions.length > 0 ? (
                     userProfile.professions
                       .slice(0, 2)
                       .map((profession: any) => (
@@ -1300,7 +1350,7 @@ const DirectoryProfile = () => {
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
               <div className="flex items-center -space-x-2">
                 {profileData.friend_profile_pics &&
-                profileData.friend_profile_pics.length > 0 ? (
+                  profileData.friend_profile_pics.length > 0 ? (
                   <>
                     {profileData.friend_profile_pics
                       .slice(0, 3)
@@ -1412,8 +1462,11 @@ const DirectoryProfile = () => {
               Photos
             </h3>
             {photos.length > 4 && (
-              <div className="flex items-center space-x-1.5 text-[#7077FE] self-end">
-                <span className="font-[Poppins] font-medium text-sm cursor-pointer">
+              <div
+                className="flex items-center space-x-1.5 text-[#7077FE] self-end cursor-pointer"
+                onClick={() => openPhotoModal(0)}
+              >
+                <span className="font-[Poppins] font-medium text-sm">
                   See all {photos.length} photos
                 </span>
                 <svg
@@ -1426,12 +1479,25 @@ const DirectoryProfile = () => {
               </div>
             )}
           </div>
+
           {photos.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
-              {photos.slice(0, 4).map((photo: any) => (
+            <div className="flex flex-wrap gap-3">
+              {photos.slice(0, 4).map((photo: any, index: number) => (
                 <div
                   key={photo.id}
-                  className="aspect-square bg-[#FFE4F5] rounded-lg overflow-hidden"
+                  className="
+        w-full 
+        sm:w-[calc(50%-6px)]
+        lg:w-[calc(25%-9px)]
+        h-[184px] 
+        lg:h-[220px] 
+        bg-[#F8F0F0] 
+        rounded-lg 
+        relative 
+        overflow-hidden
+        cursor-pointer
+      "
+                  onClick={() => openPhotoModal(index)}
                 >
                   <img
                     src={photo.file}
@@ -1441,13 +1507,13 @@ const DirectoryProfile = () => {
                 </div>
               ))}
             </div>
+
           ) : (
             <div className="text-[#64748B] text-center py-8">
               No photos available
             </div>
           )}
         </section>
-
         {/* Contact Information Section */}
         <section className="bg-white rounded-xl p-4 md:p-6 space-y-4">
           <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
@@ -1606,11 +1672,10 @@ const DirectoryProfile = () => {
                         {/* Updated Follow Button */}
                         <button
                           onClick={() => toggleFollow(item.id)}
-                          className={`px-4 py-2 sm:px-6 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] text-center capitalize w-full sm:w-auto ${
-                            item.is_following
-                              ? "bg-[#F396FF] text-white"
-                              : "bg-[#7077FE] text-white hover:bg-[#6A6DEB]"
-                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                          className={`px-4 py-2 sm:px-6 sm:py-3 rounded-full font-Rubik font-normal text-[13px] sm:text-[14px] leading-[100%] text-center capitalize w-full sm:w-auto ${item.is_following
+                            ? "bg-[#F396FF] text-white"
+                            : "bg-[#7077FE] text-white hover:bg-[#6A6DEB]"
+                            } disabled:opacity-50 disabled:cursor-not-allowed`}
                           disabled={followLoading[item.id]}
                         >
                           {followLoading[item.id] ? (
@@ -1677,11 +1742,10 @@ const DirectoryProfile = () => {
                       <div className="space-y-1">
                         <div className="inline-flex items-center space-x-2 bg-opacity-10 rounded-full px-2 py-1">
                           <span
-                            className={`text-xs font-[Poppins] ${
-                              product.category === "Music"
-                                ? "text-[#F07EFF]"
-                                : "text-[#7077FE]"
-                            }`}
+                            className={`text-xs font-[Poppins] ${product.category === "Music"
+                              ? "text-[#F07EFF]"
+                              : "text-[#7077FE]"
+                              }`}
                           >
                             {product.category}
                           </span>
@@ -1740,9 +1804,8 @@ const DirectoryProfile = () => {
                               className="w-5 h-5 rounded-lg object-cover"
                             />
                             <span className="font-['open_sans'] font-semibold text-xs text-[#1F2937]">
-                              {`${product.profile.first_name || ""} ${
-                                product.profile.last_name || ""
-                              }`.trim()}
+                              {`${product.profile.first_name || ""} ${product.profile.last_name || ""
+                                }`.trim()}
                             </span>
                           </div>
                         )}
@@ -1802,11 +1865,10 @@ const DirectoryProfile = () => {
                         className="focus:outline-none"
                       >
                         <Star
-                          className={`w-5 h-5 ${
-                            star <= reviewForm.rating
-                              ? "text-[#FACC15] fill-[#FACC15]"
-                              : "text-[#9CA3AF]"
-                          }`}
+                          className={`w-5 h-5 ${star <= reviewForm.rating
+                            ? "text-[#FACC15] fill-[#FACC15]"
+                            : "text-[#9CA3AF]"
+                            }`}
                           strokeWidth={1.5}
                         />
                       </button>
@@ -1892,13 +1954,13 @@ const DirectoryProfile = () => {
                     {reviews.map((review: any) => {
                       const reviewDate = review.createdAt
                         ? new Date(review.createdAt).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )
                         : "";
 
                       return (
@@ -1909,9 +1971,8 @@ const DirectoryProfile = () => {
                           <div className="space-y-2">
                             <div className="flex flex-wrap items-center gap-2">
                               <span className="font-[Poppins] font-semibold text-black text-sm sm:text-base">
-                                {`${review.profile?.first_name || ""} ${
-                                  review.profile?.last_name || ""
-                                }`.trim() || "Anonymous"}
+                                {`${review.profile?.first_name || ""} ${review.profile?.last_name || ""
+                                  }`.trim() || "Anonymous"}
                               </span>
                               <div className="w-1.5 h-1.5 bg-[#9CA3AF] rounded-full"></div>
                               <span className="font-['open_sans'] text-[#9CA3AF] text-xs">
@@ -1927,11 +1988,10 @@ const DirectoryProfile = () => {
                           <div className="flex items-center space-x-2 p-2">
                             <button
                               onClick={() => handleLikeReview(review.id)}
-                              className={`flex items-center space-x-1 ${
-                                review.is_liked
-                                  ? "text-[#7077FE]"
-                                  : "text-[#1F2937]"
-                              }`}
+                              className={`flex items-center space-x-1 ${review.is_liked
+                                ? "text-[#7077FE]"
+                                : "text-[#1F2937]"
+                                }`}
                             >
                               <svg
                                 className="w-5 h-5 sm:w-6 sm:h-6"
@@ -2049,12 +2109,12 @@ const DirectoryProfile = () => {
                                           const childReviewDate =
                                             childReview.createdAt
                                               ? new Date(
-                                                  childReview.createdAt
-                                                ).toLocaleDateString("en-US", {
-                                                  year: "numeric",
-                                                  month: "short",
-                                                  day: "numeric",
-                                                })
+                                                childReview.createdAt
+                                              ).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "short",
+                                                day: "numeric",
+                                              })
                                               : "";
 
                                           return (
@@ -2066,23 +2126,21 @@ const DirectoryProfile = () => {
                                                 <div className="flex items-center space-x-2">
                                                   {childReview.profile
                                                     ?.profile_picture && (
-                                                    <img
-                                                      src={
-                                                        childReview.profile
-                                                          .profile_picture
-                                                      }
-                                                      alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
-                                                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover"
-                                                    />
-                                                  )}
+                                                      <img
+                                                        src={
+                                                          childReview.profile
+                                                            .profile_picture
+                                                        }
+                                                        alt={`${childReview.profile.first_name} ${childReview.profile.last_name}`}
+                                                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover"
+                                                      />
+                                                    )}
                                                   <span className="font-[Poppins] font-semibold text-sm text-black">
-                                                    {`${
-                                                      childReview.profile
-                                                        ?.first_name || ""
-                                                    } ${
-                                                      childReview.profile
+                                                    {`${childReview.profile
+                                                      ?.first_name || ""
+                                                      } ${childReview.profile
                                                         ?.last_name || ""
-                                                    }`.trim() || "Anonymous"}
+                                                      }`.trim() || "Anonymous"}
                                                   </span>
                                                   <div className="w-1 h-1 bg-[#9CA3AF] rounded-full"></div>
                                                   <span className="font-['open_sans'] text-[#9CA3AF] text-xs">
@@ -2091,20 +2149,20 @@ const DirectoryProfile = () => {
                                                 </div>
                                                 {childReview.is_my_reply &&
                                                   editingReplyId !==
-                                                    childReview.id && (
+                                                  childReview.id && (
                                                     <div className="flex items-center space-x-2">
                                                       <button
                                                         onClick={() =>
                                                           handleEditReply(
                                                             childReview.id,
                                                             childReview.text ||
-                                                              childReview.description
+                                                            childReview.description
                                                           )
                                                         }
                                                         className="text-[#7077FE] hover:text-[#5a61e8] font-['open_sans'] text-xs"
                                                         disabled={
                                                           deletingReply[
-                                                            childReview.id
+                                                          childReview.id
                                                           ]
                                                         }
                                                       >
@@ -2123,7 +2181,7 @@ const DirectoryProfile = () => {
                                                         className="text-[#EF4444] hover:text-[#DC2626] font-['open_sans'] text-xs"
                                                         disabled={
                                                           deletingReply[
-                                                            childReview.id
+                                                          childReview.id
                                                           ]
                                                         }
                                                       >
@@ -2137,7 +2195,7 @@ const DirectoryProfile = () => {
                                                   )}
                                               </div>
                                               {editingReplyId ===
-                                              childReview.id ? (
+                                                childReview.id ? (
                                                 <div className="space-y-2">
                                                   <div className="border border-[#D1D5DB] rounded-xl sm:rounded-2xl p-3">
                                                     <textarea
@@ -2145,7 +2203,7 @@ const DirectoryProfile = () => {
                                                       placeholder="Edit your reply..."
                                                       value={
                                                         editReplyTexts[
-                                                          childReview.id
+                                                        childReview.id
                                                         ] || ""
                                                       }
                                                       onChange={(e) => {
@@ -2182,7 +2240,7 @@ const DirectoryProfile = () => {
                                                         className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-[Poppins] font-medium text-sm text-[#64748B] hover:bg-gray-100 w-full sm:w-auto"
                                                         disabled={
                                                           submittingEditReply[
-                                                            childReview.id
+                                                          childReview.id
                                                           ]
                                                         }
                                                       >
@@ -2197,7 +2255,7 @@ const DirectoryProfile = () => {
                                                         }
                                                         disabled={
                                                           submittingEditReply[
-                                                            childReview.id
+                                                          childReview.id
                                                           ] ||
                                                           !editReplyTexts[
                                                             childReview.id
@@ -2222,43 +2280,42 @@ const DirectoryProfile = () => {
                                               )}
                                               {editingReplyId !==
                                                 childReview.id && (
-                                                <div className="flex items-center pl-6 sm:pl-8 pt-1">
-                                                  <button
-                                                    onClick={() =>
-                                                      handleLikeReply(
-                                                        review.id,
-                                                        childReview.id
-                                                      )
-                                                    }
-                                                    className={`flex items-center space-x-1 ${
-                                                      childReview.is_liked
+                                                  <div className="flex items-center pl-6 sm:pl-8 pt-1">
+                                                    <button
+                                                      onClick={() =>
+                                                        handleLikeReply(
+                                                          review.id,
+                                                          childReview.id
+                                                        )
+                                                      }
+                                                      className={`flex items-center space-x-1 ${childReview.is_liked
                                                         ? "text-[#7077FE]"
                                                         : "text-[#1F2937]"
-                                                    }`}
-                                                  >
-                                                    <svg
-                                                      className="w-4 h-4 sm:w-5 sm:h-5"
-                                                      viewBox="0 0 24 24"
-                                                      fill={
-                                                        childReview.is_liked
-                                                          ? "currentColor"
-                                                          : "none"
-                                                      }
-                                                      stroke="currentColor"
+                                                        }`}
                                                     >
-                                                      <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
-                                                    </svg>
-                                                    {childReview.likes_count >
-                                                      0 && (
-                                                      <span className="font-['open_sans'] text-xs">
-                                                        {
-                                                          childReview.likes_count
+                                                      <svg
+                                                        className="w-4 h-4 sm:w-5 sm:h-5"
+                                                        viewBox="0 0 24 24"
+                                                        fill={
+                                                          childReview.is_liked
+                                                            ? "currentColor"
+                                                            : "none"
                                                         }
-                                                      </span>
-                                                    )}
-                                                  </button>
-                                                </div>
-                                              )}
+                                                        stroke="currentColor"
+                                                      >
+                                                        <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 016 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23h-.777z" />
+                                                      </svg>
+                                                      {childReview.likes_count >
+                                                        0 && (
+                                                          <span className="font-['open_sans'] text-xs">
+                                                            {
+                                                              childReview.likes_count
+                                                            }
+                                                          </span>
+                                                        )}
+                                                    </button>
+                                                  </div>
+                                                )}
                                             </div>
                                           );
                                         }
@@ -2389,8 +2446,140 @@ const DirectoryProfile = () => {
           </div>
         </div>
       </Modal>
-    </>
+
+      {/* Photo Gallery Modal */}
+      <Modal
+        isOpen={showPhotoModal}
+        onClose={closePhotoModal}
+        position="center"
+      >
+        <div className="fixed inset-0 bg-white flex flex-col">
+          {photos.length > 0 && (
+            <div className="flex flex-col h-full">
+              {/* Top Controls - Photo Counter and Close Button */}
+              <div className="flex justify-between items-center p-6">
+                <div className="px-5 py-3 bg-gray-100 backdrop-blur-xl rounded-full shadow-xl">
+                  <span className="text-lg font-bold text-gray-800">{selectedPhotoIndex + 1}</span>
+                  <span className="mx-2 text-gray-500">/</span>
+                  <span className="text-gray-600">{photos.length}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={closePhotoModal}
+                  className="p-3 bg-gray-100 backdrop-blur-xl rounded-full hover:bg-gray-200 hover:scale-110 transition-all duration-300 shadow-xl"
+                  aria-label="Close photo viewer"
+                >
+                  <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Main Content Area - Navigation Arrows and Photo */}
+              <div className="flex-grow flex items-center justify-center px-4 relative py-4">
+                {/* Navigation Arrows */}
+
+                {/* Main Photo */}
+                <div className="max-w-7xl max-h-full p-4">
+                  <img
+                    src={photos[selectedPhotoIndex]?.file}
+                    alt={`Photo ${selectedPhotoIndex + 1}`}
+                    className="max-h-[70vh] max-w-full object-contain rounded-2xl shadow-xl transition-all duration-500 ease-in-out transform hover:scale-[1.02]"
+                    style={{
+                      filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.1))'
+                    }}
+                  />
+                </div>
+              </div>              {/* Navigation Arrows */}
+              {photos.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className="absolute left-8 top-1/2 transform -translate-y-1/2 p-4 bg-gray-100 backdrop-blur-xl rounded-full hover:bg-gray-200 hover:scale-110 transition-all duration-300 shadow-xl group"
+                    onClick={prevPhoto}
+                    aria-label="Previous photo"
+                  >
+                    <svg className="w-7 h-7 text-gray-700 group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="absolute right-8 top-1/2 transform -translate-y-1/2 p-4 bg-gray-100 backdrop-blur-xl rounded-full hover:bg-gray-200 hover:scale-110 transition-all duration-300 shadow-xl group"
+                    onClick={nextPhoto}
+                    aria-label="Next photo"
+                  >
+                    <svg className="w-7 h-7 text-gray-700 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </>
+              )}
+
+              {/* Thumbnails */}
+              {photos.length > 1 && (
+                <div className="px-6 py-4 bg-gradient-to-t from-gray-100 via-gray-50 to-transparent backdrop-blur-sm border-t border-gray-200">
+                  <div className="w-full flex justify-center relative">
+    
+                    <div 
+                      ref={thumbnailContainerRef}
+                      className="w-full max-w-6xl px-3 flex overflow-x-auto space-x-4 py-2 scrollbar-hide draggable-thumbnails" 
+                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                      onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+                        e.preventDefault(); // Prevent default behavior
+                        const slider = e.currentTarget;
+                        const startX = e.pageX - slider.offsetLeft;
+                        const scrollLeft = slider.scrollLeft;
+                        
+                        let isDragging = false;
+                        
+                        const mouseMoveHandler = (moveEvent: MouseEvent) => {
+                          if (!isDragging) {
+                            isDragging = true;
+                            slider.classList.add('active');
+                          }
+                          const x = moveEvent.pageX - slider.offsetLeft;
+                          const walk = (x - startX) * 2; // Adjust multiplier for sensitivity
+                          slider.scrollLeft = scrollLeft - walk;
+                        };
+                        
+                        const mouseUpHandler = () => {
+                          if (isDragging) {
+                            slider.classList.remove('active');
+                          }
+                          document.removeEventListener('mousemove', mouseMoveHandler);
+                          document.removeEventListener('mouseup', mouseUpHandler);
+                        };
+                        
+                        document.addEventListener('mousemove', mouseMoveHandler);
+                        document.addEventListener('mouseup', mouseUpHandler);
+                      }}
+                    >
+                      {photos.map((photo: any, index: any) => (
+                        <div
+                          key={photo.id}
+                          className={`flex-shrink-0 w-19 h-19 cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ${index === selectedPhotoIndex
+                              ? 'ring-4 ring-blue-500 shadow-xl scale-110'
+                              : 'ring-2 ring-gray-300 hover:ring-blue-300 hover:scale-105 opacity-70 hover:opacity-100'
+                            }`}
+                          onClick={() => setSelectedPhotoIndex(index)}
+                        >
+                          <img
+                            src={photo.file}
+                            alt={`Thumbnail ${index + 1}`}
+                            className="w-full h-full object-cover transition-transform duration-300"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Modal>    </>
   );
 };
-
 export default DirectoryProfile;

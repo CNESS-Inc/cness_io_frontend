@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SuccessModal from "../directory/SuccessPopup";
 import ExitWarningModal from "../directory/UnfinishedPopup";
-import { CreateDirectoryEnquiry, GetBasicInfoServiceDetails } from "../../Common/ServerAPI";
+import { CreateDirectoryEnquiry, GetBasicInfoServiceDetails, GetDirectoryByServices } from "../../Common/ServerAPI";
 import { useToast } from "../ui/Toast/ToastProvider";
 
 interface Directory {
@@ -25,6 +25,8 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ open, onClose, directory, i
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [basicInfoServices, setBasicInfoServices] = useState([])
+  const [enquireServices, setEnquireServices] = useState([])
   const { showToast } = useToast();
 
   // Form state
@@ -144,8 +146,23 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ open, onClose, directory, i
         services: formData.services,
       };
 
-      await CreateDirectoryEnquiry(payload);
+      const enquire_response = await CreateDirectoryEnquiry(payload);
+      const services_response = await GetDirectoryByServices(enquire_response?.data?.data?.services, 1, 3);
+
+      setEnquireServices(enquire_response?.data?.data?.services || []);
+
+      if (services_response?.success?.status) {
+        setBasicInfoServices(services_response.data.data?.rows || []);
+      } else {
+        showToast({
+          message: services_response?.error?.message || "Failed to load services",
+          type: "error",
+          duration: 3000,
+        });
+      }
+
       setShowSuccess(true);
+
     } catch (error: any) {
       showToast({
         message: error?.response?.data?.error?.message || "Failed to submit enquiry",
@@ -327,6 +344,8 @@ const EnquiryModal: React.FC<EnquiryModalProps> = ({ open, onClose, directory, i
           setShowSuccess(false);
           onClose();
         }}
+        basicInfoServices={basicInfoServices || []}
+        services={enquireServices || []}
       />
 
       {/* EXIT WARNING MODAL */}

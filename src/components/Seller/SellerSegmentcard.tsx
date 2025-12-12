@@ -1397,7 +1397,7 @@ export function CertificationCard({
                       of Certification Process
                     </span>
                   </div>
-<div className="flex w-full sm:w-auto">
+                  <div className="flex w-full sm:w-auto">
                     <button
                       onClick={() => navigate("/dashboard/inspired-assessment")}
                       className="relative w-full sm:w-[194px] h-10 rounded-full px-5 py-2.5 flex items-center justify-center text-center font-semibold text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
@@ -1486,7 +1486,7 @@ export function CertificationCard({
             </div>
             <HeaderDivider />
 
-<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
               <div className="mt-2 flex items-end gap-2">
                 <span className="text-[32px] font-semibold font-['Open_Sans'] leading-8 text-[#222224]">
                   CIS Score:
@@ -1499,7 +1499,7 @@ export function CertificationCard({
                 </span>
               </div>
               {score < 60 ? (
-<div className="flex w-full sm:w-auto">
+                <div className="flex w-full sm:w-auto">
                   <button
                     onClick={onContinue}
                     className="relative w-full sm:w-[194px] h-10 rounded-full px-5 py-2.5 flex items-center justify-center text-center font-semibold text-[14px] text-[#222224] font-['Open_Sans'] leading-[100%] bg-white"
@@ -1812,20 +1812,20 @@ export function BestPracticesSection({
 }) {
   // Desktop: simple 2-up pager
   const navigate = useNavigate();
-const getPageSize = () => {
-  if (window.innerWidth >= 1400) return 3; // large screens
-  if (window.innerWidth >= 1024) return 2; // normal desktop
-  return 1; // fallback
-};
-const [pageSize, setPageSize] = React.useState(getPageSize());
-React.useEffect(() => {
-  const handleResize = () => {
-    setPageSize(getPageSize());
+  const getPageSize = () => {
+    if (window.innerWidth >= 1400) return 3; // large screens
+    if (window.innerWidth >= 1024) return 2; // normal desktop
+    return 1; // fallback
   };
+  const [pageSize, setPageSize] = React.useState(getPageSize());
+  React.useEffect(() => {
+    const handleResize = () => {
+      setPageSize(getPageSize());
+    };
 
-  window.addEventListener("resize", handleResize);
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
 
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
@@ -1961,7 +1961,7 @@ React.useEffect(() => {
                   `/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`
                 )
               }
- className="snap-start w-[90%] sm:w-[272px] max-w-[320px] h-auto flex-shrink-0
+              className="snap-start w-[90%] sm:w-[272px] max-w-[320px] h-auto flex-shrink-0
              rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"            >
               {/* Image */}
               <div className="h-[135px] rounded-lg overflow-hidden">
@@ -1991,11 +1991,11 @@ React.useEffect(() => {
                   {bp.title}
                 </div>
                 <span
-  className="line-clamp-3 text-[14px] text-[#667085]"
-  dangerouslySetInnerHTML={{
-    __html: DOMPurify.sanitize(bp.description),
-  }}
-/>
+                  className="line-clamp-3 text-[14px] text-[#667085]"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(bp.description),
+                  }}
+                />
                 {bp.if_following ? (
                   <button
                     className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
@@ -2061,104 +2061,104 @@ React.useEffect(() => {
         </button>
       </div>
 
-  {/* --- DESKTOP RESPONSIVE CONTROLLED GRID --- */}
-{/* --- DESKTOP list (responsive grid) --- */}
-<div
-  className="mt-3 hidden sm:grid gap-4 overflow-hidden"
-  // auto-fit will show 1 / 2 / 3 cards per row depending on space
-  style={{
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-  }}
->
-  {visible.map((bp) => (
-    <div
-      key={bp.id}
-      onClick={() =>
-        navigate(`/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`)
-      }
-      className="rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
-    >
-      {/* Image */}
-      <div className="h-[135px] rounded-lg overflow-hidden">
-        <img
-          src={
-            !bp.image ||
-            bp.image === "null" ||
-            bp.image === "undefined" ||
-            !bp.image.startsWith("http") ||
-            bp.image === "http://localhost:5026/file/"
-              ? iconMap["companycard1"]
-              : bp.image
-          }
-          alt={bp.title}
-          className="h-full w-full object-cover"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = iconMap["companycard1"];
-          }}
-        />
-      </div>
+      {/* --- DESKTOP RESPONSIVE CONTROLLED GRID --- */}
+      {/* --- DESKTOP list (responsive grid) --- */}
+      <div
+        className="mt-3 hidden sm:grid gap-4 overflow-hidden"
+        // auto-fit will show 1 / 2 / 3 cards per row depending on space
+        style={{
+          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        }}
+      >
+        {visible.map((bp) => (
+          <div
+            key={bp.id}
+            onClick={() =>
+              navigate(`/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`)
+            }
+            className="rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"
+          >
+            {/* Image */}
+            <div className="h-[135px] rounded-lg overflow-hidden">
+              <img
+                src={
+                  !bp.image ||
+                    bp.image === "null" ||
+                    bp.image === "undefined" ||
+                    !bp.image.startsWith("http") ||
+                    bp.image === "http://localhost:5026/file/"
+                    ? iconMap["companycard1"]
+                    : bp.image
+                }
+                alt={bp.title}
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = iconMap["companycard1"];
+                }}
+              />
+            </div>
 
-      {/* Content */}
-      <div className="flex flex-col flex-1">
-        <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
-          {bp.title}
-        </div>
+            {/* Content */}
+            <div className="flex flex-col flex-1">
+              <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
+                {bp.title}
+              </div>
 
-        <span
-          className="mt-2 font-opensans text-[14px] leading-[150%] text-[#667085] line-clamp-2"
-          dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(bp.description),
-          }}
-        />
+              <span
+                className="mt-2 font-opensans text-[14px] leading-[150%] text-[#667085] line-clamp-2"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(bp.description),
+                }}
+              />
 
-        {/* Follow / Following button (kept exactly from your logic) */}
-        {bp.if_following ? (
-          <button
-            className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
+              {/* Follow / Following button (kept exactly from your logic) */}
+              {bp.if_following ? (
+                <button
+                  className="mt-auto w-full h-[37px] rounded-full bg-[#F396FF] px-3 py-2
                        font-opensans text-[14px] font-semibold text-white
                        shadow transition flex items-center justify-center gap-2
                        disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleFollowPost(bp.id);
-            }}
-            disabled={loadingStates[bp.id]}
-          >
-            {loadingStates[bp.id] ? (
-              <>
-                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Loading...
-              </>
-            ) : (
-              "Following"
-            )}
-          </button>
-        ) : (
-          <button
-            className="mt-auto w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFollowPost(bp.id);
+                  }}
+                  disabled={loadingStates[bp.id]}
+                >
+                  {loadingStates[bp.id] ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    "Following"
+                  )}
+                </button>
+              ) : (
+                <button
+                  className="w-full h-[37px] rounded-full bg-[#7077FE] px-3 py-2
                        font-opensans text-[14px] font-semibold text-white
                        shadow hover:bg-[#5A61E8] transition flex items-center justify-center gap-2
-                       disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleFollowPost(bp.id);
-            }}
-            disabled={loadingStates[bp.id]}
-          >
-            {loadingStates[bp.id] ? (
-              <>
-                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Loading...
-              </>
-            ) : (
-              "Follow"
-            )}
-          </button>
-        )}
+                       disabled:opacity-50 disabled:cursor-not-allowed mt-[10px]"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFollowPost(bp.id);
+                  }}
+                  disabled={loadingStates[bp.id]}
+                >
+                  {loadingStates[bp.id] ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    "Follow"
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
-  ))}
-</div>
 
 
       {/* Dots: mobile shows one dot per card; desktop shows one per page */}
@@ -3635,7 +3635,7 @@ export function DirectorySection({
             {/* Right: button */}
             <button
               onClick={() => onView?.(it)}
-              className={`w-full sm:w-[127px] h-[35px] rounded-full px-4 pt-1 text-center font-opensans text-[14px] text-white flex items-center justify-center ${GRADIENT}`}
+              className={`w-full sm:w-[127px] h-[35px] rounded-full px-4 text-center font-opensans text-[14px] text-white flex items-center justify-center ${GRADIENT}`}
             >
               View Details
             </button>
