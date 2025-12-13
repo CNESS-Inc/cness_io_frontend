@@ -2666,10 +2666,12 @@ const UserProfilePage = () => {
                                 const maxDigits = getMaxDigits(isoCountry);
                                 if (digits.length > maxDigits)
                                   digits = digits.slice(0, maxDigits);
-                                const formatted = formatPhoneForCountry(
-                                  digits,
-                                  isoCountry
-                                );
+                                let formatted = formatPhoneForCountry(digits, isoCountry);
+
+// 🔴 IMPORTANT: remove trunk prefix (0) added by formatter
+if (formatted.startsWith("0")) {
+  formatted = formatted.slice(1);
+}
                                 contactInfoForm.setValue("phone", formatted, {
                                   shouldValidate: true,
                                   shouldDirty: true,
