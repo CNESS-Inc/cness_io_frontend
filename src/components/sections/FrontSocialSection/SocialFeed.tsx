@@ -1248,7 +1248,10 @@ export default function SocialFeed() {
                         <div className="xl:hidden z-40">
                           <button
                             onClick={toggleSidebar}
-                            className="bg-[#7077FE] text-white p-4 rounded-full shadow-lg hover:bg-[#5b63e6] transition-all"
+                            className="bg-[#7077FE] text-white
+             p-2 md:p-3
+             rounded-full shadow-lg
+             flex items-center justify-cente"
                           >
                             <svg
                               className="w-5 h-5"
