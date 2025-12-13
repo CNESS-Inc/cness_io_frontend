@@ -2666,11 +2666,16 @@ const UserProfilePage = () => {
                                 const maxDigits = getMaxDigits(isoCountry);
                                 if (digits.length > maxDigits)
                                   digits = digits.slice(0, maxDigits);
-                                let formatted = formatPhoneForCountry(digits, isoCountry);
+                                let formatted: string;
 
-// 🔴 IMPORTANT: remove trunk prefix (0) added by formatter
-if (formatted.startsWith("0")) {
-  formatted = formatted.slice(1);
+if (isoCountry === "US") {
+  // 🚫 Do NOT auto-format US numbers
+  formatted = digits;
+} else {
+  formatted = formatPhoneForCountry(digits, isoCountry);
+
+  // remove trunk prefix (0) for countries like IN, EG, MA, etc.
+  formatted = formatted.replace(/^0+/, "");
 }
                                 contactInfoForm.setValue("phone", formatted, {
                                   shouldValidate: true,
