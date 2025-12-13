@@ -2699,7 +2699,8 @@ const UserProfilePage = () => {
                               }`}
                             />
                           </div>
-                          <input
+                          
+                          {/*<input
                             type="tel"
                             placeholder="Enter Your Phone Number"
                             value={contactInfoForm.watch("phone") || ""}
@@ -2741,7 +2742,7 @@ const UserProfilePage = () => {
                                 ? "focus:ring-red-500"
                                 : "focus:ring-purple-500"
                               }`}
-                          />
+                          />*/}
                         </div>
                         {contactInfoForm.formState.errors.phone && (
                           <p className="text-sm text-red-500 mt-1">
