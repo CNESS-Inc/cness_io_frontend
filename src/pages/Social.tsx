@@ -20,6 +20,7 @@ const Social = () => {
   return (
     <>
       <Header />
+<div className="relative z-0">
 
       <div className="flex flex-col w-full bg-[#F7F7F7] gap-4 p-4 md:flex-row">
         {/* Left sidebar: auto height, constrained */}
@@ -37,7 +38,7 @@ const Social = () => {
           <SocialFeed />
         </div>
       </div>
-
+</div>
       <Footer />
     </>
   );
