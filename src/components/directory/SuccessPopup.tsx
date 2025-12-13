@@ -50,7 +50,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ open, onClose, basicInfoSer
 
         {/* GO HOME BUTTON */}
         <div className="mt-5 flex justify-center">
-          <button className="w-full py-3 bg-[#7077FE] text-white rounded-full font-semibold">
+          <button onClick={()=>navigate('/dashboard')} className="w-full py-3 bg-[#7077FE] text-white rounded-full font-semibold">
             Go Home
           </button>
         </div>
