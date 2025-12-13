@@ -310,7 +310,7 @@ export default function DetailViewDesigned() {
         <div className="flex items-center gap-3 md:gap-4 w-full sm:w-auto">
           {enquiry.directory_info?.logo_url ? (
             <img
-              src={enquiry.directory_info.logo_url}
+              src={enquiry.user_profile?.profile_picture || "/profile.png"}
               alt="business logo"
               className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-gray-200 shadow"
             />
