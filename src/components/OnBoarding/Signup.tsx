@@ -106,7 +106,7 @@ interface ValidationRules {
 export default function SignupModal({
   open = true,
   initialReferralCode,
-  onClose = () => {},
+  onClose = () => { },
 }: SignupModalProps) {
   console.log("🚀 ~ SignupModal ~ initialReferralCode:", initialReferralCode);
   // const [email, setEmail] = useState("");
@@ -167,15 +167,13 @@ export default function SignupModal({
     }
 
     if (rules.minLength && value.length < rules.minLength) {
-      return `${name.replace("_", " ")} must be at least ${
-        rules.minLength
-      } characters`;
+      return `${name.replace("_", " ")} must be at least ${rules.minLength
+        } characters`;
     }
 
     if (rules.maxLength && value.length > rules.maxLength) {
-      return `${name.replace("_", " ")} must be less than ${
-        rules.maxLength
-      } characters`;
+      return `${name.replace("_", " ")} must be less than ${rules.maxLength
+        } characters`;
     }
 
     if (rules.pattern && !rules.pattern.test(value)) {
@@ -339,7 +337,12 @@ export default function SignupModal({
       ...prev,
       [name]: value,
     }));
-    validateForms({ ...registerForm, [name]: value });
+
+    validateForms({
+      ...registerForm,
+      [name]: value,
+    });
+
     setErrors((prevErrors) => {
       if (prevErrors[name as keyof FormErrors]) {
         const newErrors = { ...prevErrors };
@@ -356,6 +359,7 @@ export default function SignupModal({
     password: string;
     confirmPassword: string;
     consent: boolean;
+    referralCode: string;
   }) => {
     const newErrors: FormErrors = {};
 
@@ -477,10 +481,10 @@ export default function SignupModal({
 
     try {
       const payload: any = {
-        username: registerForm.username,
-        email: registerForm.email,
-        password: registerForm.password,
-        referral_code: registerForm.referralCode,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        referralCode: formData.referralCode || undefined, 
       };
       const result = await registerUser(payload);
 
@@ -706,9 +710,9 @@ export default function SignupModal({
         // Include custom_profession in the payload if "other" is selected
         professions: personForm.professions.includes("other")
           ? [
-              ...personForm.professions.filter((p) => p !== "other"),
-              personForm.custom_profession,
-            ]
+            ...personForm.professions.filter((p) => p !== "other"),
+            personForm.custom_profession,
+          ]
           : personForm.professions,
       };
 
@@ -894,40 +898,40 @@ export default function SignupModal({
       .then((data) => setConsentCommunityContent(data));
   }, []);
 
-  
-useEffect(() => {
-  const links = document.querySelectorAll(".open-privacy, .open-community, .open-termsandconditions");
 
-  links.forEach((element: Element) => {
-    element.addEventListener("click", (e) => {
-      e.preventDefault();
+  useEffect(() => {
+    const links = document.querySelectorAll(".open-privacy, .open-community, .open-termsandconditions");
 
-      if (element.classList.contains("open-privacy")) {
-        setShowConsentTerms(false);
-        setShowConsentPrivacy(true);
-      }
+    links.forEach((element: Element) => {
+      element.addEventListener("click", (e) => {
+        e.preventDefault();
 
-      if (element.classList.contains("open-community")) {
-        setShowConsentTerms(false);
-        setShowConsentCommunity(true);
-      }
+        if (element.classList.contains("open-privacy")) {
+          setShowConsentTerms(false);
+          setShowConsentPrivacy(true);
+        }
 
-      if (element.classList.contains("open-terms")) {
-        setShowConsentPrivacy(false);
-        setShowConsentCommunity(false);
-        setShowConsentTerms(true);
-      }
+        if (element.classList.contains("open-community")) {
+          setShowConsentTerms(false);
+          setShowConsentCommunity(true);
+        }
+
+        if (element.classList.contains("open-terms")) {
+          setShowConsentPrivacy(false);
+          setShowConsentCommunity(false);
+          setShowConsentTerms(true);
+        }
+      });
     });
-  });
 
-  return () => {
-    links.forEach((el: Element) => {
-      el.replaceWith(el.cloneNode(true)); // cleanup
-    });
-  };
-}, [consentTermsContent, showConsentTerms]);
+    return () => {
+      links.forEach((el: Element) => {
+        el.replaceWith(el.cloneNode(true)); // cleanup
+      });
+    };
+  }, [consentTermsContent, showConsentTerms]);
 
-  
+
 
   return (
     <>
@@ -1198,10 +1202,10 @@ useEffect(() => {
                 />
                 {(errors.recaptcha ||
                   (recaptchaTouched && !recaptchaValue)) && (
-                  <p className="mt-1 text-[10px] text-red-600">
-                    Please complete reCAPTCHA
-                  </p>
-                )}
+                    <p className="mt-1 text-[10px] text-red-600">
+                      Please complete reCAPTCHA
+                    </p>
+                  )}
               </div>
             </div>
           </div>
@@ -1273,9 +1277,8 @@ useEffect(() => {
         </form>
 
         <p
-          className={`mt-4 text-center text-[13px] text-gray-600 ${
-            formssubmitted ? "hidden" : ""
-          }`}
+          className={`mt-4 text-center text-[13px] text-gray-600 ${formssubmitted ? "hidden" : ""
+            }`}
         >
           Already have an account?{" "}
           <button
@@ -1291,9 +1294,8 @@ useEffect(() => {
         </p>
 
         <div
-          className={`w-full h-[730px] flex flex-col justify-center items-center ${
-            formssubmitted ? "block" : "hidden"
-          }`}
+          className={`w-full h-[730px] flex flex-col justify-center items-center ${formssubmitted ? "block" : "hidden"
+            }`}
         >
           <h2 className="text-[32px] text-black font-medium mb-2">
             Verify Your E-Mail
@@ -1385,9 +1387,8 @@ useEffect(() => {
                         className={`w-[440px] h-[41px]
     rounded-xl
     border-[0.82px]
-    p-3 mt-2 ${
-      personErrors.first_name ? "border-red-500" : "border-gray-300"
-    } rounded-md`}
+    p-3 mt-2 ${personErrors.first_name ? "border-red-500" : "border-gray-300"
+                          } rounded-md`}
                       />
                       {personErrors.first_name && (
                         <p className="mt-1 text-sm text-red-600">
@@ -1409,9 +1410,8 @@ useEffect(() => {
                         className={`w-[440px] h-[41px]
     rounded-xl
     border-[0.82px]
-    p-3 mt-2 ${
-      personErrors.last_name ? "border-red-500" : "border-gray-300"
-    } rounded-md`}
+    p-3 mt-2 ${personErrors.last_name ? "border-red-500" : "border-gray-300"
+                          } rounded-md`}
                         placeholder="Enter your last name"
                       />
                       {personErrors.last_name && (
@@ -1593,11 +1593,10 @@ useEffect(() => {
                                 name={`question_${question.id}`}
                                 value={existingAnswer}
                                 onChange={handlePersonFormChange}
-                                className={`w-full px-3 py-2 border ${
-                                  personErrors[`question_${question.id}`]
+                                className={`w-full px-3 py-2 border ${personErrors[`question_${question.id}`]
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-md`}
+                                  } rounded-md`}
                                 placeholder={`Enter your answer`}
                                 rows={3}
                               />
@@ -1700,11 +1699,10 @@ useEffect(() => {
           </h2>
           {apiMessage && (
             <div
-              className={`text-center mb-4 ${
-                apiMessage.includes("A Forgot Password Email Has Been Sent")
+              className={`text-center mb-4 ${apiMessage.includes("A Forgot Password Email Has Been Sent")
                   ? "text-green-500"
                   : "text-red-500"
-              }`}
+                }`}
             >
               {apiMessage}
             </div>
@@ -1723,11 +1721,10 @@ useEffect(() => {
                 name="email"
                 required
                 placeholder="Enter your email"
-                className={`w-full px-3 py-2 rounded-xl border ${
-                  resetPasswordErrors.email
+                className={`w-full px-3 py-2 rounded-xl border ${resetPasswordErrors.email
                     ? "border-red-500"
                     : "border-[#CBD5E1]"
-                } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
+                  } border-opacity-100 bg-white placeholder-[#AFB1B3] focus:outline-none focus:ring-primary-500 focus:border-primary-500`}
               />
               {resetPasswordErrors.email && (
                 <p className="mt-1 text-sm text-red-600">
@@ -1780,11 +1777,10 @@ useEffect(() => {
           </div>
           {apiMessage && (
             <div
-              className={`openSans text-center p-4 ${
-                apiMessage.includes("A Forgot Password Email Has Been Sent")
+              className={`openSans text-center p-4 ${apiMessage.includes("A Forgot Password Email Has Been Sent")
                   ? "text-green-500"
                   : "text-red-500"
-              }`}
+                }`}
             >
               {apiMessage}
             </div>
