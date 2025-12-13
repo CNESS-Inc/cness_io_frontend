@@ -32,6 +32,8 @@ import {
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Modal from "../components/ui/Modal";
+import { Link } from "react-router-dom";
+import { FaUserCircle } from "react-icons/fa";
 
 const levels = [
   {
@@ -1257,22 +1259,36 @@ const DirectoryProfile = () => {
                   />
                 </div>
 
-                {/* Profile image (front) */}
-                <img
-                  src={
-                    userProfile.profile_picture ||
-                    "https://static.codia.ai/image/2025-12-04/s7mmhLwgmO.png"
+                {/* Default profile icon */}
+                <FaUserCircle
+                  onClick={() =>
+                    navigate(`/dashboard/userprofile/${userProfile?.user_id}`)
                   }
-                  alt="Profile"
-                  className="w-[75px] h-[75px] rounded-full object-cover border-2 border-white z-10"
+                  className="w-[75px] h-[75px] rounded-full border-2 border-white text-gray-400 z-0 cursor-pointer"
                 />
+
+                {userProfile?.profile_picture &&
+                  userProfile.profile_picture.trim() !== "" && (
+                    <img
+                      src={userProfile.profile_picture}
+                      alt="Profile"
+                      className="w-[75px] h-[75px] rounded-full object-cover border-2 border-white z-10 absolute left-0 cursor-pointer"
+                      onClick={() =>
+                        navigate(`/dashboard/userprofile/${userProfile?.user_id}`)
+                      }
+                      onError={(e) => {
+                        // hide broken image so the FaUserCircle icon shows instead
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  )}
               </div>
 
               <div className="flex-1 text-center sm:text-left">
-                <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
+                <Link to={`/dashboard/userprofile/${userProfile?.user_id}`} className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
                   {`${userProfile.first_name || ""} ${userProfile.last_name || ""
                     }`.trim() || "User Name"}
-                </h3>
+                </Link>
 
                 <div className="flex flex-col sm:flex-row items-center sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-[#64748B] font-['open_sans'] text-sm">
                   {userProfile.state?.name && userProfile.country?.name && (
@@ -2520,19 +2536,19 @@ const DirectoryProfile = () => {
               {photos.length > 1 && (
                 <div className="px-6 py-4 bg-gradient-to-t from-gray-100 via-gray-50 to-transparent backdrop-blur-sm border-t border-gray-200">
                   <div className="w-full flex justify-center relative">
-    
-                    <div 
+
+                    <div
                       ref={thumbnailContainerRef}
-                      className="w-full max-w-6xl px-3 flex overflow-x-auto space-x-4 py-2 scrollbar-hide draggable-thumbnails" 
+                      className="w-full max-w-6xl px-3 flex overflow-x-auto space-x-4 py-2 scrollbar-hide draggable-thumbnails"
                       style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                       onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
                         e.preventDefault(); // Prevent default behavior
                         const slider = e.currentTarget;
                         const startX = e.pageX - slider.offsetLeft;
                         const scrollLeft = slider.scrollLeft;
-                        
+
                         let isDragging = false;
-                        
+
                         const mouseMoveHandler = (moveEvent: MouseEvent) => {
                           if (!isDragging) {
                             isDragging = true;
@@ -2542,7 +2558,7 @@ const DirectoryProfile = () => {
                           const walk = (x - startX) * 2; // Adjust multiplier for sensitivity
                           slider.scrollLeft = scrollLeft - walk;
                         };
-                        
+
                         const mouseUpHandler = () => {
                           if (isDragging) {
                             slider.classList.remove('active');
@@ -2550,7 +2566,7 @@ const DirectoryProfile = () => {
                           document.removeEventListener('mousemove', mouseMoveHandler);
                           document.removeEventListener('mouseup', mouseUpHandler);
                         };
-                        
+
                         document.addEventListener('mousemove', mouseMoveHandler);
                         document.addEventListener('mouseup', mouseUpHandler);
                       }}
@@ -2559,8 +2575,8 @@ const DirectoryProfile = () => {
                         <div
                           key={photo.id}
                           className={`flex-shrink-0 w-19 h-19 cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ${index === selectedPhotoIndex
-                              ? 'ring-4 ring-blue-500 shadow-xl scale-110'
-                              : 'ring-2 ring-gray-300 hover:ring-blue-300 hover:scale-105 opacity-70 hover:opacity-100'
+                            ? 'ring-4 ring-blue-500 shadow-xl scale-110'
+                            : 'ring-2 ring-gray-300 hover:ring-blue-300 hover:scale-105 opacity-70 hover:opacity-100'
                             }`}
                           onClick={() => setSelectedPhotoIndex(index)}
                         >
