@@ -688,11 +688,11 @@ const EditDirectory: React.FC = () => {
   };
 
   // Convert image URL to blob/file
-  const urlToFile = async (url: string, filename: string): Promise<File> => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return new File([blob], filename, { type: blob.type });
-  };
+  // const urlToFile = async (url: string, filename: string): Promise<File> => {
+  //   const response = await fetch(url);
+  //   const blob = await response.blob();
+  //   return new File([blob], filename, { type: blob.type });
+  // };
 
   // Handle photo upload
   const handlePhotoUpload = async (files: FileList | null) => {
@@ -702,20 +702,20 @@ const EditDirectory: React.FC = () => {
 
     try {
       // Convert existing photo URLs to files if they exist
-      const existingPhotoFiles: File[] = [];
-      for (const photo of photos) {
-        if (photo.file && photo.file.startsWith("http")) {
-          try {
-            const file = await urlToFile(photo.file, `photo-${photo.id}.jpg`);
-            existingPhotoFiles.push(file);
-          } catch (error) {
-            console.error("Error converting photo URL to file:", error);
-          }
-        }
-      }
+      // const existingPhotoFiles: File[] = [];
+      // for (const photo of photos) {
+      //   if (photo.file && photo.file.startsWith("http")) {
+      //     try {
+      //       const file = await urlToFile(photo.file, `photo-${photo.id}.jpg`);
+      //       existingPhotoFiles.push(file);
+      //     } catch (error) {
+      //       console.error("Error converting photo URL to file:", error);
+      //     }
+      //   }
+      // }
 
       // Combine existing photos (converted to files) with new files
-      const allFiles: File[] = [...existingPhotoFiles];
+      const allFiles: File[] = [];
       for (let i = 0; i < files.length; i++) {
         allFiles.push(files[i]);
       }
