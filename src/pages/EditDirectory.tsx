@@ -688,11 +688,11 @@ const EditDirectory: React.FC = () => {
   };
 
   // Convert image URL to blob/file
-  const urlToFile = async (url: string, filename: string): Promise<File> => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return new File([blob], filename, { type: blob.type });
-  };
+  // const urlToFile = async (url: string, filename: string): Promise<File> => {
+  //   const response = await fetch(url);
+  //   const blob = await response.blob();
+  //   return new File([blob], filename, { type: blob.type });
+  // };
 
   // Handle photo upload
   const handlePhotoUpload = async (files: FileList | null) => {
@@ -702,20 +702,20 @@ const EditDirectory: React.FC = () => {
 
     try {
       // Convert existing photo URLs to files if they exist
-      const existingPhotoFiles: File[] = [];
-      for (const photo of photos) {
-        if (photo.file && photo.file.startsWith("http")) {
-          try {
-            const file = await urlToFile(photo.file, `photo-${photo.id}.jpg`);
-            existingPhotoFiles.push(file);
-          } catch (error) {
-            console.error("Error converting photo URL to file:", error);
-          }
-        }
-      }
+      // const existingPhotoFiles: File[] = [];
+      // for (const photo of photos) {
+      //   if (photo.file && photo.file.startsWith("http")) {
+      //     try {
+      //       const file = await urlToFile(photo.file, `photo-${photo.id}.jpg`);
+      //       existingPhotoFiles.push(file);
+      //     } catch (error) {
+      //       console.error("Error converting photo URL to file:", error);
+      //     }
+      //   }
+      // }
 
       // Combine existing photos (converted to files) with new files
-      const allFiles: File[] = [...existingPhotoFiles];
+      const allFiles: File[] = [];
       for (let i = 0; i < files.length; i++) {
         allFiles.push(files[i]);
       }
@@ -1500,7 +1500,7 @@ const EditDirectory: React.FC = () => {
           <div className="flex-1 flex flex-col gap-4">
             {/* SECTION TITLE */}
             <h2 className="text-[#081021] font-[Poppins] font-semibold text-lg sm:text-xl">
-              Basic Information
+              Edit Directory Information
             </h2>
 
             <div className="flex flex-col gap-4 sm:gap-3">
@@ -1596,7 +1596,7 @@ const EditDirectory: React.FC = () => {
                 {/* Contact */}
                 <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
-                    Contact <span className="text-red-500">*</span>
+                    Contact 
                   </label>
 
                   <Controller
@@ -1680,7 +1680,7 @@ const EditDirectory: React.FC = () => {
                 {/* Email */}
                 <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
-                    Email <span className="text-red-500">*</span>
+                    Email 
                   </label>
                   <input
                     type="email"

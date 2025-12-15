@@ -95,7 +95,7 @@ const mainNavItems = [
     icon: (
       <img src={iconMap["usericon"]} alt="Home Icon" className="w-5 h-5" />
     ),
-    label: "True Profile",
+    label: "Legacy Profile",
     active: false,
     isProfileDropdown: true,
     childPaths: ["/dashboard/user-profile", "/dashboard/company-profile", `/dashboard/userprofile/${loggedInUserID}`],
@@ -168,7 +168,7 @@ const mainNavItems = [
     childPaths: ["/dashboard/Feed", "/dashboard/Profile", "/dashboard/MyConnection", "/dashboard/Certification"],
     children: [
       { label: "Feed", path: "/dashboard/feed" },
-      { label: "Profile", path: "/dashboard/Profile" },
+      { label: "Dashboard", path: "/dashboard/Profile" },
       // { label: "Certification", path: "/dashboard/Certification" },
       { label: "Connections", path: "/dashboard/MyConnection" },
     ],
@@ -195,14 +195,14 @@ const mainNavItems = [
   {
     id: "MentorPartnerHub",
     icon: <Zap className="w-5 h-5 text-gray-500" />,
-    label: "Business Hub",
+    label: "Cness Works",
     active: false,
     isMentorDropdown: true,
     childPaths: ["/dashboard/become-mentor", "/dashboard/Become_partner", "/dashboard/affiliate"],
     children: [
       { label: "Mentor", path: "/dashboard/become-mentor" },
       { label: "Partner", path: "/dashboard/Become_partner" },
-      { label: "Affiliate", path: "/dashboard/affiliate" },
+      //{ label: "Affiliate", path: "/dashboard/affiliate" },
     ],
   },
 ];

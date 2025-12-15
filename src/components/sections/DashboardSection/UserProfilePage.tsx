@@ -2186,6 +2186,7 @@ const UserProfilePage = () => {
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Professions <span className="text-red-500">*</span>
                         </label>
+                       
                         <CreatableSelect
                           isMulti
                           options={
@@ -2263,7 +2264,11 @@ const UserProfilePage = () => {
                                   inputValue.trim().toLowerCase()
                               )
                           }
+                          
                         />
+                         <p className="text-xs text-gray-500 text-center sm:text-left px-2 sm:px-2 py-1">
+  Based on your profession, your profile is personalized.
+</p>
                         {basicInfoForm.formState.errors.professions && (
                           <p className="text-sm text-red-500 mt-1">
                             At least one profession is required
@@ -2976,7 +2981,7 @@ if (isoCountry === "US") {
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
                             } uppercase`}
-                          style={{ textTransform: "uppercase" }}
+                          style={{ textTransform: "capitalize" }}
                         />
                         {contactInfoForm.formState.errors.postalCode && (
                           <p className="text-sm text-red-500 mt-1">
