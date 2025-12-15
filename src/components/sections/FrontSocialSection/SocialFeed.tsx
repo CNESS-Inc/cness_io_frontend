@@ -1240,7 +1240,7 @@ export default function SocialFeed() {
                         <input
                           type="text"
                           placeholder="Create a Conscious Act"
-                          className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
+                          className="w-[50px] sm:w-auto flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-gray-300 text-sm md:text-[16px] focus:outline-none bg-white"
                           onClick={() => setOpenSignup(true)}
                           readOnly
                         />
