@@ -637,7 +637,7 @@ const Managebestpractices = () => {
                       }`}
                   onClick={() => setActiveStatusTab(0)}
                 >
-                  Pending
+                  Submitted
                 </button>
                 <button
                   className={`shrink-0 
@@ -663,9 +663,9 @@ const Managebestpractices = () => {
                       }`}
                   onClick={() => setActiveStatusTab(1)}
                 >
-                  Approved
+                  Listed
                 </button>
-                <button
+                {/*<button
                   className={`shrink-0 
                       min-w-[100px] sm:min-w-[120px]  
                       max-w-[200px] 
@@ -690,7 +690,7 @@ const Managebestpractices = () => {
                   onClick={() => setActiveStatusTab(2)}
                 >
                   Rejected
-                </button>
+                </button>*/}
               </div>
             </div>
 

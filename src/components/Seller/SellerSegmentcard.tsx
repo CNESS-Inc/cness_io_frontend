@@ -1162,7 +1162,7 @@ export function TrueProfileCard({
   const navigate = useNavigate();
 
   const computedTitle =
-    completion === 100 ? "True Profile Created" : "Complete Your True Profile";
+    completion === 100 ? "Legacy Profile Created" : "Complete Your Legacy Profile";
 
   const computedDescription =
     completion === 100
@@ -1184,14 +1184,14 @@ export function TrueProfileCard({
             />
           </span>
           <span className="font-poppins font-medium text-[15px] sm:text-[16px] leading-[100%] text-[#0F1728]">
-            True Profile
+            Legacy Profile
           </span>
         </div>
 
         <button
           onClick={() => navigate(`/dashboard/userprofile/${id}`)}
           className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F9FAFB] text-[#5E6573] hover:bg-[#EEF0F5]"
-          aria-label="Open True Profile"
+          aria-label="Open Legacy Profile"
         >
           <ArrowUpRight className="h-4 w-4" />
         </button>

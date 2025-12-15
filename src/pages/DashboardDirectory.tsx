@@ -422,7 +422,7 @@ export default function DashboardDirectory() {
         <section className="relative mx-auto mt-2 sm:mt-4 overflow-hidden rounded-xl">
           {/* Background Image Full Fit */}
           <img
-            src="https://cdn.cness.io/Directory%20(1).svg"
+            src="https://cdn.cness.io/Directory.svg"
             alt="City Skyline"
            className="w-full lg:w-screen h-[300px] lg:h-auto rounded-xl pointer-events-none select-none object-cover"
           />
@@ -435,9 +435,7 @@ export default function DashboardDirectory() {
     bg-linear-to-b from-[#4E4E4E] to-[#232323] 
     bg-clip-text text-transparent"
 >
-  Connect with professionals and{" "}
-  {!isMobile && <br />}
-  like-minded individuals.
+ Search for Individuals and Services
 </h1>
             {/* Search Bar Wrapper - Mobile Responsive */}
             <div className="w-full flex flex-col gap-2 justify-center items-center mb-4 sm:mb-6">
@@ -451,7 +449,7 @@ export default function DashboardDirectory() {
                   </span>
                   <input
                     type="text"
-                    placeholder="Search Best Practice"
+                    placeholder="Search Conscious professionals "
                     className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full sm:w-auto"
                     value={searchQuery || ""}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -518,7 +516,7 @@ export default function DashboardDirectory() {
             </div>
 
             <p className="text-xs sm:text-sm text-[#6340FF] font-semibold">
-              Connect with conscious audience
+  Showcase your professional services and connect with like-minded individuals.
             </p>
           </div>
         </section>
@@ -534,7 +532,7 @@ export default function DashboardDirectory() {
                 ? "Aspiring People"
                 : selected === "inspired"
                   ? "Inspired People"
-                  : "All People"}
+                  : "All Individuals"}
           </h2>
 
           <CompanyFilters
