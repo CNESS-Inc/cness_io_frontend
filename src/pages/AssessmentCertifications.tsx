@@ -1,6 +1,6 @@
 //import Button from "../components/ui/Button";
-import list1 from "../assets/list1.svg";
-import list2 from "../assets/list2.svg";
+//import list1 from "../assets/list1.svg";
+//import list2 from "../assets/list2.svg";
 //import list3 from "../assets/list3.svg";
 //import list4 from "../assets/list4.svg";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -297,7 +297,7 @@ const AssessmentCertification = () => {
 
             <ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] text-[#1E1E1E] space-y-2 mb-6">
               <li>
-                Complete these True Profile fields (First & Last Name,
+                Complete these Legacy Profile fields (First & Last Name,
                 Profession, Date of Birth, Phone Number, Email, and Country)
               </li>
               <li>Select Conscious Values you aspire to follow</li>
@@ -317,12 +317,11 @@ const AssessmentCertification = () => {
               </h5>
               <ul className="list-disc list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-2 mb-6">
                 <li>
-                  Your first step toward a conscious professional identity.
-                </li>
-                <li>
-                  Aspiring certification represents your intent and alignment
-                  with conscious values.
-                </li>
+  Welcoming you to the conscious global community
+</li>
+              <li>
+  Showcase your digital content to the global conscious market
+</li>
               </ul>
             </div>
           </div>
@@ -355,8 +354,8 @@ const AssessmentCertification = () => {
                 desc: "Start selling and grow your business on our marketplace.",
               },
               {
-                title: "Directory Listing",
-                desc: "Get discovered by showcasing your profile in our directory.",
+                title: " Concious Directory Listing",
+  desc: "Let your concious identy Shine",
               },
               {
                 title: "Aspiring badge",
@@ -661,13 +660,12 @@ const AssessmentCertification = () => {
             {/* Left Section */}
             <div className="lg:col-span-2">
               <h4 className="font-[poppins] font-semibold text-[34px] leading-[140%] tracking-[0] text-gray-900 mb-3">
-                Who Is Eligible for This Level of Certification?
+Achieve Leadership Certification in Two Structured Steps
               </h4>
 
               <ol className="list-decimal list-inside font-['Open_Sans'] font-normal text-[16px] leading-[220%] tracking-[0] text-[#1E1E1E] space-y-2 mb-6">
-                <li>You lead teams or initiatives.</li>
-                <li>You influence decisions, budgets, or outcomes.</li>
-                <li>You commit to transparent, people-first practices.</li>
+                <li>Complete the Consciousness-Based Form</li>
+                <li>Submit Your Conscious Leadership Story</li>
               </ol>
 
               {/* Conditionally render buttons or message for Leader */}
@@ -682,7 +680,7 @@ const AssessmentCertification = () => {
                 {renderLeaderNominationButton()}*/}
               </div>
 
-              {/* Nomination Process */}
+              {/* Nomination Process
               <div className="w-full max-w-[639px] rounded-[30px] border border-gray-200 bg-[#FAFAFA] flex flex-col gap-3.5 p-6 md:p-[30px] px-10 mt-10">
                 <h4 className="font-[poppins] font-semibold text-[18px] leading-[120%] text[#000000] mb-1">
                   Nomination Process
@@ -693,7 +691,7 @@ const AssessmentCertification = () => {
                   
                 </p>
 
-                {/* Apply as a Leader */}
+                {/* Apply as a Leader 
                 <div className="mb-4">
                   <h5 className="font-[poppins] font-medium text-[16px] leading-[120%] text[#000000] mb-2">
                     Apply as a Leader (Self-Nomination):
@@ -754,8 +752,8 @@ const AssessmentCertification = () => {
                       </span>
                     </li>
                   </ul>
-                </div> */}
-              </div>
+                </div> 
+              </div>*/}
 
               {/* Description */}
               <div className="mt-8">
