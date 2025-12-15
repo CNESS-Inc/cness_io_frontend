@@ -1500,7 +1500,7 @@ const EditDirectory: React.FC = () => {
           <div className="flex-1 flex flex-col gap-4">
             {/* SECTION TITLE */}
             <h2 className="text-[#081021] font-[Poppins] font-semibold text-lg sm:text-xl">
-              Basic Information
+              Edit Directory Information
             </h2>
 
             <div className="flex flex-col gap-4 sm:gap-3">
@@ -1596,7 +1596,7 @@ const EditDirectory: React.FC = () => {
                 {/* Contact */}
                 <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
-                    Contact <span className="text-red-500">*</span>
+                    Contact 
                   </label>
 
                   <Controller
@@ -1680,7 +1680,7 @@ const EditDirectory: React.FC = () => {
                 {/* Email */}
                 <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
-                    Email <span className="text-red-500">*</span>
+                    Email 
                   </label>
                   <input
                     type="email"

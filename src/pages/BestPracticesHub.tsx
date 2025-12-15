@@ -1067,7 +1067,7 @@ export default function BestPracticesHub() {
                   className="text-gray-800 font-openSans font-semibold leading-tight text-sm sm:text-base">
                   Add Your
                   <br />
-                  Impact Story
+                  Best Practices
                 </span>
               </div>
             </div>

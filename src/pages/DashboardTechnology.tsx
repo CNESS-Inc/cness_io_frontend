@@ -300,7 +300,7 @@ export default function DashboardTechnology() {
       <section className="relative h-auto max-w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 flex items-center justify-center">
         {/* Background Image Full Fit */}
         <img
-          src="https://cdn.cness.io/Directory%20(1).svg"
+          src="https://cdn.cness.io/Directory.svg"
           alt="City Skyline"
           className="absolute w-full h-full object-cover z-0 pointer-events-none"
         />
@@ -312,9 +312,7 @@ export default function DashboardTechnology() {
       text-[32px] leading-[1.3] bg-linear-to-b from-[#4E4E4E] to-[#232323] 
       bg-clip-text text-transparent"
           >
-            Connect with professionals and
-            <br />
-            like-minded individuals.
+            Search for Individuals and Services
           </h1>
 
           {/* Search Bar Wrapper */}
@@ -358,7 +356,7 @@ export default function DashboardTechnology() {
           </div>
 
           <p className="text-xs text-[#6340FF] font-[600] md:text-sm ">
-            Connect with conscious audience
+Showcase your professional services and connect with like-minded individuals.
           </p>
         </div>
       </section>
