@@ -645,7 +645,7 @@ const DashboardHeader = ({
           <div
             data-wallet-icon
             onClick={() => navigate("/dashboard/wallet")}
-            className="flex items-center space-x-2 bg-[#F4F2FF] text-white px-4 py-2 rounded-full hover:shadow-xl transition-all hover:scale-105 cursor-pointer"
+            className="hidden flex items-center space-x-2 bg-[#F4F2FF] text-white px-4 py-2 rounded-full hover:shadow-xl transition-all hover:scale-105 cursor-pointer"
           >
             <Wallet className="w-5 h-5 text-[#6340FF]" />
             <span className="font-bold text-lg text-[#081021]">
