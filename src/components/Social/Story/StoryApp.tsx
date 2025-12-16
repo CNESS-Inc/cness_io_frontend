@@ -1,9 +1,9 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { StorySidebar } from "./StorySidebar";
 import { StoryViewer } from "./StoryViewer";
 import { GetStory, LikeStory } from "../../../Common/ServerAPI";
-import { useToast } from "../../../components/ui/Toast/ToastProvider"; // Add this import
+import { useToast } from "../../../components/ui/Toast/ToastProvider";
 
 interface StoryContent {
   id: string;
@@ -29,19 +29,33 @@ interface Story {
   is_liked: boolean;
   likes_count: number;
   comments_count: number;
-  video_file?: string; // Add this if you need it
+  video_file?: string;
+}
+
+interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  hasMore: boolean;
+  isLoadingMore: boolean;
 }
 
 export function StoriesApp() {
   const [searchParams] = useSearchParams();
   const [activeStoryId, setActiveStoryId] = useState<any>(null);
   const [stories, setStories] = useState<Story[]>([]);
-  console.log("🚀 ~ StoriesApp ~ stories:", stories[0])
   const [isLoading, setIsLoading] = useState(true);
-  
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    hasMore: false,
+    isLoadingMore: false,
+  });
+
   // Add toast hook
   const { showToast } = useToast();
-  
+
   // Add ref for storing like animation callbacks
   const likeAnimationRef = useRef<(amount?: number) => void>(() => {});
 
@@ -84,64 +98,98 @@ export function StoriesApp() {
     }
   };
 
-  const GetStoryData = async () => {
+  const GetStoryData = async (page = 1, isLoadMore = false) => {
     try {
-      setIsLoading(true);
-      const res = await GetStory();
+      if (isLoadMore) {
+        setPagination((prev) => ({ ...prev, isLoadingMore: true }));
+      } else {
+        setIsLoading(true);
+      }
 
-      if (Array.isArray(res?.data?.data)) {
-        let apiStories = res.data.data;
+      const res = await GetStory(page, 10); // Default 10 items per page
+
+      if (Array.isArray(res?.data?.data.rows)) {
+        let apiStories = res.data.data.rows;
 
         // Transform each API story into individual Story objects
         const individualStories = transformApiDataToStories(apiStories);
-        setStories(individualStories);
 
-        // Set active story based on URL parameters
-        if (individualStories.length > 0) {
-          let targetStoryId = activeStoryId;
+        // Calculate pagination info
+        const totalItems = res.data.data.count || 0;
+        const totalPages = Math.ceil(totalItems / 10); // Assuming 10 items per page
+        const hasMore = page < totalPages;
 
-          // Priority 1: If specific story ID is provided in URL
-          if (selectedStoryId) {
-            const storyExists = individualStories.some(
-              (story: any) => story.id === selectedStoryId
-            );
-            if (storyExists) {
-              targetStoryId = selectedStoryId;
+        if (isLoadMore) {
+          // Append new stories when loading more
+          setStories((prevStories) => [...prevStories, ...individualStories]);
+        } else {
+          // Replace stories for first load
+          setStories(individualStories);
+
+          // Set active story based on URL parameters
+          if (individualStories.length > 0) {
+            let targetStoryId = activeStoryId;
+
+            // Priority 1: If specific story ID is provided in URL
+            if (selectedStoryId) {
+              const storyExists = individualStories.some(
+                (story: any) => story.id === selectedStoryId
+              );
+              if (storyExists) {
+                targetStoryId = selectedStoryId;
+                setCurrentContentIndex(0);
+              }
+            }
+            // Priority 2: If specific user is provided in URL, show their first story
+            else if (selectedUserId) {
+              const userStory = individualStories.find(
+                (story: any) => story.userId === selectedUserId
+              );
+              if (userStory) {
+                targetStoryId = userStory.id;
+                setCurrentContentIndex(0);
+              }
+            }
+
+            // If no target found or still null, use first story
+            if (!targetStoryId && individualStories.length > 0) {
+              targetStoryId = individualStories[0].id;
               setCurrentContentIndex(0);
             }
-          }
-          // Priority 2: If specific user is provided in URL, show their first story
-          else if (selectedUserId) {
-            const userStory = individualStories.find(
-              (story: any) => story.userId === selectedUserId
-            );
-            if (userStory) {
-              targetStoryId = userStory.id;
-              setCurrentContentIndex(0);
-            }
-          }
 
-          // If no target found or still null, use first story
-          if (!targetStoryId && individualStories.length > 0) {
-            targetStoryId = individualStories[0].id;
-            setCurrentContentIndex(0);
+            setActiveStoryId(targetStoryId);
           }
-
-          setActiveStoryId(targetStoryId);
         }
+
+        // Update pagination state
+        setPagination({
+          currentPage: page,
+          totalPages,
+          totalItems,
+          hasMore,
+          isLoadingMore: false,
+        });
       } else {
-        setStories([]);
+        if (!isLoadMore) {
+          setStories([]);
+        }
       }
     } catch (e) {
       console.error(e);
-      setStories([]);
+      if (!isLoadMore) {
+        setStories([]);
+      }
       showToast({
         message: "Failed to load stories",
         type: "error",
         duration: 3000,
       });
     } finally {
-      setIsLoading(false);
+      if (isLoadMore) {
+        setPagination((prev) => ({ ...prev, isLoadingMore: false }));
+      } else {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -181,17 +229,18 @@ export function StoriesApp() {
   };
 
   useEffect(() => {
-    GetStoryData();
+    // Reset to page 1 when URL parameters change
+    GetStoryData(1, false);
   }, [selectedUserId, selectedStoryId]);
 
   // UPDATED handleLikeClick function with credit animation support
   const handleLikeClick = async () => {
     if (!currentStory) return;
-    
+
     try {
       // Store current like state before API call
       const isCurrentlyLiked = currentStory.is_liked;
-      
+
       // Format data similar to PostsLike
       const formattedData = currentStory.id;
 
@@ -209,8 +258,8 @@ export function StoriesApp() {
 
       // Trigger credit animation when LIKING (not unliking)
       if (
-        (import.meta.env.VITE_ENV_STAGE === "test" || 
-         import.meta.env.VITE_ENV_STAGE === "uat") &&
+        (import.meta.env.VITE_ENV_STAGE === "test" ||
+          import.meta.env.VITE_ENV_STAGE === "uat") &&
         !isCurrentlyLiked &&
         likeAnimationRef.current
       ) {
@@ -236,17 +285,17 @@ export function StoriesApp() {
 
       // Show success toast
       showToast({
-        message: isCurrentlyLiked 
-          ? "Story unliked successfully" 
+        message: isCurrentlyLiked
+          ? "Story unliked successfully"
           : "Story liked successfully",
         type: "success",
         duration: 2000,
       });
-
     } catch (error: any) {
       console.error("Error liking story:", error);
       showToast({
-        message: error?.response?.data?.error?.message || "Failed to like story",
+        message:
+          error?.response?.data?.error?.message || "Failed to like story",
         type: "error",
         duration: 3000,
       });
@@ -262,7 +311,15 @@ export function StoriesApp() {
     likeAnimationRef.current = callback;
   };
 
-  if (isLoading) {
+  // Load more stories function
+  const handleLoadMore = useCallback(() => {
+    if (pagination.hasMore && !pagination.isLoadingMore) {
+      const nextPage = pagination.currentPage + 1;
+      GetStoryData(nextPage, true);
+    }
+  }, [pagination.hasMore, pagination.isLoadingMore, pagination.currentPage]);
+
+  if (isLoading && !stories.length) {
     return (
       <div className="h-screen bg-background flex justify-center items-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
@@ -270,7 +327,7 @@ export function StoriesApp() {
     );
   }
 
-  if (!stories.length) {
+  if (!stories.length && !isLoading) {
     return (
       <div className="h-screen bg-background flex justify-center items-center">
         <div className="text-center">
@@ -290,59 +347,92 @@ export function StoriesApp() {
   }
 
   const handleCommentCountUpdate = (storyId: string, newCount: number) => {
-    console.log("🚀 ~ handleCommentCountUpdate ~ newCount:", newCount)
     setStories((prevStories) =>
       prevStories.map((story) =>
-        story.id === storyId
-          ? { ...story, comments_count: newCount }
-          : story
+        story.id === storyId ? { ...story, comments_count: newCount } : story
       )
     );
   };
 
   return (
-    <div className="h-screen bg-background flex">
-      <StorySidebar
-        stories={stories}
-        activeStoryId={activeStoryId}
-        onStorySelect={(storyId) => {
-          setActiveStoryId(storyId);
-          setCurrentContentIndex(0);
-        }}
-      />
+    <div className="h-screen bg-background">
+      <div className="lg:hidden h-full">
+        {currentStory && stories.length > 0 && (
+          <StoryViewer
+            allStories={stories}
+            currentStoryIndex={currentStoryIndex}
+            currentContentIndex={currentContentIndex}
+            onContentIndexChange={setCurrentContentIndex}
+            stories={currentStory.content}
+            userName={currentStory.user.name}
+            userAvatar={currentStory.user.avatar}
+            is_liked={currentStory.is_liked}
+            likes_count={currentStory.likes_count}
+            comments_count={currentStory.comments_count}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+            hasPrevious={currentContentIndex > 0 || currentStoryIndex > 0}
+            timeAgo={currentStory.createdAt}
+            hasNext={
+              currentContentIndex < currentStory.content.length - 1 ||
+              currentStoryIndex < stories.length - 1
+            }
+            onLike={handleLikeClick}
+            storyId={currentStory.content[currentContentIndex]?.id}
+            userId={currentStory.userId}
+            onStoryChange={handleStoryChange}
+            onRegisterAnimation={registerAnimationCallback}
+            onCommentCountUpdate={(newCount) => {
+              handleCommentCountUpdate(currentStory.id, newCount);
+            }}
+          />
+        )}
+      </div>
 
-      {currentStory && stories.length > 0 && (
-        <StoryViewer
-          allStories={stories}
-          currentStoryIndex={currentStoryIndex}
-          currentContentIndex={currentContentIndex}
-          onContentIndexChange={setCurrentContentIndex}
-          stories={currentStory.content}
-          userName={currentStory.user.name}
-          userAvatar={currentStory.user.avatar}
-          is_liked={currentStory.is_liked}
-          likes_count={currentStory.likes_count}
-          comments_count={currentStory.comments_count}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          hasPrevious={currentContentIndex > 0 || currentStoryIndex > 0}
-          timeAgo={currentStory.createdAt}
-          hasNext={
-            currentContentIndex < currentStory.content.length - 1 ||
-            currentStoryIndex < stories.length - 1
-          }
-          onLike={handleLikeClick} // Pass the updated function
-          storyId={currentStory.content[currentContentIndex]?.id}
-          userId={currentStory.userId}
-          onStoryChange={handleStoryChange}
-          // Add this prop to pass animation callback
-          onRegisterAnimation={registerAnimationCallback}
-          onCommentCountUpdate={(newCount) => {
-            // This will update the specific story's comment count
-            handleCommentCountUpdate(currentStory.id, newCount);
+      <div className="hidden lg:flex h-full">
+        <StorySidebar
+          stories={stories}
+          activeStoryId={activeStoryId}
+          onStorySelect={(storyId) => {
+            setActiveStoryId(storyId);
+            setCurrentContentIndex(0);
           }}
+          onLoadMore={handleLoadMore}
+          isLoadingMore={pagination.isLoadingMore}
+          hasMore={pagination.hasMore}
         />
-      )}
+
+        {currentStory && stories.length > 0 && (
+          <StoryViewer
+            allStories={stories}
+            currentStoryIndex={currentStoryIndex}
+            currentContentIndex={currentContentIndex}
+            onContentIndexChange={setCurrentContentIndex}
+            stories={currentStory.content}
+            userName={currentStory.user.name}
+            userAvatar={currentStory.user.avatar}
+            is_liked={currentStory.is_liked}
+            likes_count={currentStory.likes_count}
+            comments_count={currentStory.comments_count}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+            hasPrevious={currentContentIndex > 0 || currentStoryIndex > 0}
+            timeAgo={currentStory.createdAt}
+            hasNext={
+              currentContentIndex < currentStory.content.length - 1 ||
+              currentStoryIndex < stories.length - 1
+            }
+            onLike={handleLikeClick}
+            storyId={currentStory.content[currentContentIndex]?.id}
+            userId={currentStory.userId}
+            onStoryChange={handleStoryChange}
+            onRegisterAnimation={registerAnimationCallback}
+            onCommentCountUpdate={(newCount) => {
+              handleCommentCountUpdate(currentStory.id, newCount);
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }

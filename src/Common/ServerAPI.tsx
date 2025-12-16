@@ -1420,6 +1420,13 @@ export const DeleteUserPost = (id: string): ApiResponse => {
     `${EndPoint.delete_post}/${id}`
   );
 };
+export const DeleteUserReel = (id: string): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.story}/${id}`
+  );
+};
 
 export const PostComments = (formattedData: any) => {
   return executeAPI(
@@ -1523,9 +1530,10 @@ export const getMentionUserProfile = (id: any) => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.mention_user_profile}?comment_id=${id}`);
 }
-export const GetStory = () => {
+export const GetStory = (page = 1, limit = 10) => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story);
+  const endpoint = `${EndPoint.story}?page=${page}&limit=${limit}`;
+  return executeAPI(ServerAPI.APIMethod.GET, data, endpoint);
 };
 export const PostStoryViewd = (story_id: any) => {
   let data = { story_id };

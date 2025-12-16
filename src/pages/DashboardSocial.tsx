@@ -366,6 +366,7 @@ export default function SocialTopBar() {
 
   const [isCollectionLoading, setIsCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
+  console.log("🚀 ~ SocialTopBar ~ storiesData:", storiesData)
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
@@ -1150,9 +1151,9 @@ export default function SocialTopBar() {
     try {
       const res = await GetStory();
       // Add validation for API response structure
-      if (res?.data?.data && Array.isArray(res.data.data)) {
+      if (res?.data?.data.rows && Array.isArray(res.data.data.rows)) {
         // Use stories directly without grouping
-        const allStories = res.data.data;
+        const allStories = res.data.data.rows;
         // const allStories = groupStoriesByUser(res.data.data);
         setStoriesData(allStories);
       } else {
