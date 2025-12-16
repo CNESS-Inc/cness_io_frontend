@@ -17,7 +17,6 @@ const links = [
   { name: "Why CNESS", href: "/whycness" },
   { name: "FAQs", href: "/faq" },
 ];
-
 export default function NavLinks({ className }: { className?: string }) {
   //const [activeModal, setActiveModal] = useState<"signup" | "login" | null>(
   // null
