@@ -226,7 +226,7 @@ export default function AwarenessSection() {
         >
           Connect with the trustworthy.
           <br />
-          Work with the Reliable. Grow with the Dependable.
+          {" "}Work with the Reliable. Grow with the Dependable.
         </h3>
         <p className="font-['Open_Sans'] mt-2 lg:text-[16px] md:text-[16px] text-[16px] font-light text-[#494949] leading-6 text-center">
           On CNESS, every profile, product, and organization is aligned with
