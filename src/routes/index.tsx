@@ -122,6 +122,7 @@ import EditDirectory from "../pages/EditDirectory";
 import MyEnquiry from "../pages/MyEnquiry";
 import DetailView from "../pages/DetailView";
 import AllServices from "../pages/AllServices";
+import SocialUserProfile from "../pages/SocialUserProfile";
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import("../pages/Home"));
@@ -631,6 +632,10 @@ export const router = createBrowserRouter([
           {
             path: "MyConnection",
             element: <MyConnection />,
+          },
+          {
+            path: "social/user-profile/:userId",
+            element: <SocialUserProfile />,
           },
           {
             path: "aspiring-assessment/payment",

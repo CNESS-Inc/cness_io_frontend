@@ -14,7 +14,7 @@ const links = [
   { name: "Social", href: "/social" },
   { name: "Certifications", href: "/certifications" },
   // { name: "Premium", href: "/premium" },
-  { name: "Why CNESS", href: "/whycness" },
+  { name: "Why CNESS?", href: "/whycness" },
   { name: "FAQs", href: "/faq" },
 ];
 export default function NavLinks({ className }: { className?: string }) {

@@ -30,7 +30,7 @@ export default function Benefit() {
     {
       icon: benefit3,
       title: "Access exclusive CNESS community and resources",
-      desc: "Connect with like-minded conscious leaders and growth tools.",
+      desc: "Collaborate with purpose-driven leaders and access tools that elevate growth and awareness.",
     },
     {
       icon: benefit4,
@@ -65,7 +65,7 @@ export default function Benefit() {
         <div className="w-full">
           <span
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] inline-block 
+            className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-medium px-4 py-1 rounded-[100px] inline-block 
                rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-transperant"
           >
             Why it Matters
@@ -105,9 +105,9 @@ export default function Benefit() {
           {features.map((item, idx) => (
             <div
               key={idx}
-              className="px-5 py-10 flex flex-col sm:flex-row items-start text-left gap-4 rounded-[20px] border border-[#DFDFDF] bg-white hover:shadow-md transition w-full max-w-full break-words overflow-hidden"
+              className="px-5 py-10 flex flex-col sm:flex-row items-start text-left gap-4 rounded-[20px] border border-[#DFDFDF] bg-white hover:shadow-md transition w-full max-w-full wrap-break-word overflow-hidden"
             >
-              <div className="flex-shrink-0 w-14 h-14 flex items-center justify-center rounded-lg bg-[#6340FF]/10">
+              <div className="shrink-0 w-14 h-14 flex items-center justify-center rounded-lg bg-[#6340FF]/10">
                 <img src={item.icon} alt={item.title} className="w-8 h-8" />
               </div>
 

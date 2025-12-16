@@ -355,83 +355,53 @@ export function StoriesApp() {
   };
 
   return (
-    <div className="h-screen bg-background">
-      <div className="lg:hidden h-full">
-        {currentStory && stories.length > 0 && (
-          <StoryViewer
-            allStories={stories}
-            currentStoryIndex={currentStoryIndex}
-            currentContentIndex={currentContentIndex}
-            onContentIndexChange={setCurrentContentIndex}
-            stories={currentStory.content}
-            userName={currentStory.user.name}
-            userAvatar={currentStory.user.avatar}
-            is_liked={currentStory.is_liked}
-            likes_count={currentStory.likes_count}
-            comments_count={currentStory.comments_count}
-            onPrevious={handlePrevious}
-            onNext={handleNext}
-            hasPrevious={currentContentIndex > 0 || currentStoryIndex > 0}
-            timeAgo={currentStory.createdAt}
-            hasNext={
-              currentContentIndex < currentStory.content.length - 1 ||
-              currentStoryIndex < stories.length - 1
-            }
-            onLike={handleLikeClick}
-            storyId={currentStory.content[currentContentIndex]?.id}
-            userId={currentStory.userId}
-            onStoryChange={handleStoryChange}
-            onRegisterAnimation={registerAnimationCallback}
-            onCommentCountUpdate={(newCount) => {
-              handleCommentCountUpdate(currentStory.id, newCount);
+    <div className="h-screen bg-background flex">
+      <div className="flex flex-col flex-1">
+        <div className="flex flex-1 overflow-hidden">
+          <StorySidebar
+            stories={stories}
+            activeStoryId={activeStoryId}
+            onStorySelect={(storyId) => {
+              setActiveStoryId(storyId);
+              setCurrentContentIndex(0);
             }}
+            // Add these new props:
+            onLoadMore={handleLoadMore}
+            isLoadingMore={pagination.isLoadingMore}
+            hasMore={pagination.hasMore}
           />
-        )}
-      </div>
 
-      <div className="hidden lg:flex h-full">
-        <StorySidebar
-          stories={stories}
-          activeStoryId={activeStoryId}
-          onStorySelect={(storyId) => {
-            setActiveStoryId(storyId);
-            setCurrentContentIndex(0);
-          }}
-          onLoadMore={handleLoadMore}
-          isLoadingMore={pagination.isLoadingMore}
-          hasMore={pagination.hasMore}
-        />
-
-        {currentStory && stories.length > 0 && (
-          <StoryViewer
-            allStories={stories}
-            currentStoryIndex={currentStoryIndex}
-            currentContentIndex={currentContentIndex}
-            onContentIndexChange={setCurrentContentIndex}
-            stories={currentStory.content}
-            userName={currentStory.user.name}
-            userAvatar={currentStory.user.avatar}
-            is_liked={currentStory.is_liked}
-            likes_count={currentStory.likes_count}
-            comments_count={currentStory.comments_count}
-            onPrevious={handlePrevious}
-            onNext={handleNext}
-            hasPrevious={currentContentIndex > 0 || currentStoryIndex > 0}
-            timeAgo={currentStory.createdAt}
-            hasNext={
-              currentContentIndex < currentStory.content.length - 1 ||
-              currentStoryIndex < stories.length - 1
-            }
-            onLike={handleLikeClick}
-            storyId={currentStory.content[currentContentIndex]?.id}
-            userId={currentStory.userId}
-            onStoryChange={handleStoryChange}
-            onRegisterAnimation={registerAnimationCallback}
-            onCommentCountUpdate={(newCount) => {
-              handleCommentCountUpdate(currentStory.id, newCount);
-            }}
-          />
-        )}
+          {currentStory && stories.length > 0 && (
+            <StoryViewer
+              allStories={stories}
+              currentStoryIndex={currentStoryIndex}
+              currentContentIndex={currentContentIndex}
+              onContentIndexChange={setCurrentContentIndex}
+              stories={currentStory.content}
+              userName={currentStory.user.name}
+              userAvatar={currentStory.user.avatar}
+              is_liked={currentStory.is_liked}
+              likes_count={currentStory.likes_count}
+              comments_count={currentStory.comments_count}
+              onPrevious={handlePrevious}
+              onNext={handleNext}
+              hasPrevious={currentContentIndex > 0 || currentStoryIndex > 0}
+              timeAgo={currentStory.createdAt}
+              hasNext={
+                currentContentIndex < currentStory.content.length - 1 ||
+                currentStoryIndex < stories.length - 1
+              }
+              onLike={handleLikeClick}
+              storyId={currentStory.content[currentContentIndex]?.id}
+              userId={currentStory.userId}
+              onStoryChange={handleStoryChange}
+              onRegisterAnimation={registerAnimationCallback}
+              onCommentCountUpdate={(newCount) => {
+                handleCommentCountUpdate(currentStory.id, newCount);
+              }}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
