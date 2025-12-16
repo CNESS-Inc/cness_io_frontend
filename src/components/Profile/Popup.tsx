@@ -17,7 +17,7 @@ import like from "../../assets/like.svg";
 import comment from "../../assets/comment.svg";
 import EditPostModal from "../../pages/EditPostModal";
 import { useClickOutside } from "../../hooks/useClickOutside";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface Media {
   type: "image" | "video" | "text";
