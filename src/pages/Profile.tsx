@@ -40,6 +40,7 @@ import {
   GetUserReel,
   GetFollowingUser,
   GetConnectionUser,
+  DeleteUserReel,
 } from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import Modal from "../components/ui/Modal";
@@ -82,9 +83,9 @@ const profiles = [
   {
     profileImage:
       !userProfilePicture ||
-        userProfilePicture === "null" ||
-        userProfilePicture === "undefined" ||
-        !userProfilePicture.startsWith("http")
+      userProfilePicture === "null" ||
+      userProfilePicture === "undefined" ||
+      !userProfilePicture.startsWith("http")
         ? "/profile.png"
         : userProfilePicture,
     name: fullName,
@@ -234,11 +235,11 @@ export default function Profile() {
   const [userReels, setUserReels] = useState<any[]>([]);
 
   const { showToast } = useToast();
-
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
-    postId: string | null;
-  }>({ isOpen: false, postId: null });
+    id: string | null;
+    isReel: boolean; // Add this to differentiate
+  }>({ isOpen: false, id: null, isReel: false });
   const fetchMeDetails = async () => {
     try {
       const res = await MeDetails();
@@ -257,7 +258,7 @@ export default function Profile() {
         "margaret_name",
         res?.data?.data?.user.margaret_name
       );
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -567,18 +568,39 @@ export default function Profile() {
     }
   };
 
-  const handleDeletePost = async (postId: string | number) => {
+  const handleDeletePost = async (postId: string | number, isReel = false) => {
     try {
-      await DeleteUserPost(String(postId)); // Call your API
-      setUserPosts((prev) => prev.filter((p) => p.id !== postId)); // Remove from UI
-      showToast({
-        message: "Post deleted successfully.",
-        type: "success",
-        duration: 3000,
-      });
+      if (isReel) {
+        // Delete reel
+        await DeleteUserReel(String(postId));
+        // Update UI based on current tab
+        if (activeTab === "Inspiration Reels") {
+          setUserReels((prev) => prev.filter((r) => r.id !== postId));
+        }
+        showToast({
+          message: "Reel deleted successfully.",
+          type: "success",
+          duration: 3000,
+        });
+      } else {
+        // Delete post
+        await DeleteUserPost(String(postId));
+        // Update UI based on current tab
+        if (activeTab === "Conscious Acts") {
+          setUserPosts((prev) => prev.filter((p) => p.id !== postId));
+        } else if (activeTab === "Favorites") {
+          // Also update collection if needed
+          fetchCollectionItems();
+        }
+        showToast({
+          message: "Post deleted successfully.",
+          type: "success",
+          duration: 3000,
+        });
+      }
     } catch (error) {
       showToast({
-        message: "Failed to delete post.",
+        message: `Failed to delete ${isReel ? "reel" : "post"}.`,
         type: "error",
         duration: 3000,
       });
@@ -699,10 +721,10 @@ export default function Profile() {
                   }
                   onDeletePost={() => {
                     if (post.id !== undefined) {
-                      // handleDeletePost(post.id);
                       setDeleteConfirmation({
                         isOpen: true,
-                        postId: String(post.id),
+                        id: String(post.id),
+                        isReel: false, // This is a post
                       });
                     }
                   }}
@@ -739,14 +761,18 @@ export default function Profile() {
                 selectedPost.media ??
                 ({ type: "text", src: selectedPost.body || "" } as const),
               body: selectedPost.body,
-              is_reel: selectedPost.is_reel || activeTab === "Inspiration Reels", // Add this line
+              is_reel:
+                selectedPost.is_reel || activeTab === "Inspiration Reels", // Add this line
             }}
             onClose={() => setSelectedPost(null)}
             onDeletePost={() => {
-              if (selectedPost.id !== undefined) {
+              if (selectedPost?.id !== undefined) {
+                const isReel =
+                  selectedPost?.is_reel || activeTab === "Inspiration Reels";
                 setDeleteConfirmation({
                   isOpen: true,
-                  postId: String(selectedPost.id),
+                  id: String(selectedPost.id),
+                  isReel,
                 });
               }
             }}
@@ -816,10 +842,10 @@ export default function Profile() {
                         }
                         onDeletePost={() => {
                           if (post.id !== undefined) {
-                            // handleDeletePost(post.id);
                             setDeleteConfirmation({
                               isOpen: true,
-                              postId: String(post.id),
+                              id: String(post.id),
+                              isReel: false, // Collections contain posts, not reels
                             });
                           }
                         }}
@@ -851,7 +877,7 @@ export default function Profile() {
                   key={i}
                   {...reel}
                   showOverlay
-                  reel
+                  // reel
                   onViewPost={() => setSelectedPost(reel)}
                   onLike={() => {
                     if (reel.id !== undefined) {
@@ -863,7 +889,8 @@ export default function Profile() {
                     if (reel.id !== undefined) {
                       setDeleteConfirmation({
                         isOpen: true,
-                        postId: String(reel.id),
+                        id: String(reel.id),
+                        isReel: true, // This is a reel
                       });
                     }
                   }}
@@ -889,9 +916,9 @@ export default function Profile() {
                 username: f.username,
                 profileImage:
                   !f.profile_picture ||
-                    f.profile_picture === "null" ||
-                    f.profile_picture === "undefined" ||
-                    !f.profile_picture.startsWith("http")
+                  f.profile_picture === "null" ||
+                  f.profile_picture === "undefined" ||
+                  !f.profile_picture.startsWith("http")
                     ? "/profile.png"
                     : f.profile_picture,
               }))}
@@ -919,9 +946,9 @@ export default function Profile() {
           handle: user.username,
           avatar:
             !user.profile_picture ||
-              user.profile_picture === "null" ||
-              user.profile_picture === "undefined" ||
-              !user.profile_picture.startsWith("http")
+            user.profile_picture === "null" ||
+            user.profile_picture === "undefined" ||
+            !user.profile_picture.startsWith("http")
               ? "/profile.png"
               : user.profile_picture,
         }))}
@@ -936,9 +963,9 @@ export default function Profile() {
           handle: user.username,
           avatar:
             !user.profile_picture ||
-              user.profile_picture === "null" ||
-              user.profile_picture === "undefined" ||
-              !user.profile_picture.startsWith("http")
+            user.profile_picture === "null" ||
+            user.profile_picture === "undefined" ||
+            !user.profile_picture.startsWith("http")
               ? "/profile.png"
               : user.profile_picture,
           isFollowing: user.is_following,
@@ -947,12 +974,15 @@ export default function Profile() {
 
       <Modal
         isOpen={deleteConfirmation.isOpen}
-        onClose={() => setDeleteConfirmation({ isOpen: false, postId: null })}
+        onClose={() =>
+          setDeleteConfirmation({ isOpen: false, id: null, isReel: false })
+        }
       >
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
           <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
           <p className="mb-6">
-            Are you sure you want to delete this post? This action cannot be
+            Are you sure you want to delete this{" "}
+            {deleteConfirmation.isReel ? "reel" : "post"}? This action cannot be
             undone.
           </p>
 
@@ -960,7 +990,11 @@ export default function Profile() {
             <Button
               type="button"
               onClick={() =>
-                setDeleteConfirmation({ isOpen: false, postId: null })
+                setDeleteConfirmation({
+                  isOpen: false,
+                  id: null,
+                  isReel: false,
+                })
               }
               variant="white-outline"
               className="w-full sm:w-auto"
@@ -970,10 +1004,16 @@ export default function Profile() {
             <Button
               type="button"
               onClick={async () => {
-                if (deleteConfirmation.postId) {
-                  await handleDeletePost(deleteConfirmation.postId);
-                  // await fetchMineBestPractices(); // Refresh the list
-                  setDeleteConfirmation({ isOpen: false, postId: null });
+                if (deleteConfirmation.id) {
+                  await handleDeletePost(
+                    deleteConfirmation.id,
+                    deleteConfirmation.isReel
+                  );
+                  setDeleteConfirmation({
+                    isOpen: false,
+                    id: null,
+                    isReel: false,
+                  });
                   setSelectedPost(null);
                 }
               }}

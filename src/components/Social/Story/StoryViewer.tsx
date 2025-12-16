@@ -362,35 +362,35 @@ export function StoryViewer({
     }
   }, [currentStory?.id, onStoryChange]);
 
-  const handlePrevStory = () => {
-    if (currentIndex > 0) {
-      console.log("⬅️ Moving to previous story in user's stories");
-      setCurrentIndex(currentIndex - 1);
-      setProgress(0);
-      setIsStoryReady(false);
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-      }
-    } else {
-      console.log("⬅️ Moving to previous user");
-      onPrevious();
-    }
-  };
+  // const handlePrevStory = () => {
+  //   if (currentIndex > 0) {
+  //     console.log("⬅️ Moving to previous story in user's stories");
+  //     setCurrentIndex(currentIndex - 1);
+  //     setProgress(0);
+  //     setIsStoryReady(false);
+  //     if (videoRef.current) {
+  //       videoRef.current.currentTime = 0;
+  //     }
+  //   } else {
+  //     console.log("⬅️ Moving to previous user");
+  //     onPrevious();
+  //   }
+  // };
 
-  const handleNextStory = () => {
-    if (currentIndex < stories.length - 1) {
-      console.log("➡️ Moving to next story in user's stories");
-      setCurrentIndex(currentIndex + 1);
-      setProgress(0);
-      setIsStoryReady(false);
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-      }
-    } else {
-      console.log("➡️ Moving to next user");
-      onNext();
-    }
-  };
+  // const handleNextStory = () => {
+  //   if (currentIndex < stories.length - 1) {
+  //     console.log("➡️ Moving to next story in user's stories");
+  //     setCurrentIndex(currentIndex + 1);
+  //     setProgress(0);
+  //     setIsStoryReady(false);
+  //     if (videoRef.current) {
+  //       videoRef.current.currentTime = 0;
+  //     }
+  //   } else {
+  //     console.log("➡️ Moving to next user");
+  //     onNext();
+  //   }
+  // };
 
   const handlePrevContent = () => {
     if (currentContentIndex > 0) {
@@ -573,6 +573,20 @@ export function StoryViewer({
 
   if (!currentStory) return null;
 
+
+   const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <div className="relative w-full h-full bg-black">
       <style>{animationStyles}</style>
@@ -581,7 +595,7 @@ export function StoryViewer({
       {isAnimating && (
         <div className="heart-pop-animation">
           <Heart
-            size={80}
+            size={isMobile ? 60 : 80}
             fill="#7077FE"
             color="#7077FE"
             className="drop-shadow-lg"
@@ -590,56 +604,61 @@ export function StoryViewer({
       )}
 
       <div className="absolute inset-0 flex justify-center items-center">
-        {/* Previous story preview (left side) */}
-        {hasPrevious && prevStory && (
-          <div className="absolute hidden xl:block left-0 w-2/9 h-4/8 lg:w-2/9 lg:h-5/8 rounded-lg overflow-hidden z-0 ml-4">
+        {/* Previous/Next story previews - Hidden on mobile */}
+        {!isMobile && hasPrevious && prevStory && (
+          <div className="absolute left-0 w-2/9 h-4/8 lg:w-2/9 lg:h-5/8 rounded-lg overflow-hidden z-0 ml-4">
             <div className="w-full h-full">
-              <div className="absolute w-full h-full bg-[rgba(0,0,0,0.6)]"></div>
-              {prevStory.type === "image" ? (
-                <img
-                  src={prevStory.url}
-                  className="w-full h-full object-cover"
-                  alt="Previous story"
-                />
-              ) : (
-                <video
-                  src={prevStory.url}
-                  className="w-full h-full object-cover"
-                  muted
-                  loop
-                />
-              )}
-            </div>
+                          <div className="absolute w-full h-full bg-[rgba(0,0,0,0.6)]"></div>
+                          {prevStory.type === "image" ? (
+                            <img
+                              src={prevStory.url}
+                              className="w-full h-full object-cover"
+                              alt="Previous story"
+                            />
+                          ) : (
+                            <video
+                              src={prevStory.url}
+                              className="w-full h-full object-cover"
+                              muted
+                              loop
+                            />
+                          )}
+                        </div>
           </div>
         )}
 
-        {/* Next story preview (right side) */}
-        {hasNext && nextStory && (
-          <div className="absolute hidden xl:block right-0 w-2/9 h-4/8 lg:w-2/9 lg:h-5/8 rounded-lg overflow-hidden z-0 mr-4">
+        {!isMobile && hasNext && nextStory && (
+          <div className="absolute right-0 w-2/9 h-4/8 lg:w-2/9 lg:h-5/8 rounded-lg overflow-hidden z-0 mr-4">
             <div className="w-full h-full relative">
-              <div className="absolute w-full h-full bg-[rgba(0,0,0,0.6)]"></div>
-              {nextStory.type === "image" ? (
-                <img
-                  src={nextStory.url}
-                  className="w-full h-full object-cover"
-                  alt="Next story"
-                />
-              ) : (
-                <video
-                  src={nextStory.url}
-                  className="w-full h-full object-cover"
-                  muted
-                  loop
-                />
-              )}
-            </div>
+                          <div className="absolute w-full h-full bg-[rgba(0,0,0,0.6)]"></div>
+                          {nextStory.type === "image" ? (
+                            <img
+                              src={nextStory.url}
+                              className="w-full h-full object-cover"
+                              alt="Next story"
+                            />
+                          ) : (
+                            <video
+                              src={nextStory.url}
+                              className="w-full h-full object-cover"
+                              muted
+                              loop
+                            />
+                          )}
+                        </div>
           </div>
         )}
 
         {/* Current story (center) */}
-        <div className="relative z-10 w-full max-w-md h-[80%] mx-4">
-          {/* Progress bars */}
-          <div className="absolute top-4 left-4 right-4 flex gap-1 z-30">
+        <div className={`
+          relative z-10 
+          ${isMobile ? 'w-full h-full' : 'w-full max-w-md h-[80%] mx-4'}
+        `}>
+          {/* Progress bars - Adjust top position for mobile */}
+          <div className={`
+            absolute flex gap-1 z-30
+            ${isMobile ? 'top-2 left-2 right-2' : 'top-4 left-4 right-4'}
+          `}>
             {stories.map((_story, index) => (
               <div
                 key={index}
@@ -661,20 +680,29 @@ export function StoryViewer({
             ))}
           </div>
 
-          {/* Navigation areas */}
+          {/* Navigation areas - Larger on mobile */}
           <button
             onClick={handlePrevContent}
-            className="absolute left-0 top-0 w-1/4 h-full z-10 focus:outline-none"
+            className={`
+              absolute left-0 top-0 z-10 focus:outline-none
+              ${isMobile ? 'w-1/3 h-full' : 'w-1/4 h-full'}
+            `}
             disabled={!hasPrevious && currentContentIndex === 0}
           />
           <button
             onClick={handleNextContent}
-            className="absolute right-0 top-0 w-1/4 h-full z-10 focus:outline-none"
+            className={`
+              absolute right-0 top-0 z-10 focus:outline-none
+              ${isMobile ? 'w-1/3 h-full' : 'w-1/4 h-full'}
+            `}
             disabled={!hasNext && currentContentIndex === stories.length - 1}
           />
 
-          {/* Story Content */}
-          <div className="relative h-full w-full bg-black rounded-2xl overflow-hidden">
+          {/* Story Content - Full screen on mobile */}
+          <div className={`
+            relative h-full w-full bg-black overflow-hidden
+            ${isMobile ? '' : 'rounded-2xl'}
+          `}>
             {currentStory.type === "image" ? (
               <img
                 src={currentStory.url}
@@ -693,15 +721,18 @@ export function StoryViewer({
                   loop={false}
                   onClick={(e) => togglePause(e)}
                 />
-                {/* Mute/Unmute button */}
+                {/* Mute/Unmute button - Adjust position for mobile */}
                 <button
                   onClick={toggleMute}
-                  className="absolute top-10 right-5 z-30 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center"
+                  className={`
+                    absolute z-30 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center
+                    ${isMobile ? 'top-4 right-4' : 'top-10 right-5'}
+                  `}
                 >
                   {isMuted ? (
-                    <VolumeX color="white" />
+                    <VolumeX color="white" size={16} />
                   ) : (
-                    <Volume2 color="white" />
+                    <Volume2 color="white" size={16} />
                   )}
                 </button>
               </div>
@@ -711,10 +742,16 @@ export function StoryViewer({
             <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-black/30" />
           </div>
 
-          {/* User info */}
-          <div className="absolute top-16 left-4 right-4 flex flex-col gap-1 z-30">
+          {/* User info - Adjust position for mobile */}
+          <div className={`
+            absolute flex flex-col gap-1 z-30
+            ${isMobile ? 'top-10 left-3 right-3' : 'top-16 left-4 right-4'}
+          `}>
             <div className="flex items-center gap-3">
-              <div className="relative w-[42px] h-[42px] rounded-full p-[1.83px] bg-linear-to-r from-[#6340FF] to-[#D748EA]">
+              <div className={`
+                relative rounded-full p-[1.83px] bg-linear-to-r from-[#6340FF] to-[#D748EA]
+                ${isMobile ? 'w-10 h-10' : 'w-[42px] h-[42px]'}
+              `}>
                 <div className="w-full h-full rounded-full overflow-hidden object-cover bg-white p-px">
                   <img
                     src={userAvatar ? userAvatar : "/profile.png"}
@@ -722,88 +759,91 @@ export function StoryViewer({
                     className="w-full h-full rounded-full object-cover bg-white"
                   />
                 </div>
-                <span className="absolute bottom-[5px] right-2 w-2.5 h-2.5 rounded-full bg-green-500 border-[1.5px] border-white"></span>
+                <span className={`
+                  absolute rounded-full bg-green-500 border border-white
+                  ${isMobile ? 'bottom-1 right-1 w-2 h-2' : 'bottom-[5px] right-2 w-2.5 h-2.5'}
+                `}></span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-white font-medium">{userName}</span>
-                <span className="text-white/70 text-sm">
+                <span className="text-white font-medium text-sm lg:text-base">
+                  {userName}
+                </span>
+                <span className="text-white/70 text-xs lg:text-sm">
                   <TimeAgo date={timeAgo ? timeAgo : new Date()} />
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Pause/Play button */}
+          {/* Pause/Play button - Adjust size for mobile */}
           <button
             onClick={(e) => togglePause(e)}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
           >
             {isPaused ? (
-              <Play className="w-12 h-12 text-white/80" />
+              <Play className={isMobile ? "w-10 h-10" : "w-12 h-12"} />
             ) : (
-              <Pause className="w-12 h-12 text-white/80" />
+              <Pause className={isMobile ? "w-10 h-10" : "w-12 h-12"} />
             )}
           </button>
 
-          {hasPrevious && (
+          {/* Previous/Next buttons - Hide on mobile */}
+          {!isMobile && hasPrevious && (
             <button
               onClick={onPrevious}
-              className="absolute left-[-35px] 2xl:left-[-65px] -translate-x-1/2 top-1/2 -translate-y-1/2 w-[30px] h-[30px] rounded-full bg-white backdrop-blur-lg border border-white/20 text-black hover:bg-white z-20"
+              className="absolute left-[-35px] 2xl:left-[-65px] -translate-x-1/2 top-1/2 -translate-y-1/2 w-[30px] h-[30px] rounded-full bg-white backdrop-blur-lg border border-white/20 text-black hover:bg-white z-20 "
             >
-              <div className="w-full h-full flex justify-center items-center">
-                <ChevronLeft className="w-6 h-6 text-black" />
-              </div>
+              <ChevronLeft className="w-6 h-6 text-black" />
             </button>
           )}
 
-          {hasNext && (
+          {!isMobile && hasNext && (
             <button
               onClick={onNext}
-              className="absolute right-[-35px] 2xl:right-[-65px] top-1/2 translate-x-1/2 -translate-y-1/2 w-[30px] h-[30px] rounded-full bg-white backdrop-blur-lg border border-white/20 text-white hover:bg-white z-20"
+              className="absolute right-[-35px] 2xl:right-[-65px] top-1/2 translate-x-1/2 -translate-y-1/2 w-[30px] h-[30px] rounded-full bg-white backdrop-blur-lg border border-white/20 text-white hover:bg-white z-20 flex items-center justify-center"
             >
-              <div className="w-full h-full flex justify-center items-center">
-                <ChevronRight className="w-6 h-6 text-black" />
-              </div>
+              <ChevronRight className="w-6 h-6 text-black" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Navigation areas */}
-      <button
-        onClick={handlePrevStory}
-        className="absolute left-0 top-0 w-1/4 h-full z-10 focus:outline-none"
-        disabled={!hasPrevious && currentIndex === 0}
-      />
-      <button
-        onClick={handleNextStory}
-        className="absolute right-0 top-0 w-1/4 h-full z-10 focus:outline-none"
-        disabled={!hasNext && currentIndex === stories.length - 1}
-      />
-
-      {/* Message input */}
-      <div className="absolute bottom-4 w-3/8 mx-auto left-4 right-4 z-30">
-        <div className="flex items-center gap-2 rounded-full p-2">
+      {/* Message input - Redesign for mobile */}
+      <div className={`
+        absolute z-30
+        ${isMobile 
+          ? 'bottom-6 left-3 right-3' 
+          : 'bottom-4 left-4 right-4 max-w-md mx-auto'
+        }
+      `}>
+        <div className={`
+          flex items-center gap-2 rounded-full p-2 bg-white/10 backdrop-blur-lg
+          ${isMobile ? 'px-3' : ''}
+        `}>
           <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Reply..."
-            className="flex-1 bg-white backdrop-blur-lg rounded-full border-none placeholder:text-black focus-visible:ring-0"
+            className={`
+              flex-1 bg-transparent border-none placeholder:text-white/70 focus-visible:ring-0 text-white
+              ${isMobile ? 'text-sm' : ''}
+            `}
             onClick={(e) => handleCommentClick(e)}
           />
           
-          {/* Like Button with Count */}
+          {/* Like Button */}
           <div className="relative">
             <Button
               size="sm"
               className={`
-              rounded-full 
-              ${is_liked ? "bg-[#7077FE]" : "bg-[#7077FE]"} 
-              ${isAnimating && is_liked ? "pulse-glow like-button-animate" : ""}
-              ${isAnimating && !is_liked ? "bg-unlike-pulse" : ""}
-              text-black border border-white hover:bg-[#7077FE] 
-              w-8 h-8 p-0 transition-all duration-300 relative
-            `}
+                rounded-full 
+                ${is_liked ? "bg-[#7077FE]" : "bg-[#7077FE]"} 
+                ${isAnimating && is_liked ? "pulse-glow like-button-animate" : ""}
+                ${isAnimating && !is_liked ? "bg-unlike-pulse" : ""}
+                text-white hover:bg-[#7077FE]/90 
+                ${isMobile ? 'w-7 h-7' : 'w-8 h-8'} 
+                p-0 transition-all duration-300 relative
+              `}
               onClick={(e) => handleLikeClick(e)}
               disabled={isAnimating}
             >
@@ -811,104 +851,133 @@ export function StoryViewer({
                 {isAnimating && is_liked && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <Heart
-                      size={20}
+                      size={isMobile ? 16 : 20}
                       fill="white"
                       color="white"
                       className="animate-pulse"
                     />
                   </div>
                 )}
-
                 <img
                   src={Like}
                   className={`
-                  w-4 h-4 transition-all duration-300 
-                  ${is_liked ? "transform scale-110" : ""}
-                  ${isAnimating ? "opacity-0" : "opacity-100"}
-                `}
+                    ${isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'}
+                    transition-all duration-300 
+                    ${is_liked ? "transform scale-110" : ""}
+                    ${isAnimating ? "opacity-0" : "opacity-100"}
+                  `}
                   alt="Like"
                 />
               </div>
             </Button>
 
             {/* Like count badge */}
-            <div
-              className={`
-              absolute -top-2 -right-2 
-              bg-white rounded-full 
-              w-5 h-5 flex items-center justify-center 
-              text-xs font-bold 
-              transition-all duration-300
-              ${
-                likes_count > 0
-                  ? "scale-100 opacity-100 text-[#7077FE]"
-                  : "scale-0 opacity-0"
-              }
-            `}
-            >
-              {likes_count}
-            </div>
+            {likes_count > 0 && (
+              <div className={`
+                absolute -top-1.5 -right-1.5 
+                bg-white rounded-full 
+                ${isMobile ? 'w-4 h-4 text-[10px]' : 'w-5 h-5 text-xs'}
+                flex items-center justify-center font-bold text-[#7077FE]
+              `}>
+                {likes_count > 99 ? '99+' : likes_count}
+              </div>
+            )}
           </div>
 
-          {/* Comment Button with Count */}
+          {/* Comment Button */}
           <div className="relative">
             <Button
               size="sm"
-              className="rounded-full bg-[#F07EFF] text-black border border-white hover:bg-white/90 w-8 h-8 p-0"
+              className={`
+                rounded-full bg-[#F07EFF] text-white hover:bg-[#F07EFF]/90
+                ${isMobile ? 'w-7 h-7' : 'w-8 h-8'} 
+                p-0
+              `}
               onClick={(e) => handleCommentClick(e)}
             >
-              <img src={comment} className="w-4 h-4" alt="Comment" />
+              <img 
+                src={comment} 
+                className={isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} 
+                alt="Comment" 
+              />
             </Button>
 
             {/* Comment count badge */}
-            <div
-              className={`
-              absolute -top-2 -right-2 
-              bg-white rounded-full 
-              w-5 h-5 flex items-center justify-center 
-              text-xs font-bold 
-              transition-all duration-300
-              ${
-                comments_count > 0
-                  ? "scale-100 opacity-100 text-[#F07EFF]"
-                  : "scale-0 opacity-0"
-              }
-            `}
-            >
-              {comments_count}
-            </div>
+            {comments_count > 0 && (
+              <div className={`
+                absolute -top-1.5 -right-1.5 
+                bg-white rounded-full 
+                ${isMobile ? 'w-4 h-4 text-[10px]' : 'w-5 h-5 text-xs'}
+                flex items-center justify-center font-bold text-[#F07EFF]
+              `}>
+                {comments_count > 99 ? '99+' : comments_count}
+              </div>
+            )}
           </div>
 
           {/* Share Button */}
           <div className="relative">
             <Button
               size="sm"
-              className="rounded-full bg-[#6ACFAD] text-black border border-white hover:bg-white/90 w-8 h-8 p-0"
+              className={`
+                rounded-full bg-[#6ACFAD] text-white hover:bg-[#6ACFAD]/90
+                ${isMobile ? 'w-7 h-7' : 'w-8 h-8'} 
+                p-0
+              `}
               onClick={(e) => {
                 e.stopPropagation();
                 handleShare();
               }}
             >
-              <img src={share} className="w-4 h-4" alt="Share" />
+              <img 
+                src={share} 
+                className={isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} 
+                alt="Share" 
+              />
             </Button>
             {showSharePopup && (
               <SharePopup
                 isOpen={showSharePopup}
                 onClose={() => setShowSharePopup(false)}
                 url={buildStoryShareUrl()}
-                position="top"
+                position={isMobile ? "bottom" : "top"}
               />
             )}
           </div>
         </div>
       </div>
 
-      {/* Comment Modal */}
+      {/* Mobile navigation indicators */}
+      {isMobile && (
+        <>
+          {hasPrevious && (
+            <div className="absolute left-2 top-1/2 -translate-y-1/2 z-20">
+              <div className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center cursor-pointer"
+              onClick={onPrevious}
+              >
+                <ChevronLeft className="w-5 h-5 text-white" />
+              </div>
+            </div>
+          )}
+          {hasNext && (
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20">
+              <div className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center cursor-pointer"
+              onClick={onNext}
+              >
+                <ChevronRight className="w-5 h-5 text-white" />
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Comment Modal - Full screen on mobile */}
       {selectedReelId && (
         <ReelComment
           selectedReelId={selectedReelId}
           setSelectedReelId={handleCloseComments}
           onCommentCountUpdate={updateCommentCount}
+          isMobile={isMobile}
         />
       )}
     </div>
