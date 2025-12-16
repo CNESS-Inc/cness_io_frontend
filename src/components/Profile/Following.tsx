@@ -1,20 +1,27 @@
 // components/FollowingModal.tsx
 import { useState, useEffect } from "react";
-import { X, Search,Users } from "lucide-react";
+import { X, Search, Users } from "lucide-react";
 import { SendFollowRequest } from "../../Common/ServerAPI";
 
-type Friend = { id: string; name: string; handle: string; avatar: string; following?: boolean };
+type Friend = {
+  id: string;
+  name: string;
+  handle: string;
+  avatar: string;
+  following?: boolean;
+};
 
 export default function FollowingModal({
+  userProfile,
   open,
   onClose,
   friends,
 }: {
+  userProfile?: any;
   open: boolean;
   onClose: () => void;
   friends: Friend[];
 }) {
-
   const [localFriends, setLocalFriends] = useState<Friend[]>([]);
 
   useEffect(() => {
@@ -53,50 +60,49 @@ export default function FollowingModal({
           }}
         >
           {/* Header */}
-            {/* Title & Close */}
-<div className="relative flex items-center justify-center w-full  bg-[#897AFF1A] py-6">
-  {/* Left icon */}
-  <div className="absolute left-6 flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm">
-    <Users className="w-5 h-5 text-[#7C81FF]" />
-  </div>
-
-  {/* Center text */}
-  <div
-    style={{
-      fontFamily: "Poppins",
-      fontWeight: 500,
-      fontSize: "16.77px",
-      lineHeight: "100%",
-      color: "#7C81FF",
-    }}
-  >
-    Following
-  </div>
-
-  {/* Right close button */}
-  <button
-    onClick={onClose}
-    className="absolute right-6 p-2 rounded-full hover:bg-gray-100"
-    aria-label="Close"
-  >
-    <X className="w-5 h-5 text-[#FF4D94]" />
-  </button>
-</div>  
-            {/* Search */}
-            <div className="relative">
-              <input
-                placeholder="Search..."
-                style={{
-                  fontFamily: "Plus Jakarta Sans",
-                  fontWeight: 400,
-                  fontSize: "11.74px",
-                  lineHeight: "100%",
-                }}
-                className="w-full rounded-full border border-gray-200 bg-white py-3 pl-5 pr-10 outline-none focus:ring-2 focus:ring-indigo-100"
-              />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          {/* Title & Close */}
+          <div className="relative flex items-center justify-center w-full  bg-[#897AFF1A] py-6">
+            {/* Left icon */}
+            <div className="absolute left-6 flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm">
+              <Users className="w-5 h-5 text-[#7C81FF]" />
             </div>
-         
+
+            {/* Center text */}
+            <div
+              style={{
+                fontFamily: "Poppins",
+                fontWeight: 500,
+                fontSize: "16.77px",
+                lineHeight: "100%",
+                color: "#7C81FF",
+              }}
+            >
+              Following
+            </div>
+
+            {/* Right close button */}
+            <button
+              onClick={onClose}
+              className="absolute right-6 p-2 rounded-full hover:bg-gray-100"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5 text-[#FF4D94]" />
+            </button>
+          </div>
+          {/* Search */}
+          <div className="relative">
+            <input
+              placeholder="Search..."
+              style={{
+                fontFamily: "Plus Jakarta Sans",
+                fontWeight: 400,
+                fontSize: "11.74px",
+                lineHeight: "100%",
+              }}
+              className="w-full rounded-full border border-gray-200 bg-white py-3 pl-5 pr-10 outline-none focus:ring-2 focus:ring-indigo-100"
+            />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          </div>
 
           {/* Scrollable list */}
           <div className="flex-1 overflow-y-auto px-6 py-1">
@@ -134,13 +140,14 @@ export default function FollowingModal({
                       </div>
                     </div>
                   </div>
-
-                  <button
-                    className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF]"
-                    onClick={() => handleFollow(f.id)}
-                  >
-                    Unfollow
-                  </button>
+                  {!userProfile && (
+                    <button
+                      className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF]"
+                      onClick={() => handleFollow(f.id)}
+                    >
+                      Unfollow
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>

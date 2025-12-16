@@ -35,7 +35,7 @@ export default function SocialMedia() {
               style={{ fontFamily: "Poppins, sans-serif" }}
               className="text-[28px] md:text-[36px] lg:text-[42px] leading-tight font-medium mt-3 text-[#242424]"
             >
-              <span className="bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
+              <span className="bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
                 Social Media
               </span>
               , Reimagined for Conscious Expression
@@ -55,8 +55,8 @@ with people who understand what your origins are.
             <Button
               className="w-fit rounded-[100px] 
              py-3.5 px-6 mt-6 
-             text-[16px] font-['Open_Sans'] font-medium font-[500] leading-[100%] tracking-[0px] text-center text-white
-             bg-gradient-to-r from-[#7077FE] to-[#F07EFF]"
+             text-[16px] font-['Open_Sans'] font-medium leading-[100%] tracking-[0px] text-center text-white
+             bg-linear-to-r from-[#7077FE] to-[#F07EFF]"
               onClick={() => setOpenSignup(true)}
             >
               Join the Conscious Conversation
@@ -70,7 +70,7 @@ with people who understand what your origins are.
             alt="Social Media Visual"
             width={"100%"}
             height={"511px"}
-            className="w-full h-auto mt-8 lg:mt-[52px] object-cover rounded-[16px] sm:rounded-[20px] lg:rounded-[24px] transition-all duration-300"
+            className="w-full h-auto mt-8 lg:mt-[52px] object-cover rounded-2xl sm:rounded-[20px] lg:rounded-3xl transition-all duration-300"
           />
 
           {/* {notificationLottie && ( */}

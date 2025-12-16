@@ -207,7 +207,7 @@ export default function AwarenessSection() {
                     style={{ width: "100%", height: "100%" }}
                   />
                 </AnimatePresence>
-                <h3 className="poppins text-start bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-[32px] font-semibold mt-2">
+                <h3 className="poppins text-start bg-linear-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-[32px] font-semibold mt-2">
                   find their people
                 </h3>
               </div>
@@ -236,7 +236,7 @@ export default function AwarenessSection() {
                     <span className="font-medium text-[#000000] bg-clip-text">
                       Where Conscious Creations{" "}
                     </span>
-                    <span className="font-medium bg-gradient-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
+                    <span className="font-medium bg-linear-to-r from-[#7077FE] to-[#9747FF] text-transparent bg-clip-text">
                       Find Their People
                     </span>
                   </h1>
@@ -284,15 +284,15 @@ export default function AwarenessSection() {
                           onTouchEnd={handleTouchEnd}
                           className="h-full w-full"
                         >
-                          <Card className="flex flex-col md:h-[408px] h-full w-full rounded-[12px] overflow-hidden">
+                          <Card className="flex flex-col md:h-[408px] h-full w-full rounded-xl overflow-hidden">
                             <div
-                              className="relative w-full rounded-t-[12px] overflow-hidden"
+                              className="relative w-full rounded-t-xl overflow-hidden"
                               style={{ height: "290px" }}
                             >
                               <img
                                 src={card.image}
                                 alt={card.altText}
-                                className="w-full h-full object-cover rounded-t-[12px]"
+                                className="w-full h-full object-cover rounded-t-xl"
                               />
                               {/* {card.badge && (
                                 <div
@@ -305,10 +305,10 @@ export default function AwarenessSection() {
                               )}*/}
                             </div>
 
-                            <div className="relative flex-grow flex flex-col">
+                            <div className="relative grow flex flex-col">
                               <CardContent className="flex flex-col w-full p-0 h-full">
                                 <div
-                                  className="flex flex-col gap-2 px-5 py-4 w-full rounded-b-[12px] bg-cover bg-center h-full"
+                                  className="flex flex-col gap-2 px-5 py-4 w-full rounded-b-xl bg-cover bg-center h-full"
                                   style={{
                                     backgroundImage: card.bg_image,
                                     marginTop: 0,
@@ -351,7 +351,7 @@ export default function AwarenessSection() {
                     <br />
                     purpose-driven ecosystem.
                   </p>
-                  <div className="flex lg:justify-end justify-start md:gap-6 gap-2 lg:w-4/12 md:w-7/12 w-full lg:-mt-0 md:mt-0 mt-4">
+                  <div className="flex lg:justify-end justify-start md:gap-6 gap-2 lg:w-4/12 md:w-7/12 w-full lg:mt-0 md:mt-0 mt-4">
                     {/*<Button
                       variant="outline"
                       className="bg-white awareness-btn w-fit h-[42px] border-[#2222241a] md:px-4 px-1 sm:px-6 py-1 rounded-[100px] text-[#222224] font-medium md:text-[14px] text-[12px] lg:w-full md:w-full"
@@ -383,7 +383,7 @@ export default function AwarenessSection() {
         <div className="community-bottom m-0 bg-[url(https://res.cloudinary.com/diudvzdkb/image/upload/v1753780353/community-bg_cqdnuq.png)] w-full lg:px-8 md:px-8 px-4 py-16 flex justify-center items-center flex-col bg-cover bg-center">
           <h3
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="lg:text-[32px] md:text-[32px] text-[23px] font-medium bg-gradient-to-b from-[#4E4E4E] to-[#232323] 
+            className="lg:text-[32px] md:text-[32px] text-[23px] font-medium bg-linear-to-b from-[#4E4E4E] to-[#232323] 
                text-transparent bg-clip-text mb-3 text-center community-heading"
           >
             Connect with the trustworthy. Work with the <br />
@@ -391,7 +391,7 @@ export default function AwarenessSection() {
           </h3>
           <p
             style={{ fontFamily: "Open Sans, sans-serif" }}
-            className="mt-2 lg:text-[18px] md:text-[16px] text-[14px] font-[400] text-[#494949] text-center"
+            className="mt-2 lg:text-[18px] md:text-[16px] text-[14px] font-normal text-[#494949] text-center"
           >
             On CNESS, every profile, product, and organization is aligned with
             values you can count on.

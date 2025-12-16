@@ -80,7 +80,7 @@ export default function PopupOnboardingModal({
               className="
                 relative grid grid-cols-1 md:grid-cols-2
                 w-full max-w-[1020px] h-auto max-h-[95vh]
-                rounded-[24px] p-4 md:p-[30px]
+                rounded-3xl p-4 md:p-[30px]
                 shadow-2xl bg-white
                 overflow-y-auto
               "
@@ -88,7 +88,7 @@ export default function PopupOnboardingModal({
               {/* Left panel */}
               <div
                 className="
-                  relative overflow-hidden rounded-[24px]
+                  relative overflow-hidden rounded-3xl
                   hidden md:block
                   flex-1 h-full
                 "
@@ -107,7 +107,7 @@ export default function PopupOnboardingModal({
                   }}
                 />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center w-full px-6">
-                  <h2 className="text-center font-[Poppins] font-medium text-3xl md:text-[42px] leading-tight mb-5 bg-gradient-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text">
+                  <h2 className="text-center font-[Poppins] font-medium text-3xl md:text-[42px] leading-tight mb-5 bg-linear-to-b from-[#232323] to-[#4E4E4E] text-transparent bg-clip-text">
                     Welcome!
                   </h2>
                   <p className="text-[#64748B] text-center text-sm md:text-base leading-relaxed max-w-[380px] mx-auto">
@@ -120,9 +120,9 @@ export default function PopupOnboardingModal({
               {/* Right panel */}
               <div
                 className="
-                  relative rounded-[24px] bg-white
+                  relative rounded-3xl bg-white
                   w-full h-full
-                  px-4 md:px-[30px] pb-[20px] pt-0 md:pb-[0px]
+                  px-4 md:px-[30px] pb-5 pt-0 md:pb-0
                 "
               >
                 {/* Close button */}

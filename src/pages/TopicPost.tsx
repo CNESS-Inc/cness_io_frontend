@@ -151,10 +151,6 @@ export default function Topic() {
   // Get both topic and tag from URL search params
   const topicSlug = searchParams.get("topic");
   const tagSlug = searchParams.get("tag");
-  
-  console.log("🚀 ~ Topic ~ tagSlug:", tagSlug);
-  console.log("🚀 ~ Topic ~ topicSlug:", topicSlug);
-
   const topics: Topic[] = location.state?.topics || [];
   const userSelectedTopics: Topic[] = location.state?.userSelectedTopics || [];
 

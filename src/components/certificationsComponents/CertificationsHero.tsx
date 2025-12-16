@@ -28,7 +28,7 @@ export default function CertificationsHero() {
         <div className="flex flex-col items-center text-center z-10 pt-16 px-4">
           <h1
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className={`font-medium text-[32px] md:text-[42px] leading-[100%] tracking-[-0.02em] text-center antialiased bg-gradient-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${
+            className={`font-medium text-[32px] md:text-[42px] leading-[100%] tracking-[-0.02em] text-center antialiased bg-linear-to-b from-[#4E4E4E] to-[#232323] text-transparent bg-clip-text transition-all duration-1000 ease-in-out ${
               step >= 4
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 -translate-y-6"
@@ -69,11 +69,11 @@ mindful living.
         </div>
 
         <div className="w-full px-4 lg:px-16 pb-18 pt-20">
-          <div className="mx-auto max-w-[1900px] rounded-[32px] overflow-hidden">
+          <div className="mx-auto max-w-[1900px] rounded-4xl overflow-hidden">
             <img
               src="https://cdn.cness.io/Rectangle%201.png"
               alt="certificate hero Section"
-              className="mx-auto w-full max-w-[1900px] rounded-[32px] object-cover h-[240px] sm:h-[280px] md:h-[320px] lg:h-[405px] xl:h-[460px] 2xl:h-[460px] object-[58%_50%] sm:object-[60%_50%] md:object-[62%_50%] lg:object-[64%_50%] xl:object-[66%_50%] 2xl:object-[68%_50%]"
+              className="mx-auto w-full max-w-[1900px] rounded-4xl object-cover h-60 sm:h-[280px] md:h-80 lg:h-[405px] xl:h-[460px] 2xl:h-[460px] object-[58%_50%] sm:object-[60%_50%] md:object-[62%_50%] lg:object-[64%_50%] xl:object-[66%_50%] 2xl:object-[68%_50%]"
             />
           </div>
         </div>

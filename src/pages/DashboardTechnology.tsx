@@ -355,7 +355,7 @@ export default function DashboardTechnology() {
             </div>
           </div>
 
-          <p className="text-xs text-[#6340FF] font-[600] md:text-sm ">
+          <p className="text-xs text-[#6340FF] font-semibold md:text-sm ">
 Showcase your professional services and connect with like-minded individuals.
           </p>
         </div>

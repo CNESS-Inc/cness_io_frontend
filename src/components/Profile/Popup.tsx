@@ -73,6 +73,7 @@ interface PopupProps {
   insightsCount?: number;
   likesCount?: number;
   collection?: boolean;
+  userPost?: boolean;
   onPostUpdated?: () => void;
 }
 
@@ -83,6 +84,7 @@ const PostPopup: React.FC<PopupProps> = ({
   likesCount,
   insightsCount,
   collection,
+  userPost,
   onPostUpdated,
 }) => {
   const isReel = post.is_reel;
@@ -344,7 +346,7 @@ const PostPopup: React.FC<PopupProps> = ({
 
         {/* Menu items */}
         <div className="px-3 py-3 flex flex-col">
-          {!collection && !isReel && (
+          {!collection && !userPost && (
             <>
               <button
                 className="flex items-center gap-3 px-4 py-4 text-gray-700 hover:bg-gray-50 border-b border-[#E2E8F0] transition-colors duration-200 w-full text-left"

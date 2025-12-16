@@ -597,7 +597,7 @@ The CNESS Super App Was Built To Unite Learning, Certifications, Communities, An
                     src="https://cdn.cness.io/Group.webp"
                     alt="Feature popups"
                     className="pointer-events-none absolute z-10 h-auto
-                       w-[120px] sm:w-[150px] md:w-[160px]
+                       w-[120px] sm:w-[150px] md:w-40
                        left-[52%] top-[46%] sm:left-[50%] sm:top-[45%] md:left-[49%] md:top-[44%]
                        -translate-x-1/2 -translate-y-1/2 drop-shadow-xl"
                   /> */}
@@ -641,7 +641,7 @@ The CNESS Super App Was Built To Unite Learning, Certifications, Communities, An
               className="font-poppins font-medium text-[32px] md:text-[42px] leading-[54px] tracking-[-0.02em] capitalize text-centerp"
             >
               What{" "}
-              <span className="bg-gradient-to-r from-[#D747EA] to-[#7741FB] text-transparent bg-clip-text">
+              <span className="bg-linear-to-r from-[#D747EA] to-[#7741FB] text-transparent bg-clip-text">
                 We Offer
               </span>
             </h3>
@@ -740,7 +740,7 @@ The CNESS Super App Was Built To Unite Learning, Certifications, Communities, An
           <div className="mx-auto max-w-[900px] px-4 sm:px-6 text-center">
             <h2 className="font-['Poppins'] font-medium text-[28px] sm:text-[32px] md:text-[42px] leading-tight md:leading-[54px] tracking-[-0.02em] text-[#0F172A]">
               Meet{" "}
-              <span className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-[#6340FF] to-[#D748EA] bg-clip-text text-transparent">
                 Our Team
               </span>
             </h2>
