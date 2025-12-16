@@ -120,6 +120,9 @@ export const EndPoint = {
   social_user_profile: "/profile/social-user-profile",
   public_profile: "/profile/public",
   social_profile: "/profile/social-user-profile",
+  user_social_profile: "/profile/social-user-profile/by-user",
+  user_social_profile_post: "/user/posts/by-user",
+  user_social_profile_reel: "/story/by-user",
   profile_remove: "/profile/image/remove",
   organizationProfile: "/organization-profile",
   organizationNumber: "/organization-profile/verify-identify",
@@ -1138,6 +1141,18 @@ export const GetSocialProfileDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.social_profile}`);
 };
+export const GetUserSocialProfileDetails = (userId:any): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_social_profile}?user_id=${userId}`);
+};
+export const GetOtherUserPost = (userId:any): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_social_profile_post}?user_id=${userId}`);
+};
+export const GetOtherUserReel = (userId:any): ApiResponse => {
+  const data = {};
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_social_profile_reel}?user_id=${userId}`);
+};
 export const GetOrganiZationProfileDetails = (): ApiResponse => {
   const data = {};
   return executeAPI(
@@ -1420,6 +1435,13 @@ export const DeleteUserPost = (id: string): ApiResponse => {
     `${EndPoint.delete_post}/${id}`
   );
 };
+export const DeleteUserReel = (id: string): ApiResponse => {
+  return executeAPI(
+    ServerAPI.APIMethod.DELETE,
+    {},
+    `${EndPoint.story}/${id}`
+  );
+};
 
 export const PostComments = (formattedData: any) => {
   return executeAPI(
@@ -1523,9 +1545,10 @@ export const getMentionUserProfile = (id: any) => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.mention_user_profile}?comment_id=${id}`);
 }
-export const GetStory = () => {
+export const GetStory = (page = 1, limit = 10) => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story);
+  const endpoint = `${EndPoint.story}?page_no=${page}&limit=${limit}`;
+  return executeAPI(ServerAPI.APIMethod.GET, data, endpoint);
 };
 export const PostStoryViewd = (story_id: any) => {
   let data = { story_id };
@@ -1601,13 +1624,16 @@ export const GetTrendingMovie = () => {
   let data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.trending_movie);
 };
-export const GetFollowingUser = () => {
+export const GetFollowingUser = (userId?: any) => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.following);
+  const queryString = userId ? `?user_id=${userId}` : '';
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.following}${queryString}`);
 };
-export const GetFollowerUser = () => {
+
+export const GetFollowerUser = (userId?: any) => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.followers);
+  const queryString = userId ? `?user_id=${userId}` : '';
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.followers}${queryString}`);
 };
 export const GetUserReel = () => {
   let data = {};

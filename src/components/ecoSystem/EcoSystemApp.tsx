@@ -72,9 +72,9 @@ const rightCards = [
   {
     title: "CNESS Social Media Super App",
     info: "(Mobile App)",
-    subtitle: "Ecosystem — in your pocket.",
+    subtitle: "An Ecosystem In Your Pocket.",
     description:
-      "Stay connected wherever you are. Join conscious circles, share your journey, and soon buy  meaningful products in a built-in marketplace — all from your phone.",
+      "Stay connected wherever you are. Join conscious circles, share your journey, and soon buy meaningful products in a built-in marketplace all from your phone.",
     list: [
       "Conscious Profile: A Digital Reflection Of One’s Values And Intent",
       "Moments: Thoughtful, Bite-Sized Posts For Sharing Experiences",
@@ -103,8 +103,8 @@ const rightCards = [
     ],
     button: "Download",
     caption: {
-      before: "An App That Supports Individuals In Their Day-To-Day",
-      highlight: "Growth, Reflection, And Mental Alignment.",
+      before: "An App That Supports Individuals In Their Daily Life.",
+      highlight: "Nurturing Growth, Reflection, And Mental Alignment.",
       after: "",
     },
   },

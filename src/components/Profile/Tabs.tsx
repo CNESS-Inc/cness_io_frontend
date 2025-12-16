@@ -59,7 +59,7 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
   */
 
   return (
-    <div className="rounded-[12px] rounded-bl-none border border-gray-200 bg-white flex flex-col gap-4 p-4 sm:pt-6 sm:px-6 w-full">
+    <div className="rounded-xl rounded-bl-none border border-gray-200 bg-white flex flex-col gap-4 p-4 sm:pt-6 sm:px-6 w-full">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
           <div>
@@ -122,12 +122,12 @@ const ConnectionsCard: React.FC<ConnectionsCardProps> = ({
             {activeTab === tab && (
               <span
                 aria-hidden
-                className="absolute inset-0 rounded-t-[12px] bg-gradient-to-b from-white via-purple-50 to-purple-50 z-0"
+                className="absolute inset-0 rounded-t-xl bg-linear-to-b from-white via-purple-50 to-purple-50 z-0"
               />
             )}
             <span className="relative z-10">{tab}</span>
             {activeTab === tab && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-purple-600 rounded-full" />
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600 rounded-full" />
             )}
           </button>
         ))}

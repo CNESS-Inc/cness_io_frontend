@@ -85,7 +85,7 @@ export default function DashboardFirsttimeSection() {
                   <img
                     src={bulb}
                     alt="bulb icon"
-                    className="w-[7px] 2xl:w-[16px] h-[10px] 2xl:h-[16px]"
+                    className="w-[7px] 2xl:w-4 h-2.5 2xl:h-4"
                   />
                 </div>
                 <span className="font-['Poppins',Helvetica]">
@@ -121,7 +121,7 @@ export default function DashboardFirsttimeSection() {
             <h6 className="font-['Open_Sans',Helvetica] font-normal text-white">
               TRUE PROFILE
             </h6>
-            <h5 className="pt-3 pe-5 font-['Poppins',Helvetica] font-medium text-xl md:text-2xl text-white leading-[32px]">
+            <h5 className="pt-3 pe-5 font-['Poppins',Helvetica] font-medium text-xl md:text-2xl text-white leading-8">
               Access your True profile and begin exploring the various products
               we offer.
             </h5>
@@ -159,7 +159,7 @@ export default function DashboardFirsttimeSection() {
             <h6 className="font-['Poppins',Helvetica] font-medium text-[22px] sm:text-[28px] text-[#222224]">
               Certification Makes It Official.
             </h6>
-            <h5 className="pt-3 font-['Open_Sans',Helvetica] font-light text-base sm:text-lg text-[#242424] leading-[32px]">
+            <h5 className="pt-3 font-['Open_Sans',Helvetica] font-light text-base sm:text-lg text-[#242424] leading-8">
               Get your conscious identity verified and unlock everything CNESS
               has to offer.
             </h5>
@@ -195,7 +195,7 @@ export default function DashboardFirsttimeSection() {
                 {badgeLevels.map((badge, index) => (
                   <div
                     key={index}
-                    className="w-full h-full bg-white px-6 py-[16px] rounded-[18px] flex flex-col justify-center items-center gap-3"
+                    className="w-full h-full bg-white px-6 py-4 rounded-[18px] flex flex-col justify-center items-center gap-3"
                     style={{
                       border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
                     }}
@@ -285,10 +285,10 @@ export default function DashboardFirsttimeSection() {
                   <img
                     src={comunity}
                     alt="comunity"
-                    className="w-[80px] h-[25px] object-contain pointer-events-none select-none"
+                    className="w-20 h-[25px] object-contain pointer-events-none select-none"
                     aria-hidden="true"
                   />
-                  <h5 className="font-['Open_Sans',Helvetica] font-normal text-xs text-[#222224] leading-[32px]">
+                  <h5 className="font-['Open_Sans',Helvetica] font-normal text-xs text-[#222224] leading-8">
                     2000+ Happy Users
                   </h5>
                 </div>
@@ -304,7 +304,7 @@ export default function DashboardFirsttimeSection() {
                   <h6 className="font-['Poppins',Helvetica] font-medium text-xl md:text-2xl text-white">
                     Social Media
                   </h6>
-                  <h5 className="pe-5 font-['Open_Sans',Helvetica] text-base font-normal text-white leading-[32px]">
+                  <h5 className="pe-5 font-['Open_Sans',Helvetica] text-base font-normal text-white leading-8">
                     Reimagined for conscious expressions
                   </h5>
                   <div className="pt-6">
@@ -417,7 +417,7 @@ export default function DashboardFirsttimeSection() {
                 ethical standards!
               </h5>
               <div className="pt-5">
-                <button className="flex items-center gap-2 px-[18px] py-[12px] rounded-full bg-[rgba(112,119,254,0.1)] text-[#7077FE] text-sm font-normal">
+                <button className="flex items-center gap-2 px-[18px] py-3 rounded-full bg-[rgba(112,119,254,0.1)] text-[#7077FE] text-sm font-normal">
                   Coming Soon
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -440,7 +440,7 @@ export default function DashboardFirsttimeSection() {
         </div>
         <div className="w-full lg:w-2/5 flex flex-col gap-3">
           <div
-            className="w-full h-full relative py-8 px-[20px] rounded-xl bg-[#FAFAFA]"
+            className="w-full h-full relative py-8 px-5 rounded-xl bg-[#FAFAFA]"
             style={{
               border: "1px solid var(--Stroke, rgba(236, 238, 242, 1))",
             }}
@@ -460,7 +460,7 @@ export default function DashboardFirsttimeSection() {
                 creators who prioritize sustainability and ethical practices.
               </h5>
               <div className="pt-5">
-                <button className="flex items-center gap-2 px-[18px] py-[12px] rounded-full bg-[rgba(112,119,254,0.1)] text-[#7077FE] text-sm font-normal">
+                <button className="flex items-center gap-2 px-[18px] py-3 rounded-full bg-[rgba(112,119,254,0.1)] text-[#7077FE] text-sm font-normal">
                   Coming Soon
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

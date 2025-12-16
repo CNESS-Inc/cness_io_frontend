@@ -366,6 +366,8 @@ export default function SocialTopBar() {
 
   const [isCollectionLoading, setIsCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
+  const [storiesCount, setStoriesCount] = useState<any>();
+  console.log("🚀 ~ SocialTopBar ~ storiesData:", storiesData)
   // const [addNewPost, setAddNewPost] = useState(false)
 
   const [userInfo, setUserInfo] = useState<any>();
@@ -1150,11 +1152,12 @@ export default function SocialTopBar() {
     try {
       const res = await GetStory();
       // Add validation for API response structure
-      if (res?.data?.data && Array.isArray(res.data.data)) {
+      if (res?.data?.data.rows && Array.isArray(res.data.data.rows)) {
         // Use stories directly without grouping
-        const allStories = res.data.data;
+        const allStories = res.data.data.rows;
         // const allStories = groupStoriesByUser(res.data.data);
         setStoriesData(allStories);
+        setStoriesCount(res.data.data.count);
       } else {
         console.warn("Invalid stories API response structure:", res);
         setStoriesData([]);
@@ -2476,7 +2479,7 @@ export default function SocialTopBar() {
                               </div>
                             </div>
                             <div className="absolute bottom-5 w-full text-center text-white text-xs md:text-[15px] font-normal z-20">
-                              Inspirational Story
+                              Inspirational Reel
                             </div>
                             <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
                           </div>
@@ -2537,7 +2540,7 @@ export default function SocialTopBar() {
                           ))}
 
                           {/* Show "See More" button if there are more than 10 stories */}
-                          {storiesData.length > 10 && (
+                          {storiesCount > 10 && (
                             <div
                               onClick={() => navigate("/story-design")}
                               className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start bg-linear-to-br from-purple-400 to-pink-500 flex flex-col items-center justify-center"
@@ -2562,7 +2565,7 @@ export default function SocialTopBar() {
                                   See More
                                 </span>
                                 <span className="text-xs opacity-90 mt-1 block">
-                                  {storiesData.length - 10}+ more stories
+                                  {storiesCount - 10}+ more stories
                                 </span>
                               </div>
                             </div>
@@ -3416,12 +3419,12 @@ export default function SocialTopBar() {
                     <button
                       key={topic.id}
                       onClick={() => {
-                        navigate(`/dashboard/${topic.slug}`, {
-                          state: {
-                            topics,
-                            userSelectedTopics,
-                          },
-                        });
+                        navigate(`/dashboard/feed/search?topic=${topic.slug}`, {
+                        state: {
+                          topics,
+                          userSelectedTopics,
+                        },
+                      });
                         setIsSidebarOpen(false);
                       }}
                       className="flex items-center gap-2 hover:text-purple-700 cursor-pointer w-full text-left"

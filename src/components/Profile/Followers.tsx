@@ -12,10 +12,12 @@ type Follower = {
 };
 
 export default function FollowersModal({
+  userProfile,
   open,
   onClose,
   followers,
 }: {
+  userProfile?:any;
   open: boolean;
   onClose: () => void;
   followers: Follower[];
@@ -134,20 +136,25 @@ export default function FollowersModal({
                   </div>
 
                   {/* Action buttons */}
-                  <div className="flex gap-2">
-                    {!f.isFollowing ? (
-                      <button className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB]" onClick={() => handleFollow(f.id)}>
-                        + Follow
+                 {!userProfile && (
+                    <div className="flex gap-2">
+                      {!f.isFollowing ? (
+                        <button 
+                          className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB]" 
+                          onClick={() => handleFollow(f.id)}
+                        >
+                          + Follow
+                        </button>
+                      ) : (
+                        <button className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF]">
+                          Following
+                        </button>
+                      )}
+                      <button className="px-5 py-1.5 rounded-full border border-gray-300 text-[13px] font-medium text-gray-700 hover:bg-gray-50">
+                        Remove
                       </button>
-                    ) : (
-                      <button className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#F396FF]">
-                        Following
-                      </button>
-                    )}
-                    <button className="px-5 py-1.5 rounded-full border border-gray-300 text-[13px] font-medium text-gray-700 hover:bg-gray-50">
-                      Remove
-                    </button>
-                  </div>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

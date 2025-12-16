@@ -101,8 +101,7 @@ export default function Certifications() {
                   className="font-light text-[16px] leading-[26px] text-[#242424]
                max-w-[780px] mt-3 md:mt-4 mx-auto"
                 >
-                  Join CNESS — where your growth is recognized, your values are
-                  celebrated, and your impact begins.
+                  Join CNESS - a platform where your growth is recognized, your values are celebrated, and your impact begins.
                 </p>
               </div>
               <div className="flex items-center justify-center w-full joining-btn ">

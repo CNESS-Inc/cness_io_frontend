@@ -323,7 +323,7 @@ export default function SignupModalOld({ open = true, onClose = () => { } }: Sig
           <ul className="mt-4 flex justify-center items-center gap-6 text-sm text-gray-600">
             <li className="flex items-center gap-2 font-[Open_Sans] font-normal text-[14px] leading-[100%] tracking-[0px] text-gray-700">
               <Check className="h-6 w-6 stroke-[3px] text-green-500" />
-              Forever Free plan
+              Free Plan Forever
             </li>
             <li className="flex items-center gap-2 font-[Open_Sans] font-normal text-[14px] leading-[100%] tracking-[0px] text-gray-700">
               <Check className="h-6 w-6 stroke-[3px] text-green-500" />
@@ -346,7 +346,7 @@ export default function SignupModalOld({ open = true, onClose = () => { } }: Sig
               className="
               inline-flex items-center gap-3
               font-inter font-medium
-              text-[14px] leading-[20px] tracking-[0]
+              text-[14px] leading-5 tracking-[0]
               text-gray-900
             "
             >
@@ -364,7 +364,7 @@ export default function SignupModalOld({ open = true, onClose = () => { } }: Sig
           className={`
           my-6 flex items-center
           lg:w-[415px] w-full h-[19px]
-          gap-[20px]
+          gap-5
           text-[14px] leading-[100%] tracking-[0]
           font-['Open_Sans'] font-normal
           text-gray-500 ${formssubmitted ? " hidden" : ""}`}
@@ -398,10 +398,10 @@ export default function SignupModalOld({ open = true, onClose = () => { } }: Sig
               }}
               placeholder="Enter your Username"
               className="w-full h-[45px]
-                  rounded-[4px] border-2 border-gray-200
-                  px-[10px]  /* pr + pl = 10px */
+                  rounded-sm border-2 border-gray-200
+                  px-2.5  /* pr + pl = 10px */
                   outline-none
-                  text-[14px] leading-[20px]
+                  text-[14px] leading-5
                   placeholder:text-gray-400"
               required
             />
@@ -427,10 +427,10 @@ export default function SignupModalOld({ open = true, onClose = () => { } }: Sig
               }}
               className="
                   lg:w-[415px] w-full h-[45px]
-                  rounded-[4px] border-2 border-gray-200
-                  px-[10px]  /* pr + pl = 10px */
+                  rounded-sm border-2 border-gray-200
+                  px-2.5  /* pr + pl = 10px */
                   outline-none
-                  text-[14px] leading-[20px]
+                  text-[14px] leading-5
                   placeholder:text-gray-400
                 
                 "
@@ -459,10 +459,10 @@ export default function SignupModalOld({ open = true, onClose = () => { } }: Sig
                 }}
                 className="
                     lg:w-[195.5px] w-full h-[45px]
-                    rounded-[4px] border-2 border-gray-200
-                    px-[10px]
+                    rounded-sm border-2 border-gray-200
+                    px-2.5
                     outline-none
-                    text-[14px] leading-[20px]
+                    text-[14px] leading-5
                     placeholder:text-gray-400
                   
                   "
@@ -489,10 +489,10 @@ export default function SignupModalOld({ open = true, onClose = () => { } }: Sig
                 }}
                 className="
                     lg:w-[195.5px] w-full h-[45px]
-                    rounded-[4px] border-2 border-gray-200
-                    px-[10px]
+                    rounded-sm border-2 border-gray-200
+                    px-2.5
                     outline-none
-                    text-[14px] leading-[20px]
+                    text-[14px] leading-5
                     placeholder:text-gray-400
                     
                   "
@@ -520,7 +520,7 @@ export default function SignupModalOld({ open = true, onClose = () => { } }: Sig
           {/* Referral + CAPTCHA placeholder */}
           <div className="grid grid-cols-1 gap-4">
             {/* Referral Code */}
-            <div className="mb-0 w-[100%]">
+            <div className="mb-0 w-full">
               <label className="block">
                 <span className="block mb-2 font-['Poppins'] font-medium text-[12px] leading-[100%] tracking-[0] text-[#000000]">
                   Referral code (optional)
@@ -537,10 +537,10 @@ export default function SignupModalOld({ open = true, onClose = () => { } }: Sig
                   }}
                   className="
                       w-full h-[45px]
-                      rounded-[4px] border-2 border-gray-200
-                      px-[10px]
+                      rounded-sm border-2 border-gray-200
+                      px-2.5
                       outline-none
-                      text-[14px] leading-[20px]
+                      text-[14px] leading-5
                       placeholder:text-gray-400
                     
                     "
@@ -581,7 +581,7 @@ export default function SignupModalOld({ open = true, onClose = () => { } }: Sig
           {/* Submit */}
           <button
             type="submit"
-            className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[42px] text-white text-[14px] shadow-md hover:opacity-95"
+            className="mt-0 w-full rounded-full bg-linear-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[42px] text-white text-[14px] shadow-md hover:opacity-95"
             disabled={registerLoading || !recaptchaValue}
           >
             {registerLoading ? "Signing Up..." : "Sign Up"}
@@ -609,19 +609,19 @@ export default function SignupModalOld({ open = true, onClose = () => { } }: Sig
           className={`w-full h-[730px] flex flex-col justify-center items-center ${formssubmitted ? "block" : "hidden"
             }`}
         >
-          <h2 className="text-[32px] text-black font-[500] mb-2">
+          <h2 className="text-[32px] text-black font-medium mb-2">
             Verify Your E-Mail
           </h2>
-          <p className="text-[#64748B] text-[14px] font-[400]">
+          <p className="text-[#64748B] text-[14px] font-normal">
             We have sent a verification link to your mail id
           </p>
-          <span className="text-[16px] text-[#9747FF] font-[600] mb-[35px]">
+          <span className="text-[16px] text-[#9747FF] font-semibold mb-[35px]">
             {useremail}
           </span>
           <button
             type="submit"
             onClick={handleResendMail}
-            className="mt-0 w-full rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[45px] text-white text-[14px] shadow-md hover:opacity-95"
+            className="mt-0 w-full rounded-full bg-linear-to-r from-indigo-500 to-fuchsia-500 px-6 py-0 h-[45px] text-white text-[14px] shadow-md hover:opacity-95"
           >
             Resend Verification Email
           </button>

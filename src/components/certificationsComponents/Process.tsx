@@ -44,7 +44,7 @@ export default function Process() {
         <div className="w-full flex flex-col items-center justify-center md:justify-start md:items-start text-center md:text-left">
           <span
             style={{ fontFamily: "Poppins, sans-serif" }}
-            className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-[500] px-4 py-1 rounded-[100px] mb-6 inline-block 
+            className="badge text-[#F07EFF] border-[#F07EFF] border text-[16px] font-medium px-4 py-1 rounded-[100px] mb-6 inline-block 
             rounded-tl-[100px] rounded-br-[100px] rounded-tr-[10px] rounded-bl-[10px] bg-white"
           >
             How It Works
@@ -56,7 +56,7 @@ export default function Process() {
             Our Certification Process
           </h1>
           <p className="font-['Open_Sans'] text-[16px] text-[#242424] font-light mt-2">
-            We’ve made the path to certification clear and straightforward — so
+            We’ve made the path to certification clear and straightforward so
             you can focus on learning, growing, and getting recognized without
             complications.
           </p>
@@ -83,7 +83,7 @@ export default function Process() {
           </div>
           <div className="flex w-full">
             <span className="ml-auto text-right text-[#64748B] text-xs font-normal">
-              condition apply*
+              Conditions apply*
             </span>
           </div>
         </div>
@@ -91,8 +91,8 @@ export default function Process() {
         {/* middle */}
         <div className="grid grid-cols-[40px_1fr] gap-6 md:contents">
           <div className="flex justify-center self-center md:col-start-2 md:row-start-1 md:mt-20">
-            <div className="relative flex flex-col justify-between items-center w-[60px] h-[35rem] ">
-              <div className="absolute inset-0 left-1/2 -translate-x-1/2 w-[2px] border-l-2 border-dashed border-[#E9E9E9] z-0"></div>
+            <div className="relative flex flex-col justify-between items-center w-[60px] h-140 ">
+              <div className="absolute inset-0 left-1/2 -translate-x-1/2 w-0.5 border-l-2 border-dashed border-[#E9E9E9] z-0"></div>
 
               {steps.map((step, i) => (
                 <div key={i} className="relative z-10 bg-white">
@@ -115,7 +115,7 @@ export default function Process() {
               >
                 <span
                   style={{ fontFamily: "Poppins, sans-serif" }}
-                  className="bg-gradient-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-xl font-semibold"
+                  className="bg-linear-to-r from-[#6340FF] to-[#D748EA] text-transparent bg-clip-text text-xl font-semibold"
                 >
                   {step.step}
                 </span>

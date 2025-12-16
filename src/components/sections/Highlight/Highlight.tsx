@@ -35,7 +35,7 @@ export default function Highlight() {
     {
       icon: "https://res.cloudinary.com/diudvzdkb/image/upload/v1753780613/highlight-icon-1_qo6e4e.png",
       title: "Create a Profile",
-      desc: "Let the world see who you are — your values, work and inner story.",
+      desc: "Let the world see who you are your values, work and inner story.",
     },
     {
       icon: "https://res.cloudinary.com/diudvzdkb/image/upload/v1753780614/highlight-icon-2_y63cpz.png",

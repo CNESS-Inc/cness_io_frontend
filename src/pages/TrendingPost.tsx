@@ -110,8 +110,9 @@ export default function Trending() {
         const newPosts: Post[] = res.data.data.rows.map((el: any) => {
           return {
             avatar: el?.profile?.profile_picture || null,
-            name: `${el?.profile?.first_name || ""} ${el?.profile?.last_name || ""
-              }`,
+            name: `${el?.profile?.first_name || ""} ${
+              el?.profile?.last_name || ""
+            }`,
             time: el?.createdAt,
             following: el?.if_following || false,
             media: el?.file,
@@ -199,8 +200,9 @@ export default function Trending() {
           const newPosts: Post[] = res.data.data.rows.map((el: any) => {
             return {
               avatar: el?.profile?.profile_picture || null,
-              name: `${el?.profile?.first_name || ""} ${el?.profile?.last_name || ""
-                }`,
+              name: `${el?.profile?.first_name || ""} ${
+                el?.profile?.last_name || ""
+              }`,
               time: el?.createdAt,
               following: el?.if_following || false,
               media: el?.file,
@@ -243,8 +245,11 @@ export default function Trending() {
           <button
             key={topic.id}
             onClick={() =>
-              navigate(`/dashboard/${topic.slug}`, {
-                state: { topics, userSelectedTopics },
+              navigate(`/dashboard/feed/search?topic=${topic.slug}`, {
+                state: {
+                  topics,
+                  userSelectedTopics,
+                },
               })
             }
             className="flex items-center gap-2 hover:text-purple-700 cursor-pointer"
@@ -380,8 +385,9 @@ export default function Trending() {
         />
       )}
       <div
-        className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${isTopicsOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${
+          isTopicsOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         role="dialog"
         aria-modal="true"
         aria-label="Trending topics"

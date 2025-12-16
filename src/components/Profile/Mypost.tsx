@@ -24,6 +24,7 @@ export type MyPostProps = {
   collection?: boolean;
   friend?: boolean;
   reel?: boolean;
+  userPost?: boolean;
   onViewPost?: () => void;
   onDeletePost?: () => void;
   onDeleteSavePost?: () => void;
@@ -57,6 +58,7 @@ export default function MyPost({
   authorAvatar,
   time,
   reel,
+  userPost,
   isFollowing,
   showFollowButton,
   insightsCount,
@@ -168,7 +170,7 @@ export default function MyPost({
               {!friend && <Pen className="w-4 h-4 inline-block mr-1" />}
               View Post
             </button>
-            {!friend && !reel && (
+            {!friend && !reel && !userPost && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
