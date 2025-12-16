@@ -455,7 +455,7 @@ const BecomeMentor = () => {
               </h1>
               <h5 className="py-3 font-['Open_Sans',Helvetica] text-base font-light text-[#242424] leading-[24px]">
                 Become a CNESS Mentor and turn your wisdom into a force for
-                transformation.Guide professionals, empower learners, and shape
+                transformation. Guide professionals, empower learners, and shape
                 the future of conscious leadership.
               </h5>
               <div className="pt-6">
