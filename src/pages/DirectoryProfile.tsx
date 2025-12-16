@@ -1714,7 +1714,7 @@ const DirectoryProfile = () => {
           )}
 
           {/* Products Section */}
-          {products.length > 0 && (
+          {products?.length > 0 && (
             <section className="bg-white rounded-xl p-4 md:p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
@@ -1730,7 +1730,7 @@ const DirectoryProfile = () => {
                 </span>
               </div>
               <div className="space-y-4">
-                {products.slice(0, 3).map((product: any, index: number) => (
+                {products?.slice(0, 3).map((product: any, index: number) => (
                   <div
                     key={index}
                     className="bg-linear-to-b from-[#F1F3FF] to-white border border-[#ECEEF2] rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 md:space-x-4"
