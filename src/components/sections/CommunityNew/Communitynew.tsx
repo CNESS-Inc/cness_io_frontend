@@ -19,10 +19,11 @@ const Communitynew: React.FC = () => {
           </span>
         </h2>
         <p className="font-['Open_Sans'] font-light text-[16px] leading-6 tracking-[0px] text-[#242424] text-center w-fit mx-auto">
-          Whether you're here to grow your career, share your passion, or
-          simply <br className="lg:block md:block hidden" />
-          connect with others who care — CNESS gives you a space to belong,
-          be <br className="lg:block md:block hidden" />
+          
+Whether you're here to grow your career, share your passion, or simply
+ <br className="lg:block md:block hidden" />
+         connect with others who care, CNESS gives you a space to belong, be
+ <br className="lg:block md:block hidden" />
           seen, and evolve together.
         </p>
       </div>

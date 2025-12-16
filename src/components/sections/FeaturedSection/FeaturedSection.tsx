@@ -141,12 +141,14 @@ export default function FeaturedSection() {
           }
         >
           <h5 className="font-[poppins] font-medium text-[18px] mb-2">
-            Go live. Share your voice. Be seen by the conscious world.
+Go live. Share your voice. Be seen by the conscious world.
+
           </h5>
           <p className="font-['Open_Sans'] font-light text-[16px] leading-6 tracking-[0px] text-[#242424]">
-            Host Live Talks. Stream Music. Share Reflections. Submit Your Content <br className="lg:block md:block hidden" />
-            To Be Featured On AriOme — Our Curated Stream Of Purpose-Led <br className="lg:block md:block hidden" />
-            Creators, Artists, And Changemakers.
+           Host Live Talks. Stream Music. Share Reflections. Submit Your Content
+To Be Featured On AriOme which is our Curated Stream Of Purpose-Led
+Creators, Artists & Leaders.
+
           </p>
         </div>
       </div>

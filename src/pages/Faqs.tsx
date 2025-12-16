@@ -350,9 +350,9 @@ export default function Faqs() {
           className="font-['Open_Sans'] lg:text-lg md:text-[16px] text-[12px] text-[#242424] lg:mb-10 md:mb-12 mb-4 mt-4
             max-w-4xl mx-auto transition-all duration-1000 ease-in-out font-light"
         >
-          If you cannot find answer to a question in your FAQ, you can always{" "}
+          If you cannot find the answer to your question in the FAQ section, you can {" "}
           <br />
-          contact us. we will answer to you shortly
+          always contact us and we will answer you shortly.
         </p>
       </div>
       {/* <GetInTouch /> */}

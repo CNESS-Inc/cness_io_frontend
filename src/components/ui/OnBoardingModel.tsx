@@ -112,7 +112,7 @@ export default function PopupOnboardingModal({
                   </h2>
                   <p className="text-[#64748B] text-center text-sm md:text-base leading-relaxed max-w-[380px] mx-auto">
                     Discover certifications, connect with like-minded people, grow your ideas,
-                    and make an impact—all in one place.
+                    and make an impact all in one place.
                   </p>
                 </div>
               </div>

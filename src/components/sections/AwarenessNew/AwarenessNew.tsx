@@ -188,8 +188,8 @@ export default function AwarenessSection() {
 
             <div className="flex flex-col md:flex-row items-center justify-between max-w-[700px] w-full mx-auto mt-10 gap-6 md:gap-4">
               <p className="lg:w-8/12 md:w-5/12 w-full font-['Open_Sans'] font-light text-[16px] leading-6 tracking-[0px] text-[#242424]">
-                Showcase your products in our conscious Marketplace, connect
-                with the right Audience, and grow your business in a
+                Showcase your products in our conscious marketplace, connect
+                with the right audience, and grow your business in a
                 Purpose-driven ecosystem.
               </p>
               <div className="flex justify-center md:justify-end w-full md:w-auto mt-4 md:mt-0">

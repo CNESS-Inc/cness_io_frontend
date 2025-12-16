@@ -945,7 +945,7 @@ export default function SignupModal({
           <ul className="mt-4 flex justify-center items-center gap-6 text-sm text-gray-600">
             <li className="flex items-center gap-2 font-[Open_Sans] font-normal text-[14px] leading-[100%] tracking-[0px] text-gray-700">
               <Check className="h-6 w-6 stroke-[3px] text-green-500" />
-              Forever Free plan
+              Free Plan Forever
             </li>
             <li className="flex items-center gap-2 font-[Open_Sans] font-normal text-[14px] leading-[100%] tracking-[0px] text-gray-700">
               <Check className="h-6 w-6 stroke-[3px] text-green-500" />

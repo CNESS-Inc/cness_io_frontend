@@ -44,13 +44,13 @@ export default function SocialMedia() {
           <div className="lg:w-6/12 md:w-6/12 w-full flex flex-col items-center md:items-start">
             <p style={{ fontFamily: "Open Sans, sans-serif" }}
               className="font-light text-[15px] sm:text-[16px] leading-[26px] text-[#242424] md:mt-4">
-              Share reflections, life moments, and conscious thoughts.
+Share reflections, life moments, and conscious thoughts.
               <br />
-              React, repost, and respond to what moves you. CNESS is where
-              like-hearted
+React, repost, and respond to what moves you. CNESS is where like-hearted
+creators, thinkers, and change makers meet  not to impress, but to express. Connect 
+
               <br />
-              creators, thinkers, and changemakers meet — not to impress, but to
-              express. Connect with people who understand where you’re coming from.
+with people who understand what your origins are.
             </p>
             <Button
               className="w-fit rounded-[100px] 

@@ -19,7 +19,7 @@ const whyItems = [
     id: 2,
     icon: why2,
     title: "One Platform, Many Paths",
-    desc: "Learning, certification, community and marketplace — all connected so you can focus on your growth.",
+    desc: "Learning, certification, community and marketplace all connected so you can focus on your growth.",
   },
   {
     id: 3,

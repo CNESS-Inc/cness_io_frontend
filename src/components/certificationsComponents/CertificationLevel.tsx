@@ -28,7 +28,7 @@ export default function CertificationLevel() {
     {
       title: "Leader",
       description:
-        "For changemakers leading communities, creating impact, and inspiring transformation.",
+        "For trailblazers leading communities, creating impact, and inspiring transformation.",
       icon: group3,
       position:
         "md:translate-x-4 md:-translate-y-14 lg:translate-x-20 xl:-translate-y-20 xl:translate-x-44", // top-right

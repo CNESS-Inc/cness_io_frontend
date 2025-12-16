@@ -329,11 +329,7 @@ text-[14px] sm:text-[15px] md:text-[16px] font-light
 leading-6 text-[#242424]
 mt-4 sm:mt-6 max-w-[620px] mx-auto lg:mx-0"
                     >
-                      We're building more than a platform—we're shaping an
-                      ecosystem. From certifications and learning tools for
-                      professionals, to communities, marketplaces, and
-                      entertainment for individuals, our super app is designed
-                      to help you grow, connect, and thrive with purpose.
+                      We're building more than a platform. We’re moulding an ecosystem. From certifications and learning tools for professionals, to communities, marketplaces, and entertainment for individuals, our super app is designed to help you grow, connect, and thrive with purpose.
                     </p>
                     <Button
                       variant="gradient-primary"
@@ -398,14 +394,7 @@ text-[14px] sm:text-[16px] font-['Plus Jakarta Sans'] font-medium text-[16px] le
   leading-[24.4px] text-[#242424] capitalize font-['Open_Sans'] font-light
   text-justify mx-auto lg:mx-0"
                   >
-                    CNESS was born from the vision of our founder, Nandiji,
-                    whose life and teachings embody conscious living. He
-                    believed that true growth goes beyond fleeting online
-                    inspiration — it's about nurturing the soul and connecting
-                    with others on a deeper level. Guided by this belief, he
-                    envisioned a space where people could be authentic, nourish
-                    their spirits, and support one another on a shared journey
-                    toward mindful, meaningful living. That space became CNESS.
+                    CNESS was born from the vision of our founder, Nandhiji, whose life and teachings embody conscious living. He believes that true growth goes beyond fleeting online inspiration. It's about nurturing the soul and connecting with others on a deeper level. Guided by this belief, he envisioned a space where people could be authentic, nourish their spirits, and support one another on a shared journey toward mindful, meaningful living. That space became CNESS.
                   </p>
 
                   <div className="flex flex-wrap justify-center lg:justify-start items-center gap-4 mt-5">
@@ -512,10 +501,7 @@ gap-2
   text-[16px] leading-[24.4px] 
   capitalize text-[#242424]"
                     >
-                      We built our super app to unite learning, certifications,
-                      communities, and marketplaces in one ecosystem—helping
-                      people and businesses grow, connect, and thrive with
-                      purpose.
+The CNESS Super App Was Built To Unite Learning, Certifications, Communities, And Marketplaces In One Ecosystem. To Help People And Businesses Grow, Connect, And Thrive With Purpose.
                     </p>
                   </div>
                 </div>
@@ -566,7 +552,7 @@ gap-2
                   {[
                     {
                       title: "We measure what matters",
-                      desc: "We focus on values and purpose — not just numbers.",
+                      desc: "We focus on values and purpose, not just numbers.",
                     },
                     {
                       title: "A creator‑first platform",

@@ -45,7 +45,7 @@ export default function CertificationsHero() {
             }`}
           >
             CNESS Certification celebrates your conscious 
-journey—your growth, values, and purpose that inspire change. It’s 
+journey, your growth, values, and purpose that inspire change. It’s 
 more than a credential; it’s recognition of your commitment to 
 mindful living.
           </p>
