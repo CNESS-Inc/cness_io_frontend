@@ -14,6 +14,7 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import EnquiryModal from "../components/directory/Enquire";
+import DOMPurify from "dompurify";
 import {
   GetDirectoryProfileByUserId,
   CreateOrUpdateDirectoryReview,
@@ -516,7 +517,8 @@ const DirectoryProfile = () => {
   const photos = profileData.photos || [];
   const services = profileData.service_offered || [];
   const bestPractices = profileData.best_practies || [];
-  const products = profileData.products || [];
+  const products :any= null;
+  // const products = profileData.products || [];
 
   const formatBusinessHours = () => {
     if (businessHours.business_status === 1 && businessHours.weekly_hours) {
@@ -1674,7 +1676,12 @@ const DirectoryProfile = () => {
                             {item.title}
                           </h4>
                           <p className="font-['open_sans'] font-normal text-[13px] sm:text-[14px] text-[#1F2937] leading-relaxed break-words">
-                            {displayText}
+                             
+                              <span
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(displayText),
+                            }}
+                          />
                             {shouldTruncate && (
                               <button
                                 onClick={toggleExpand}
@@ -1713,7 +1720,7 @@ const DirectoryProfile = () => {
           )}
 
           {/* Products Section */}
-          {products.length > 0 && (
+          {products?.length > 0 && (
             <section className="bg-white rounded-xl p-4 md:p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
@@ -1729,7 +1736,7 @@ const DirectoryProfile = () => {
                 </span>
               </div>
               <div className="space-y-4">
-                {products.slice(0, 3).map((product: any, index: number) => (
+                {products?.slice(0, 3).map((product: any, index: number) => (
                   <div
                     key={index}
                     className="bg-linear-to-b from-[#F1F3FF] to-white border border-[#ECEEF2] rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 md:space-x-4"
