@@ -23,6 +23,115 @@ import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBest
 import EditBestPracticeModal from "../components/sections/bestPractiseHub/EditBestPracticesModel";
 import DOMPurify from "dompurify";
 
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+  isLoading: boolean;
+}
+
+const Pagination: React.FC<PaginationProps> = ({
+  currentPage,
+  totalPages,
+  // totalItems,
+  onPageChange,
+  isLoading,
+}) => {
+  const isMobile = window.innerWidth < 768;
+
+  if (totalPages <= 1) return null;
+
+  return (
+    <div className="mt-4 sm:mt-6 md:mt-8">
+      <div className="flex justify-center">
+        <nav className="inline-flex rounded-md shadow-sm -space-x-px text-xs sm:text-sm">
+          {/* Previous Button */}
+          <button
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1 || isLoading}
+            className="px-2 sm:px-3 py-1 rounded-l-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            «
+          </button>
+
+          {/* First Page - Desktop Only */}
+          {!isMobile && (
+            <>
+              <button
+                onClick={() => onPageChange(1)}
+                disabled={isLoading}
+                className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === currentPage
+                    ? "bg-indigo-500 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                1
+              </button>
+
+              {currentPage > 3 && (
+                <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
+                  ...
+                </span>
+              )}
+            </>
+          )}
+
+          {/* Current Page and Adjacent Pages */}
+          {[currentPage - 1, currentPage, currentPage + 1]
+            .filter((page) => page > 1 && page < totalPages)
+            .map((page) => (
+              <button
+                key={page}
+                onClick={() => onPageChange(page)}
+                disabled={isLoading}
+                className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === currentPage
+                    ? "bg-indigo-500 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                {page}
+              </button>
+            ))}
+
+          {/* Last Page - Desktop Only */}
+          {!isMobile && (
+            <>
+              {currentPage < totalPages - 2 && (
+                <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
+                  ...
+                </span>
+              )}
+
+              {totalPages > 1 && (
+                <button
+                  onClick={() => onPageChange(totalPages)}
+                  disabled={isLoading}
+                  className={`px-2 sm:px-3 py-1 border border-gray-300 ${totalPages === currentPage
+                      ? "bg-indigo-500 text-white"
+                      : "bg-white text-gray-700 hover:bg-gray-100"
+                    }`}
+                >
+                  {totalPages}
+                </button>
+              )}
+            </>
+          )}
+
+          {/* Next Button */}
+          <button
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages || isLoading}
+            className="px-2 sm:px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            »
+          </button>
+        </nav>
+      </div>
+    </div>
+  );
+};
+
 const Managebestpractices = () => {
   const [activeTab, setActiveTab] = useState<"saved" | "mine">("saved");
   const [inputValue, setInputValue] = useState("");
@@ -41,7 +150,7 @@ const Managebestpractices = () => {
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 10,
+    itemsPerPage: 12,
   });
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
@@ -571,21 +680,19 @@ const Managebestpractices = () => {
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-200 mb-4 sm:mb-6 mt-4 sm:mt-6 md:mt-8 overflow-x-auto">
           <button
-            className={`px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base cursor-pointer font-medium whitespace-nowrap ${
-              activeTab === "saved"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500"
-            }`}
+            className={`px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base cursor-pointer font-medium whitespace-nowrap ${activeTab === "saved"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-500"
+              }`}
             onClick={() => setActiveTab("saved")}
           >
             Saved Best Practices
           </button>
           <button
-            className={`px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base cursor-pointer font-medium whitespace-nowrap ${
-              activeTab === "mine"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500"
-            }`}
+            className={`px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base cursor-pointer font-medium whitespace-nowrap ${activeTab === "mine"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-500"
+              }`}
             onClick={() => setActiveTab("mine")}
           >
             My Best Practices
@@ -630,11 +737,10 @@ const Managebestpractices = () => {
                       text-ellipsis 
                       text-center
                       focus:outline-none
-                      border ${
-                        activeStatusTab === 0
-                          ? "text-purple-600 h-[42px] sm:h-[45px] bg-[#F8F3FF] border-0"
-                          : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                      }`}
+                      border ${activeStatusTab === 0
+                      ? "text-purple-600 h-[42px] sm:h-[45px] bg-[#F8F3FF] border-0"
+                      : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                    }`}
                   onClick={() => setActiveStatusTab(0)}
                 >
                   Submitted
@@ -656,11 +762,10 @@ const Managebestpractices = () => {
                       text-ellipsis 
                       text-center
                       focus:outline-none
-                      border ${
-                        activeStatusTab === 1
-                          ? "text-purple-600 h-[42px] sm:h-[45px] bg-[#F8F3FF] border-0"
-                          : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                      }`}
+                      border ${activeStatusTab === 1
+                      ? "text-purple-600 h-[42px] sm:h-[45px] bg-[#F8F3FF] border-0"
+                      : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                    }`}
                   onClick={() => setActiveStatusTab(1)}
                 >
                   Listed
@@ -760,7 +865,7 @@ const Managebestpractices = () => {
                           </button>
                         </div>
                       )}
-                      
+
                       {/* Card content */}
                       <div
                         onClick={() =>
@@ -782,12 +887,12 @@ const Managebestpractices = () => {
                             <img
                               src={
                                 !company?.user?.profilePicture ||
-                                company?.user?.profilePicture === "null" ||
-                                company?.user?.profilePicture === "undefined" ||
-                                !company?.user?.profilePicture.startsWith(
-                                  "http"
-                                ) ||
-                                company?.user?.profilePicture ===
+                                  company?.user?.profilePicture === "null" ||
+                                  company?.user?.profilePicture === "undefined" ||
+                                  !company?.user?.profilePicture.startsWith(
+                                    "http"
+                                  ) ||
+                                  company?.user?.profilePicture ===
                                   "http://localhost:5026/file/"
                                   ? "/profile.png"
                                   : company?.user?.profilePicture
@@ -815,10 +920,10 @@ const Managebestpractices = () => {
                               <img
                                 src={
                                   !company.file ||
-                                  company.file === "null" ||
-                                  company.file === "undefined" ||
-                                  !company.file.startsWith("http") ||
-                                  company.file === "http://localhost:5026/file/"
+                                    company.file === "null" ||
+                                    company.file === "undefined" ||
+                                    !company.file.startsWith("http") ||
+                                    company.file === "http://localhost:5026/file/"
                                     ? iconMap["companycard1"]
                                     : company.file
                                 }
@@ -877,6 +982,14 @@ const Managebestpractices = () => {
                 </p>
               </div>
             )}
+
+            <Pagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalItems}
+              onPageChange={(page) => fetchMineBestPractices(page)}
+              isLoading={isLoading.my_added}
+            />
           </div>
         )}
 
@@ -916,12 +1029,12 @@ const Managebestpractices = () => {
                           <img
                             src={
                               !company?.user?.profilePicture ||
-                              company?.user?.profilePicture === "null" ||
-                              company?.user?.profilePicture === "undefined" ||
-                              !company?.user?.profilePicture.startsWith(
-                                "http"
-                              ) ||
-                              company?.user?.profilePicture ===
+                                company?.user?.profilePicture === "null" ||
+                                company?.user?.profilePicture === "undefined" ||
+                                !company?.user?.profilePicture.startsWith(
+                                  "http"
+                                ) ||
+                                company?.user?.profilePicture ===
                                 "http://localhost:5026/file/"
                                 ? "/profile.png"
                                 : company?.user?.profilePicture
@@ -949,10 +1062,10 @@ const Managebestpractices = () => {
                             <img
                               src={
                                 !company.file ||
-                                company.file === "null" ||
-                                company.file === "undefined" ||
-                                !company.file.startsWith("http") ||
-                                company.file === "http://localhost:5026/file/"
+                                  company.file === "null" ||
+                                  company.file === "undefined" ||
+                                  !company.file.startsWith("http") ||
+                                  company.file === "http://localhost:5026/file/"
                                   ? iconMap["companycard1"]
                                   : company.file
                               }
@@ -997,6 +1110,14 @@ const Managebestpractices = () => {
                 No Best Practices found.
               </p>
             )}
+
+            <Pagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalItems}
+              onPageChange={(page) => fetchBestPractices(page)}
+              isLoading={isLoading.save}
+            />
           </div>
         )}
       </div>
@@ -1019,7 +1140,7 @@ const Managebestpractices = () => {
         handleSubmit={handleCreateSubmit}
         isSubmitting={isCreateSubmitting}
       />
-      
+
       <EditBestPracticeModal
         open={activeModal === "bestpractices"}
         onClose={closeModal}
