@@ -14,6 +14,7 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import EnquiryModal from "../components/directory/Enquire";
+import DOMPurify from "dompurify";
 import {
   GetDirectoryProfileByUserId,
   CreateOrUpdateDirectoryReview,
@@ -1675,7 +1676,12 @@ const DirectoryProfile = () => {
                             {item.title}
                           </h4>
                           <p className="font-['open_sans'] font-normal text-[13px] sm:text-[14px] text-[#1F2937] leading-relaxed break-words">
-                            {displayText}
+                             
+                              <span
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(displayText),
+                            }}
+                          />
                             {shouldTruncate && (
                               <button
                                 onClick={toggleExpand}
