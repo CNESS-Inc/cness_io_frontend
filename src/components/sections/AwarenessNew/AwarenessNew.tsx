@@ -113,7 +113,7 @@ export default function AwarenessSection() {
                 Explore a wide range of conscious products crafted by verified
                 creators who
                 <br />
-                Prioritize sustainability and ethical practices.
+                prioritize sustainability and ethical practices.
               </p>
             </div>
 
