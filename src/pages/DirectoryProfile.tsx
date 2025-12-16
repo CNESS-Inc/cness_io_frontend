@@ -516,7 +516,8 @@ const DirectoryProfile = () => {
   const photos = profileData.photos || [];
   const services = profileData.service_offered || [];
   const bestPractices = profileData.best_practies || [];
-  const products = profileData.products || [];
+  const products :any= null;
+  // const products = profileData.products || [];
 
   const formatBusinessHours = () => {
     if (businessHours.business_status === 1 && businessHours.weekly_hours) {
