@@ -545,7 +545,7 @@ const getConnectionStatus = (post: any) => {
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 md:gap-3">
                     <Link
-                      to={`/dashboard/userprofile/${collectionItem.originalData.profile.user_id}`}
+                      to={`/dashboard/social/user-profile/${collectionItem.originalData.profile.user_id}`}
                     >
                       <img
                         src={
@@ -570,7 +570,7 @@ const getConnectionStatus = (post: any) => {
                     <div>
                       <p className="font-semibold text-sm md:text-base text-black">
                         <Link
-                          to={`/dashboard/userprofile/${collectionItem.originalData.profile.user_id}`}
+                          to={`/dashboard/social/user-profile/${collectionItem.originalData.profile.user_id}`}
                         >
                           {" "}
                           {collectionItem.originalData.profile.first_name}{" "}
@@ -579,7 +579,7 @@ const getConnectionStatus = (post: any) => {
                         <span className="text-[#999999] text-xs md:text-[12px] font-light">
                           {" "}
                           <Link
-                            to={`/dashboard/userprofile/${collectionItem.originalData.profile.user_id}`}
+                            to={`/dashboard/social/user-profile/${collectionItem.originalData.profile.user_id}`}
                           >
                             {" "}
                             @{collectionItem.originalData.user.username}

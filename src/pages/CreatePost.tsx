@@ -627,7 +627,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
           </div>
 
           <div className="px-6 pt-5 flex items-center gap-2 md:gap-3">
-            <Link to={`/dashboard/userprofile/${userInfo?.id}`}>
+            <Link to={`/dashboard/social/user-profile/${userInfo?.id}`}>
               <img
                 src={
                   !userInfo?.profile_picture ||
@@ -648,7 +648,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-1 text-sm md:text-base">
                 <Link
-                  to={`/dashboard/userprofile/${userInfo?.id}`}
+                  to={`/dashboard/social/user-profile/${userInfo?.id}`}
                   className="font-semibold text-black hover:underline"
                 >
                   {userInfo?.name || "User"}
