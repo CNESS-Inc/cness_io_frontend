@@ -221,6 +221,16 @@ export default function Profile() {
     location.state?.activeTab || profiles[0].tabs[0].label
   );
   const [boards, _setBoards] = useState<CollectionBoard[]>([]);
+  // Add these states after your existing states
+  const [postsPage, setPostsPage] = useState(1);
+  const [reelsPage, setReelsPage] = useState(1);
+  const [collectionPage, setCollectionPage] = useState(1);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
+  const [hasMoreReels, setHasMoreReels] = useState(true);
+  const [hasMoreCollection, setHasMoreCollection] = useState(true);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
+  const [isLoadingReels, setIsLoadingReels] = useState(false);
+  const [isLoadingCollection, setIsLoadingCollection] = useState(false);
   //const handleAddCollection = () => setBoards(demoBoards);
   const navigate = useNavigate();
   const [selectedPost, setSelectedPost] = useState<MyPostProps | null>(null);
@@ -371,9 +381,10 @@ export default function Profile() {
       });
     }
   };
-  const fetchUsersReel = async () => {
+  const fetchUsersReel = async (page = 1, append = false) => {
     try {
-      const res = await GetUserReel();
+      setIsLoadingReels(true);
+      const res = await GetUserReel(page); // Add pagination parameter
       const transformReelsToPostProps = res.data.data.rows.map((reel: any) => ({
         id: reel.id,
         media: {
@@ -392,7 +403,19 @@ export default function Profile() {
         duration: reel.duration,
         is_reel: true,
       }));
-      setUserReels(transformReelsToPostProps); // Store reels data
+
+      // Check if we have more reels
+      const hasMore = res.data.data.rows.length >= 12;
+      setHasMoreReels(hasMore);
+
+      // Append or replace reels
+      if (append) {
+        setUserReels((prev) => [...prev, ...transformReelsToPostProps]);
+        setReelsPage(page + 1);
+      } else {
+        setUserReels(transformReelsToPostProps);
+        setReelsPage(2);
+      }
     } catch (error) {
       console.error("Error fetching user reels:", error);
       showToast({
@@ -400,16 +423,18 @@ export default function Profile() {
         type: "error",
         duration: 3000,
       });
+    } finally {
+      setIsLoadingReels(false);
     }
   };
 
-  const fetchCollectionItems = async () => {
+  const fetchCollectionItems = async (page = 1, append = false) => {
     try {
-      const res = await GetSavedPosts();
+      setIsLoadingCollection(true);
+      const res = await GetSavedPosts(page); // Add pagination parameter
 
-      // Transform the API response to match CollectionItem interface
       const transformedItems = res.data.data.rows.map((item: any) => {
-        // Handle multiple images (comma-separated), single image/video, or text-only
+        // Your existing transformation logic
         let media = null;
         if (item.file) {
           const ext = item.file.split("?")[0].split(".").pop()?.toLowerCase();
@@ -422,7 +447,7 @@ export default function Profile() {
               type: "video",
               src: item.file,
               alt: item.content || "",
-              poster: item.file, // You can adjust if you have a separate poster
+              poster: item.file,
             };
           } else if (
             item.file_type === "image" ||
@@ -439,18 +464,15 @@ export default function Profile() {
                 alt: item.content || "",
               };
             } else if (files.length > 1) {
-              // If your MyPost component supports multiple images, pass as array
-              // Otherwise, just show the first image
               media = {
                 type: "image",
                 src: files[0],
                 alt: item.content || "",
-                images: files, // Optional: for gallery support
+                images: files,
               };
             }
           }
         }
-        // For text-only posts, media remains null
 
         return {
           media,
@@ -462,28 +484,39 @@ export default function Profile() {
           user: item.user,
           profile: item.profile,
           date: item.createdAt,
-          // Add more fields if needed
         };
       });
 
-      setCollectionItems(transformedItems);
+      // Check if we have more items
+      const hasMore = res.data.data.rows.length >= 12;
+      setHasMoreCollection(hasMore);
+
+      // Append or replace items
+      if (append) {
+        setCollectionItems((prev) => [...prev, ...transformedItems]);
+        setCollectionPage(page + 1);
+      } else {
+        setCollectionItems(transformedItems);
+        setCollectionPage(2);
+      }
     } catch (error) {
       console.error("Error fetching collection items:", error);
-      // Optional: Show error to user
       showToast({
         message: "Failed to load collection items",
         type: "error",
         duration: 3000,
       });
+    } finally {
+      setIsLoadingCollection(false);
     }
   };
 
-  const fetchUserPosts = async () => {
+  const fetchUserPosts = async (page = 1, append = false) => {
     try {
-      const res = await GetUserPost();
-      console.log("🚀 ~ fetchUserPosts ~ res:", res);
+      setIsLoadingPosts(true);
+      const res = await GetUserPost(page); // Assuming your API supports pagination
       const transformedPosts = res.data.data.rows.map((item: any) => {
-        // Handle multiple images (comma-separated), single image/video, or text-only
+        // Your existing transformation logic
         let media = null;
         if (item.file) {
           const ext = item.file.split("?")[0].split(".").pop()?.toLowerCase();
@@ -496,7 +529,7 @@ export default function Profile() {
               type: "video",
               src: item.file,
               alt: item.content || "",
-              poster: item.file, // You can adjust if you have a separate poster
+              poster: item.file,
             };
           } else if (
             item.file_type === "image" ||
@@ -513,18 +546,15 @@ export default function Profile() {
                 alt: item.content || "",
               };
             } else if (files.length > 1) {
-              // If your MyPost component supports multiple images, pass as array
-              // Otherwise, just show the first image
               media = {
                 type: "image",
                 src: files[0],
                 alt: item.content || "",
-                images: files, // Optional: for gallery support
+                images: files,
               };
             }
           }
         }
-        // For text-only posts, media remains null
 
         return {
           media,
@@ -537,11 +567,21 @@ export default function Profile() {
           profile: item.profile,
           date: item.createdAt,
           product_id: item.product_id,
-          // Add more fields if needed
         };
       });
 
-      setUserPosts(transformedPosts);
+      // Check if we have more posts
+      const hasMore = res.data.data.rows.length >= 12; // Assuming PAGE_SIZE = 12
+      setHasMorePosts(hasMore);
+
+      // Append or replace posts
+      if (append) {
+        setUserPosts((prev) => [...prev, ...transformedPosts]);
+        setPostsPage(page + 1);
+      } else {
+        setUserPosts(transformedPosts);
+        setPostsPage(2); // Set next page to 2 after initial load
+      }
     } catch (error) {
       console.error("Error fetching user posts:", error);
       showToast({
@@ -549,6 +589,8 @@ export default function Profile() {
         type: "error",
         duration: 3000,
       });
+    } finally {
+      setIsLoadingPosts(false);
     }
   };
 
@@ -647,7 +689,6 @@ export default function Profile() {
 
   useEffect(() => {
     if (activeTab === "Favorites" && boards.length === 0) {
-      // setBoards(demoBoards);
       fetchCollectionItems();
     }
     if (activeTab === "Connections") {
@@ -661,6 +702,17 @@ export default function Profile() {
     }
     fetchFollowingFollowerUsers();
   }, [activeTab, boards.length]);
+
+  // Add this useEffect to reset pagination when tab changes
+  useEffect(() => {
+    // Reset pagination states when tab changes
+    setPostsPage(1);
+    setReelsPage(1);
+    setCollectionPage(1);
+    setHasMorePosts(true);
+    setHasMoreReels(true);
+    setHasMoreCollection(true);
+  }, [activeTab]);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f9f9fb] py-2 px-2 sm:px-2 md:px-2 lg:px-2">
@@ -701,44 +753,59 @@ export default function Profile() {
       {/* Content */}
       <div className="flex-1 py-4 sm:py-4">
         {activeTab === "Conscious Acts" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-            {userPosts.length ? (
-              userPosts.map((post, i) => (
-                <MyPost
-                  key={i}
-                  {...post}
-                  showOverlay
-                  //onClick={() => setSelectedPost(post)}
-                  onViewPost={() => setSelectedPost(post)}
-                  onLike={() => {
-                    if (post.id !== undefined) {
-                      handleLikePost(post.id);
-                    }
-                  }}
-                  onOpenReflections={() =>
-                    // console.log("Open reflections for post", i)
-                    setSelectedPost(post)
-                  }
-                  onDeletePost={() => {
-                    if (post.id !== undefined) {
-                      setDeleteConfirmation({
-                        isOpen: true,
-                        id: String(post.id),
-                        isReel: false, // This is a post
-                      });
-                    }
-                  }}
-                />
-              ))
-            ) : (
-              <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
-                <div className="flex items-center gap-2 text-[#575FFF]">
-                  <CirclePlay className="h-5 w-5" strokeWidth={2} />
-                  <span className="text-sm">No Post yet</span>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+              {userPosts.length ? (
+                userPosts.map((post, i) => (
+                  <MyPost
+                    key={i}
+                    {...post}
+                    showOverlay
+                    onViewPost={() => setSelectedPost(post)}
+                    onLike={() => {
+                      if (post.id !== undefined) {
+                        handleLikePost(post.id);
+                      }
+                    }}
+                    onOpenReflections={() => setSelectedPost(post)}
+                    onDeletePost={() => {
+                      if (post.id !== undefined) {
+                        setDeleteConfirmation({
+                          isOpen: true,
+                          id: String(post.id),
+                          isReel: false,
+                        });
+                      }
+                    }}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
+                  <div className="flex items-center gap-2 text-[#575FFF]">
+                    <CirclePlay className="h-5 w-5" strokeWidth={2} />
+                    <span className="text-sm">No Post yet</span>
+                  </div>
                 </div>
+              )}
+            </div>
+
+            {/* Load More Button for Posts */}
+            {(hasMorePosts || isLoadingPosts) && userPosts.length > 0 && (
+              <div className="flex justify-center pt-6 mt-4">
+                <button
+                  onClick={() => fetchUserPosts(postsPage, true)}
+                  disabled={!hasMorePosts || isLoadingPosts}
+                  className="font-['Open_Sans'] px-6 py-3 text-sm rounded-full border border-gray-300 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isLoadingPosts
+                    ? "Loading..."
+                    : hasMorePosts
+                    ? "Load more posts"
+                    : "No more posts"}
+                </button>
               </div>
             )}
-          </div>
+          </>
         )}
         {selectedPost && (
           /*<PostPopup
@@ -805,106 +872,116 @@ export default function Profile() {
             <div className="space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <p className="text-sm text-gray-500">
-                  Only You Can See What You’ve Saved
+                  Only You Can See What You've Saved
                 </p>
               </div>
 
-              {/* <MyCollection
-                mode="boards"
-                boards={boards}
-                onOpen={(id) => {
-                  const board = boards.find((b) => b.id === id);
-                  navigate(`/dashboard/MyCollection/${id}`, {
-                    state: { board },
-                  });
-                }}
-              /> */}
-
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-                {collectionItems.length ? (
-                  collectionItems.map((post, i) => (
-                    <>
-                      <MyPost
-                        key={i}
-                        {...post}
-                        showOverlay
-                        collection
-                        //onClick={() => setSelectedPost(post)}
-                        onViewPost={() => setSelectedPost(post)}
-                        onLike={() => {
-                          if (post.id !== undefined) {
-                            handleLikePost(post.id);
-                          }
-                        }}
-                        onOpenReflections={() =>
-                          // console.log("Open reflections for post", i)
-                          setSelectedPost(post)
-                        }
-                        onDeletePost={() => {
-                          if (post.id !== undefined) {
-                            setDeleteConfirmation({
-                              isOpen: true,
-                              id: String(post.id),
-                              isReel: false, // Collections contain posts, not reels
-                            });
-                          }
-                        }}
-                        onDeleteSavePost={() => {
-                          if (post.id !== undefined) {
-                            handleUnsavePost(post.id);
-                          }
-                        }}
-                      />
-                    </>
-                  ))
-                ) : (
-                  <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
-                    <div className="flex items-center gap-2 text-[#575FFF]">
-                      <CirclePlay className="h-5 w-5" strokeWidth={2} />
-                      <span className="text-sm">No Post yet</span>
-                    </div>
+                {collectionItems.map((post, i) => (
+                  <MyPost
+                    key={i}
+                    {...post}
+                    showOverlay
+                    collection
+                    onViewPost={() => setSelectedPost(post)}
+                    onLike={() => {
+                      if (post.id !== undefined) {
+                        handleLikePost(post.id);
+                      }
+                    }}
+                    onOpenReflections={() => setSelectedPost(post)}
+                    onDeletePost={() => {
+                      if (post.id !== undefined) {
+                        setDeleteConfirmation({
+                          isOpen: true,
+                          id: String(post.id),
+                          isReel: false,
+                        });
+                      }
+                    }}
+                    onDeleteSavePost={() => {
+                      if (post.id !== undefined) {
+                        handleUnsavePost(post.id);
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Load More Button for Collections */}
+              {(hasMoreCollection || isLoadingCollection) &&
+                collectionItems.length > 0 && (
+                  <div className="flex justify-center pt-6 mt-4">
+                    <button
+                      onClick={() => fetchCollectionItems(collectionPage, true)}
+                      disabled={!hasMoreCollection || isLoadingCollection}
+                      className="font-['Open_Sans'] px-6 py-3 text-sm rounded-full border border-gray-300 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {isLoadingCollection
+                        ? "Loading..."
+                        : hasMoreCollection
+                        ? "Load more saved items"
+                        : "No more saved items"}
+                    </button>
                   </div>
                 )}
-              </div>
             </div>
           ))}
 
         {activeTab === "Inspiration Reels" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-            {userReels.length ? (
-              userReels.map((reel, i) => (
-                <MyPost
-                  key={i}
-                  {...reel}
-                  showOverlay
-                  // reel
-                  onViewPost={() => setSelectedPost(reel)}
-                  onLike={() => {
-                    if (reel.id !== undefined) {
-                      handleLikePost(reel.id);
-                    }
-                  }}
-                  onOpenReflections={() => setSelectedPost(reel)}
-                  onDeletePost={() => {
-                    if (reel.id !== undefined) {
-                      setDeleteConfirmation({
-                        isOpen: true,
-                        id: String(reel.id),
-                        isReel: true, // This is a reel
-                      });
-                    }
-                  }}
-                />
-              ))
-            ) : (
-              <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
-                <div className="flex items-center gap-2 text-[#575FFF]">
-                  <CirclePlay className="h-5 w-5" strokeWidth={2} />
-                  <span className="text-sm">No Reels yet</span>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+              {userReels.length ? (
+                userReels.map((reel, i) => (
+                  <MyPost
+                    key={i}
+                    {...reel}
+                    showOverlay
+                    onViewPost={() => setSelectedPost(reel)}
+                    onLike={() => {
+                      if (reel.id !== undefined) {
+                        handleLikePost(reel.id);
+                      }
+                    }}
+                    onOpenReflections={() => setSelectedPost(reel)}
+                    onDeletePost={() => {
+                      if (reel.id !== undefined) {
+                        setDeleteConfirmation({
+                          isOpen: true,
+                          id: String(reel.id),
+                          isReel: true,
+                        });
+                      }
+                    }}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
+                  <div className="flex items-center gap-2 text-[#575FFF]">
+                    <CirclePlay className="h-5 w-5" strokeWidth={2} />
+                    <span className="text-sm">No Reels yet</span>
+                  </div>
                 </div>
+              )}
+            </div>
+
+            {/* Load More Button for Reels */}
+            {(hasMoreReels || isLoadingReels) && userReels.length > 0 && (
+              <div className="flex justify-center pt-6 mt-4">
+                <button
+                  onClick={() => fetchUsersReel(reelsPage, true)}
+                  disabled={!hasMoreReels || isLoadingReels}
+                  className="font-['Open_Sans'] px-6 py-3 text-sm rounded-full border border-gray-300 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isLoadingReels
+                    ? "Loading..."
+                    : hasMoreReels
+                    ? "Load more reels"
+                    : "No more reels"}
+                </button>
               </div>
             )}
-          </div>
+          </>
         )}
 
         {activeTab === "Connections" &&
