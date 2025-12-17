@@ -30,6 +30,7 @@ type Props = {
 
 export default function FriendProfileModal({ friend, onClose }: Props) {
   const [profileData, setProfileData] = useState<any>(null);
+  console.log("🚀 ~ FriendProfileModal ~ profileData:", profileData);
   const [followingFollowers, setFollowingFollowers] = useState<any>(null);
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -149,7 +150,7 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
       console.error("Error fetching friend data:", error);
     } finally {
       setLoading(false);
-       setButtonsLoading(false);
+      setButtonsLoading(false);
     }
   };
 
@@ -451,6 +452,14 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
       });
     }
   };
+  const isValidUrl = (url: string | null | undefined): boolean => {
+    if (!url) return false;
+    if (url === "null" || url === "undefined" || url === "") return false;
+    if (url === "http://localhost:5026/file/") return false; // Empty path
+    if (!url.startsWith("http")) return false;
+    return true;
+  };
+
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -460,9 +469,16 @@ export default function FriendProfileModal({ friend, onClose }: Props) {
             <div className="shrink-0">
               <div className="relative">
                 <img
-                  src={companycard}
+                  src={
+                    isValidUrl(profileData?.profile_banner)
+                      ? profileData.profile_banner
+                      : companycard
+                  }
                   alt="Cover"
                   className="w-full h-[100px] sm:h-[150px] object-cover rounded-t-2xl"
+                  onError={(e) => {
+                    e.currentTarget.src = companycard; // Fallback to companycard on error
+                  }}
                 />
                 <button
                   onClick={onClose}

@@ -49,7 +49,7 @@ const AllFriends = ({ searchTerm, onSelect, onChat }: Props) => {
       const rows = response?.data?.data?.rows || [];
       const formatted = rows.map((item: any) => ({
         id: item.friend_user.id,
-        name: `${item.friend_user.profile.first_name} ${item.friend_user.profile.last_name}`,
+        name: item.friend_user.profile ? `${item?.friend_user?.profile?.first_name} ${item?.friend_user?.profile?.last_name}` : item?.username,
         username: item?.friend_user?.username,
         image: item.friend_user.profile.profile_picture,
         profileImage: item.friend_user.profile.profile_picture,

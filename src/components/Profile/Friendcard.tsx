@@ -38,6 +38,7 @@ const FriendCard: React.FC<FriendCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const profileImage = image && image.trim() !== "" ? image : "/profile.png";
+  const loggedInUserID = localStorage.getItem("Id");
 
   // Function to handle card click
   const handleCardClick = (e: React.MouseEvent) => {
@@ -48,9 +49,11 @@ const FriendCard: React.FC<FriendCardProps> = ({
     ) {
       return;
     }
-    
-    // Navigate to user profile page
+    if(loggedInUserID === connection.id){
+    navigate(`/dashboard/Profile`);
+    }else{
     navigate(`/dashboard/social/user-profile/${connection.id}`);
+    }
   };
 
   // Function to handle maximize button click

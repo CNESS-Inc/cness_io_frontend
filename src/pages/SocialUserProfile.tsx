@@ -58,9 +58,11 @@ export interface Media {
   poster?: string;
 }
 
+// Define page size constant
+const PAGE_SIZE = 12;
+
 export default function SocialUserProfile() {
   const { userId } = useParams<{ userId: string }>();
-  console.log("🚀 ~ SocialUserProfile ~ userId:", userId);
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [profiles, setProfiles] = useState<any[]>([
@@ -76,7 +78,6 @@ export default function SocialUserProfile() {
       ],
     },
   ]);
-  console.log("🚀 ~ SocialUserProfile ~ profiles:", profiles)
   const [activeTab, setActiveTab] = useState(
     location.state?.activeTab || "Conscious Acts"
   );
@@ -91,6 +92,14 @@ export default function SocialUserProfile() {
   const [followerUsers, setFollowerUsers] = useState<FollowerUser[]>([]);
   const [userReels, setUserReels] = useState<any[]>([]);
 
+  // Add pagination states
+  const [postsPage, setPostsPage] = useState(1);
+  const [reelsPage, setReelsPage] = useState(1);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
+  const [hasMoreReels, setHasMoreReels] = useState(true);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
+  const [isLoadingReels, setIsLoadingReels] = useState(false);
+
   const { showToast } = useToast();
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
@@ -99,65 +108,66 @@ export default function SocialUserProfile() {
   }>({ isOpen: false, id: null, isReel: false });
 
   // Fetch profile data from API
-const fetchProfileData = async () => {
-  try {
-    let userData;
-    
-    if (userId) {
-      // If viewing another user's profile
-      const res = await GetUserSocialProfileDetails(userId);
-      userData = res?.data?.data;
-    }
+  const fetchProfileData = async () => {
+    try {
+      let userData;
 
-    if (userData) {
+      if (userId) {
+        // If viewing another user's profile
+        const res = await GetUserSocialProfileDetails(userId);
+        userData = res?.data?.data;
+      }
 
-      // Format profile picture URL
-      const getProfilePictureUrl = (url: string | null) => {
-        if (!url || url === "null" || url === "undefined") {
-          return "/profile.png";
-        }
-        if (url.startsWith("http")) {
+      if (userData) {
+        // Format profile picture URL
+        const getProfilePictureUrl = (url: string | null) => {
+          if (!url || url === "null" || url === "undefined") {
+            return "/profile.png";
+          }
+          if (url.startsWith("http")) {
+            return url;
+          }
+          // If it's a relative path, you might want to prepend your API base URL
+          // Or handle it according to your backend setup
           return url;
-        }
-        // If it's a relative path, you might want to prepend your API base URL
-        // Or handle it according to your backend setup
-        return url;
-      };
+        };
 
-      // Combine first_name and last_name for full name
-      const fullName = `${userData.first_name || ""} ${userData.last_name || ""}`.trim() || 
-                      userData.name || 
-                      userData.user?.username || 
-                      "User";
+        // Combine first_name and last_name for full name
+        const fullName =
+          `${userData.first_name || ""} ${userData.last_name || ""}`.trim() ||
+          userData.name ||
+          userData.user?.username ||
+          "User";
 
-      // Update profiles state with data from API response
-      setProfiles([
-        {
-          profileImage: getProfilePictureUrl(userData.profile_picture),
-          name: fullName,
-          username: userData.user?.username || "user",
-          following: userData.following_count?.toString() || "0",
-          followers: userData.followers_count?.toString() || "0",
-          interests: userData.interests || [],
-          professions: userData.professions || [],
-          postCount: userData.post_count || [],
+        // Update profiles state with data from API response
+        setProfiles([
+          {
+            profileImage: getProfilePictureUrl(userData.profile_picture),
+            name: fullName,
+            username: userData.user?.username || "user",
+            following: userData.following_count?.toString() || "0",
+            followers: userData.followers_count?.toString() || "0",
+            interests: userData.interests || [],
+            professions: userData.professions || [],
+            postCount: userData.post_count || [],
             badge: userData.badge || [],
-          tabs: [
-            { label: "Conscious Acts", icon: <Copy size={16} /> },
-            { label: "Inspiration Reels", icon: <CirclePlay size={16} /> },
-          ],
-        },
-      ]);
+            about: userData.about_us || [],
+            tabs: [
+              { label: "Conscious Acts", icon: <Copy size={16} /> },
+              { label: "Inspiration Reels", icon: <CirclePlay size={16} /> },
+            ],
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+      showToast({
+        message: "Failed to load profile information",
+        type: "error",
+        duration: 3000,
+      });
     }
-  } catch (error) {
-    console.error("Error fetching profile data:", error);
-    showToast({
-      message: "Failed to load profile information",
-      type: "error",
-      duration: 3000,
-    });
-  }
-};
+  };
 
   const fetchFollowingUsers = async () => {
     try {
@@ -205,9 +215,10 @@ const fetchProfileData = async () => {
     }
   };
 
-  const fetchUsersReel = async () => {
+  const fetchUsersReel = async (page = 1, append = false) => {
     try {
-      const res = userId ? await GetOtherUserReel(userId) : await GetUserReel(); // You might need to create GetOtherUserReel
+      setIsLoadingReels(true);
+      const res = userId ? await GetOtherUserReel(userId, page) : await GetUserReel(page);
       const transformReelsToPostProps = res.data.data.rows.map((reel: any) => ({
         id: reel.id,
         media: {
@@ -226,7 +237,20 @@ const fetchProfileData = async () => {
         duration: reel.duration,
         is_reel: true,
       }));
-      setUserReels(transformReelsToPostProps);
+
+      // Check if we have more reels
+      const hasMore = res.data.data.rows.length >= PAGE_SIZE;
+      setHasMoreReels(hasMore);
+      
+      // Append or replace reels
+      if (append) {
+        setUserReels(prev => [...prev, ...transformReelsToPostProps]);
+        setReelsPage(page + 1);
+      } else {
+        setUserReels(transformReelsToPostProps);
+        setReelsPage(2); // Set next page to 2 after initial load
+      }
+      
     } catch (error) {
       console.error("Error fetching user reels:", error);
       showToast({
@@ -234,12 +258,15 @@ const fetchProfileData = async () => {
         type: "error",
         duration: 3000,
       });
+    } finally {
+      setIsLoadingReels(false);
     }
   };
 
-  const fetchUserPosts = async () => {
+  const fetchUserPosts = async (page = 1, append = false) => {
     try {
-      const res = await GetOtherUserPost(userId); // You might need to create GetOtherUserPost
+      setIsLoadingPosts(true);
+      const res = await GetOtherUserPost(userId, page);
       const transformedPosts = res.data.data.rows.map((item: any) => {
         let media = null;
         if (item.file) {
@@ -294,7 +321,19 @@ const fetchProfileData = async () => {
         };
       });
 
-      setUserPosts(transformedPosts);
+      // Check if we have more posts
+      const hasMore = res.data.data.rows.length >= PAGE_SIZE;
+      setHasMorePosts(hasMore);
+      
+      // Append or replace posts
+      if (append) {
+        setUserPosts(prev => [...prev, ...transformedPosts]);
+        setPostsPage(page + 1);
+      } else {
+        setUserPosts(transformedPosts);
+        setPostsPage(2); // Set next page to 2 after initial load
+      }
+      
     } catch (error) {
       console.error("Error fetching user posts:", error);
       showToast({
@@ -302,6 +341,8 @@ const fetchProfileData = async () => {
         type: "error",
         duration: 3000,
       });
+    } finally {
+      setIsLoadingPosts(false);
     }
   };
 
@@ -309,11 +350,13 @@ const fetchProfileData = async () => {
     try {
       const res = await GetFollowingFollowerUsers();
       // Update the profile data with counts
-      setProfiles(prev => prev.map(profile => ({
-        ...profile,
-        following: res.data.data.followingCount?.toString() || "0",
-        followers: res.data.data.followerCount?.toString() || "0",
-      })));
+      setProfiles((prev) =>
+        prev.map((profile) => ({
+          ...profile,
+          following: res.data.data.followingCount?.toString() || "0",
+          followers: res.data.data.followerCount?.toString() || "0",
+        }))
+      );
     } catch (error) {
       console.error("Error fetching follower users:", error);
       showToast({
@@ -385,7 +428,7 @@ const fetchProfileData = async () => {
   useEffect(() => {
     // Fetch profile data on component mount
     fetchProfileData();
-    
+
     // Check if URL has the openpost parameter and a post ID
     const shouldOpenPost = searchParams.get("openpost") === "true";
     const postIdFromUrl = searchParams.get("dataset");
@@ -398,6 +441,15 @@ const fetchProfileData = async () => {
     }
   }, [searchParams, userPosts, navigate, location.pathname, userId]);
 
+  // Reset pagination when tab changes
+  useEffect(() => {
+    setPostsPage(1);
+    setReelsPage(1);
+    setHasMorePosts(true);
+    setHasMoreReels(true);
+  }, [activeTab, userId]);
+
+  // Fetch data when activeTab or userId changes
   useEffect(() => {
     if (activeTab === "Inspiration Reels") {
       fetchUsersReel();
@@ -426,47 +478,66 @@ const fetchProfileData = async () => {
           onTabChange={setActiveTab}
         />
       ))}
-      
+
       {/* Content */}
       <div className="flex-1 py-4 sm:py-4">
         {activeTab === "Conscious Acts" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-            {userPosts.length ? (
-              userPosts.map((post, i) => (
-                <MyPost
-                  key={i}
-                  {...post}
-                  showOverlay
-                  userPost
-                  onViewPost={() => setSelectedPost(post)}
-                  onLike={() => {
-                    if (post.id !== undefined) {
-                      handleLikePost(post.id);
-                    }
-                  }}
-                  onOpenReflections={() => setSelectedPost(post)}
-                  onDeletePost={() => {
-                    if (post.id !== undefined) {
-                      setDeleteConfirmation({
-                        isOpen: true,
-                        id: String(post.id),
-                        isReel: false,
-                      });
-                    }
-                  }}
-                />
-              ))
-            ) : (
-              <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
-                <div className="flex items-center gap-2 text-[#575FFF]">
-                  <CirclePlay className="h-5 w-5" strokeWidth={2} />
-                  <span className="text-sm">No Post yet</span>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+              {userPosts.length ? (
+                userPosts.map((post, i) => (
+                  <MyPost
+                    key={i}
+                    {...post}
+                    showOverlay
+                    userPost
+                    onViewPost={() => setSelectedPost(post)}
+                    onLike={() => {
+                      if (post.id !== undefined) {
+                        handleLikePost(post.id);
+                      }
+                    }}
+                    onOpenReflections={() => setSelectedPost(post)}
+                    onDeletePost={() => {
+                      if (post.id !== undefined) {
+                        setDeleteConfirmation({
+                          isOpen: true,
+                          id: String(post.id),
+                          isReel: false,
+                        });
+                      }
+                    }}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
+                  <div className="flex items-center gap-2 text-[#575FFF]">
+                    <CirclePlay className="h-5 w-5" strokeWidth={2} />
+                    <span className="text-sm">No Post yet</span>
+                  </div>
                 </div>
+              )}
+            </div>
+            
+            {/* Load More Button for Posts */}
+            {(hasMorePosts || isLoadingPosts) && userPosts.length > 0 && (
+              <div className="flex justify-center pt-6 mt-4">
+                <button
+                  onClick={() => fetchUserPosts(postsPage, true)}
+                  disabled={!hasMorePosts || isLoadingPosts}
+                  className="font-['Open_Sans'] px-6 py-3 text-sm rounded-full border border-gray-300 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isLoadingPosts
+                    ? "Loading..."
+                    : hasMorePosts
+                      ? "Load more posts"
+                      : "No more posts"}
+                </button>
               </div>
             )}
-          </div>
+          </>
         )}
-        
+
         {selectedPost && (
           <PostPopup
             post={{
@@ -504,46 +575,65 @@ const fetchProfileData = async () => {
             insightsCount={selectedPost.reflections ?? 0}
           />
         )}
-        
+
         {activeTab === "Inspiration Reels" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-            {userReels.length ? (
-              userReels.map((reel, i) => (
-                <MyPost
-                  key={i}
-                  {...reel}
-                  showOverlay
-                  userPost
-                  onViewPost={() => setSelectedPost(reel)}
-                  onLike={() => {
-                    if (reel.id !== undefined) {
-                      handleLikePost(reel.id);
-                    }
-                  }}
-                  onOpenReflections={() => setSelectedPost(reel)}
-                  onDeletePost={() => {
-                    if (reel.id !== undefined) {
-                      setDeleteConfirmation({
-                        isOpen: true,
-                        id: String(reel.id),
-                        isReel: true,
-                      });
-                    }
-                  }}
-                />
-              ))
-            ) : (
-              <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
-                <div className="flex items-center gap-2 text-[#575FFF]">
-                  <CirclePlay className="h-5 w-5" strokeWidth={2} />
-                  <span className="text-sm">No Reels yet</span>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+              {userReels.length ? (
+                userReels.map((reel, i) => (
+                  <MyPost
+                    key={i}
+                    {...reel}
+                    showOverlay
+                    userPost
+                    onViewPost={() => setSelectedPost(reel)}
+                    onLike={() => {
+                      if (reel.id !== undefined) {
+                        handleLikePost(reel.id);
+                      }
+                    }}
+                    onOpenReflections={() => setSelectedPost(reel)}
+                    onDeletePost={() => {
+                      if (reel.id !== undefined) {
+                        setDeleteConfirmation({
+                          isOpen: true,
+                          id: String(reel.id),
+                          isReel: true,
+                        });
+                      }
+                    }}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full border border-dashed border-purple-300 rounded-lg flex items-center justify-center py-10 sm:py-16 text-center bg-[#F5F2FF]">
+                  <div className="flex items-center gap-2 text-[#575FFF]">
+                    <CirclePlay className="h-5 w-5" strokeWidth={2} />
+                    <span className="text-sm">No Reels yet</span>
+                  </div>
                 </div>
+              )}
+            </div>
+            
+            {/* Load More Button for Reels */}
+            {(hasMoreReels || isLoadingReels) && userReels.length > 0 && (
+              <div className="flex justify-center pt-6 mt-4">
+                <button
+                  onClick={() => fetchUsersReel(reelsPage, true)}
+                  disabled={!hasMoreReels || isLoadingReels}
+                  className="font-['Open_Sans'] px-6 py-3 text-sm rounded-full border border-gray-300 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isLoadingReels
+                    ? "Loading..."
+                    : hasMoreReels
+                      ? "Load more reels"
+                      : "No more reels"}
+                </button>
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
-      
+
       <FollowingModal
         open={openFollowing}
         onClose={() => setOpenFollowing(false)}

@@ -171,7 +171,7 @@ const CommentBox = ({
   const [editSuggestions, setEditSuggestions] = useState<any[]>([]);
   const [showEditSuggestions, setShowEditSuggestions] = useState(false);
   const [selectedEditMentionIndex, setSelectedEditMentionIndex] = useState(0);
-
+  const loggedInUserID = localStorage.getItem("Id");
   // Delete confirmation state
   const [deleteConfirmation, setDeleteConfirmation] =
     useState<DeleteConfirmation>({
@@ -952,7 +952,11 @@ const CommentBox = ({
                         <div className="flex justify-between">
                           <div className="flex items-center gap-2 mb-2.5">
                             <Link
-                              to={`/dashboard/social/user-profile/${comment?.profile?.user_id}`}
+                              to={
+                                loggedInUserID === comment?.profile?.user_id
+                                  ? `/dashboard/Profile`
+                                  : `/dashboard/social/user-profile/${comment?.profile?.user_id}`
+                              }
                             >
                               <img
                                 src={
