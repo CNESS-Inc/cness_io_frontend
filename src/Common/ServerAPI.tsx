@@ -1145,13 +1145,15 @@ export const GetUserSocialProfileDetails = (userId:any): ApiResponse => {
   const data = {};
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_social_profile}?user_id=${userId}`);
 };
-export const GetOtherUserPost = (userId:any): ApiResponse => {
+export const GetOtherUserPost = (userId:any,page?:any): ApiResponse => {
   const data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_social_profile_post}?user_id=${userId}`);
+  const limit = 12
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_social_profile_post}?user_id=${userId}&page_no=${page}&limit=${limit}`);
 };
-export const GetOtherUserReel = (userId:any): ApiResponse => {
+export const GetOtherUserReel = (userId:any,page?:any): ApiResponse => {
   const data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_social_profile_reel}?user_id=${userId}`);
+  const limit = 12
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_social_profile_reel}?user_id=${userId}&page_no=${page}&limit=${limit}`);
 };
 export const GetOrganiZationProfileDetails = (): ApiResponse => {
   const data = {};
@@ -1554,9 +1556,10 @@ export const PostStoryViewd = (story_id: any) => {
   let data = { story_id };
   return executeAPI(ServerAPI.APIMethod.POST, data, EndPoint.story_viewed);
 };
-export const GetUserPost = () => {
+export const GetUserPost = (page?:any) => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.user_post);
+  const limit = 12
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.user_post}?page_no=${page}&limit=${limit}`);
 };
 export const GetUserPostById = (postId: any) => {
   let data = {};
@@ -1635,9 +1638,10 @@ export const GetFollowerUser = (userId?: any) => {
   const queryString = userId ? `?user_id=${userId}` : '';
   return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.followers}${queryString}`);
 };
-export const GetUserReel = () => {
+export const GetUserReel = (page?:any) => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.story_user);
+  const limit=12
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.story_user}?page_no=${page}&limit=${limit}`);
 };
 export const GetFollowingFollowerUsers = () => {
   let data = {};
@@ -1664,7 +1668,7 @@ export const GetConnectionUser = (
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
-  if (page) params["page"] = page;
+  if (page) params["page_no"] = page;
   if (limit) params["limit"] = limit;
 
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection, params);
@@ -1677,7 +1681,7 @@ export const GetSearchFriend = (
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
-  if (page) params["page"] = page;
+  if (page) params["page_no"] = page;
   if (limit) params["limit"] = limit;
 
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.friend_search, params);
@@ -1704,7 +1708,7 @@ export const GetFriendRequest = (
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
-  if (page) params["page"] = page;
+  if (page) params["page_no"] = page;
   if (limit) params["limit"] = limit;
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request, params);
 };
@@ -1716,7 +1720,7 @@ export const GetSuggestedFriend = (
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
-  if (page) params["page"] = page;
+  if (page) params["page_no"] = page;
   if (limit) params["limit"] = limit;
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.suggested_connection, params);
 };
@@ -1821,9 +1825,10 @@ export const UnsavePost = (postId: string) => {
   );
 };
 
-export const GetSavedPosts = () => {
+export const GetSavedPosts = (page?:any) => {
   let data = {};
-  return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.get_save_posts);
+  const limit = 12
+  return executeAPI(ServerAPI.APIMethod.GET, data, `${EndPoint.get_save_posts}?page_no=${page}&limit=${limit}`);
 };
 
 export const ReportPost = (postId: string, reason: string) => {
@@ -2589,7 +2594,7 @@ export const GetProductReviws = (
 ): ApiResponse => {
   const queryParams = new URLSearchParams();
 
-  if (params?.page) queryParams.append("page", params.page.toString());
+  if (params?.page) queryParams.append("page_no", params.page.toString());
   if (params?.limit) queryParams.append("limit", params.limit.toString());
 
   const queryString = queryParams.toString();
@@ -2644,7 +2649,7 @@ export const GetLibraryrDetails = (params?: {
 }): ApiResponse => {
   const queryParams = new URLSearchParams();
 
-  if (params?.page) queryParams.append("page", params.page.toString());
+  if (params?.page) queryParams.append("page_no", params.page.toString());
   if (params?.limit) queryParams.append("limit", params.limit.toString());
   if (params?.category_slug) queryParams.append("category_slug", params.category_slug.toString());
   if (params?.sort_by) queryParams.append("sort_by", params.sort_by.toString());

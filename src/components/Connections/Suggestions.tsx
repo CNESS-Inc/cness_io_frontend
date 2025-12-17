@@ -48,7 +48,7 @@ const Suggestions = ({ searchTerm, onSelect }: Props) => {
       const rows = response?.data?.data?.rows || [];
       const formatted = rows.map((item: any) => ({
         id: item.id,
-        name: `${item?.profile?.first_name} ${item?.profile?.last_name}` || item?.username,
+        name: item.profile ? `${item?.profile?.first_name} ${item?.profile?.last_name}` : item?.username,
         username: item?.username || "",
         image: item?.profile?.profile_picture,
         profileImage: item?.profile?.profile_picture,

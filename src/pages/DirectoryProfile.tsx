@@ -1668,14 +1668,14 @@ const DirectoryProfile = () => {
                       <img
                         src={item.file}
                         alt="Practice"
-                        className="w-full sm:w-[140px] md:w-[180px] lg:w-[216px] h-[180px] sm:h-[140px] md:h-[160px] lg:h-[150px] rounded-lg object-cover shrink-0"
+                        className="w-full sm:w-[140px] md:w-[180px] lg:w-[216px] h-[180px] sm:h-[140px] md:h-40 lg:h-[150px] rounded-lg object-cover shrink-0"
                       />
                       <div className="flex-1 space-y-3 min-w-0">
                         <div className="space-y-1">
-                          <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base break-words">
+                          <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base wrap-break-word">
                             {item.title}
                           </h4>
-                          <p className="font-['open_sans'] font-normal text-[13px] sm:text-[14px] text-[#1F2937] leading-relaxed break-words">
+                          <p className="font-['open_sans'] font-normal text-[13px] sm:text-[14px] text-[#1F2937] leading-relaxed wrap-break-word">
                              
                               <span
                             dangerouslySetInnerHTML={{
@@ -1783,7 +1783,7 @@ const DirectoryProfile = () => {
                             />
                           )}
                         </div>
-                        <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base break-words line-clamp-2">
+                        <h4 className="font-[Poppins] font-semibold text-[#1F2937] text-sm sm:text-base wrap-break-word line-clamp-2">
                           {product.title}
                         </h4>
                         <div className="flex items-center space-x-2">
@@ -2498,7 +2498,7 @@ const DirectoryProfile = () => {
               </div>
 
               {/* Main Content Area - Navigation Arrows and Photo */}
-              <div className="flex-grow flex items-center justify-center px-4 relative py-4">
+              <div className="grow flex items-center justify-center px-4 relative py-4">
                 {/* Navigation Arrows */}
 
                 {/* Main Photo */}
@@ -2541,7 +2541,7 @@ const DirectoryProfile = () => {
 
               {/* Thumbnails */}
               {photos.length > 1 && (
-                <div className="px-6 py-4 bg-gradient-to-t from-gray-100 via-gray-50 to-transparent backdrop-blur-sm border-t border-gray-200">
+                <div className="px-6 py-4 bg-linear-to-t from-gray-100 via-gray-50 to-transparent backdrop-blur-sm border-t border-gray-200">
                   <div className="w-full flex justify-center relative">
 
                     <div
@@ -2581,7 +2581,7 @@ const DirectoryProfile = () => {
                       {photos.map((photo: any, index: any) => (
                         <div
                           key={photo.id}
-                          className={`flex-shrink-0 w-19 h-19 cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ${index === selectedPhotoIndex
+                          className={`shrink-0 w-19 h-19 cursor-pointer rounded-xl overflow-hidden transition-all duration-300 ${index === selectedPhotoIndex
                             ? 'ring-4 ring-blue-500 shadow-xl scale-110'
                             : 'ring-2 ring-gray-300 hover:ring-blue-300 hover:scale-105 opacity-70 hover:opacity-100'
                             }`}

@@ -2,6 +2,7 @@
 import { X, Search, Users } from "lucide-react";
 //import { useState } from "react";
 import { SendFollowRequest } from "../../Common/ServerAPI";
+import { useNavigate } from "react-router-dom";
 
 type Follower = {
   id: string;
@@ -17,12 +18,15 @@ export default function FollowersModal({
   onClose,
   followers,
 }: {
-  userProfile?:any;
+  userProfile?: any;
   open: boolean;
   onClose: () => void;
   followers: Follower[];
 }) {
   if (!open) return null;
+
+  const navigate = useNavigate();
+  const loggedInUserID = localStorage.getItem("Id");
 
   const handleFollow = async (userId: string) => {
     try {
@@ -30,12 +34,19 @@ export default function FollowersModal({
         following_id: userId,
       };
       await SendFollowRequest(formattedData);
-      
     } catch (error) {
       console.error("Error fetching selection details:", error);
     }
   };
 
+  const userProfileNavigation = (id: any) => {
+    if(loggedInUserID === id){
+    navigate(`/dashboard/Profile`);
+    }else{
+    navigate(`/dashboard/social/user-profile/${id}`);
+    }
+    onClose()
+  };
   return (
     <div className="fixed inset-0 z-50">
       {/* Backdrop */}
@@ -104,11 +115,13 @@ export default function FollowersModal({
                 <li key={f.id} className="flex items-center justify-between">
                   {/* User info */}
                   <div className="flex items-center gap-3">
-                    <img
-                      src={f.avatar}
-                      alt={f.name}
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
+                    <div className="cursor-pointer" onClick={() => userProfileNavigation(f.id)}>
+                      <img
+                        src={f.avatar}
+                        alt={f.name}
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                    </div>
                     <div>
                       <div
                         style={{
@@ -136,11 +149,11 @@ export default function FollowersModal({
                   </div>
 
                   {/* Action buttons */}
-                 {!userProfile && (
+                  {!userProfile && (
                     <div className="flex gap-2">
                       {!f.isFollowing ? (
-                        <button 
-                          className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB]" 
+                        <button
+                          className="px-5 py-1.5 rounded-full text-white text-[13px] font-medium bg-[#7077FE] hover:bg-[#6A6DEB]"
                           onClick={() => handleFollow(f.id)}
                         >
                           + Follow
