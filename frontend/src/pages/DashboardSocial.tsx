@@ -1,0 +1,3933 @@
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import StoryCard from "../components/Social/StoryCard";
+import { IoTrendingUpSharp } from "react-icons/io5";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Share2,
+  ThumbsUp,
+  MessageSquare,
+  Bookmark,
+  Flag,
+  Link as LinkIcon,
+  MoreHorizontal,
+  UserRoundPlus,
+} from "lucide-react";
+import Modal from "../components/ui/Modal";
+import TopicModal from "../components/Social/Topicmodel";
+import { iconMap } from "../assets/icons";
+// import { MdContentCopy } from "react-icons/md";
+
+import {
+  // AddPost,
+  AddStory,
+  GetFollowingUser,
+  GetStory,
+  GetSavedPosts,
+  MeDetails,
+  PostsLike,
+  SendFollowRequest,
+  UnFriend,
+  SendFriendRequest,
+  // GetFriendStatus,
+  SavePost,
+  UnsavePost,
+  ReportPost,
+  getTopics,
+  UserSelectedTopic,
+  getUserSelectedTopic,
+  updateUserSelectedTopic,
+  FeedPostsDetails,
+  TrackPostView,
+  GetUserPostById,
+} from "../Common/ServerAPI";
+
+// images
+// import Announcement from "../assets/Announcement.png";
+import Collection from "../assets/collectionicon.svg";
+// import Leaderboard from "../assets/Leaderboard.png";
+//import Mention from "../assets/mentionicon.svg";
+import people from "../assets/peopleicon.svg";
+import Trending from "../assets/trending.svg";
+import createstory from "../assets/createstory.jpg";
+//import like from "../assets/like.png";
+// import like from "../assets/sociallike.svg";
+// import comment from "../assets/comment.png";
+// import comment1 from "../assets/comment1.png";
+import Image from "../components/ui/Image";
+import CommentBox from "./CommentBox";
+import { useToast } from "../components/ui/Toast/ToastProvider";
+import FollowedUsersList from "./FollowedUsersList";
+import CollectionList from "./CollectionList";
+import Button from "../components/ui/Button";
+import { copyPostLink } from "../lib/utils";
+import CreditAnimation from "../Common/CreditAnimation";
+import { FaFacebook, FaLinkedin, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { MdContentCopy } from "react-icons/md";
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+} from "react-share";
+import CreatePostModal from "./CreatePost";
+// import { buildShareUrl } from "../lib/utils";
+
+// interface Post {
+//   friend_request_status: string;
+//   product_id: any;
+//   id: string;
+//   user_id: string;
+//   content: string;
+//   file: string | null;
+//   file_type: string | null;
+//   is_poll: boolean;
+//   poll_id: string | null;
+//   createdAt: string;
+//   likes_count: number;
+//   comments_count: number;
+//   if_following: boolean;
+//   if_friend: boolean;
+//   is_liked: boolean;
+//   is_saved: boolean;
+//   is_requested: boolean;
+//   user: {
+//     id: string;
+//     username: string;
+//   };
+//   profile: {
+//     id: string;
+//     user_id: string;
+//     first_name: string;
+//     last_name: string;
+//     profile_picture: string;
+//   };
+// }
+
+interface FollowedUser {
+  id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  profile_picture: string;
+  is_following: boolean;
+}
+
+// Best to put this in a separate types file or at the top of your component file
+interface CollectionItem {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  created_at: string;
+  originalData: {
+    id: string;
+    content: string;
+    file: string;
+    file_type: string | null;
+    createdAt: string;
+    likes_count: number;
+    comments_count: number;
+    is_liked: boolean;
+    profile: {
+      first_name: string;
+      last_name: string;
+      profile_picture: string;
+    };
+    user: {
+      username: string;
+      id: string;
+    };
+  };
+}
+
+interface PostCarouselProps {
+  mediaItems: Array<{
+    type: "image" | "video";
+    url: string;
+  }>;
+}
+
+interface Story {
+  id: string;
+  user_id: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  video_file: string;
+  thumbnail: string;
+  likes_count: number;
+  comments_count: number;
+  is_viewed: boolean;
+  is_liked: boolean;
+  totalStoriesCount?: number; // Number of total stories by this user
+  storyuser: {
+    id: string;
+    role: string;
+    username: string;
+    profile: {
+      user_id: string;
+      first_name: string;
+      last_name: string;
+      profile_picture: string;
+    };
+  };
+}
+
+type Topic = {
+  id: string;
+  topic_name: string;
+  slug: string;
+};
+
+function PostCarousel({ mediaItems }: PostCarouselProps) {
+  const [current, setCurrent] = useState(0);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  // Auto slide every 3 seconds (only for images)
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      // Only auto-advance if current item is not a video
+      if (mediaItems[current].type !== "video") {
+        setCurrent((prev) => (prev + 1) % mediaItems.length);
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [mediaItems.length, current]);
+
+  // Pause videos when they're not visible
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (video) {
+        if (index === current && mediaItems[index].type === "video") {
+          video.play().catch((e) => console.error("Video play failed:", e));
+        } else {
+          video.pause();
+        }
+      }
+    });
+  }, [current, mediaItems]);
+
+  const handlePrev = () => {
+    setCurrent((prev) => (prev === 0 ? mediaItems.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrent((prev) => (prev + 1) % mediaItems.length);
+  };
+
+  return (
+    <div className="relative w-full ">
+      {/* Media Container */}
+      <div className="w-full aspect-video rounded-3xl  bg-black">
+        {mediaItems.map((item, index) => (
+          <div
+            key={index}
+            className={`w-full h-full transition-opacity duration-500 ${
+              index === current ? "block" : "hidden"
+            }`}
+          >
+            {item.type === "image" ? (
+              <img
+                src={item.url}
+                alt={`Slide ${index}`}
+                className="w-full h-full object-cover rounded-3xl"
+              />
+            ) : (
+              <video
+                ref={(el) => {
+                  videoRefs.current[index] = el;
+                }}
+                className="w-full h-full object-cover rounded-3xl"
+                controls
+                muted
+                loop
+                playsInline
+              >
+                <source src={item.url} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Show arrows only if there are multiple items */}
+      {mediaItems.length > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            className="absolute -left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
+          >
+            <ChevronLeft size={22} />
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
+          >
+            <ChevronRight size={22} />
+          </button>
+        </>
+      )}
+
+      {/* Show dots only if there are multiple items */}
+      {mediaItems.length > 1 && (
+        <div className="flex justify-center gap-1 mt-2">
+          {mediaItems.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrent(idx)}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                idx === current ? "bg-indigo-500" : "bg-gray-300"
+              }`}
+            ></button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+//const [isExpanded, setIsExpanded] = useState(false);
+//const toggleExpand = () => setIsExpanded(!isExpanded);
+
+export default function SocialTopBar() {
+  const storyScrollRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollLeft = () => {
+    storyScrollRef.current?.scrollBy({
+      left: -300,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollRight = () => {
+    storyScrollRef.current?.scrollBy({
+      left: 300,
+      behavior: "smooth",
+    });
+  };
+  //  const handlePrev = () => {
+  //     setCurrent((prev) => (prev === 0 ? mediaItems.length - 1 : prev - 1));
+  //   };
+
+  //   const handleNext = () => {
+  //     setCurrent((prev) => (prev + 1) % mediaItems.length);
+  //   };
+
+  // const navigate = useNavigate();
+  // const [isExpanded, setIsExpanded] = useState(false);
+  // const toggleExpand = () => setIsExpanded(!isExpanded);
+  const location = useLocation();
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [showStoryPopup, setShowStoryPopup] = useState(false);
+  const [showCommentBox, setShowCommentBox] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  // const [postMessage, setPostMessage] = useState("");
+  // const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
+  const [_apiMessage, setApiMessage] = useState<string | null>(null);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
+  const [storyMessage, setStoryMessage] = useState("");
+  const [selectedStoryVideo, setSelectedStoryVideo] = useState<File | null>(
+    null
+  );
+  const [isUploading, setIsUploading] = useState(false);
+  const [_apiStoryMessage, setApiStoryMessage] = useState<string | null>(null);
+  const [copy, setCopy] = useState<Boolean>(false);
+
+  // const [selectedImages, setSelectedImages] = useState<File[]>([]);
+
+  const [userPosts, setUserPosts] = useState<any[]>([]);
+
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>(
+    {}
+  );
+  // const [postVideoPreviewUrl, setPostVideoPreviewUrl] = useState<string | null>(
+  //   null
+  // );
+  // const [openMenuPostId, setOpenMenuPostId] = useState<string | null>(null);
+  const [openMenu, setOpenMenu] = useState<{
+    postId: string | null;
+    type: "options" | "share" | null;
+  }>({ postId: null, type: null });
+
+  const [activeView, setActiveView] = useState<
+    "posts" | "following" | "collection"
+  >("posts");
+  const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
+  const [collectionItems, setCollectionItems] = useState<CollectionItem[]>([]);
+  console.log("🚀 ~ SocialTopBar ~ collectionItems:", collectionItems)
+
+  const [_isPostsLoading, setIsPostsLoading] = useState(false);
+  const [isFollowingLoading, setIsFollowingLoading] = useState(false);
+
+  const [isCollectionLoading, setIsCollectionLoading] = useState(false);
+  const [storiesData, setStoriesData] = useState<Story[]>([]);
+  const [storiesCount, setStoriesCount] = useState<any>();
+  // const [addNewPost, setAddNewPost] = useState(false)
+  // Add these states with your existing states
+  const [collectionPage, setCollectionPage] = useState(1);
+  const [hasMoreCollection, setHasMoreCollection] = useState(true);
+  const [isLoadingCollectionMore, setIsLoadingCollectionMore] = useState(false);
+  const [userInfo, setUserInfo] = useState<any>();
+  // const [isAdult, setIsAdult] = useState<Boolean>(
+  //   localStorage.getItem("isAdult") === "true" ? true : false
+  // );
+  const isAdult = localStorage.getItem("isAdult") === "true" ? true : false;
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const postIdFromURL = queryParams.get("p");
+  const [singlePost, setSinglePost] = useState<any>(null);
+  const [isLoadingSinglePost, setIsLoadingSinglePost] = useState(false);
+  const { showToast } = useToast();
+  const userProfilePicture = localStorage.getItem("profile_picture");
+
+  const [friendRequests, _setFriendRequests] = useState<{
+    [key: string]: string;
+  }>({});
+
+  const [connectingUsers, _setConnectingUsers] = useState<{
+    [key: string]: boolean;
+  }>({});
+
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [selectedPostForReport, setSelectedPostForReport] = useState<
+    string | null
+  >(null);
+  const [reportReason, setReportReason] = useState("");
+  // const [isSavingPost, setIsSavingPost] = useState<string | null>(null);
+  const [isReportingPost, setIsReportingPost] = useState<string | null>(null);
+  //const [showTopicModal, setShowTopicModal] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [animations, setAnimations] = useState<any[]>([]);
+  // const [isPosting, setIsPosting] = useState(false);
+  const tweetText = `Earned the CNESS Inspired Certification! Proud to lead with conscious values. Join us at cness.io`;
+
+  useEffect(() => {
+    if (location.state?.openPostPopup) {
+      setShowPopup(true);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
+
+  useEffect(() => {
+    if (showPopup) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showPopup]);
+
+  // const maxChars = 2000;
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const triggerCreditAnimation = (fromElement: HTMLElement, amount = 10) => {
+    const walletIcon = document.querySelector(
+      "[data-wallet-icon]"
+    ) as HTMLElement;
+    if (!walletIcon || !fromElement) return;
+
+    const fromRect = fromElement.getBoundingClientRect();
+    const toRect = walletIcon.getBoundingClientRect();
+
+    const animationId = Date.now();
+    setAnimations((prev) => [
+      ...prev,
+      {
+        id: animationId,
+        from: {
+          x: fromRect.left + fromRect.width / 2,
+          y: fromRect.top + fromRect.height / 2,
+        },
+        to: {
+          x: toRect.left + toRect.width / 2,
+          y: toRect.top + toRect.height / 2,
+        },
+        amount: amount,
+      },
+    ]);
+
+    // Remove animation after completion
+    setTimeout(() => {
+      setAnimations((prev) => prev.filter((a) => a.id !== animationId));
+    }, 1400);
+  };
+
+  const handleConnect = async (userId: string) => {
+    try {
+      // Find the post to get current status - check both userPosts and singlePost
+      const post = userPosts.find((p) => p.user_id === userId) || singlePost;
+      if (!post || post.user_id !== userId) return;
+
+      // Case 1: No existing connection or pending request - Send new connection request
+      if (
+        post.friend_request_status !== "ACCEPT" &&
+        post.friend_request_status !== "PENDING" &&
+        !post.if_friend
+      ) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await SendFriendRequest(formattedData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+
+        // Update the post in userPosts state if it exists there
+        setUserPosts((prev) =>
+          prev.map((p) =>
+            p.user_id === userId
+              ? {
+                  ...p,
+                  if_friend: false,
+                  friend_request_status: "PENDING",
+                  is_requested: true,
+                }
+              : p
+          )
+        );
+
+        // Also update singlePost if it's the current single post
+        if (singlePost && singlePost.user_id === userId) {
+          setSinglePost({
+            ...singlePost,
+            if_friend: false,
+            friend_request_status: "PENDING",
+            is_requested: true,
+          });
+        }
+      }
+      // Case 2: Cancel pending request (when status is PENDING)
+      else if (post.friend_request_status === "PENDING" && !post.if_friend) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await UnFriend(formattedData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+
+        setUserPosts((prev) =>
+          prev.map((p) =>
+            p.user_id === userId
+              ? {
+                  ...p,
+                  if_friend: false,
+                  friend_request_status: null,
+                  is_requested: false,
+                }
+              : p
+          )
+        );
+
+        // Also update singlePost if it's the current single post
+        if (singlePost && singlePost.user_id === userId) {
+          setSinglePost({
+            ...singlePost,
+            if_friend: false,
+            friend_request_status: null,
+            is_requested: false,
+          });
+        }
+      }
+      // Case 3: Remove existing friend connection
+      else if (post.friend_request_status === "ACCEPT" && post.if_friend) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await UnFriend(formattedData);
+        showToast({
+          message: res?.success?.message,
+          type: "success",
+          duration: 2000,
+        });
+
+        setUserPosts((prev) =>
+          prev.map((p) =>
+            p.user_id === userId
+              ? {
+                  ...p,
+                  if_friend: false,
+                  friend_request_status: null,
+                  is_requested: false,
+                }
+              : p
+          )
+        );
+
+        // Also update singlePost if it's the current single post
+        if (singlePost && singlePost.user_id === userId) {
+          setSinglePost({
+            ...singlePost,
+            if_friend: false,
+            friend_request_status: null,
+            is_requested: false,
+          });
+        }
+      }
+    } catch (error: any) {
+      console.error("Error handling friend request:", error);
+      showToast({
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to update connection",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  // Function to get friend status
+  const getFriendStatus = (userId: string) => {
+    return friendRequests[userId] || "connect";
+  };
+
+  // Add this function to fetch followed users
+  const fetchFollowedUsers = async () => {
+    setIsFollowingLoading(true);
+    setActiveView("following");
+    try {
+      const res = await GetFollowingUser();
+      // Transform the API response to match FollowedUser interface
+      const transformedUsers = res.data.data.rows.map((item: any) => ({
+        id: item.following_id,
+        username: item.following_user.username,
+        first_name: item.following_user.profile.first_name,
+        last_name: item.following_user.profile.last_name,
+        profile_picture: item.following_user.profile.profile_picture,
+        is_following: true, // Since these are users you're following
+      }));
+
+      setFollowedUsers(transformedUsers);
+    } catch (error) {
+      console.error("Error fetching followed users:", error);
+      // Optional: Show error to user
+      showToast({
+        message: "Failed to load followed users",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsFollowingLoading(false);
+    }
+  };
+
+  const fetchCollectionItems = async (page = 1, append = false) => {
+    if (append) {
+      setIsLoadingCollectionMore(true);
+    } else {
+      setIsCollectionLoading(true);
+    }
+
+    setActiveView("collection");
+
+    try {
+      // Pass page parameter to API
+      const res = await GetSavedPosts(page);
+
+      // Transform the API response to match CollectionItem interface
+      const transformedItems = res.data.data.rows.map((item: any) => {
+        // Get the first image URL if available, or use profile picture as fallback
+        const firstImageUrl =
+          item.file &&
+          item.file.split(",")[0].trim() !== "https://dev.cness.io/file/"
+            ? item.file.split(",")[0].trim()
+            : item.profile.profile_picture;
+
+        return {
+          id: item.id,
+          title: item.content
+            ? item.content.length > 30
+              ? `${item.content.substring(0, 30)}...`
+              : item.content
+            : "Untitled Post",
+          description: `Posted by ${item.profile.first_name} ${item.profile.last_name}`,
+          image_url: firstImageUrl,
+          created_at: item.createdAt,
+          // Add any additional fields you want to display
+          originalData: item, // Keep original data if needed for navigation
+        };
+      });
+
+      // Check if we have more items
+      const totalCount = res?.data?.data?.count || 0;
+      const totalPages = Math.ceil(totalCount / 12); // Assuming limit = 12
+
+      // Update hasMore state
+      setHasMoreCollection(page < totalPages);
+
+      // Append or replace items
+      if (append) {
+        // Append new items, filter out duplicates
+        const existingIds = new Set(collectionItems.map((item) => item.id));
+        const newItems = transformedItems.filter(
+          (item: any) => !existingIds.has(item.id)
+        );
+        setCollectionItems((prev) => [...prev, ...newItems]);
+        setCollectionPage(page + 1);
+      } else {
+        // Replace items for initial load
+        setCollectionItems(transformedItems);
+        setCollectionPage(2); // Set next page to 2
+      }
+    } catch (error) {
+      console.error("Error fetching collection items:", error);
+      showToast({
+        message: "Failed to load collection items",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      if (append) {
+        setIsLoadingCollectionMore(false);
+      } else {
+        setIsCollectionLoading(false);
+      }
+    }
+  };
+
+  const handleLoadMoreCollection = () => {
+    if (!isLoadingCollectionMore && hasMoreCollection) {
+      fetchCollectionItems(collectionPage, true);
+    }
+  };
+
+  const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const shareMenuRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const postViewRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const postViewObserverRef = useRef<IntersectionObserver | null>(null);
+  const postViewTimeoutsRef = useRef<Record<string, number>>({});
+  const viewedPostsRef = useRef<Set<string>>(new Set());
+  const loggedInUserID = localStorage.getItem("Id");
+  const CONTENT_LIMIT = 150;
+  const toggleExpand = (postId: string) => {
+    setExpandedPosts((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
+  };
+
+  useEffect(() => {
+    // Only fetch single post if URL has 'p' parameter and we haven't loaded it yet
+    if (postIdFromURL && !singlePost) {
+      const fetchAndShowSinglePost = async () => {
+        setIsLoadingSinglePost(true);
+        try {
+          await fetchSinglePost(postIdFromURL);
+        } catch (error) {
+          console.error("Error fetching single post:", error);
+          showToast({
+            type: "error",
+            message: "Failed to load post",
+            duration: 2000,
+          });
+        } finally {
+          setIsLoadingSinglePost(false);
+        }
+      };
+
+      fetchAndShowSinglePost();
+    }
+
+    // Clear single post when URL parameter is removed
+    if (!postIdFromURL && singlePost) {
+      setSinglePost(null);
+    }
+  }, [postIdFromURL, singlePost]);
+
+  const fetchSinglePost = async (postId: string) => {
+    try {
+      const response = await GetUserPostById(postId);
+
+      if (response?.success?.status) {
+        const postData = response.data.data;
+
+        const transformedPost: any = {
+          id: postData.id,
+          user_id: postData.user_id,
+          content: postData.content,
+          file: postData.file,
+          file_type: postData.file_type,
+          is_poll: !!postData.poll,
+          poll_id: postData.poll?.id || null,
+          createdAt: postData.createdAt,
+          likes_count: postData.likes_count || 0,
+          comments_count: postData.total_comment_count || 0,
+          if_following: postData.if_following || false,
+          if_friend: postData.if_friend || false,
+          is_liked: postData.is_liked || false,
+          is_saved: postData.is_saved || false,
+          is_requested: postData.is_requested || false,
+          user: {
+            id: postData.user.id,
+            username: postData.user.username,
+          },
+          profile: {
+            id: postData.profile.id,
+            user_id: postData.profile.user_id,
+            first_name: postData.profile.first_name,
+            last_name: postData.profile.last_name,
+            profile_picture: postData.profile.profile_picture,
+          },
+        };
+
+        // Check if friend_request_status exists in the response
+        // If not, we need to determine it based on existing data
+        if (postData.friend_request_status !== undefined) {
+          transformedPost.friend_request_status =
+            postData.friend_request_status;
+        } else {
+          // Determine status based on existing fields
+          if (postData.if_friend) {
+            transformedPost.friend_request_status = "ACCEPT";
+          } else if (postData.is_requested) {
+            transformedPost.friend_request_status = "PENDING";
+          } else {
+            transformedPost.friend_request_status = null;
+          }
+        }
+
+        setSinglePost(transformedPost);
+      } else {
+        showToast({
+          type: "error",
+          message: "Post not found",
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching single post:", error);
+      showToast({
+        type: "error",
+        message: "Failed to load post",
+        duration: 2000,
+      });
+    }
+  };
+
+  const getUserPosts = async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+    setIsPostsLoading(true);
+    try {
+      // Call the API with tag parameter if available
+      const res = await FeedPostsDetails(page); // Pass tag to API
+
+      if (res?.data) {
+        const newPosts = res?.data.data.rows || [];
+        const totalPages = res?.data?.data?.count / 10 || 0;
+
+        if (newPosts.length === 0) {
+          setHasMore(false); // No more posts to load
+        } else {
+          // If it's the first page with a tag, replace posts
+          // If it's subsequent pages, append posts
+          if (page === 1) {
+            setUserPosts(newPosts);
+          } else {
+            setUserPosts([...userPosts, ...newPosts]);
+          }
+
+          // Check if the current page is the last page
+          if (page >= totalPages) {
+            setHasMore(false); // We've loaded all available pages
+          } else {
+            setPage(page + 1); // Load the next page
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      showToast({
+        message: "Failed to load posts",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+      setIsPostsLoading(false);
+    }
+  };
+
+  // const getFreshPosts = async () => {
+  //   if (isLoading || !hasMore) return;
+
+  //   setIsLoading(true);
+  //   setIsPostsLoading(true);
+  //   try {
+  //     // Call the API to get the posts for the current page
+  //     // const res = await PostsDetails(1);
+  //     const res = await FeedPostsDetails(1);
+  //     if (res?.data) {
+  //       const newPosts = res?.data.data.rows || [];
+  //       const totalPages = res?.data?.data?.count / 10 || 0;
+
+  //       if (newPosts.length === 0) {
+  //         setHasMore(false); // No more posts to load
+  //       } else {
+  //         setUserPosts(newPosts);
+
+  //         // Check if the current page is the last page
+  //         if (page >= totalPages) {
+  //           setHasMore(false); // We've loaded all available pages
+  //         } else {
+  //           setPage(2); // Load the next page
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching posts:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //     setIsPostsLoading(false);
+  //   }
+  // };
+
+  useEffect(() => {
+    getUserPosts();
+    fetchStory();
+  }, []);
+
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = Array.from(e.target.files || []);
+
+  //   // Validate file types
+  //   const allowedImageTypes = [
+  //     "image/jpeg",
+  //     "image/jpg",
+  //     "image/png",
+  //     "image/webp",
+  //   ];
+  //   const invalidFiles = files.filter(
+  //     (file) => !allowedImageTypes.includes(file.type)
+  //   );
+
+  //   if (invalidFiles.length > 0) {
+  //     showToast({
+  //       message: "Only JPG, JPEG, PNG, and WEBP image files are allowed.",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //     // Clear the file input so the same file can be selected again
+  //     e.target.value = "";
+  //     return;
+  //   }
+
+  //   setSelectedImages((prev) => [...prev, ...files]); // Append new images to existing ones
+  // };
+
+  // const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     // Validate file type
+  //     const allowedVideoTypes = ["video/mp4"];
+
+  //     if (!allowedVideoTypes.includes(file.type)) {
+  //       showToast({
+  //         message: "Only MP4 video files are allowed.",
+  //         type: "error",
+  //         duration: 3000,
+  //       });
+  //       // Clear the file input so the same file can be selected again
+  //       e.target.value = "";
+  //       return;
+  //     }
+
+  //     setSelectedVideo(file);
+  //     // Create preview URL
+  //     const videoUrl = URL.createObjectURL(file);
+  //     setPostVideoPreviewUrl(videoUrl);
+  //   }
+  // };
+
+  // const handleRemoveImage = (index: number) => {
+  //   setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+  // };
+
+  // const handleSubmitPost = async () => {
+  //   // Validation checks
+  //   if (!postMessage || postMessage.trim().length < 1) {
+  //     showToast({
+  //       message: "Message is required and must contain at least one character.",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //     return;
+  //   }
+
+  //   if (postMessage.length > 2000) {
+  //     showToast({
+  //       message: "Message must not exceed 2000 characters.",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //     return;
+  //   }
+
+  //   // Validate image file types
+  //   const allowedImageTypes = [
+  //     "image/jpeg",
+  //     "image/jpg",
+  //     "image/png",
+  //     "image/webp",
+  //   ];
+  //   const invalidImages = selectedImages.filter(
+  //     (file) => !allowedImageTypes.includes(file.type)
+  //   );
+  //   if (invalidImages.length > 0) {
+  //     showToast({
+  //       message: "Only JPG, JPEG, PNG, and WEBP image files are allowed.",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //     return;
+  //   }
+
+  //   // Validate video file type
+  //   if (selectedVideo && !["video/mp4"].includes(selectedVideo.type)) {
+  //     showToast({
+  //       message: "Only MP4 video files are allowed.",
+  //       type: "error",
+  //       duration: 3000,
+  //     });
+  //     return;
+  //   }
+
+  //   setIsPosting(true); // Start loading
+
+  //   const formData = new FormData();
+  //   formData.append("content", postMessage);
+  //   formData.append("topic_id", selectedTopic);
+
+  //   // Append all selected images
+  //   selectedImages.forEach((image) => {
+  //     formData.append("file", image);
+  //   });
+
+  //   // Append video if selected
+  //   if (selectedVideo) {
+  //     formData.append("file", selectedVideo);
+  //   }
+
+  //   try {
+  //     const response = await AddPost(formData);
+
+  //     if (response) {
+  //       showToast({
+  //         message: "Post created successfully",
+  //         type: "success",
+  //         duration: 3000,
+  //       });
+
+  //       // Add the new post to the beginning of the userPosts array
+  //       if (response.data && response.data.data) {
+  //         const newPost = response.data.data;
+
+  //         // Transform the API response to match your Post interface
+  //         const transformedPost: Post = {
+  //           id: newPost.id,
+  //           user_id: newPost.user_id,
+  //           content: newPost.content,
+  //           file: newPost.file,
+  //           file_type: newPost.file_type,
+  //           is_poll: newPost.is_poll,
+  //           poll_id: newPost.poll_id,
+  //           createdAt: newPost.createdAt,
+  //           likes_count: newPost.likes_count,
+  //           comments_count: newPost.comments_count,
+  //           if_following: newPost.if_following,
+  //           if_friend: newPost.if_friend,
+  //           is_liked: newPost.is_liked,
+  //           is_saved: newPost.is_saved,
+  //           is_requested: newPost.is_requested,
+  //           product_id: null,
+  //           user: {
+  //             id: newPost.user.id,
+  //             username: newPost.user.username,
+  //           },
+  //           profile: {
+  //             id: newPost.profile.id,
+  //             user_id: newPost.profile.user_id,
+  //             first_name: newPost.profile.first_name,
+  //             last_name: newPost.profile.last_name,
+  //             profile_picture: newPost.profile.profile_picture,
+  //           },
+  //           friend_request_status: "",
+  //         };
+
+  //         // Add the new post to the beginning of the array
+  //         setUserPosts((prevPosts) => [transformedPost, ...prevPosts]);
+  //       }
+
+  //       // Reset form state
+  //       setPostMessage("");
+  //       setSelectedTopic("");
+  //       setSelectedImages([]);
+  //       setSelectedVideo(null);
+  //       if (postVideoPreviewUrl) {
+  //         URL.revokeObjectURL(postVideoPreviewUrl);
+  //         setPostVideoPreviewUrl(null);
+  //       }
+  //       setShowPopup(false);
+  //     }
+  //   } catch (err: any) {
+  //     console.error(err);
+  //     showToast({
+  //       message: err?.response?.data?.error?.message || "Failed to create post",
+  //       type: "error",
+  //       duration: 5000,
+  //     });
+  //   } finally {
+  //     setIsPosting(false); // End loading regardless of success/error
+  //   }
+  // };
+
+  const handleStoryVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const allowedVideoTypes = ["video/mp4"];
+
+      if (!allowedVideoTypes.includes(file.type)) {
+        showToast({
+          message: "Only MP4 video files are allowed.",
+          type: "error",
+          duration: 3000,
+        });
+        // Clear the file input so the same file can be selected again
+        e.target.value = "";
+        return;
+      }
+
+      setSelectedStoryVideo(file);
+
+      // Create preview URL
+      const videoUrl = URL.createObjectURL(file);
+      setVideoPreviewUrl(videoUrl);
+
+      // Clean up the URL when component unmounts or when video changes
+      return () => {
+        URL.revokeObjectURL(videoUrl);
+      };
+    }
+  };
+
+  // Update the remove video handler
+  const handleRemoveStoryVideo = () => {
+    setSelectedStoryVideo(null);
+    if (videoPreviewUrl) {
+      URL.revokeObjectURL(videoPreviewUrl);
+      setVideoPreviewUrl(null);
+    }
+  };
+
+  const handleSubmitStory = async () => {
+    setApiStoryMessage(null);
+    if (!selectedStoryVideo) {
+      setApiStoryMessage("Please select a video.");
+      return;
+    }
+
+    // Validate video file type
+    if (!["video/mp4"].includes(selectedStoryVideo.type)) {
+      setApiStoryMessage("Only MP4 video files are allowed.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("description", storyMessage);
+    formData.append("file", selectedStoryVideo);
+
+    try {
+      setIsUploading(true); // Show loader
+      const response = await AddStory(formData);
+
+      if (response) {
+        setApiStoryMessage(
+          response?.success?.message || "Story added successfully"
+        );
+        setTimeout(async () => {
+          setShowStoryPopup(false);
+          // Refresh stories after successful upload
+          await fetchStory();
+          // setStoryData(res?.data?.data || []);
+        }, 1000);
+
+        setStoryMessage("");
+        setSelectedStoryVideo(null);
+      } else {
+        setApiStoryMessage("Failed to create story.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      showToast({
+        message: err?.response?.data?.error?.message,
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsUploading(false); // Hide loader
+    }
+  };
+
+  const fetchStory = async () => {
+    try {
+      const res = await GetStory();
+      // Add validation for API response structure
+      if (res?.data?.data.rows && Array.isArray(res.data.data.rows)) {
+        // Use stories directly without grouping
+        const allStories = res.data.data.rows;
+        // const allStories = groupStoriesByUser(res.data.data);
+        setStoriesData(allStories);
+        setStoriesCount(res.data.data.count);
+      } else {
+        console.warn("Invalid stories API response structure:", res);
+        setStoriesData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching stories:", error);
+      setStoriesData([]);
+    }
+  };
+
+  // // Function to group stories by user and return the most recent story per user
+  // const groupStoriesByUser = (stories: any[]) => {
+  //   const userStoryMap = new Map();
+  //   const userStoryCounts = new Map();
+
+  //   stories.forEach((story) => {
+  //     const userId = story.user_id;
+  //     const existingStory = userStoryMap.get(userId);
+
+  //     // Count total stories per user
+  //     userStoryCounts.set(userId, (userStoryCounts.get(userId) || 0) + 1);
+
+  //     // If no story exists for this user, or if current story is more recent
+  //     if (
+  //       !existingStory ||
+  //       new Date(story.createdAt) > new Date(existingStory.createdAt)
+  //     ) {
+  //       userStoryMap.set(userId, {
+  //         ...story,
+  //         totalStoriesCount: userStoryCounts.get(userId),
+  //       });
+  //     }
+  //   });
+
+  //   // Convert map values to array and sort by creation date (most recent first)
+  //   return Array.from(userStoryMap.values()).sort(
+  //     (a, b) =>
+  //       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  //   );
+  // };
+
+  const openPostPopup = () => {
+    setShowPopup(true);
+    setApiMessage(null);
+    setShowPostModal(true);
+  };
+
+  const openStoryPopup = () => {
+    setShowStoryPopup(true);
+    setApiStoryMessage(null);
+  };
+
+  const handleLike = async (postId: string, event: React.MouseEvent) => {
+    console.log("🚀 ~ handleLike ~ event:", event);
+    try {
+      const formattedData = { post_id: postId };
+
+      // Make the API call first
+      const res = await PostsLike(formattedData);
+
+      // Update karma_credits in localStorage from API response
+      if (res?.data?.data?.karma_credits !== undefined) {
+        localStorage.setItem(
+          "karma_credits",
+          res.data.data.karma_credits.toString()
+        );
+        window.dispatchEvent(new Event("karmaCreditsUpdated"));
+      }
+
+      // Update userPosts state
+      setUserPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                is_liked: !post.is_liked,
+                likes_count: post.is_liked
+                  ? post.likes_count - 1
+                  : post.likes_count + 1,
+              }
+            : post
+        )
+      );
+
+      // Update singlePost state if it's the current single post
+      if (singlePost && singlePost.id === postId) {
+        setSinglePost({
+          ...singlePost,
+          is_liked: !singlePost.is_liked,
+          likes_count: singlePost.is_liked
+            ? singlePost.likes_count - 1
+            : singlePost.likes_count + 1,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching like details:", error);
+    }
+  };
+
+  const handleFollow = async (userId: string) => {
+    try {
+      const formattedData = {
+        following_id: userId,
+      };
+      await SendFollowRequest(formattedData);
+
+      // Update userPosts
+      setUserPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.user_id === userId
+            ? { ...post, if_following: !post.if_following }
+            : post
+        )
+      );
+
+      // Also update singlePost if it's the current single post
+      if (singlePost && singlePost.user_id === userId) {
+        setSinglePost({
+          ...singlePost,
+          if_following: !singlePost.if_following,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching selection details:", error);
+    }
+  };
+
+  const isVideoFile = (url: string) => {
+    return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (!openMenu.postId || !openMenu.type) return;
+
+    const key = `${openMenu.postId}-${openMenu.type}`;
+    const currentMenu = menuRef.current[key];
+
+    // Close options menu if click is outside
+    if (currentMenu && !currentMenu.contains(event.target as Node)) {
+      setOpenMenu({ postId: null, type: null });
+    }
+
+    // Close share menu if click is outside
+    if (
+      shareMenuRef.current &&
+      !shareMenuRef.current.contains(event.target as Node)
+    ) {
+      setOpenMenu({ postId: null, type: null });
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openMenu]);
+
+  const toggleMenu = (postId: string, type: "options" | "share") => {
+    setOpenMenu((prev) => {
+      if (prev.postId === postId && prev.type === type) {
+        return { postId: null, type: null }; // close
+      } else {
+        return { postId, type }; // open
+      }
+    });
+  };
+
+  const handleScroll = () => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      getUserPosts(); // Call API when the user scrolls near the bottom
+    }
+  };
+  //@ts-ignore
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+    // Cleanup on unmount
+    return () =>
+      container && container.removeEventListener("scroll", handleScroll);
+  }, [page, isLoading]);
+
+  const MeDetail = async () => {
+    // if (localStorage.getItem("isAdult") === "true") {
+    //   // setIsAdult(true);
+    //   return;
+    // }
+    try {
+      const response = await MeDetails();
+      if (response?.data?.data?.user) {
+        setUserInfo(response?.data?.data?.user);
+      }
+      localStorage.setItem("isAdult", response?.data?.data?.user?.is_adult);
+    } catch (error) {
+      console.error("Error fetching me details:", error);
+      // setIsAdult(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      setIsPostsLoading(true);
+      MeDetail();
+      await getUserPosts();
+      setIsPostsLoading(false);
+    };
+
+    fetchInitialData();
+  }, []);
+
+  // Function to save/unsave post to collection
+  // Function to save/unsave post to collection
+  const savePostToCollection = async (postId: string) => {
+    try {
+      // Check if it's in userPosts or singlePost
+      const currentPost =
+        userPosts.find((post) => post.id === postId) || singlePost;
+      const isCurrentlySaved = currentPost?.is_saved || false;
+
+      // Use appropriate API based on current state
+      const response = isCurrentlySaved
+        ? await UnsavePost(postId)
+        : await SavePost(postId);
+
+      if (response.success) {
+        showToast({
+          type: "success",
+          message: isCurrentlySaved
+            ? "Post removed from collection!"
+            : "Post saved to collection successfully!",
+          duration: 2000,
+        });
+
+        // Update the post's saved status in userPosts array
+        setUserPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === postId ? { ...post, is_saved: !isCurrentlySaved } : post
+          )
+        );
+
+        // Also update singlePost if it's the current single post
+        if (singlePost && singlePost.id === postId) {
+          setSinglePost({
+            ...singlePost,
+            is_saved: !isCurrentlySaved,
+          });
+        }
+      } else {
+        throw new Error("Failed to save/unsave post");
+      }
+    } catch (error) {
+      showToast({
+        type: "error",
+        message: "Failed to save/unsave post to collection",
+        duration: 2000,
+      });
+    }
+  };
+
+  // Function to report post
+  const reportPost = async () => {
+    if (!selectedPostForReport || !reportReason.trim()) {
+      showToast({
+        type: "error",
+        message: "Please provide a reason for reporting",
+        duration: 2000,
+      });
+      return;
+    }
+
+    setIsReportingPost(selectedPostForReport);
+    try {
+      const response = await ReportPost(selectedPostForReport, reportReason);
+
+      if (response.success) {
+        showToast({
+          type: "success",
+          message:
+            "Post reported successfully! Admin will review it soon and take action if needed.",
+          duration: 2000,
+        });
+        setShowReportModal(false);
+        setSelectedPostForReport(null);
+        setReportReason("");
+      } else {
+        throw new Error("Failed to report post");
+      }
+    } catch (error) {
+      showToast({
+        type: "error",
+        message: "Failed to report post",
+        duration: 2000,
+      });
+    } finally {
+      setIsReportingPost(null);
+    }
+  };
+
+  // Function to open report modal
+  const openReportModal = (postId: string) => {
+    setSelectedPostForReport(postId);
+    setShowReportModal(true);
+    // setOpenMenuPostId(null); // Close the three-dot menu
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!openMenu.postId || !openMenu.type) return;
+
+      const key = `${openMenu.postId}-${openMenu.type}`;
+      const currentMenu = menuRef.current[key];
+
+      if (currentMenu && !currentMenu.contains(event.target as Node)) {
+        setOpenMenu({ postId: null, type: null });
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // const [selectedTopic, setSelectedTopic] = useState<string>(""); // dropdown state
+  const [topics, setTopics] = useState<Topic[]>([]); // list of topics
+  const [userSelectedTopics, setUserSelectedTopics] = useState<Topic[]>([]); // list of user selected topics
+  const [visibleTopic, setVisibleTopic] = useState(10);
+  const [showTopicModal, setShowTopicModal] = useState(false);
+  // const [isTopicDropdownOpen, setIsTopicDropdownOpen] = useState(false);
+  // const [topicSearchQuery, setTopicSearchQuery] = useState("");
+  // const topicDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (topics.length > 0) {
+      fetchUserSelectedTopics();
+    }
+  }, [topics]);
+
+  useEffect(() => {
+    fetchTopics();
+  }, []);
+
+  const fetchTopics = async () => {
+    try {
+      const response = await getTopics();
+      if (
+        response?.success?.statusCode === 200 &&
+        response?.data?.data?.length
+      ) {
+        setTopics(response?.data?.data);
+      } else {
+        console.warn("Error during fetch topics details", response);
+      }
+    } catch (error) {
+      console.error("Error fetching topic details:", error);
+      showToast({
+        message: "Failed to load Topics.",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const fetchUserSelectedTopics = async () => {
+    if (!loggedInUserID) {
+      showToast({
+        message: "No user ID found.",
+        type: "error",
+        duration: 2000,
+      });
+      return;
+    }
+    try {
+      const response = await getUserSelectedTopic(loggedInUserID);
+      if (
+        response?.success?.statusCode === 200 &&
+        response?.data?.data?.length > 0
+      ) {
+        setUserSelectedTopics(response?.data?.data);
+      } else {
+        // No topics selected yet - show modal
+        console.warn(
+          "No user selected topics found, showing topic selection modal"
+        );
+        setShowTopicModal(true);
+      }
+    } catch (error: any) {
+      console.error("Error fetching user selected topic details:", error);
+      // On 404 or any error, show the topic selection modal
+      if (error?.response?.status === 404 || error?.response?.status === 400) {
+        setShowTopicModal(true);
+      } else {
+        showToast({
+          message: "Failed to load User Selected Topics.",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    }
+  };
+
+  // // Add filtered topics based on search
+  // const filteredTopics = topics.filter((topic) =>
+  //   topic.topic_name.toLowerCase().includes(topicSearchQuery.toLowerCase())
+  // );
+
+  // // Function to get selected topic name
+  // const getSelectedTopicName = () => {
+  //   const selected = topics.find((t) => t.id === selectedTopic);
+  //   return selected ? selected.topic_name : "-- What's this post about? --";
+  // };
+
+  const handleTopicsSelected = async (ids: string[]) => {
+    if (!loggedInUserID) {
+      showToast({
+        message: "No user ID found.",
+        type: "error",
+        duration: 2000,
+      });
+      return;
+    }
+    try {
+      const payload = { topicIds: ids };
+
+      let response;
+
+      if (!userSelectedTopics || userSelectedTopics.length === 0) {
+        // call add selected topics
+        response = await UserSelectedTopic(loggedInUserID, payload);
+      } else {
+        // Already has topics → call UPDATE
+        response = await updateUserSelectedTopic(loggedInUserID, payload);
+      }
+
+      if (
+        response?.success?.statusCode === 200 ||
+        response?.success?.statusCode === 201
+      ) {
+        setShowTopicModal(false);
+        fetchUserSelectedTopics();
+      } else {
+        showToast({
+          message: response?.error?.message || "Error saving topics",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error saving topics:", error);
+      showToast({
+        message: "Something went wrong. Please try again.",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
+  const formatMessageTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInDays === 0) {
+      return "Today";
+    } else if (diffInDays === 1) {
+      return "Yesterday";
+    } else if (diffInDays < 7) {
+      return date.toLocaleDateString("en-US", { weekday: "long" });
+    } else {
+      // Manually format: 01 Sep 2025, 11.52 AM
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = date.toLocaleString("en-US", { month: "short" });
+      const year = date.getFullYear();
+
+      let hours = date.getHours();
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
+
+      return `${day} ${month} ${year}, ${hours}.${minutes} ${ampm}`;
+    }
+  };
+
+  const isValidMediaUrl = (url: string): boolean => {
+    if (!url || typeof url !== "string") return false;
+
+    const trimmedUrl = url.trim();
+
+    // Check if URL is empty or just contains the base path without actual file
+    if (
+      !trimmedUrl ||
+      trimmedUrl === "https://dev.cness.io/file/" ||
+      trimmedUrl === "https://dev.cness.io/file" ||
+      trimmedUrl.endsWith("/file/") ||
+      trimmedUrl.endsWith("/file")
+    ) {
+      return false;
+    }
+
+    // Check if URL has a file extension or looks like a valid media file
+    const hasFileExtension = /\.[a-zA-Z0-9]+$/.test(trimmedUrl);
+    const hasValidMediaPattern = /\.(jpg|jpeg|png|webp|mp4|webm|ogg|mov)/i.test(
+      trimmedUrl
+    );
+
+    return hasFileExtension || hasValidMediaPattern;
+  };
+
+  const renderContentWithHashtags = (text: string) => {
+    if (!text) return null;
+    const parts = text.split(/(\#[\w]+)/g);
+    return parts.map((part, idx) => {
+      if (part.match(/^#[\w]+/)) {
+        const tag = part.slice(1);
+        return (
+          <button
+            key={`${part}-${idx}`}
+            onClick={() =>
+              navigate(`/dashboard/feed/search?tag=${encodeURIComponent(tag)}`)
+            }
+            className="text-[#7077FE] hover:underline"
+            type="button"
+          >
+            {part}
+          </button>
+        );
+      }
+      return <span key={idx}>{part}</span>;
+    });
+  };
+
+  const postIdsSignature = useMemo(
+    () => userPosts.map((post) => post.id).join(","),
+    [userPosts]
+  );
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+
+    postViewObserverRef.current?.disconnect();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const target = entry.target as HTMLElement;
+          const postId = target.dataset.postId;
+          if (!postId) return;
+
+          const hasTracked = viewedPostsRef.current.has(postId);
+
+          if (entry.isIntersecting && !hasTracked) {
+            if (postViewTimeoutsRef.current[postId]) return;
+
+            postViewTimeoutsRef.current[postId] = window.setTimeout(
+              async () => {
+                try {
+                  await TrackPostView(postId);
+                  viewedPostsRef.current.add(postId);
+                  observer.unobserve(target);
+                } catch (error) {
+                  console.error("Failed to track post view", error);
+                } finally {
+                  delete postViewTimeoutsRef.current[postId];
+                }
+              },
+              3000
+            );
+          } else if (
+            !entry.isIntersecting &&
+            postViewTimeoutsRef.current[postId]
+          ) {
+            clearTimeout(postViewTimeoutsRef.current[postId]);
+            delete postViewTimeoutsRef.current[postId];
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    postViewObserverRef.current = observer;
+
+    Object.entries(postViewRefs.current).forEach(([postId, element]) => {
+      if (element && !viewedPostsRef.current.has(postId)) {
+        observer.observe(element);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+      Object.values(postViewTimeoutsRef.current).forEach(clearTimeout);
+      postViewTimeoutsRef.current = {};
+    };
+  }, [postIdsSignature]);
+
+  const [showPostModal, setShowPostModal] = useState(false);
+
+  // 4. Replace the handleSubmitPost function in SocialTopBar with:
+  const handlePostCreated = (newPost: any) => {
+    // Add the new post to the beginning of the userPosts array
+    setUserPosts((prevPosts) => [newPost, ...prevPosts]);
+  };
+
+  return (
+    <>
+      {isAdult ? (
+        <div className="flex flex-col xl:flex-row justify-between gap-2 xl:gap-4 px-2 md:px-4 xl:px-2 w-full pt-2">
+          {/* Left Side: Post & Stories - Full width on mobile */}
+          <div className="w-full xl:max-w-[75%]" ref={containerRef}>
+            {activeView === "posts" ? (
+              <>
+                {/* {isPostsLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                </div>
+              ) : ( */}
+                <>
+                  {/* Start a Post */}
+                  <div className="bg-linear-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-10 rounded-xl mb-4 md:mb-5">
+                    <div className="flex flex-col gap-2 md:gap-3">
+                      <div className="flex items-center gap-6">
+                        <Link to={`/dashboard/Profile`}>
+                          <img
+                            src={
+                              !userProfilePicture ||
+                              userProfilePicture === "null" ||
+                              userProfilePicture === "undefined" ||
+                              !userProfilePicture.startsWith("http")
+                                ? "/profile.png"
+                                : userProfilePicture
+                            }
+                            alt="User"
+                            className="w-8 h-8 md:w-16 md:h-16 rounded-full object-cover"
+                          />
+                        </Link>
+                        <input
+                          type="text"
+                          placeholder="Create a Post"
+                          className="flex-1 cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-full border border-[#CBD5E1] text-[16px] md:text-[16px] focus:outline-none bg-[#FAFAFA] placeholder:text-black h-[52px] open-sans"
+                          onClick={() => openPostPopup()}
+                          readOnly
+                        />
+                        <div className="xl:hidden z-40">
+                          <button
+                            onClick={toggleSidebar}
+                            className="bg-[#7077FE] text-white p-4 rounded-full shadow-lg hover:bg-[#5b63e6] transition-all"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              {isSidebarOpen ? (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              ) : (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 6h16M4 12h16M4 18h16"
+                                />
+                              )}
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Loading state for single post */}
+                  {isLoadingSinglePost && (
+                    <div className="flex justify-center items-center h-64">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                    </div>
+                  )}
+
+                  {/* Single Post View */}
+                  {singlePost ? (
+                    <div
+                      key={singlePost.id}
+                      ref={(el) => {
+                        if (el) {
+                          postViewRefs.current[singlePost.id] = el;
+                        } else {
+                          delete postViewRefs.current[singlePost.id];
+                        }
+                      }}
+                      data-post-id={singlePost.id}
+                      className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-5"
+                    >
+                      {/* Header */}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 md:gap-3">
+                          <Link
+                            to={
+                              loggedInUserID === singlePost?.profile?.user_id
+                                ? `/dashboard/Profile`
+                                : `/dashboard/social/user-profile/${singlePost?.profile?.user_id}`
+                            }
+                          >
+                            <img
+                              src={
+                                !singlePost.profile.profile_picture ||
+                                singlePost.profile.profile_picture === "null" ||
+                                singlePost.profile.profile_picture ===
+                                  "undefined" ||
+                                !singlePost.profile.profile_picture.startsWith(
+                                  "http"
+                                )
+                                  ? "/profile.png"
+                                  : singlePost.profile.profile_picture
+                              }
+                              className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
+                              alt="User"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "/profile.png";
+                              }}
+                            />
+                          </Link>
+                          <div>
+                            <p className="font-semibold text-sm md:text-base text-black">
+                              <Link
+                                to={
+                                  loggedInUserID ===
+                                  singlePost?.profile?.user_id
+                                    ? `/dashboard/Profile`
+                                    : `/dashboard/social/user-profile/${singlePost?.profile?.user_id}`
+                                }
+                              >
+                                {singlePost.profile.first_name}
+                                {singlePost.profile.last_name}
+                              </Link>
+                              <span className="text-[#999999] text-xs md:text-[12px] font-light">
+                                <Link
+                                  to={
+                                    loggedInUserID ===
+                                    singlePost?.profile?.user_id
+                                      ? `/dashboard/Profile`
+                                      : `/dashboard/social/user-profile/${singlePost?.profile?.user_id}`
+                                  }
+                                >
+                                  @{singlePost.user.username}
+                                </Link>
+                              </span>
+                            </p>
+                            <p className="text-xs md:text-[12px] text-[#606060]">
+                              {formatMessageTime(singlePost.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                        {singlePost.user_id !== loggedInUserID && (
+                          <div className="flex gap-2">
+                            {/* Connect Button */}
+                            <button
+                              onClick={() => handleConnect(singlePost.user_id)}
+                              className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${
+                                singlePost.if_friend &&
+                                singlePost.friend_request_status === "ACCEPT"
+                                  ? "bg-green-100 text-green-700 border border-green-300"
+                                  : !singlePost.if_friend &&
+                                    singlePost.friend_request_status ===
+                                      "PENDING"
+                                  ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
+                                  : "bg-white text-black border border-gray-200"
+                              }`}
+                            >
+                              <span className="flex items-center gap-1">
+                                <UserRoundPlus className="w-4 h-4" />
+                                {singlePost.if_friend &&
+                                singlePost.friend_request_status === "ACCEPT"
+                                  ? "Connected"
+                                  : !singlePost.if_friend &&
+                                    singlePost.friend_request_status ===
+                                      "PENDING"
+                                  ? "Requested"
+                                  : "Connect"}
+                              </span>
+                            </button>
+                            {/* Follow Button */}
+                            <button
+                              onClick={() => handleFollow(singlePost.user_id)}
+                              className={`flex justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors h-[35px]
+                                ${
+                                  singlePost.if_following
+                                    ? "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                    : "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                }`}
+                            >
+                              {singlePost.if_following ? (
+                                <>
+                                  <IoTrendingUpSharp w-100 />
+                                  Resonating
+                                </>
+                              ) : (
+                                "+ Resonate"
+                              )}
+                            </button>
+
+                            {/* Three Dots Menu */}
+
+                            <div className="relative">
+                              <button
+                                onClick={() =>
+                                  toggleMenu(singlePost.id, "options")
+                                }
+                                className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
+                                title="More options"
+                              >
+                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                              </button>
+
+                              {openMenu.postId === singlePost.id &&
+                                openMenu.type === "options" && (
+                                  <div
+                                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                    ref={(el) => {
+                                      const key = `${singlePost.id}-options`;
+                                      if (el) menuRef.current[key] = el;
+                                      else delete menuRef.current[key];
+                                    }}
+                                  >
+                                    <ul className="space-y-1">
+                                      <li className="lg:hidden">
+                                        <button
+                                          onClick={() =>
+                                            handleConnect(singlePost.user_id)
+                                          }
+                                          disabled={
+                                            connectingUsers[
+                                              singlePost.user_id
+                                            ] || false
+                                          }
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                        >
+                                          <img
+                                            src={iconMap["userplus"]}
+                                            alt="userplus"
+                                            className="w-4 h-4"
+                                          />
+                                          {connectingUsers[singlePost.user_id]
+                                            ? "Loading..."
+                                            : getFriendStatus(
+                                                singlePost.user_id
+                                              ) === "requested"
+                                            ? "Requested" // This will now change back to "Connect" when clicked again
+                                            : "Connect"}
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() => {
+                                            copyPostLink(
+                                              `${window.location.origin}/social?p=${singlePost.id}`,
+                                              (msg) =>
+                                                showToast({
+                                                  type: "success",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                }),
+                                              (msg) =>
+                                                showToast({
+                                                  type: "error",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                })
+                                            );
+                                          }}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                        >
+                                          <LinkIcon className="w-4 h-4" />
+                                          Copy Post Act
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() =>
+                                            savePostToCollection(singlePost.id)
+                                          }
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                        >
+                                          <Bookmark className="w-4 h-4" />
+                                          {singlePost.is_saved
+                                            ? "Unsave"
+                                            : "Save Act"}
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() =>
+                                            openReportModal(singlePost.id)
+                                          }
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                        >
+                                          <Flag className="w-4 h-4" />
+                                          Report Act
+                                        </button>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        )}
+
+                        {singlePost.user_id == loggedInUserID && (
+                          <div className="flex gap-2">
+                            {/* Three Dots Menu */}
+
+                            <div className="relative">
+                              <button
+                                onClick={() =>
+                                  toggleMenu(singlePost.id, "options")
+                                }
+                                className="flex items-center border-[#ECEEF2] border shadow-sm justify-center w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
+                                title="More options"
+                              >
+                                <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                              </button>
+
+                              {openMenu.postId === singlePost.id &&
+                                openMenu.type === "options" && (
+                                  <div
+                                    className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                    ref={(el) => {
+                                      const key = `${singlePost.id}-options`;
+                                      if (el) menuRef.current[key] = el;
+                                      else delete menuRef.current[key];
+                                    }}
+                                  >
+                                    <ul className="space-y-1">
+                                      <li>
+                                        <button
+                                          onClick={() => {
+                                            copyPostLink(
+                                              `${window.location.origin}/social?p=${singlePost.id}`,
+
+                                              (msg) =>
+                                                showToast({
+                                                  type: "success",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                }),
+                                              (msg) =>
+                                                showToast({
+                                                  type: "error",
+                                                  message: msg,
+                                                  duration: 2000,
+                                                })
+                                            );
+                                          }}
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                        >
+                                          <LinkIcon className="w-4 h-4" />
+                                          Copy Post Link
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() =>
+                                            savePostToCollection(singlePost.id)
+                                          }
+                                          className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                        >
+                                          <Bookmark className="w-4 h-4" />
+                                          {singlePost.is_saved
+                                            ? "Unsave"
+                                            : "Save Post"}
+                                        </button>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Post Content */}
+                      <div className="mt-3 md:mt-4">
+                        <p className="text-gray-800 font-[poppins] text-sm md:text-base mb-2 md:mb-3 space-y-1">
+                          <span>
+                            {expandedPosts[singlePost.id] ||
+                            singlePost?.content?.length <= CONTENT_LIMIT
+                              ? renderContentWithHashtags(
+                                  singlePost.content || ""
+                                )
+                              : renderContentWithHashtags(
+                                  `${singlePost?.content?.substring(
+                                    0,
+                                    CONTENT_LIMIT
+                                  )}...`
+                                )}
+                          </span>
+                          {singlePost?.content?.length > CONTENT_LIMIT && (
+                            <button
+                              onClick={() => toggleExpand(singlePost.id)}
+                              className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
+                            >
+                              {expandedPosts[singlePost.id]
+                                ? "Show less"
+                                : "Read more"}
+                            </button>
+                          )}
+                        </p>
+
+                        {/* Dynamic Media Block */}
+                        {singlePost.file && (
+                          <div className="rounded-lg">
+                            {(() => {
+                              // Split and filter valid URLs
+                              const urls = singlePost.file
+                                .split(",")
+                                .map((url: string) => url.trim())
+                                .filter((url: string) => isValidMediaUrl(url)); // Filter out invalid URLs
+
+                              // If no valid media URLs after filtering, don't render anything
+                              if (urls.length === 0) {
+                                return null;
+                              }
+
+                              const mediaItems = urls.map((url: string) => ({
+                                url,
+                                type: (isVideoFile(url) ? "video" : "image") as
+                                  | "video"
+                                  | "image",
+                              }));
+
+                              // Use PostCarousel if there are multiple items
+                              if (mediaItems.length > 1) {
+                                return (
+                                  // Wrap with Link if product_id exists
+                                  singlePost.product_id ? (
+                                    <Link
+                                      to={`/dashboard/product-detail/${singlePost.product_id}`}
+                                    >
+                                      <PostCarousel mediaItems={mediaItems} />
+                                    </Link>
+                                  ) : (
+                                    <PostCarousel mediaItems={mediaItems} />
+                                  )
+                                );
+                              }
+
+                              // Single item rendering - wrap with Link if product_id exists
+                              const item = mediaItems[0];
+                              const mediaContent =
+                                item.type === "video" ? (
+                                  <video
+                                    className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
+                                    controls
+                                    muted
+                                    autoPlay
+                                    loop
+                                  >
+                                    <source src={item.url} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                  </video>
+                                ) : (
+                                  <img
+                                    src={item.url}
+                                    alt="Post content"
+                                    className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
+                                    onError={(e) => {
+                                      const target =
+                                        e.target as HTMLImageElement;
+                                      target.src = ""; // Clear broken images
+                                    }}
+                                  />
+                                );
+
+                              // Conditionally wrap with Link if product_id exists
+                              return singlePost.product_id ? (
+                                <Link
+                                  to={`/dashboard/product-detail/${singlePost.product_id}`}
+                                >
+                                  {mediaContent}
+                                </Link>
+                              ) : (
+                                mediaContent
+                              );
+                            })()}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Reactions and Action Buttons */}
+                      <div className="flex justify-between items-center mt-6 px-1 text-xs md:text-sm text-gray-600 gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 md:gap-2">
+                            <div className="flex items-center -space-x-2 md:-space-x-3"></div>
+                          </div>
+                          {/* <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                              <img
+                                src={comment}
+                                alt="Comment"
+                                className="w-6 h-6 md:w-8 md:h-8"
+                              />
+                            </div>
+                            <span>{post.comments_count}</span>
+                          </div> */}
+                        </div>
+                        {singlePost.comments_count > 0 && (
+                          <div>
+                            <span className="text-sm text-[#64748B]">
+                              {singlePost.comments_count} Reflections
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="border-t border-[#ECEEF2] grid grid-cols-3  gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
+                        <button
+                          onClick={(e) => handleLike(singlePost.id, e)}
+                          disabled={isLoading}
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${
+                            isLoading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                        >
+                          <span className="hidden sm:flex text-lg text-black">
+                            {singlePost.likes_count}
+                          </span>
+                          <ThumbsUp
+                            className="w-5 h-5 md:w-6 md:h-6 shrink-0"
+                            fill={singlePost.is_liked ? "#7077FE" : "none"}
+                            stroke={singlePost.is_liked ? "#7077FE" : "#000"}
+                          />
+
+                          <span
+                            className={`hidden sm:flex ${
+                              singlePost.is_liked
+                                ? "text-[#7077FE]"
+                                : "text-black"
+                            }`}
+                          >
+                            Appreciate
+                          </span>
+                          {animations.map((anim) => (
+                            <CreditAnimation
+                              key={anim.id}
+                              from={anim.from}
+                              to={anim.to}
+                              amount={anim.amount}
+                            />
+                          ))}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedPostId(singlePost.id);
+                            setShowCommentBox(true);
+                          }}
+                          className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${
+                            selectedPostId === singlePost.id
+                              ? "text-[#7077FE]"
+                              : "text-black"
+                          }`}
+                        >
+                          <MessageSquare
+                            className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
+                            fill={
+                              selectedPostId === singlePost.id
+                                ? "#7077FE"
+                                : "none"
+                            }
+                            stroke={
+                              selectedPostId === singlePost.id
+                                ? "#7077FE"
+                                : "#000"
+                            }
+                          />{" "}
+                          <span
+                            className={`hidden sm:flex ${
+                              selectedPostId === singlePost.id
+                                ? "#7077FE"
+                                : "text-black"
+                            }`}
+                          >
+                            Reflections
+                          </span>
+                        </button>
+
+                        <div className="relative">
+                          <button
+                            onClick={() => toggleMenu(singlePost.id, "share")}
+                            className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black`}
+                          >
+                            <Share2 className="w-5 h-5 md:w-6 md:h-6" />
+                            <span className="hidden sm:flex text-black">
+                              Share
+                            </span>
+                          </button>
+                          {openMenu.postId === singlePost.id &&
+                            openMenu.type === "share" && (
+                              <div
+                                className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                                ref={shareMenuRef}
+                              >
+                                <ul className="flex items-center gap-4">
+                                  <li>
+                                    <FacebookShareButton
+                                      url={`${window.location.origin}/post/${singlePost.id}`}
+                                    >
+                                      <FaFacebook size={32} color="#4267B2" />
+                                    </FacebookShareButton>
+                                  </li>
+                                  <li>
+                                    <LinkedinShareButton
+                                      url={`${window.location.origin}/post/${singlePost.id}`}
+                                    >
+                                      <FaLinkedin size={32} color="#0077B5" />
+                                    </LinkedinShareButton>
+                                  </li>
+                                  {/* <li>
+                                                          <FaInstagram size={32} color="#C13584" />
+                                                        </li> */}
+                                  <TwitterShareButton
+                                    url={`${window.location.origin}/post/${singlePost.id}`}
+                                    title={tweetText}
+                                  >
+                                    <FaTwitter size={32} color="#1DA1F2" />
+                                  </TwitterShareButton>
+                                  <li>
+                                    <WhatsappShareButton
+                                      url={`${window.location.origin}/post/${singlePost.id}`}
+                                    >
+                                      <FaWhatsapp size={32} color="#1DA1F2" />
+                                    </WhatsappShareButton>
+                                  </li>
+                                  <li>
+                                    <button
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(
+                                          `${window.location.origin}/social?p=${singlePost.id}`
+                                        );
+                                        setCopy(true);
+                                        setTimeout(() => setCopy(false), 1500);
+                                      }}
+                                      className="flex items-center relative"
+                                      title="Copy link"
+                                    >
+                                      <MdContentCopy
+                                        size={30}
+                                        className="text-gray-600"
+                                      />
+                                      {copy && (
+                                        <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                                          Link Copied!
+                                        </div>
+                                      )}
+                                    </button>
+                                  </li>
+                                </ul>
+                              </div>
+                            )}
+                        </div>
+
+                        {/* <button
+                          onClick={() => savePostToCollection(post.id)}
+                          className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 ${
+                            post.is_saved ? "text-[#7077FE]" : "text-[#000]"
+                          }`}
+                        >
+                          <Bookmark
+                            stroke={post.is_saved ? "#7077FE" : "#000"}
+                            fill={post.is_saved ? "#7077FE" : "#fff"}
+                            className="w-5 h-5 md:w-6 md:h-6"
+                          />
+                          {post.is_saved ? "Unsave" : "Save"}
+                        </button> */}
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+
+                  {/* Story Strip Wrapper */}
+                  {!postIdFromURL ? (
+                    <>
+                      <h4 className="font-medium text-[16px]">
+                        Inspiration Reels
+                      </h4>
+
+                      <div className="relative">
+                        {/* LEFT BUTTON */}
+                        <button
+                          onClick={scrollLeft}
+                          className="absolute -left-2 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
+                        >
+                          <ChevronLeft size={22} />
+                        </button>
+                        <div
+                          className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory mt-3 md:mt-4"
+                          ref={storyScrollRef}
+                        >
+                          {/* Create Story Card */}
+
+                          <div
+                            onClick={() => openStoryPopup()}
+                            className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start"
+                          >
+                            <img
+                              src={createstory}
+                              alt="Create Story Background"
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "/profile.png";
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
+                            <svg
+                              viewBox="0 0 162 70"
+                              preserveAspectRatio="none"
+                              className="absolute bottom-0 left-0 w-full h-[70px] z-10"
+                            >
+                              <path
+                                d="M0,0 H61 C65,0 81,22 81,22 C81,22 97,0 101,0 H162 V70 H0 Z"
+                                fill="#7C81FF"
+                              />
+                            </svg>
+                            <div className="absolute bottom-[46px] left-1/2 -translate-x-1/2 z-20">
+                              <div className="w-9 h-9 md:w-12 md:h-12 bg-white text-[#7C81FF] font-semibold rounded-full flex items-center justify-center text-xl border-5">
+                                <img
+                                  src={iconMap["storyplus"]}
+                                  alt="plus"
+                                  className="w-4 h-4 transition duration-200 group-hover:brightness-0 group-hover:invert"
+                                />
+                              </div>
+                            </div>
+                            <div className="absolute bottom-5 w-full text-center text-white text-xs md:text-[15px] font-normal z-20">
+                              Inspirational Reel
+                            </div>
+                            <div className="w-full border-t-[5px] border-[#7C81FF] mt-4"></div>
+                          </div>
+
+                          {storiesData.slice(0, 10).map((story) => (
+                            <div
+                              key={story.id}
+                              className="w-[140px] h-[190px] md:w-[162px] md:h-[214px] snap-start shrink-0 rounded-xl overflow-hidden relative"
+                            >
+                              <StoryCard
+                                id={story.id}
+                                userId={story.user_id}
+                                userIcon={
+                                  story.storyuser?.profile?.profile_picture
+                                    ? story.storyuser?.profile?.profile_picture
+                                    : "/profile.png"
+                                }
+                                userName={
+                                  `${
+                                    story.storyuser?.profile?.first_name || ""
+                                  } ${
+                                    story.storyuser?.profile?.last_name || ""
+                                  }`.trim() || ""
+                                }
+                                title={story.description || "Untitled Story"}
+                                videoSrc={story?.thumbnail || ""}
+                              />
+
+                              <div className="absolute top-2 left-2 z-30 flex items-center gap-2  px-2 py-1 rounded-full">
+                                <img
+                                  src={
+                                    story.storyuser?.profile?.profile_picture
+                                      ? story.storyuser?.profile
+                                          ?.profile_picture
+                                      : "/profile.png"
+                                  }
+                                  alt="user"
+                                  className="w-6 h-6 rounded-full object-cover"
+                                />
+
+                                <span
+                                  className="
+  text-white 
+  text-[12px] 
+  font-normal 
+  leading-[100%] 
+  tracking-[0] 
+  font-['Open_Sans'] 
+  whitespace-nowrap 
+  drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]
+"
+                                >
+                                  {" "}
+                                  {story.storyuser?.profile?.first_name ||
+                                    ""}{" "}
+                                  {story.storyuser?.profile?.last_name || ""}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+
+                          {/* Show "See More" button if there are more than 10 stories */}
+                          {storiesCount > 10 && (
+                            <div
+                              onClick={() => navigate("/story-design")}
+                              className="w-[140px] h-[190px] md:w-[164px] md:h-[214px] rounded-xl overflow-hidden relative cursor-pointer shrink-0 snap-start bg-linear-to-br from-purple-400 to-pink-500 flex flex-col items-center justify-center"
+                            >
+                              <div className="text-white text-center p-4">
+                                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-3 mx-auto">
+                                  <svg
+                                    className="w-6 h-6 text-white"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                                    />
+                                  </svg>
+                                </div>
+                                <span className="text-sm font-semibold block">
+                                  See More
+                                </span>
+                                <span className="text-xs opacity-90 mt-1 block">
+                                  {storiesCount - 10}+ more stories
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          <button
+                            onClick={scrollRight}
+                            className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-md w-[42px] h-[42px] rounded-full flex items-center justify-center z-10"
+                          >
+                            <ChevronRight size={22} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Posts Section */}
+                      <div className="mt-1 h-14 px-6 py-4 bg-[rgba(112,119,254,0.1)] text-[#7077FE] font-medium rounded-lg text-left w-full font-family-Poppins text-[16px]">
+                        Reflection Scroll
+                      </div>
+                      {userPosts.map((post) => (
+                        <div
+                          key={post.id}
+                          ref={(el) => {
+                            if (el) {
+                              postViewRefs.current[post.id] = el;
+                            } else {
+                              delete postViewRefs.current[post.id];
+                            }
+                          }}
+                          data-post-id={post.id}
+                          className="bg-white rounded-xl shadow-md p-3 md:p-4 w-full mx-auto mt-4 md:mt-5"
+                        >
+                          {/* Header */}
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 md:gap-3">
+                              <Link
+                                to={
+                                  loggedInUserID === post?.profile?.user_id
+                                    ? `/dashboard/Profile`
+                                    : `/dashboard/social/user-profile/${post?.profile?.user_id}`
+                                }
+                              >
+                                <img
+                                  src={
+                                    !post.profile.profile_picture ||
+                                    post.profile.profile_picture === "null" ||
+                                    post.profile.profile_picture ===
+                                      "undefined" ||
+                                    !post.profile.profile_picture.startsWith(
+                                      "http"
+                                    )
+                                      ? "/profile.png"
+                                      : post.profile.profile_picture
+                                  }
+                                  className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
+                                  alt="User"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = "/profile.png";
+                                  }}
+                                />
+                              </Link>
+                              <div>
+                                <p className="font-semibold text-sm md:text-base text-black">
+                                  <Link
+                                    to={
+                                      loggedInUserID === post?.profile?.user_id
+                                        ? `/dashboard/Profile`
+                                        : `/dashboard/social/user-profile/${post?.profile?.user_id}`
+                                    }
+                                  >
+                                    {" "}
+                                    {post.profile.first_name}{" "}
+                                    {post.profile.last_name}
+                                  </Link>
+                                  <span className="text-[#999999] text-xs md:text-[12px] font-light">
+                                    {" "}
+                                    <Link
+                                      to={
+                                        loggedInUserID ===
+                                        post?.profile?.user_id
+                                          ? `/dashboard/Profile`
+                                          : `/dashboard/social/user-profile/${post?.profile?.user_id}`
+                                      }
+                                    >
+                                      {" "}
+                                      @{post.user.username}
+                                    </Link>
+                                  </span>
+                                </p>
+                                <p className="text-xs md:text-[12px] text-[#606060]">
+                                  {formatMessageTime(post.createdAt)}
+                                </p>
+                              </div>
+                            </div>
+                            {post.user_id !== loggedInUserID && (
+                              <div className="flex gap-2">
+                                {/* Connect Button */}
+                                <button
+                                  onClick={() => handleConnect(post.user_id)}
+                                  className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${
+                                    post.if_friend &&
+                                    post.friend_request_status === "ACCEPT"
+                                      ? "bg-green-100 text-green-700 border border-green-300"
+                                      : !post.if_friend &&
+                                        post.friend_request_status === "PENDING"
+                                      ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
+                                      : "bg-white text-black border border-gray-200"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-1">
+                                    <UserRoundPlus className="w-4 h-4" />
+                                    {post.if_friend &&
+                                    post.friend_request_status === "ACCEPT"
+                                      ? "Connected"
+                                      : !post.if_friend &&
+                                        post.friend_request_status === "PENDING"
+                                      ? "Requested"
+                                      : "Connect"}
+                                  </span>
+                                </button>
+                                {/* Follow Button */}
+                                <button
+                                  onClick={() => handleFollow(post.user_id)}
+                                  className={`flex justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors h-[35px]
+                                ${
+                                  post.if_following
+                                    ? "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                    : "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                }`}
+                                >
+                                  {post.if_following ? (
+                                    <>
+                                      <IoTrendingUpSharp w-100 />
+                                      Resonating
+                                    </>
+                                  ) : (
+                                    "+ Resonate"
+                                  )}
+                                </button>
+
+                                {/* Three Dots Menu */}
+
+                                <div className="relative">
+                                  <button
+                                    onClick={() =>
+                                      toggleMenu(post.id, "options")
+                                    }
+                                    className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
+                                    title="More options"
+                                  >
+                                    <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                                  </button>
+
+                                  {openMenu.postId === post.id &&
+                                    openMenu.type === "options" && (
+                                      <div
+                                        className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                        ref={(el) => {
+                                          const key = `${post.id}-options`;
+                                          if (el) menuRef.current[key] = el;
+                                          else delete menuRef.current[key];
+                                        }}
+                                      >
+                                        <ul className="space-y-1">
+                                          <li className="lg:hidden">
+                                            <button
+                                              onClick={() =>
+                                                handleConnect(post.user_id)
+                                              }
+                                              disabled={
+                                                connectingUsers[post.user_id] ||
+                                                false
+                                              }
+                                              className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                            >
+                                              <img
+                                                src={iconMap["userplus"]}
+                                                alt="userplus"
+                                                className="w-4 h-4"
+                                              />
+                                              {connectingUsers[post.user_id]
+                                                ? "Loading..."
+                                                : getFriendStatus(
+                                                    post.user_id
+                                                  ) === "requested"
+                                                ? "Requested" // This will now change back to "Connect" when clicked again
+                                                : "Connect"}
+                                            </button>
+                                          </li>
+                                          <li>
+                                            <button
+                                              onClick={() => {
+                                                copyPostLink(
+                                                  `${window.location.origin}/social?p=${post.id}`,
+                                                  (msg) =>
+                                                    showToast({
+                                                      type: "success",
+                                                      message: msg,
+                                                      duration: 2000,
+                                                    }),
+                                                  (msg) =>
+                                                    showToast({
+                                                      type: "error",
+                                                      message: msg,
+                                                      duration: 2000,
+                                                    })
+                                                );
+                                              }}
+                                              className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                            >
+                                              <LinkIcon className="w-4 h-4" />
+                                              Copy Post Act
+                                            </button>
+                                          </li>
+                                          <li>
+                                            <button
+                                              onClick={() =>
+                                                savePostToCollection(post.id)
+                                              }
+                                              className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                            >
+                                              <Bookmark className="w-4 h-4" />
+                                              {post.is_saved
+                                                ? "Unsave"
+                                                : "Save Act"}
+                                            </button>
+                                          </li>
+                                          <li>
+                                            <button
+                                              onClick={() =>
+                                                openReportModal(post.id)
+                                              }
+                                              className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                            >
+                                              <Flag className="w-4 h-4" />
+                                              Report Act
+                                            </button>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                    )}
+                                </div>
+                              </div>
+                            )}
+
+                            {post.user_id == loggedInUserID && (
+                              <div className="flex gap-2">
+                                {/* Three Dots Menu */}
+
+                                <div className="relative">
+                                  <button
+                                    onClick={() =>
+                                      toggleMenu(post.id, "options")
+                                    }
+                                    className="flex items-center border-[#ECEEF2] border shadow-sm justify-center w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
+                                    title="More options"
+                                  >
+                                    <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                                  </button>
+
+                                  {openMenu.postId === post.id &&
+                                    openMenu.type === "options" && (
+                                      <div
+                                        className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                        ref={(el) => {
+                                          const key = `${post.id}-options`;
+                                          if (el) menuRef.current[key] = el;
+                                          else delete menuRef.current[key];
+                                        }}
+                                      >
+                                        <ul className="space-y-1">
+                                          <li>
+                                            <button
+                                              onClick={() => {
+                                                copyPostLink(
+                                                  `${window.location.origin}/social?p=${post.id}`,
+                                                  (msg) =>
+                                                    showToast({
+                                                      type: "success",
+                                                      message: msg,
+                                                      duration: 2000,
+                                                    }),
+                                                  (msg) =>
+                                                    showToast({
+                                                      type: "error",
+                                                      message: msg,
+                                                      duration: 2000,
+                                                    })
+                                                );
+                                              }}
+                                              className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                            >
+                                              <LinkIcon className="w-4 h-4" />
+                                              Copy Post Link
+                                            </button>
+                                          </li>
+                                          <li>
+                                            <button
+                                              onClick={() =>
+                                                savePostToCollection(post.id)
+                                              }
+                                              className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                            >
+                                              <Bookmark className="w-4 h-4" />
+                                              {post.is_saved
+                                                ? "Unsave"
+                                                : "Save Post"}
+                                            </button>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                    )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Post Content */}
+                          <div className="mt-3 md:mt-4">
+                            <p className="text-gray-800 font-[poppins] text-sm md:text-base mb-2 md:mb-3 space-y-1">
+                              <span>
+                                {expandedPosts[post.id] ||
+                                post?.content?.length <= CONTENT_LIMIT
+                                  ? renderContentWithHashtags(
+                                      post.content || ""
+                                    )
+                                  : renderContentWithHashtags(
+                                      `${post?.content?.substring(
+                                        0,
+                                        CONTENT_LIMIT
+                                      )}...`
+                                    )}
+                              </span>
+                              {post?.content?.length > CONTENT_LIMIT && (
+                                <button
+                                  onClick={() => toggleExpand(post.id)}
+                                  className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
+                                >
+                                  {expandedPosts[post.id]
+                                    ? "Show less"
+                                    : "Read more"}
+                                </button>
+                              )}
+                            </p>
+
+                            {/* Dynamic Media Block */}
+                            {post.file && (
+                              <div className="rounded-lg">
+                                {(() => {
+                                  // Split and filter valid URLs
+                                  const urls = post.file
+                                    .split(",")
+                                    .map((url: string) => url.trim())
+                                    .filter((url: string) =>
+                                      isValidMediaUrl(url)
+                                    ); // Filter out invalid URLs
+
+                                  // If no valid media URLs after filtering, don't render anything
+                                  if (urls.length === 0) {
+                                    return null;
+                                  }
+
+                                  const mediaItems = urls.map(
+                                    (url: string) => ({
+                                      url,
+                                      type: (isVideoFile(url)
+                                        ? "video"
+                                        : "image") as "video" | "image",
+                                    })
+                                  );
+
+                                  // Use PostCarousel if there are multiple items
+                                  if (mediaItems.length > 1) {
+                                    return (
+                                      // Wrap with Link if product_id exists
+                                      post.product_id ? (
+                                        <Link
+                                          to={`/dashboard/product-detail/${post.product_id}`}
+                                        >
+                                          <PostCarousel
+                                            mediaItems={mediaItems}
+                                          />
+                                        </Link>
+                                      ) : (
+                                        <PostCarousel mediaItems={mediaItems} />
+                                      )
+                                    );
+                                  }
+
+                                  // Single item rendering - wrap with Link if product_id exists
+                                  const item = mediaItems[0];
+                                  const mediaContent =
+                                    item.type === "video" ? (
+                                      <video
+                                        className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl"
+                                        controls
+                                        muted
+                                        autoPlay
+                                        loop
+                                      >
+                                        <source
+                                          src={item.url}
+                                          type="video/mp4"
+                                        />
+                                        Your browser does not support the video
+                                        tag.
+                                      </video>
+                                    ) : (
+                                      <img
+                                        src={item.url}
+                                        alt="Post content"
+                                        className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
+                                        onError={(e) => {
+                                          const target =
+                                            e.target as HTMLImageElement;
+                                          target.src = ""; // Clear broken images
+                                        }}
+                                      />
+                                    );
+
+                                  // Conditionally wrap with Link if product_id exists
+                                  return post.product_id ? (
+                                    <Link
+                                      to={`/dashboard/product-detail/${post.product_id}`}
+                                    >
+                                      {mediaContent}
+                                    </Link>
+                                  ) : (
+                                    mediaContent
+                                  );
+                                })()}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Reactions and Action Buttons */}
+                          <div className="flex justify-between items-center mt-6 px-1 text-xs md:text-sm text-gray-600 gap-2">
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1 md:gap-2">
+                                <div className="flex items-center -space-x-2 md:-space-x-3"></div>
+                              </div>
+                              {/* <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                              <img
+                                src={comment}
+                                alt="Comment"
+                                className="w-6 h-6 md:w-8 md:h-8"
+                              />
+                            </div>
+                            <span>{post.comments_count}</span>
+                          </div> */}
+                            </div>
+                            {post.comments_count > 0 && (
+                              <div>
+                                <span className="text-sm text-[#64748B]">
+                                  {post.comments_count} Reflections
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="border-t border-[#ECEEF2] grid grid-cols-3  gap-2 md:grid-cols-3 md:gap-4 mt-3 md:mt-5">
+                            <button
+                              onClick={(e) => handleLike(post.id, e)}
+                              disabled={isLoading}
+                              className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-semibold text-sm leading-[150%] bg-white text-[#7077FE] hover:bg-gray-50 relative ${
+                                isLoading ? "opacity-50 cursor-not-allowed" : ""
+                              }`}
+                            >
+                              <span className="hidden sm:flex text-lg text-black">
+                                {post.likes_count}
+                              </span>
+                              <ThumbsUp
+                                className="w-5 h-5 md:w-6 md:h-6 shrink-0"
+                                fill={post.is_liked ? "#7077FE" : "none"}
+                                stroke={post.is_liked ? "#7077FE" : "#000"}
+                              />
+
+                              <span
+                                className={`hidden sm:flex ${
+                                  post.is_liked
+                                    ? "text-[#7077FE]"
+                                    : "text-black"
+                                }`}
+                              >
+                                Appreciate
+                              </span>
+                              {animations.map((anim) => (
+                                <CreditAnimation
+                                  key={anim.id}
+                                  from={anim.from}
+                                  to={anim.to}
+                                  amount={anim.amount}
+                                />
+                              ))}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedPostId(post.id);
+                                setShowCommentBox(true);
+                              }}
+                              className={`flex items-center justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6  font-semibold text-sm md:text-base  hover:bg-gray-50 ${
+                                selectedPostId === post.id
+                                  ? "text-[#7077FE]"
+                                  : "text-black"
+                              }`}
+                            >
+                              <MessageSquare
+                                className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
+                                fill={
+                                  selectedPostId === post.id
+                                    ? "#7077FE"
+                                    : "none"
+                                }
+                                stroke={
+                                  selectedPostId === post.id
+                                    ? "#7077FE"
+                                    : "#000"
+                                }
+                              />{" "}
+                              <span
+                                className={`hidden sm:flex ${
+                                  selectedPostId === post.id
+                                    ? "#7077FE"
+                                    : "text-black"
+                                }`}
+                              >
+                                Reflections
+                              </span>
+                            </button>
+
+                            <div className="relative">
+                              <button
+                                onClick={() => toggleMenu(post.id, "share")}
+                                className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black`}
+                              >
+                                <Share2 className="w-5 h-5 md:w-6 md:h-6" />
+                                <span className="hidden sm:flex text-black">
+                                  Share
+                                </span>
+                              </button>
+                              {openMenu.postId === post.id &&
+                                openMenu.type === "share" && (
+                                  <div
+                                    className="absolute top-10 sm:left-auto sm:right-0 mt-3 bg-white shadow-lg rounded-lg p-3 z-10"
+                                    ref={shareMenuRef}
+                                  >
+                                    <ul className="flex items-center gap-4">
+                                      <li>
+                                        <FacebookShareButton
+                                          url={`${window.location.origin}/post/${post.id}`}
+                                        >
+                                          <FaFacebook
+                                            size={32}
+                                            color="#4267B2"
+                                          />
+                                        </FacebookShareButton>
+                                      </li>
+                                      <li>
+                                        <LinkedinShareButton
+                                          url={`${window.location.origin}/post/${post.id}`}
+                                        >
+                                          <FaLinkedin
+                                            size={32}
+                                            color="#0077B5"
+                                          />
+                                        </LinkedinShareButton>
+                                      </li>
+                                      {/* <li>
+                                                          <FaInstagram size={32} color="#C13584" />
+                                                        </li> */}
+                                      <TwitterShareButton
+                                        url={`${window.location.origin}/post/${post.id}`}
+                                        title={tweetText}
+                                      >
+                                        <FaTwitter size={32} color="#1DA1F2" />
+                                      </TwitterShareButton>
+                                      <li>
+                                        <WhatsappShareButton
+                                          url={`${window.location.origin}/post/${post.id}`}
+                                        >
+                                          <FaWhatsapp
+                                            size={32}
+                                            color="#1DA1F2"
+                                          />
+                                        </WhatsappShareButton>
+                                      </li>
+                                      <li>
+                                        <button
+                                          onClick={() => {
+                                            navigator.clipboard.writeText(
+                                              `${window.location.origin}/social?p=${post.id}`
+                                            );
+                                            setCopy(true);
+                                            setTimeout(
+                                              () => setCopy(false),
+                                              1500
+                                            );
+                                          }}
+                                          className="flex items-center relative"
+                                          title="Copy link"
+                                        >
+                                          <MdContentCopy
+                                            size={30}
+                                            className="text-gray-600"
+                                          />
+                                          {copy && (
+                                            <div className="absolute w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                                              Link Copied!
+                                            </div>
+                                          )}
+                                        </button>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                )}
+                            </div>
+
+                            {/* <button
+                          onClick={() => savePostToCollection(post.id)}
+                          className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 ${
+                            post.is_saved ? "text-[#7077FE]" : "text-[#000]"
+                          }`}
+                        >
+                          <Bookmark
+                            stroke={post.is_saved ? "#7077FE" : "#000"}
+                            fill={post.is_saved ? "#7077FE" : "#fff"}
+                            className="w-5 h-5 md:w-6 md:h-6"
+                          />
+                          {post.is_saved ? "Unsave" : "Save"}
+                        </button> */}
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Load More Button */}
+                      {hasMore && userPosts.length >= 10 && (
+                        <div className="flex justify-center mt-6">
+                          <button
+                            onClick={() => getUserPosts()}
+                            disabled={isLoading}
+                            className="px-6 py-2 bg-[#7077FE] text-white rounded-full hover:bg-[#5b63e6] disabled:opacity-50"
+                          >
+                            {isLoading ? "Showing..." : "Show More Results"}
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    ""
+                  )}
+                </>
+                {/* )} */}
+              </>
+            ) : activeView === "following" ? (
+              <div className="bg-white rounded-xl shadow-md p-4 mt-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    People You Follow
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setActiveView("posts")}
+                      className="text-sm text-[#7C81FF] hover:underline"
+                    >
+                      Back to Posts
+                    </button>
+                    {/* Mobile sidebar toggle */}
+                    <div className="xl:hidden z-40">
+                      <button
+                        onClick={toggleSidebar}
+                        className="bg-[#7077FE] text-white p-3 rounded-full shadow-lg hover:bg-[#5b63e6] transition-all"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          {isSidebarOpen ? (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          ) : (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 6h16M4 12h16M4 18h16"
+                            />
+                          )}
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {isFollowingLoading ? (
+                  <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                  </div>
+                ) : (
+                  <FollowedUsersList
+                    users={followedUsers}
+                    onFollowToggle={(userId) => {
+                      setFollowedUsers((prev) =>
+                        prev.map((user) =>
+                          user.id === userId
+                            ? { ...user, is_following: !user.is_following }
+                            : user
+                        )
+                      );
+                    }}
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="bg-white rounded-xl shadow-md p-4 mt-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    My Collection
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setActiveView("posts")}
+                      className="text-sm text-[#7C81FF] hover:underline"
+                    >
+                      Back to Posts
+                    </button>
+                    {/* Mobile sidebar toggle */}
+                    <div className="xl:hidden z-40">
+                      <button
+                        onClick={toggleSidebar}
+                        className="bg-[#7077FE] text-white p-3 rounded-full shadow-lg hover:bg-[#5b63e6] transition-all"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          {isSidebarOpen ? (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          ) : (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 6h16M4 12h16M4 18h16"
+                            />
+                          )}
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {isCollectionLoading ? (
+                  <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                  </div>
+                ) : (
+                  <>
+                    {collectionItems.length === 0 ? (
+                      <div className="text-center py-10 text-gray-500">
+                        No posts saved to collection yet
+                      </div>
+                    ) : (
+                      <>
+<CollectionList 
+  key={`collection-${collectionItems.length}-${collectionPage}`}
+  items={collectionItems}
+/>
+
+                        {/* Load More Button */}
+                        {hasMoreCollection && collectionItems.length > 0 && (
+                          <div className="flex justify-center pt-6 mt-4">
+                            <button
+                              onClick={handleLoadMoreCollection}
+                              disabled={isLoadingCollectionMore}
+                              className="font-['Open_Sans'] px-6 py-3 text-sm rounded-full border border-gray-300 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors bg-white"
+                            >
+                              {isLoadingCollectionMore
+                                ? "Loading..."
+                                : "Load More Saved Posts"}
+                            </button>
+                          </div>
+                        )}
+
+                        {/* No more posts message */}
+                        {!hasMoreCollection && collectionItems.length > 0 && (
+                          <div className="text-center py-4 text-gray-500">
+                            You've reached the end of your collection
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
+          {isSidebarOpen && (
+            <div
+              className="xl:hidden fixed inset-0 bg-black/50 z-40"
+              onClick={toggleSidebar}
+            />
+          )}
+
+          <div
+            className={`fixed xl:static top-0 right-0 h-full xl:h-auto w-[280px] sm:w-[320px] xl:w-[25%] max-w-[90vw] xl:max-w-none bg-white xl:bg-transparent shadow-xl xl:shadow-none transform transition-transform duration-300 ease-in-out ${
+              isSidebarOpen
+                ? "translate-x-0 p-3"
+                : "translate-x-full xl:translate-x-0"
+            } z-50 xl:z-auto overflow-y-auto pt-0 flex flex-col gap-4`}
+          >
+            {/* Close button for mobile */}
+            <div className="xl:hidden flex justify-between items-center px-4 pb-4 border-b border-gray-200 sticky top-0 bg-white z-10 pt-4">
+              <h3 className="text-lg font-semibold text-gray-800">Menu</h3>
+              <button
+                onClick={toggleSidebar}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <svg
+                  className="w-6 h-6 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="w-full h-fit bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm lg:mx-0">
+              <h3 className="text-[#081021] font-semibold text-base md:text-[14px] mb-3 md:mb-4 px-4">
+                Quick Actions
+              </h3>
+              <div className="w-full border-t border-[#E1E1E1] my-4"></div>
+              <ul className="space-y-4 text-sm md:text-[14px] text-[#000000]">
+                <li
+                  onClick={() => {
+                    navigate("/dashboard/trendingpost");
+                    setIsSidebarOpen(false); // Close sidebar on navigation
+                  }}
+                  className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
+                >
+                  <img src={Trending} className="w-5 h-5" alt="" /> Trending
+                </li>
+                <li
+                  onClick={() => {
+                    fetchCollectionItems();
+                    // setIsSidebarOpen(false);
+                  }}
+                  className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-2 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
+                >
+                  <img src={Collection} className="w-5 h-5" alt="" /> My
+                  Favorites
+                </li>
+                <li
+                  onClick={() => {
+                    fetchFollowedUsers();
+                    setIsSidebarOpen(false);
+                  }}
+                  className="flex items-center gap-2 hover:text-[#7077FE] cursor-pointer px-4 py-3 rounded-[5px] mb-0 hover:bg-[#7077FE1A] transition-duration-500 hover:font-semibold transition-all"
+                >
+                  <img src={people} className="w-5 h-5" alt="" /> People you
+                  follow
+                </li>
+              </ul>
+            </div>
+
+            {/* User Selected Topics Below Quick Actions */}
+            {userSelectedTopics?.length > 0 && (
+              <div className="w-full h-fit bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm lg:mx-0">
+                <div className="flex items-center justify-between mb-3 md:mb-4 px-4">
+                  <h3 className="text-[#081021] font-semibold text-base md:text-[14px]">
+                    My interests
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setShowTopicModal(true);
+                      setIsSidebarOpen(false);
+                    }}
+                    className="text-sm text-blue-500 hover:underline hover:text-blue-600 transition cursor-pointer"
+                  >
+                    Change
+                  </button>
+                </div>
+                <div className="w-full border-t border-[#C8C8C8] my-4"></div>
+                <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
+                  {userSelectedTopics?.map((topic) => (
+                    <button
+                      key={topic.id}
+                      onClick={() => {
+                        navigate(`/dashboard/feed/search?topic=${topic.slug}`, {
+                          state: {
+                            topics,
+                            userSelectedTopics,
+                          },
+                        });
+                        setIsSidebarOpen(false);
+                      }}
+                      className="flex items-center gap-2 hover:text-purple-700 cursor-pointer w-full text-left"
+                      title={topic.topic_name}
+                    >
+                      <span className="w-2 h-2 bg-purple-500 rounded-full shrink-0"></span>
+                      <span className="truncate">
+                        {topic.topic_name.length > 25
+                          ? `${topic.topic_name.substring(0, 25)}...`
+                          : topic.topic_name}
+                      </span>
+                    </button>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Topics BELOW User Selected Topics */}
+            <div className="w-full h-fit bg-white rounded-xl pt-4 pb-4 px-3 md:pt-6 md:pb-6 shadow-sm lg:mx-0 mb-20 lg:mb-0">
+              <h3 className="text-[#081021] font-semibold text-base md:text-[14px] mb-3 md:mb-4 px-4">
+                Explore Topics
+              </h3>
+              <div className="w-full border-t border-[#E1E1E1] my-4"></div>
+              <ul className="space-y-3 text-sm md:text-[15px] text-gray-700 px-4">
+                {topics?.slice(0, visibleTopic)?.map((topic) => (
+                  <button
+                    key={topic.id}
+                    onClick={() => {
+                      navigate(`/dashboard/feed/search?topic=${topic.slug}`, {
+                        state: {
+                          topics,
+                          userSelectedTopics,
+                        },
+                      });
+                      setIsSidebarOpen(false);
+                    }}
+                    className="flex items-center gap-2 hover:text-purple-700 cursor-pointer w-full text-left"
+                    title={topic.topic_name}
+                  >
+                    <span className="w-2 h-2 bg-purple-500 rounded-full shrink-0"></span>
+                    <span className="truncate">
+                      {topic.topic_name.length > 25
+                        ? `${topic.topic_name.substring(0, 25)}...`
+                        : topic.topic_name}
+                    </span>
+                  </button>
+                ))}
+              </ul>
+              {topics.length > visibleTopic && (
+                <div className="px-4 mt-3">
+                  <button
+                    onClick={() => setVisibleTopic((prev) => prev + 10)}
+                    className="text-sm text-[#7077FE] hover:underline font-medium w-full text-left"
+                  >
+                    See More Topics ({topics.length - visibleTopic} more)
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Popup Modals (unchanged) */}
+          {showPostModal && (
+            <CreatePostModal
+              isOpen={showPostModal}
+              onClose={() => setShowPostModal(false)}
+              userInfo={userInfo}
+              onPostCreated={handlePostCreated}
+              topics={topics}
+            />
+          )}
+
+          {showCloseConfirm && (
+            <div
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-9999"
+              onClick={() => setShowCloseConfirm(false)}
+            >
+              <div
+                className="bg-white rounded-xl w-full max-w-sm p-6 shadow-lg"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Do you want to save this as a draft?
+                </h3>
+
+                <div className="flex justify-center items-center flex-col gap-3">
+                  <button
+                    className="w-[50%] flex justify-center items-center py-2 bg-[#7077FE] text-white rounded-lg text-sm"
+                    onClick={() => {
+                      // TODO: handle save draft
+                      console.log("Draft saved");
+                      setShowCloseConfirm(false);
+                      setShowPopup(false);
+                    }}
+                  >
+                    Save Draft
+                  </button>
+
+                  <button
+                    className="w-[50%] flex justify-center items-center py-2 bg-red-500 text-white rounded-lg text-sm"
+                    onClick={() => {
+                      setShowCloseConfirm(false);
+                      setShowPopup(false); // close main popup
+                    }}
+                  >
+                    Discard
+                  </button>
+
+                  <button
+                    className="w-[50%] flex justify-center items-center py-2 bg-gray-200 text-black rounded-lg text-sm"
+                    onClick={() => setShowCloseConfirm(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showStoryPopup && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className=" bg-white rounded-[18px] w-full overflow-y-auto max-w-md mx-4 p-4 shadow-lg relative">
+                <div className="flex px-5 py-3 bg-[#897AFF1A] justify-between items-center">
+                  <div className="w-fit h-fit">
+                    <Image
+                      src="/popup-plus-icon.png"
+                      alt="plus-icon"
+                      width={36}
+                      height={36}
+                      className="object-contain"
+                    />
+                  </div>
+                  <h2 className="text-lg font-semibold mb-0 text-gray-800">
+                    Upload Story
+                  </h2>
+                  <button
+                    onClick={() => setShowStoryPopup(false)}
+                    className="text-black text-[26px] hover:text-black cursor-pointer"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* {apiStoryMessage && (
+                <div
+                  className={`poppins text-center mb-4 ${
+                    apiStoryMessage.includes("verification")
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  {apiStoryMessage}
+                </div>
+              )} */}
+                <div className="px-3 mt-5 pb-5">
+                  <textarea
+                    rows={4}
+                    className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
+                    placeholder="Write anything about your story"
+                    value={storyMessage}
+                    onChange={(e) => setStoryMessage(e.target.value)}
+                  />
+
+                  {/* Video Upload Section */}
+                  <div className="space-y-3 mb-4 flex rounded-lg border border-[#F07EFF1A] justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
+                    <div className="flex justify-center gap-4 w-full">
+                      <div>
+                        <label className="flex flex-col items-center justify-center gap-2 cursor-pointer">
+                          <Image
+                            src="/youtube.png"
+                            alt="youtube"
+                            width={24}
+                            height={16}
+                            className="object-contain rounded-0"
+                          />
+                          <span className="text-black text-sm">
+                            Select Video
+                          </span>
+                          <input
+                            type="file"
+                            accept="video/mp4"
+                            id="video-upload-story"
+                            className="hidden"
+                            onChange={handleStoryVideoChange}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Video Preview */}
+                  {videoPreviewUrl && (
+                    <div className="mb-4 relative">
+                      <video
+                        controls
+                        className="w-full max-h-[300px] rounded-lg object-cover"
+                        src={videoPreviewUrl}
+                      />
+                      <button
+                        onClick={handleRemoveStoryVideo}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Video preview - {selectedStoryVideo?.name}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between">
+                    <button
+                      onClick={handleSubmitStory}
+                      className="w-full py-2 text-sm rounded-[100px] bg-[#7077FE] text-white disabled:bg-gray-400"
+                      disabled={!selectedStoryVideo || isUploading}
+                    >
+                      {isUploading ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Uploading...
+                        </div>
+                      ) : (
+                        "Post Story"
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showCloseConfirm && (
+            <div
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-9999"
+              onClick={() => setShowCloseConfirm(false)}
+            >
+              <div
+                className="bg-white rounded-xl w-full max-w-sm p-6 shadow-lg"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Do you want to save this as a draft?
+                </h3>
+
+                <div className="flex flex-col gap-3">
+                  <button
+                    className="w-full py-2 bg-[#7077FE] text-white rounded-lg text-sm"
+                    onClick={() => {
+                      // TODO: handle save draft
+                      console.log("Draft saved");
+                      setShowCloseConfirm(false);
+                      setShowPopup(false);
+                    }}
+                  >
+                    Save Draft
+                  </button>
+
+                  <button
+                    className="w-full py-2 bg-red-500 text-white rounded-lg text-sm"
+                    onClick={() => {
+                      setShowCloseConfirm(false);
+                      setShowPopup(false); // close main popup
+                    }}
+                  >
+                    Discard
+                  </button>
+
+                  <button
+                    className="w-full py-2 bg-gray-200 text-black rounded-lg text-sm"
+                    onClick={() => setShowCloseConfirm(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showCommentBox && selectedPostId && (
+            <CommentBox
+              setUserPosts={setUserPosts}
+              userPosts={userPosts}
+              postId={selectedPostId}
+              onClose={() => {
+                setShowCommentBox(false);
+                setSelectedPostId(null);
+              }}
+              triggerCreditAnimation={triggerCreditAnimation}
+            />
+          )}
+
+          {showTopicModal && (
+            <TopicModal
+              topics={topics} // ← correct prop name
+              userSelectedTopics={userSelectedTopics} // ← correct prop name
+              onSelect={handleTopicsSelected} // ← now defined
+              onClose={() => setShowTopicModal(false)}
+            />
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="w-full min-h-[70vh] flex items-center justify-center px-4">
+            <div className="bg-white max-w-2xl w-full shadow-lg rounded-xl p-8 text-center">
+              <div className="py-8">
+                <svg
+                  className="w-20 h-20 text-purple-500 mx-auto mb-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                  />
+                </svg>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-3">
+                  Sorry!
+                </h2>
+                <p className="text-gray-600 text-sm sm:text-base">
+                  Only users 18 years or older can access the social media
+                  feature.
+                </p>
+                <div className="w-full flex justify-center mt-4">
+                  <Button
+                    variant="gradient-primary"
+                    className="font-['Plus Jakarta Sans'] text-[14px] w-full sm:w-auto rounded-full py-2 px-6 flex justify-center transition-colors duration-500 ease-in-out"
+                    type="submit"
+                  >
+                    <Link to="/dashboard/user-profile"> Update Profile</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Report Post Modal */}
+      <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)}>
+        <div className="p-0 lg:min-w-[450px] md:min-w-[450px] min-w-[300px]">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Report Post
+          </h3>
+          <div className="mb-4">
+            <label
+              htmlFor="reportReason"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Reason why you report this post
+            </label>
+            <textarea
+              id="reportReason"
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows={4}
+              placeholder="Please provide a reason for reporting this post..."
+            />
+          </div>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setShowReportModal(false)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={reportPost}
+              disabled={
+                isReportingPost === selectedPostForReport ||
+                !reportReason.trim()
+              }
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isReportingPost === selectedPostForReport
+                ? "Submitting..."
+                : "Submit Report"}
+            </button>
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
+}

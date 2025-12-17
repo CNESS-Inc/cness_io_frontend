@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AddTicketMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="AddTicketMessage.xsd">
+  <StoreID>10138</StoreID>
+  <ActionCode>taAdd</ActionCode>
+  <Ticket>
+    <ExternalID>1</ExternalID>
+    <OrderServiceType>stPickUp</OrderServiceType>
+    <NetSubtotal>32.00</NetSubtotal>
+    <TaxSubtotal>1.92</TaxSubtotal>
+    <TotalOwing>33.92</TotalOwing>
+    <PriceGroupName>$$Regular Price Group$$</PriceGroupName>
+    <Customer>
+      <Telephone>1015467664</Telephone>
+      <CompanyName></CompanyName>
+      <FirstName>SHARY</FirstName>
+      <LastName>ABBOTT</LastName>
+      <Apartment></Apartment>
+      <StreetNumber>362</StreetNumber>
+      <StreetName>4TH AVENUE SOUTH</StreetName>
+      <City>SEATTLE</City>
+      <State>WA</State>
+      <Zip>98104</Zip>
+      <Stairway></Stairway>
+      <Floor></Floor>
+      <EMail></EMail>
+      <Zone1>2</Zone1>
+      <Zone2></Zone2>
+      <Zone3></Zone3>
+      <Zone4></Zone4>
+      <Instructions></Instructions>
+      <Notes></Notes>
+    </Customer>
+    <Notes></Notes>
+    <MenuSelections>
+      <MenuSelection>
+        <Name>Mediterranean Pizza</Name>
+        <PLU>27</PLU>
+        <Quantity>1</Quantity>
+        <SizeName>Large</SizeName>
+        <PriceGroupName>$$Regular Price Group$$</PriceGroupName>
+        <Portions>
+          <Portion>
+            <Name>$$Full Portion$$</Name>
+            <Modifiers>
+              <Modifier>
+                <Name>Stuffed</Name>
+                <PLU>117</PLU>
+                <ModifierAction>maAdd</ModifierAction>
+                <ModifierActionName>Add</ModifierActionName>
+              </Modifier>
+            </Modifiers>
+          </Portion>
+        </Portions>
+        <Notes></Notes>
+        <Price>17.00</Price>
+      </MenuSelection>
+      <MenuSelection>
+        <Name>Hawaiian Pizza</Name>
+        <PLU>19</PLU>
+        <Quantity>1</Quantity>
+        <SizeName>Large</SizeName>
+        <PriceGroupName>$$Regular Price Group$$</PriceGroupName>
+        <Portions>
+          <Portion>
+            <Name>$$Full Portion$$</Name>
+            <Modifiers>
+              <Modifier>
+                <Name>Hand Tossed</Name>
+                <PLU>118</PLU>
+                <ModifierAction>maAdd</ModifierAction>
+                <ModifierActionName>Add</ModifierActionName>
+              </Modifier>
+            </Modifiers>
+          </Portion>
+        </Portions>
+        <Notes></Notes>
+        <Price>15.00</Price>
+      </MenuSelection>
+    </MenuSelections>
+    <OrderCredits/>
+    <OrderCharges/>
+    <ExpectedPayments>
+      <ExpectedPayment>
+        <Name>Cash</Name>
+        <Amount>33.92</Amount>
+      </ExpectedPayment>
+    </ExpectedPayments>
+  </Ticket>
+  <ResponseFormat>trFull</ResponseFormat>
+</AddTicketMessage>
