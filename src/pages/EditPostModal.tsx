@@ -1,8 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CirclePlus, X } from "lucide-react";
 import { useToast } from "../components/ui/Toast/ToastProvider";
-import { EditPost, GetSinglePost, getTopics, GetConnectionUser, SearchLocation } from "../Common/ServerAPI";
-import { Link } from "react-router-dom";
+import {
+  EditPost,
+  GetSinglePost,
+  getTopics,
+  GetConnectionUser,
+  SearchLocation,
+} from "../Common/ServerAPI";
+import { useNavigate } from "react-router-dom";
 
 interface EditPostModalProps {
   isOpen: boolean;
@@ -35,6 +41,7 @@ interface EditPostModalProps {
     main_name?: string;
   };
   onPostUpdated?: (updatedPost: any) => void;
+  popupModalClose?: any;
 }
 
 const EditPostModal: React.FC<EditPostModalProps> = ({
@@ -42,9 +49,11 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   onClose,
   posts,
   userInfo: propUserInfo,
-  onPostUpdated
+  onPostUpdated,
+  popupModalClose,
 }) => {
   const { showToast } = useToast();
+  const navigate = useNavigate();
 
   // Get userInfo from props or localStorage
   const [userInfo] = useState(() => {
@@ -62,12 +71,14 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       profile_picture: storedProfilePic || undefined,
     };
   });
-  console.log("🚀 ~ EditPostModal ~ userInfo:", userInfo)
+  const loggedInUserID = localStorage.getItem("Id");
   const [post, setPost] = useState({ ...posts });
   const [postMessage, setPostMessage] = useState("");
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
-  const [removedExistingImages, setRemovedExistingImages] = useState<string[]>([]);
+  const [removedExistingImages, setRemovedExistingImages] = useState<string[]>(
+    []
+  );
   const [selectedTopic, setSelectedTopic] = useState("");
   const [isTopicDropdownOpen, setIsTopicDropdownOpen] = useState(false);
   const [topicSearchQuery, setTopicSearchQuery] = useState("");
@@ -126,7 +137,6 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
     { emoji: "😤", label: "Frustrated" },
   ];
 
-
   // Fetch post details when modal opens
   useEffect(() => {
     if (!isOpen) return;
@@ -142,7 +152,10 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           // Parse existing files
           let filesArray: string[] = [];
           if (p.file) {
-            filesArray = p.file.split(",").map((url: string) => url.trim()).filter(Boolean);
+            filesArray = p.file
+              .split(",")
+              .map((url: string) => url.trim())
+              .filter(Boolean);
           }
 
           setPost({
@@ -153,11 +166,11 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
             topic_id: p.topic_id,
             is_reel: posts?.is_reel || false,
             media: {
-              type: filesArray.length > 0 ? 'image' : 'text',
-              src: filesArray[0] || '',
+              type: filesArray.length > 0 ? "image" : "text",
+              src: filesArray[0] || "",
               alt: p.content,
-              images: filesArray
-            }
+              images: filesArray,
+            },
           });
 
           setPostMessage(p.content || "");
@@ -170,7 +183,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           if (p.feeling) {
             setFeeling(p.feeling);
             // Find emoji for this feeling
-            const feelingData = feelings.find(f => f.label === p.feeling);
+            const feelingData = feelings.find((f) => f.label === p.feeling);
             if (feelingData) {
               setFeelingEmoji(feelingData.emoji);
             }
@@ -182,11 +195,17 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           }
 
           // Load tagged users
-          if (p.tagged_users && Array.isArray(p.tagged_users) && p.tagged_users.length > 0) {
+          if (
+            p.tagged_users &&
+            Array.isArray(p.tagged_users) &&
+            p.tagged_users.length > 0
+          ) {
             const userNames = p.tagged_users.map((user: any) =>
-              `${user.first_name || ''} ${user.last_name || ''}`.trim()
+              `${user.first_name || ""} ${user.last_name || ""}`.trim()
             );
-            const userIds = p.tagged_users.map((user: any) => user.id.toString());
+            const userIds = p.tagged_users.map((user: any) =>
+              user.id.toString()
+            );
 
             setTags(userNames);
             setTagIds(userIds);
@@ -199,7 +218,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
               last_name: user.last_name,
               username: user.username,
               profile_picture: user.profile_picture,
-              friend_user: null
+              friend_user: null,
             }));
             setSelectedFriends(friendsFormat);
           }
@@ -208,7 +227,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           showToast({
             message: "Failed to load post details.",
             type: "error",
-            duration: 3000
+            duration: 3000,
           });
         }
       } catch (error) {
@@ -216,7 +235,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
         showToast({
           message: "Failed to load post details.",
           type: "error",
-          duration: 3000
+          duration: 3000,
         });
       } finally {
         setIsLoading(false);
@@ -230,7 +249,10 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   const fetchTopics = async () => {
     try {
       const response = await getTopics();
-      if (response?.success?.statusCode === 200 && response?.data?.data?.length) {
+      if (
+        response?.success?.statusCode === 200 &&
+        response?.data?.data?.length
+      ) {
         setTopics(response?.data?.data);
       }
     } catch (error) {
@@ -238,7 +260,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       showToast({
         message: "Failed to load Topics.",
         type: "error",
-        duration: 3000
+        duration: 3000,
       });
     }
   };
@@ -334,7 +356,6 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
     }
   }, [isOpen, isTagsPopupOpen, friendSearchQuery]);
 
-
   // Handle body overflow
   useEffect(() => {
     if (isOpen) {
@@ -374,26 +395,36 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    const allowedImageTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    const allowedImageTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+    ];
 
-    const invalidFiles = files.filter((file) => !allowedImageTypes.includes(file.type));
+    const invalidFiles = files.filter(
+      (file) => !allowedImageTypes.includes(file.type)
+    );
 
     if (invalidFiles.length > 0) {
       showToast({
         message: "Only JPG, JPEG, PNG, and WEBP image files are allowed.",
         type: "error",
-        duration: 3000
+        duration: 3000,
       });
       e.target.value = "";
       return;
     }
 
-    const totalImages = existingImages.length + selectedImages.length + files.length;
+    const totalImages =
+      existingImages.length + selectedImages.length + files.length;
     if (totalImages > 10) {
       showToast({
-        message: `You can only upload up to 10 images. Current: ${existingImages.length + selectedImages.length}, Adding: ${files.length}`,
+        message: `You can only upload up to 10 images. Current: ${
+          existingImages.length + selectedImages.length
+        }, Adding: ${files.length}`,
         type: "error",
-        duration: 3000
+        duration: 3000,
       });
       e.target.value = "";
       return;
@@ -416,7 +447,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   const handleFileSelectClick = () => {
     if (fileInputRef.current) {
       // Reset the input value to allow selecting the same file again
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
       fileInputRef.current.click();
     }
   };
@@ -457,15 +488,17 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   // Handle toggling friend selection
   const handleToggleFriend = (friend: any) => {
     const friendUserId = friend.friend_user?.id || friend.user_id || friend.id;
-    const isSelected = selectedFriends.find(f => {
+    const isSelected = selectedFriends.find((f) => {
       const selectedId = f.friend_user?.id || f.user_id || f.id;
       return selectedId?.toString() === friendUserId?.toString();
     });
     if (isSelected) {
-      setSelectedFriends(selectedFriends.filter(f => {
-        const selectedId = f.friend_user?.id || f.user_id || f.id;
-        return selectedId?.toString() !== friendUserId?.toString();
-      }));
+      setSelectedFriends(
+        selectedFriends.filter((f) => {
+          const selectedId = f.friend_user?.id || f.user_id || f.id;
+          return selectedId?.toString() !== friendUserId?.toString();
+        })
+      );
     } else {
       setSelectedFriends([...selectedFriends, friend]);
     }
@@ -473,10 +506,13 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
 
   // Handle confirming friend tags
   const handleConfirmTags = () => {
-    const friendNames = selectedFriends.map(f =>
-      `${f.friend_user?.profile?.first_name || f.first_name} ${f.friend_user?.profile?.last_name || f.last_name}`
+    const friendNames = selectedFriends.map(
+      (f) =>
+        `${f.friend_user?.profile?.first_name || f.first_name} ${
+          f.friend_user?.profile?.last_name || f.last_name
+        }`
     );
-    const friendIds = selectedFriends.map(f => {
+    const friendIds = selectedFriends.map((f) => {
       const userId = f.friend_user?.id || f.user_id || f.id;
       return userId.toString();
     });
@@ -498,7 +534,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       showToast({
         message: "Message is required and must contain at least one character.",
         type: "error",
-        duration: 3000
+        duration: 3000,
       });
       return;
     }
@@ -507,7 +543,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       showToast({
         message: `Message must not exceed ${maxChars} characters.`,
         type: "error",
-        duration: 3000
+        duration: 3000,
       });
       return;
     }
@@ -516,23 +552,6 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
 
     try {
       const formData = new FormData();
-
-      /**
-       * Backend API Payload Structure:
-       * - id: added automatically by EditPost() function
-       * - content: post text content (required)
-       * - topic_id: selected topic ID (optional)
-       * - existing_files: JSON.stringify([urls]) - files to KEEP from current post
-       * - files: multipart file uploads - NEW files to ADD
-       *
-       * Examples:
-       * 1. Keep some + add new: existing_files=['url1.jpg'] + files=[newFile]
-       * 2. Remove all + add new: no existing_files + files=[newFile1, newFile2]
-       * 3. Keep all + add new: existing_files=['url1.jpg','url2.jpg'] + files=[newFile]
-       * 4. Update content only: existing_files=[...all urls...] + no files
-       * 5. Remove all files: no existing_files + no files
-       */
-
       // Add content (required)
       formData.append("content", postMessage);
 
@@ -564,19 +583,13 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
         formData.append("file", image);
       });
 
-      console.log("Submitting form data:");
-      console.log("- Content:", postMessage);
-      console.log("- Topic ID:", selectedTopic);
-      console.log("- Existing images (JSON array):", existingImages.length, existingImages);
-      console.log("- New images (files):", selectedImages.length);
-
       const response = await EditPost(post.id, formData);
 
       if (response) {
         showToast({
           message: "Post updated successfully",
           type: "success",
-          duration: 3000
+          duration: 3000,
         });
 
         resetForm();
@@ -592,7 +605,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       showToast({
         message: err?.response?.data?.error?.message || "Failed to update post",
         type: "error",
-        duration: 5000
+        duration: 5000,
       });
     } finally {
       setIsPosting(false);
@@ -638,7 +651,7 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       postMessage,
       selectedImages: selectedImages.length,
       existingImages: existingImages.length,
-      removedImages: removedExistingImages.length
+      removedImages: removedExistingImages.length,
     });
     resetForm();
     setShowCloseConfirm(false);
@@ -648,6 +661,18 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
   if (!isOpen) return null;
 
   const totalImages = existingImages.length + selectedImages.length;
+
+  const userProfileNavigation = (id: any) => {
+    onClose();
+    if (popupModalClose) {
+      popupModalClose();
+    }
+    if (loggedInUserID === id) {
+      navigate(`/dashboard/Profile`);
+    } else {
+      navigate(`/dashboard/social/user-profile/${id}`);
+    }
+  };
 
   return (
     <>
@@ -676,13 +701,16 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
           <div className="px-6 pt-5 flex items-center gap-2 md:gap-3">
             {userInfo && (
               <>
-                <Link to={`/dashboard/social/user-profile/${userInfo?.id}`}>
+                <div
+                  className="cursor-pointer"
+                  onClick={() => userProfileNavigation(userInfo.id)}
+                >
                   <img
                     src={
                       !userInfo?.profile_picture ||
-                        userInfo?.profile_picture === "null" ||
-                        userInfo?.profile_picture === "undefined" ||
-                        !userInfo?.profile_picture.startsWith("http")
+                      userInfo?.profile_picture === "null" ||
+                      userInfo?.profile_picture === "undefined" ||
+                      !userInfo?.profile_picture.startsWith("http")
                         ? "/profile.png"
                         : userInfo?.profile_picture
                     }
@@ -693,24 +721,33 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                       target.src = "/profile.png";
                     }}
                   />
-                </Link>
+                </div>
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-1 text-sm md:text-base">
-                    <Link to={`/dashboard/social/user-profile/${userInfo?.id}`} className="font-semibold text-black hover:underline">
+                    <div
+                      onClick={() => userProfileNavigation(userInfo.id)}
+                      className="font-semibold text-black hover:underline cursor-pointer"
+                    >
                       {userInfo?.name || "User"}
-                    </Link>
+                    </div>
                     {/* Formatted sentence: "is feeling Happy with John and 2 others at New York" */}
                     {(feeling || tags.length > 0 || location) && (
                       <>
                         {feeling && (
                           <>
-                            <span className="text-gray-600 text-xs md:text-sm">is feeling</span>
+                            <span className="text-gray-600 text-xs md:text-sm">
+                              is feeling
+                            </span>
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F2BF97]/30 rounded-full font-medium text-gray-800 text-xs">
                               <button
                                 onClick={() => setIsFeelingPopupOpen(true)}
                                 className="hover:underline inline-flex items-center gap-1"
                               >
-                                {feelingEmoji && <span className="text-sm">{feelingEmoji}</span>}
+                                {feelingEmoji && (
+                                  <span className="text-sm">
+                                    {feelingEmoji}
+                                  </span>
+                                )}
                                 {feeling}
                               </button>
                               <button
@@ -728,17 +765,17 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                         )}
                         {tags.length > 0 && (
                           <>
-                            <span className="text-gray-600 text-xs md:text-sm">with</span>
+                            <span className="text-gray-600 text-xs md:text-sm">
+                              with
+                            </span>
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F4A5FF]/30 rounded-full font-medium text-gray-800 text-xs">
                               <button
                                 onClick={() => setIsTagsPopupOpen(true)}
                                 className="hover:underline"
                               >
-                                {tags.length === 1 ? (
-                                  tags[0]
-                                ) : (
-                                  `${tags[0]} and ${tags.length - 1} More`
-                                )}
+                                {tags.length === 1
+                                  ? tags[0]
+                                  : `${tags[0]} and ${tags.length - 1} More`}
                               </button>
                               <button
                                 onClick={() => {
@@ -756,7 +793,9 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                         )}
                         {selectedLocation && (
                           <>
-                            <span className="text-gray-600 text-xs md:text-sm">at</span>
+                            <span className="text-gray-600 text-xs md:text-sm">
+                              at
+                            </span>
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#FF6F61]/30 rounded-full font-medium text-gray-800 text-xs">
                               <button
                                 onClick={() => setIsLocationPopupOpen(true)}
@@ -796,7 +835,9 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 <textarea
                   rows={4}
                   className="w-full p-3 border border-[#ECEEF2] text-black placeholder:text-[#64748B] text-sm rounded-md resize-none mb-3 outline-none focus:border-[#897AFF1A]"
-                  placeholder={`What's on your mind? ${userInfo?.main_name || ""}...`}
+                  placeholder={`What's on your mind? ${
+                    userInfo?.main_name || ""
+                  }...`}
                   value={postMessage}
                   onChange={(e) => {
                     if (e.target.value.length <= maxChars) {
@@ -838,7 +879,6 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
 
                       {/* New Images */}
                       {selectedImages.map((file, index) => (
-
                         <div key={`new-${index}`} className="relative">
                           <img
                             src={URL.createObjectURL(file)}
@@ -867,7 +907,9 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                             <p className="text-[#7077FE] font-medium text-sm">
                               Add new image
                             </p>
-                            <p className="text-[#6B7280] text-xs">Maximum 3 mb</p>
+                            <p className="text-[#6B7280] text-xs">
+                              Maximum 3 mb
+                            </p>
                           </div>
                         </div>
                       )}
@@ -907,7 +949,9 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
 
                 {/* Add to Post Section */}
                 <div className="space-y-3 mb-4 flex rounded-lg border border-[#F07EFF1A] justify-between items-center px-6 py-4 bg-[#F07EFF1A]">
-                  <p className="mb-0 text-sm font-semibold">Add to your post:</p>
+                  <p className="mb-0 text-sm font-semibold">
+                    Add to your post:
+                  </p>
                   <div className="flex justify-end gap-2 w-6/12">
                     {/* Tag Friends Icon */}
                     <button
@@ -979,12 +1023,17 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                       onClick={handleTopicButtonClick}
                       className="w-full p-2 border border-[#ECEEF2] text-sm rounded-md outline-none focus:border-[#7077FE] bg-white text-left flex justify-between items-center"
                     >
-                      <span className={selectedTopic ? "text-black" : "text-gray-500"}>
+                      <span
+                        className={
+                          selectedTopic ? "text-black" : "text-gray-500"
+                        }
+                      >
                         {getSelectedTopicName()}
                       </span>
                       <svg
-                        className={`w-4 h-4 transition-transform ${isTopicDropdownOpen ? "rotate-180" : ""
-                          }`}
+                        className={`w-4 h-4 transition-transform ${
+                          isTopicDropdownOpen ? "rotate-180" : ""
+                        }`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -1008,14 +1057,19 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                           <input
                             type="text"
                             value={topicSearchQuery}
-                            onChange={(e) => setTopicSearchQuery(e.target.value)}
+                            onChange={(e) =>
+                              setTopicSearchQuery(e.target.value)
+                            }
                             placeholder="Search topics..."
                             className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md outline-none focus:border-[#7077FE]"
                             onClick={(e) => e.stopPropagation()}
                             autoFocus
                           />
                         </div>
-                        <div className="overflow-y-auto" style={{ maxHeight: "150px" }}>
+                        <div
+                          className="overflow-y-auto"
+                          style={{ maxHeight: "150px" }}
+                        >
                           {filteredTopics.length > 0 ? (
                             filteredTopics.map((topic) => (
                               <button
@@ -1026,10 +1080,11 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                                   setIsTopicDropdownOpen(false);
                                   setTopicSearchQuery("");
                                 }}
-                                className={`w-full text-left px-4 py-2 text-sm hover:bg-[#7077FE]/10 transition-colors ${selectedTopic === topic.id
-                                  ? "bg-[#7077FE]/20 text-[#7077FE] font-medium"
-                                  : "text-gray-700"
-                                  }`}
+                                className={`w-full text-left px-4 py-2 text-sm hover:bg-[#7077FE]/10 transition-colors ${
+                                  selectedTopic === topic.id
+                                    ? "bg-[#7077FE]/20 text-[#7077FE] font-medium"
+                                    : "text-gray-700"
+                                }`}
                               >
                                 {topic.topic_name}
                               </button>
@@ -1047,10 +1102,11 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                                 setIsTopicDropdownOpen(false);
                                 setTopicSearchQuery("");
                               }}
-                              className={`w-full text-left px-4 py-2 text-sm border-t border-[#ECEEF2] hover:bg-[#7077FE]/10 transition-colors ${selectedTopic === "999999"
-                                ? "bg-[#7077FE]/20 text-[#7077FE] font-medium"
-                                : "text-gray-700"
-                                }`}
+                              className={`w-full text-left px-4 py-2 text-sm border-t border-[#ECEEF2] hover:bg-[#7077FE]/10 transition-colors ${
+                                selectedTopic === "999999"
+                                  ? "bg-[#7077FE]/20 text-[#7077FE] font-medium"
+                                  : "text-gray-700"
+                              }`}
                             >
                               Other
                             </button>
@@ -1100,11 +1156,23 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 onClick={handleCloseFeelingPopup}
                 className="w-[21px] h-[21px] rounded-full bg-[#6D6D6D] flex items-center justify-center transition-all"
               >
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
-              <h3 className="text-xl font-bold text-[#0F1320] tracking-tight">How are you feeling?</h3>
+              <h3 className="text-xl font-bold text-[#0F1320] tracking-tight">
+                How are you feeling?
+              </h3>
               <div className="w-10"></div>
             </div>
 
@@ -1117,7 +1185,12 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
                 <input
                   type="text"
@@ -1139,7 +1212,9 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                     return (
                       <button
                         key={feel.label}
-                        onClick={() => handleSelectFeeling(feel.label, feel.emoji)}
+                        onClick={() =>
+                          handleSelectFeeling(feel.label, feel.emoji)
+                        }
                         className={`flex items-center gap-3 px-2 py-2 rounded-2xl transition-all duration-200 ${
                           isSelected
                             ? "bg-[#7077FE]/8 shadow-sm ring-2 ring-[#7077FE]/30"
@@ -1149,22 +1224,38 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                         <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                           <span className="text-2xl">{feel.emoji}</span>
                         </div>
-                      <div className="flex-1 text-left min-w-0">
-                        <p className="font-bold text-[#0F1320] text-base truncate">{feel.label}</p>
-                      </div>
-                    </button>
+                        <div className="flex-1 text-left min-w-0">
+                          <p className="font-bold text-[#0F1320] text-base truncate">
+                            {feel.label}
+                          </p>
+                        </div>
+                      </button>
                     );
                   })}
                 </div>
               ) : (
                 <div className="text-center py-16 px-6">
                   <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-10 h-10 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
-                  <p className="text-[#0F1320] font-semibold text-base mb-1">No matches found</p>
-                  <p className="text-gray-500 text-sm">Try searching with a different feeling</p>
+                  <p className="text-[#0F1320] font-semibold text-base mb-1">
+                    No matches found
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    Try searching with a different feeling
+                  </p>
                 </div>
               )}
             </div>
@@ -1198,11 +1289,23 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 onClick={handleCloseLocationPopup}
                 className="w-[21px] h-[21px] rounded-full bg-[#6D6D6D] flex items-center justify-center transition-all"
               >
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
-              <h3 className="text-xl font-bold text-gray-900 tracking-tight">Search for location</h3>
+              <h3 className="text-xl font-bold text-gray-900 tracking-tight">
+                Search for location
+              </h3>
               <div className="w-10"></div>
             </div>
 
@@ -1215,7 +1318,12 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
                 <input
                   type="text"
@@ -1234,7 +1342,9 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 <div className="flex flex-col items-center justify-center py-12">
                   <div className="w-8 h-8 border-2 border-[#7077FE] border-t-transparent rounded-full animate-spin mb-3"></div>
                   <p className="text-sm text-gray-500">
-                    {locationSearchQuery.length === 0 ? "Loading suggestions..." : "Searching..."}
+                    {locationSearchQuery.length === 0
+                      ? "Loading suggestions..."
+                      : "Searching..."}
                   </p>
                 </div>
               ) : locationResults.length > 0 ? (
@@ -1250,10 +1360,25 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                       className="w-full text-left px-4 py-3 bg-white hover:bg-[#897AFF1A] rounded-xl border border-gray-100 hover:border-[#7077FE]/30 transition-all group"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#897AFF1A] flex items-center justify-center flex-shrink-0 group-hover:bg-[#7077FE]/20 transition-colors">
-                          <svg className="w-5 h-5 text-[#7077FE]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <div className="w-10 h-10 rounded-full bg-[#897AFF1A] flex items-center justify-center shrink-0 group-hover:bg-[#7077FE]/20 transition-colors">
+                          <svg
+                            className="w-5 h-5 text-[#7077FE]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
                           </svg>
                         </div>
                         <div className="flex-1 min-w-0">
@@ -1271,9 +1396,24 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
               ) : (
                 <div className="flex flex-col items-center justify-center py-12">
                   <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-3">
-                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                      className="w-8 h-8 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
                   </div>
                   <p className="text-sm text-gray-500">
@@ -1306,11 +1446,23 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 onClick={handleCloseTagPopup}
                 className="w-[21px] h-[21px] rounded-full bg-[#6D6D6D] flex items-center justify-center transition-all"
               >
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
-              <h3 className="text-xl font-bold text-[#0F1320] tracking-tight">Tag people</h3>
+              <h3 className="text-xl font-bold text-[#0F1320] tracking-tight">
+                Tag people
+              </h3>
               <div className="w-10"></div>
             </div>
 
@@ -1324,7 +1476,12 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
                   <input
                     type="text"
@@ -1351,7 +1508,9 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#7077FE]/10 rounded-full border border-[#7077FE]/20">
                   <div className="w-2 h-2 rounded-full bg-[#7077FE]"></div>
                   <span className="text-sm font-semibold text-[#0F1320]">
-                    {selectedFriends.length} {selectedFriends.length === 1 ? 'person' : 'people'} selected
+                    {selectedFriends.length}{" "}
+                    {selectedFriends.length === 1 ? "person" : "people"}{" "}
+                    selected
                   </span>
                 </div>
               </div>
@@ -1363,16 +1522,29 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                 <div className="space-y-2">
                   {friends.map((friend) => {
                     // Get the actual user ID from friend (could be in different places)
-                    const friendUserId = friend.friend_user?.id || friend.user_id || friend.id;
+                    const friendUserId =
+                      friend.friend_user?.id || friend.user_id || friend.id;
                     // Check if this friend is selected by comparing all possible ID variations
-                    const isSelected = selectedFriends.find(f => {
+                    const isSelected = selectedFriends.find((f) => {
                       const selectedId = f.friend_user?.id || f.user_id || f.id;
-                      return selectedId?.toString() === friendUserId?.toString();
+                      return (
+                        selectedId?.toString() === friendUserId?.toString()
+                      );
                     });
-                    const firstName = friend.friend_user?.profile?.first_name || friend.first_name || 'User';
-                    const lastName = friend.friend_user?.profile?.last_name || friend.last_name || '';
-                    const profilePic = friend.friend_user?.profile?.profile_picture || friend.profile_picture || '/profile.png';
-                    const username = friend.friend_user?.username || friend.username || 'user';
+                    const firstName =
+                      friend.friend_user?.profile?.first_name ||
+                      friend.first_name ||
+                      "User";
+                    const lastName =
+                      friend.friend_user?.profile?.last_name ||
+                      friend.last_name ||
+                      "";
+                    const profilePic =
+                      friend.friend_user?.profile?.profile_picture ||
+                      friend.profile_picture ||
+                      "/profile.png";
+                    const username =
+                      friend.friend_user?.username || friend.username || "user";
 
                     return (
                       <button
@@ -1396,15 +1568,27 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
                           />
                           {isSelected && (
                             <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#7077FE] rounded-full flex items-center justify-center shadow-md border-2 border-white">
-                              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              <svg
+                                className="w-3 h-3 text-white"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
                               </svg>
                             </div>
                           )}
                         </div>
                         <div className="flex-1 text-left min-w-0">
-                          <p className="font-bold text-[#0F1320] text-base truncate">{firstName} {lastName}</p>
-                          <p className="text-sm text-gray-500 font-medium">@{username}</p>
+                          <p className="font-bold text-[#0F1320] text-base truncate">
+                            {firstName} {lastName}
+                          </p>
+                          <p className="text-sm text-gray-500 font-medium">
+                            @{username}
+                          </p>
                         </div>
                       </button>
                     );
@@ -1413,15 +1597,29 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
               ) : (
                 <div className="text-center py-16 px-6">
                   <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                    <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    <svg
+                      className="w-10 h-10 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
                     </svg>
                   </div>
                   <p className="text-[#0F1320] font-semibold text-base mb-1">
-                    {friendSearchQuery ? "No matches found" : "No friends available"}
+                    {friendSearchQuery
+                      ? "No matches found"
+                      : "No friends available"}
                   </p>
                   <p className="text-gray-500 text-sm">
-                    {friendSearchQuery ? "Try searching with a different name" : "Connect with friends to tag them"}
+                    {friendSearchQuery
+                      ? "Try searching with a different name"
+                      : "Connect with friends to tag them"}
                   </p>
                 </div>
               )}

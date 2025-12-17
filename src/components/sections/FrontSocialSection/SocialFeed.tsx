@@ -1368,7 +1368,7 @@ export default function SocialFeed() {
     className="
       w-8 aspect-square
       md:w-[55px] lg:w-[63px]
-      flex-shrink-0 overflow-hidden rounded-full
+      shrink-0 overflow-hidden rounded-full
     "
   >
                             <img

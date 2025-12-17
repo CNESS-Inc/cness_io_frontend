@@ -1,7 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { iconMap } from "../assets/icons";
-import { ChevronLeft, ChevronRight, Flag, LinkIcon, MessageSquare, Share2, ThumbsUp, MoreHorizontal, Bookmark, UserRoundPlus } from "lucide-react";
-import { PostsLike, SendFriendRequest, UnFriend, SendFollowRequest, UnsavePost } from "../Common/ServerAPI";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Flag,
+  LinkIcon,
+  MessageSquare,
+  Share2,
+  ThumbsUp,
+  MoreHorizontal,
+  Bookmark,
+  UserRoundPlus,
+} from "lucide-react";
+import {
+  PostsLike,
+  SendFriendRequest,
+  UnFriend,
+  SendFollowRequest,
+  UnsavePost,
+} from "../Common/ServerAPI";
 import CommentBox from "./CommentBox";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import defaultProfile from "../assets/altprofile.png";
@@ -170,7 +187,9 @@ const PostCarousel = ({ mediaItems }: { mediaItems: MediaItem[] }) => {
 };
 
 const CollectionList = ({ items }: { items: any[] }) => {
-  const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
+  const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>(
+    {}
+  );
   const [openMenu, setOpenMenu] = useState<{
     postId: string | null;
     type: "options" | "share" | null;
@@ -178,7 +197,8 @@ const CollectionList = ({ items }: { items: any[] }) => {
   const [copy, setCopy] = useState<boolean>(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-  const [collectionItems, setCollectionItems] = useState<CollectionItem[]>(items);
+  const [collectionItems, setCollectionItems] =
+    useState<CollectionItem[]>(items);
   const menuRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const shareMenuRef = useRef<HTMLDivElement>(null);
   const loggedInUserID = localStorage.getItem("Id");
@@ -251,7 +271,9 @@ const CollectionList = ({ items }: { items: any[] }) => {
             key={`${part}-${idx}`}
             onClick={() =>
               // You might want to adjust this navigation based on your routes
-              window.location.href = `/dashboard/feed/search?tag=${encodeURIComponent(tag)}`
+              (window.location.href = `/dashboard/feed/search?tag=${encodeURIComponent(
+                tag
+              )}`)
             }
             className="text-[#7077FE] hover:underline"
             type="button"
@@ -276,19 +298,19 @@ const CollectionList = ({ items }: { items: any[] }) => {
       const formattedData = { post_id: postId };
       await PostsLike(formattedData);
 
-      setCollectionItems(prevItems =>
-        prevItems.map(item =>
+      setCollectionItems((prevItems) =>
+        prevItems.map((item) =>
           item.originalData.id === postId
             ? {
-              ...item,
-              originalData: {
-                ...item.originalData,
-                is_liked: !item.originalData.is_liked,
-                likes_count: item.originalData.is_liked
-                  ? item.originalData.likes_count - 1
-                  : item.originalData.likes_count + 1,
-              },
-            }
+                ...item,
+                originalData: {
+                  ...item.originalData,
+                  is_liked: !item.originalData.is_liked,
+                  likes_count: item.originalData.is_liked
+                    ? item.originalData.likes_count - 1
+                    : item.originalData.likes_count + 1,
+                },
+              }
             : item
         )
       );
@@ -309,16 +331,16 @@ const CollectionList = ({ items }: { items: any[] }) => {
       };
       const response: any = await SendFollowRequest(formattedData);
       if (response.success) {
-        setCollectionItems(prevItems =>
-          prevItems.map(item =>
+        setCollectionItems((prevItems) =>
+          prevItems.map((item) =>
             item.originalData.user.id === userId
               ? {
-                ...item,
-                originalData: {
-                  ...item.originalData,
-                  if_following: !item.originalData.if_following,
-                },
-              }
+                  ...item,
+                  originalData: {
+                    ...item.originalData,
+                    if_following: !item.originalData.if_following,
+                  },
+                }
               : item
           )
         );
@@ -339,127 +361,129 @@ const CollectionList = ({ items }: { items: any[] }) => {
     }
   };
 
-// In your handleConnect function in CollectionList.tsx, update the state updates:
+  // In your handleConnect function in CollectionList.tsx, update the state updates:
 
-const handleConnect = async (userId: string) => {
-  try {
-    // Find the post in collection items
-    const post = collectionItems.find(item => item.originalData.user.id === userId)?.originalData;
-    if (!post) return;
+  const handleConnect = async (userId: string) => {
+    try {
+      // Find the post in collection items
+      const post = collectionItems.find(
+        (item) => item.originalData.user.id === userId
+      )?.originalData;
+      if (!post) return;
 
-    // Case 1: No existing connection or pending request - Send new connection request
-    if (
+      // Case 1: No existing connection or pending request - Send new connection request
+      if (
         post.friend_request_status !== "ACCEPT" &&
         post.friend_request_status !== "PENDING" &&
         !post.if_friend
       ) {
-      const formattedData = {
-        friend_id: userId,
-      };
-      const res = await SendFriendRequest(formattedData);
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await SendFriendRequest(formattedData);
+        showToast({
+          message: res?.success?.message || "Connection request sent",
+          type: "success",
+          duration: 2000,
+        });
+
+        // Update the collection item - use undefined instead of null
+        setCollectionItems((prevItems) =>
+          prevItems.map((item) =>
+            item.originalData.user.id === userId
+              ? {
+                  ...item,
+                  originalData: {
+                    ...item.originalData,
+                    if_friend: false,
+                    friend_request_status: "PENDING",
+                    is_requested: true,
+                  } as any, // Use type assertion to handle the property mismatch
+                }
+              : item
+          )
+        );
+      }
+      // Case 2: Cancel pending request (when status is PENDING)
+      else if (post.friend_request_status === "PENDING" && !post.if_friend) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await UnFriend(formattedData);
+        showToast({
+          message: res?.success?.message || "Connection request cancelled",
+          type: "success",
+          duration: 2000,
+        });
+
+        setCollectionItems((prevItems) =>
+          prevItems.map((item) =>
+            item.originalData.user.id === userId
+              ? {
+                  ...item,
+                  originalData: {
+                    ...item.originalData,
+                    if_friend: false,
+                    friend_request_status: undefined, // Use undefined instead of null
+                    is_requested: false,
+                  } as any,
+                }
+              : item
+          )
+        );
+      }
+      // Case 3: Remove existing friend connection
+      else if (post.friend_request_status === "ACCEPT" && post.if_friend) {
+        const formattedData = {
+          friend_id: userId,
+        };
+        const res = await UnFriend(formattedData);
+        showToast({
+          message: res?.success?.message || "Connection removed",
+          type: "success",
+          duration: 2000,
+        });
+
+        setCollectionItems((prevItems) =>
+          prevItems.map((item) =>
+            item.originalData.user.id === userId
+              ? {
+                  ...item,
+                  originalData: {
+                    ...item.originalData,
+                    if_friend: false,
+                    friend_request_status: undefined, // Use undefined instead of null
+                    is_requested: false,
+                  } as any,
+                }
+              : item
+          )
+        );
+      }
+    } catch (error: any) {
+      console.error("Error handling friend request:", error);
       showToast({
-        message: res?.success?.message || "Connection request sent",
-        type: "success",
-        duration: 2000,
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to update connection",
+        type: "error",
+        duration: 3000,
       });
-
-      // Update the collection item - use undefined instead of null
-      setCollectionItems(prevItems =>
-        prevItems.map(item =>
-          item.originalData.user.id === userId
-            ? {
-              ...item,
-              originalData: {
-                ...item.originalData,
-                if_friend: false,
-                friend_request_status: "PENDING",
-                is_requested: true,
-              } as any, // Use type assertion to handle the property mismatch
-            }
-            : item
-        )
-      );
     }
-    // Case 2: Cancel pending request (when status is PENDING)
-    else if (post.friend_request_status === "PENDING" && !post.if_friend) {
-      const formattedData = {
-        friend_id: userId,
-      };
-      const res = await UnFriend(formattedData);
-      showToast({
-        message: res?.success?.message || "Connection request cancelled",
-        type: "success",
-        duration: 2000,
-      });
+  };
 
-      setCollectionItems(prevItems =>
-        prevItems.map(item =>
-          item.originalData.user.id === userId
-            ? {
-              ...item,
-              originalData: {
-                ...item.originalData,
-                if_friend: false,
-                friend_request_status: undefined, // Use undefined instead of null
-                is_requested: false,
-              } as any,
-            }
-            : item
-        )
-      );
+  // Also update the getConnectionStatus function to handle undefined:
+  const getConnectionStatus = (post: any) => {
+    if (post.if_friend && post.friend_request_status === "ACCEPT") {
+      return "Connected";
+    } else if (!post.if_friend && post.friend_request_status === "PENDING") {
+      return "Requested";
+    } else if (post.is_requested) {
+      return "Requested";
+    } else {
+      return "Connect";
     }
-    // Case 3: Remove existing friend connection
-    else if (post.friend_request_status === "ACCEPT" && post.if_friend) {
-      const formattedData = {
-        friend_id: userId,
-      };
-      const res = await UnFriend(formattedData);
-      showToast({
-        message: res?.success?.message || "Connection removed",
-        type: "success",
-        duration: 2000,
-      });
-
-      setCollectionItems(prevItems =>
-        prevItems.map(item =>
-          item.originalData.user.id === userId
-            ? {
-              ...item,
-              originalData: {
-                ...item.originalData,
-                if_friend: false,
-                friend_request_status: undefined, // Use undefined instead of null
-                is_requested: false,
-              } as any,
-            }
-            : item
-        )
-      );
-    }
-  } catch (error: any) {
-    console.error("Error handling friend request:", error);
-    showToast({
-      message:
-        error?.response?.data?.error?.message ||
-        "Failed to update connection",
-      type: "error",
-      duration: 3000,
-    });
-  }
-};
-
-// Also update the getConnectionStatus function to handle undefined:
-const getConnectionStatus = (post: any) => {
-  if (post.if_friend && post.friend_request_status === "ACCEPT") {
-    return "Connected";
-  } else if (!post.if_friend && post.friend_request_status === "PENDING") {
-    return "Requested";
-  } else if (post.is_requested) {
-    return "Requested";
-  } else {
-    return "Connect";
-  }
-};
+  };
   const handleClickOutside = (event: MouseEvent) => {
     if (!openMenu.postId || !openMenu.type) return;
 
@@ -497,8 +521,13 @@ const getConnectionStatus = (post: any) => {
     });
   };
 
-  const copyPostLink = (url: string, onSuccess: (msg: string) => void, onError: (msg: string) => void) => {
-    navigator.clipboard.writeText(url)
+  const copyPostLink = (
+    url: string,
+    onSuccess: (msg: string) => void,
+    onError: (msg: string) => void
+  ) => {
+    navigator.clipboard
+      .writeText(url)
       .then(() => onSuccess("Link copied to clipboard!"))
       .catch(() => onError("Failed to copy link"));
   };
@@ -507,7 +536,9 @@ const getConnectionStatus = (post: any) => {
     try {
       const response = await UnsavePost(postId);
       if (response.success) {
-        setCollectionItems(prevItems => prevItems.filter(item => item.originalData.id !== postId));
+        setCollectionItems((prevItems) =>
+          prevItems.filter((item) => item.originalData.id !== postId)
+        );
         setOpenMenu({ postId: null, type: null });
         showToast({
           type: "success",
@@ -545,19 +576,27 @@ const getConnectionStatus = (post: any) => {
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 md:gap-3">
                     <Link
-                      to={`/dashboard/social/user-profile/${collectionItem.originalData.profile.user_id}`}
+                      to={
+                        loggedInUserID ===
+                        collectionItem.originalData.profile.user_id
+                          ? `/dashboard/Profile`
+                          : `/dashboard/social/user-profile/${collectionItem.originalData.profile.user_id}`
+                      }
                     >
                       <img
                         src={
-                          !collectionItem.originalData.profile.profile_picture ||
-                            collectionItem.originalData.profile.profile_picture === "null" ||
-                            collectionItem.originalData.profile.profile_picture ===
-                            "undefined" ||
-                            !collectionItem.originalData.profile.profile_picture.startsWith(
-                              "http"
-                            )
+                          !collectionItem.originalData.profile
+                            .profile_picture ||
+                          collectionItem.originalData.profile
+                            .profile_picture === "null" ||
+                          collectionItem.originalData.profile
+                            .profile_picture === "undefined" ||
+                          !collectionItem.originalData.profile.profile_picture.startsWith(
+                            "http"
+                          )
                             ? defaultProfile
-                            : collectionItem.originalData.profile.profile_picture
+                            : collectionItem.originalData.profile
+                                .profile_picture
                         }
                         className="w-8 h-8 md:w-[63px] md:h-[63px] rounded-full"
                         alt="User"
@@ -570,7 +609,12 @@ const getConnectionStatus = (post: any) => {
                     <div>
                       <p className="font-semibold text-sm md:text-base text-black">
                         <Link
-                          to={`/dashboard/social/user-profile/${collectionItem.originalData.profile.user_id}`}
+                          to={
+                            loggedInUserID ===
+                            collectionItem.originalData.profile.user_id
+                              ? `/dashboard/Profile`
+                              : `/dashboard/social/user-profile/${collectionItem.originalData.profile.user_id}`
+                          }
                         >
                           {" "}
                           {collectionItem.originalData.profile.first_name}{" "}
@@ -579,7 +623,12 @@ const getConnectionStatus = (post: any) => {
                         <span className="text-[#999999] text-xs md:text-[12px] font-light">
                           {" "}
                           <Link
-                            to={`/dashboard/social/user-profile/${collectionItem.originalData.profile.user_id}`}
+                            to={
+                              loggedInUserID ===
+                              collectionItem.originalData.profile.user_id
+                                ? `/dashboard/Profile`
+                                : `/dashboard/social/user-profile/${collectionItem.originalData.profile.user_id}`
+                            }
                           >
                             {" "}
                             @{collectionItem.originalData.user.username}
@@ -587,7 +636,9 @@ const getConnectionStatus = (post: any) => {
                         </span>
                       </p>
                       <p className="text-xs md:text-[12px] text-[#606060]">
-                        {formatMessageTime(collectionItem.originalData.createdAt)}
+                        {formatMessageTime(
+                          collectionItem.originalData.createdAt
+                        )}
                       </p>
                     </div>
                   </div>
@@ -595,16 +646,20 @@ const getConnectionStatus = (post: any) => {
                     <div className="flex gap-2">
                       {/* Connect Button */}
                       <button
-                        onClick={() => handleConnect(collectionItem.originalData.user.id)}
+                        onClick={() =>
+                          handleConnect(collectionItem.originalData.user.id)
+                        }
                         className={`hidden lg:flex justify-center items-center gap-1 text-xs lg:text-sm px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[35px] min-w-[100px] ${
                           collectionItem.originalData.if_friend &&
-                          collectionItem.originalData.friend_request_status === "ACCEPT"
+                          collectionItem.originalData.friend_request_status ===
+                            "ACCEPT"
                             ? "bg-green-100 text-green-700 border border-green-300"
                             : !collectionItem.originalData.if_friend &&
-                              collectionItem.originalData.friend_request_status === "PENDING"
+                              collectionItem.originalData
+                                .friend_request_status === "PENDING"
                             ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
                             : "bg-white text-black border border-gray-200"
-                          }`}
+                        }`}
                       >
                         <span className="flex items-center gap-1">
                           <UserRoundPlus className="w-4 h-4" />
@@ -613,13 +668,15 @@ const getConnectionStatus = (post: any) => {
                       </button>
                       {/* Follow Button */}
                       <button
-                        onClick={() => handleFollow(collectionItem.originalData.user.id)}
+                        onClick={() =>
+                          handleFollow(collectionItem.originalData.user.id)
+                        }
                         className={`flex justify-center items-center gap-1 text-xs lg:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors h-[35px]
                             ${
-                          collectionItem.originalData.if_following
-                            ? "bg-[#7077FE] text-white hover:bg-indigo-600"
-                            : "bg-[#7077FE] text-white hover:bg-indigo-600"
-                          }`}
+                              collectionItem.originalData.if_following
+                                ? "bg-[#7077FE] text-white hover:bg-indigo-600"
+                                : "bg-[#7077FE] text-white hover:bg-indigo-600"
+                            }`}
                       >
                         {collectionItem.originalData.if_following ? (
                           <>
@@ -635,7 +692,10 @@ const getConnectionStatus = (post: any) => {
                       <div className="relative">
                         <button
                           onClick={() =>
-                            toggleMenu(collectionItem.originalData.id, "options")
+                            toggleMenu(
+                              collectionItem.originalData.id,
+                              "options"
+                            )
                           }
                           className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
                           title="More options"
@@ -657,12 +717,16 @@ const getConnectionStatus = (post: any) => {
                                 <li className="lg:hidden">
                                   <button
                                     onClick={() =>
-                                      handleConnect(collectionItem.originalData.user.id)
+                                      handleConnect(
+                                        collectionItem.originalData.user.id
+                                      )
                                     }
                                     className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                                   >
                                     <UserRoundPlus className="w-4 h-4" />
-                                    {getConnectionStatus(collectionItem.originalData)}
+                                    {getConnectionStatus(
+                                      collectionItem.originalData
+                                    )}
                                   </button>
                                 </li>
                                 <li>
@@ -692,7 +756,11 @@ const getConnectionStatus = (post: any) => {
                                 </li>
                                 <li>
                                   <button
-                                    onClick={() => handleUnsave(collectionItem.originalData.id)}
+                                    onClick={() =>
+                                      handleUnsave(
+                                        collectionItem.originalData.id
+                                      )
+                                    }
                                     className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                                   >
                                     <Bookmark className="w-4 h-4" />
@@ -706,7 +774,8 @@ const getConnectionStatus = (post: any) => {
                                       // Add report functionality here
                                       showToast({
                                         type: "info",
-                                        message: "Report functionality to be implemented",
+                                        message:
+                                          "Report functionality to be implemented",
                                         duration: 2000,
                                       });
                                     }}
@@ -728,7 +797,10 @@ const getConnectionStatus = (post: any) => {
                       <div className="relative">
                         <button
                           onClick={() =>
-                            toggleMenu(collectionItem.originalData.id, "options")
+                            toggleMenu(
+                              collectionItem.originalData.id,
+                              "options"
+                            )
                           }
                           className="flex items-center border-[#ECEEF2] border shadow-sm justify-center w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
                           title="More options"
@@ -751,7 +823,7 @@ const getConnectionStatus = (post: any) => {
                                   <button
                                     onClick={() => {
                                       copyPostLink(
-                                        `${window.location.origin}/post/${collectionItem.originalData.id}`,
+                                        `${window.location.origin}/social?p=${collectionItem.originalData.id}`,
                                         (msg) =>
                                           showToast({
                                             type: "success",
@@ -774,7 +846,11 @@ const getConnectionStatus = (post: any) => {
                                 </li>
                                 <li>
                                   <button
-                                    onClick={() => handleUnsave(collectionItem.originalData.id)}
+                                    onClick={() =>
+                                      handleUnsave(
+                                        collectionItem.originalData.id
+                                      )
+                                    }
                                     className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                                   >
                                     <Bookmark className="w-4 h-4" />
@@ -794,18 +870,20 @@ const getConnectionStatus = (post: any) => {
                   <p className="text-gray-800 font-[poppins] text-sm md:text-base mb-2 md:mb-3 space-y-1">
                     <span>
                       {expandedPosts[collectionItem.id] ||
-                        collectionItem.originalData.content?.length <= CONTENT_LIMIT
+                      collectionItem.originalData.content?.length <=
+                        CONTENT_LIMIT
                         ? renderContentWithHashtags(
-                          collectionItem.originalData.content || ""
-                        )
+                            collectionItem.originalData.content || ""
+                          )
                         : renderContentWithHashtags(
-                          `${collectionItem.originalData.content?.substring(
-                            0,
-                            CONTENT_LIMIT
-                          )}...`
-                        )}
+                            `${collectionItem.originalData.content?.substring(
+                              0,
+                              CONTENT_LIMIT
+                            )}...`
+                          )}
                     </span>
-                    {collectionItem.originalData.content?.length > CONTENT_LIMIT && (
+                    {collectionItem.originalData.content?.length >
+                      CONTENT_LIMIT && (
                       <button
                         onClick={() => toggleExpand(collectionItem.id)}
                         className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
@@ -841,9 +919,7 @@ const getConnectionStatus = (post: any) => {
 
                         // Use PostCarousel if there are multiple items
                         if (mediaItems.length > 1) {
-                          return (
-                            <PostCarousel mediaItems={mediaItems} />
-                          );
+                          return <PostCarousel mediaItems={mediaItems} />;
                         }
 
                         // Single item rendering
@@ -857,7 +933,10 @@ const getConnectionStatus = (post: any) => {
                               autoPlay
                               loop
                             >
-                              <source src={singleMediaItem.url} type="video/mp4" />
+                              <source
+                                src={singleMediaItem.url}
+                                type="video/mp4"
+                              />
                               Your browser does not support the video tag.
                             </video>
                           ) : (
@@ -867,7 +946,9 @@ const getConnectionStatus = (post: any) => {
                               className="w-full max-h-[300px] md:max-h-[400px] object-cover rounded-3xl mb-2"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
-                                target.src = iconMap["companycard1"] || "/default-image.png";
+                                target.src =
+                                  iconMap["companycard1"] ||
+                                  "/default-image.png";
                               }}
                             />
                           );
@@ -904,8 +985,16 @@ const getConnectionStatus = (post: any) => {
                     </span>
                     <ThumbsUp
                       className="w-5 h-5 md:w-6 md:h-6 shrink-0"
-                      fill={collectionItem.originalData.is_liked ? "#7077FE" : "none"}
-                      stroke={collectionItem.originalData.is_liked ? "#7077FE" : "#000"}
+                      fill={
+                        collectionItem.originalData.is_liked
+                          ? "#7077FE"
+                          : "none"
+                      }
+                      stroke={
+                        collectionItem.originalData.is_liked
+                          ? "#7077FE"
+                          : "#000"
+                      }
                     />
 
                     <span
@@ -913,7 +1002,7 @@ const getConnectionStatus = (post: any) => {
                         collectionItem.originalData.is_liked
                           ? "text-[#7077FE]"
                           : "text-black"
-                        }`}
+                      }`}
                     >
                       Appreciate
                     </span>
@@ -927,7 +1016,7 @@ const getConnectionStatus = (post: any) => {
                       selectedPostId === collectionItem.originalData.id
                         ? "text-[#7077FE]"
                         : "text-black"
-                      }`}
+                    }`}
                   >
                     <MessageSquare
                       className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
@@ -947,7 +1036,7 @@ const getConnectionStatus = (post: any) => {
                         selectedPostId === collectionItem.originalData.id
                           ? "#7077FE"
                           : "text-black"
-                        }`}
+                      }`}
                     >
                       Reflections
                     </span>
@@ -955,13 +1044,13 @@ const getConnectionStatus = (post: any) => {
 
                   <div className="relative">
                     <button
-                      onClick={() => toggleMenu(collectionItem.originalData.id, "share")}
+                      onClick={() =>
+                        toggleMenu(collectionItem.originalData.id, "share")
+                      }
                       className={`flex items-center w-full justify-center gap-2 md:gap-4 px-6 py-1 h-[45px] md:px-6 font-semibold text-sm md:text-base hover:bg-gray-50 text-black`}
                     >
                       <Share2 className="w-5 h-5 md:w-6 md:h-6" />
-                      <span className="hidden sm:flex text-black">
-                        Share
-                      </span>
+                      <span className="hidden sm:flex text-black">Share</span>
                     </button>
                     {openMenu.postId === collectionItem.originalData.id &&
                       openMenu.type === "share" && (
@@ -1038,17 +1127,20 @@ const getConnectionStatus = (post: any) => {
             setSelectedPostId(null);
           }}
           onCommentAdded={() =>
-            setCollectionItems(prevItems => prevItems.map(item => item.originalData.id === selectedPostId
-              ? {
-                ...item,
-                originalData: {
-                  ...item.originalData,
-                  comments_count: item.originalData.comments_count + 1,
-                },
-              }
-              : item
+            setCollectionItems((prevItems) =>
+              prevItems.map((item) =>
+                item.originalData.id === selectedPostId
+                  ? {
+                      ...item,
+                      originalData: {
+                        ...item.originalData,
+                        comments_count: item.originalData.comments_count + 1,
+                      },
+                    }
+                  : item
+              )
             )
-            )}
+          }
         />
       )}
     </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { X, Search, Users } from "lucide-react";
 import { SendFollowRequest } from "../../Common/ServerAPI";
+import { useNavigate } from "react-router-dom";
 
 type Friend = {
   id: string;
@@ -23,6 +24,8 @@ export default function FollowingModal({
   friends: Friend[];
 }) {
   const [localFriends, setLocalFriends] = useState<Friend[]>([]);
+  const navigate = useNavigate();
+  const loggedInUserID = localStorage.getItem("Id");
 
   useEffect(() => {
     setLocalFriends(friends);
@@ -42,6 +45,15 @@ export default function FollowingModal({
   };
 
   if (!open) return null;
+
+  const userProfileNavigation = (id: any) => {
+    if(loggedInUserID === id){
+    navigate(`/dashboard/Profile`);
+    }else{
+    navigate(`/dashboard/social/user-profile/${id}`);
+    }
+    onClose()
+  };
 
   return (
     <div className="fixed inset-0 z-50">
@@ -110,11 +122,16 @@ export default function FollowingModal({
               {localFriends.map((f) => (
                 <li key={f.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <img
-                      src={f.avatar}
-                      alt={f.name}
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => userProfileNavigation(f.id)}
+                    >
+                      <img
+                        src={f.avatar}
+                        alt={f.name}
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                    </div>
                     <div>
                       <div
                         style={{

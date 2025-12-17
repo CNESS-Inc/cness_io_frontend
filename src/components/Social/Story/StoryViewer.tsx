@@ -16,6 +16,7 @@ import share from "../../../assets/story-share.png";
 import ReelComment from "../Reels/ReelComment";
 import SharePopup from "../SharePopup";
 import moment from "moment";
+import { Link } from "react-router-dom";
 
 interface StoryContent {
   id: string;
@@ -103,14 +104,13 @@ export function StoryViewer({
   onLike,
   is_liked,
   likes_count,
-  comments_count, // Add this prop
+  comments_count,
   onRegisterAnimation,
   onCommentCountUpdate,
   storyId,
   userId,
   onStoryChange,
 }: StoryViewerProps) {
-  console.log("🚀 ~ StoryViewer ~ comments_count:", comments_count)
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState("");
@@ -126,6 +126,7 @@ export function StoryViewer({
   const [videoDuration, setVideoDuration] = useState(duration);
   const [isStoryReady, setIsStoryReady] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const loggedInUserID = localStorage.getItem("Id");
 
   useEffect(() => {
     if (onRegisterAnimation) {
@@ -133,7 +134,7 @@ export function StoryViewer({
         setIsAnimating(true);
         setTimeout(() => setIsAnimating(false), 1000);
       };
-      
+
       onRegisterAnimation(animationCallback);
     }
   }, [onRegisterAnimation]);
@@ -166,7 +167,7 @@ export function StoryViewer({
     setProgress(0);
     setIsPaused(false);
     setSelectedReelId(null);
-    setIsStoryReady(false); 
+    setIsStoryReady(false);
 
     // Clear any existing intervals
     if (intervalRef.current) {
@@ -207,7 +208,7 @@ export function StoryViewer({
           const duration =
             videoRef.current.duration * 1000 || currentStory.duration;
           setVideoDuration(duration);
-          setIsStoryReady(true); 
+          setIsStoryReady(true);
         }
       };
 
@@ -573,18 +574,17 @@ export function StoryViewer({
 
   if (!currentStory) return null;
 
+  const [isMobile, setIsMobile] = useState(false);
 
-   const [isMobile, setIsMobile] = useState(false);
-  
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   return (
@@ -608,57 +608,61 @@ export function StoryViewer({
         {!isMobile && hasPrevious && prevStory && (
           <div className="absolute left-0 w-2/9 h-4/8 lg:w-2/9 lg:h-5/8 rounded-lg overflow-hidden z-0 ml-4">
             <div className="w-full h-full">
-                          <div className="absolute w-full h-full bg-[rgba(0,0,0,0.6)]"></div>
-                          {prevStory.type === "image" ? (
-                            <img
-                              src={prevStory.url}
-                              className="w-full h-full object-cover"
-                              alt="Previous story"
-                            />
-                          ) : (
-                            <video
-                              src={prevStory.url}
-                              className="w-full h-full object-cover"
-                              muted
-                              loop
-                            />
-                          )}
-                        </div>
+              <div className="absolute w-full h-full bg-[rgba(0,0,0,0.6)]"></div>
+              {prevStory.type === "image" ? (
+                <img
+                  src={prevStory.url}
+                  className="w-full h-full object-cover"
+                  alt="Previous story"
+                />
+              ) : (
+                <video
+                  src={prevStory.url}
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                />
+              )}
+            </div>
           </div>
         )}
 
         {!isMobile && hasNext && nextStory && (
           <div className="absolute right-0 w-2/9 h-4/8 lg:w-2/9 lg:h-5/8 rounded-lg overflow-hidden z-0 mr-4">
             <div className="w-full h-full relative">
-                          <div className="absolute w-full h-full bg-[rgba(0,0,0,0.6)]"></div>
-                          {nextStory.type === "image" ? (
-                            <img
-                              src={nextStory.url}
-                              className="w-full h-full object-cover"
-                              alt="Next story"
-                            />
-                          ) : (
-                            <video
-                              src={nextStory.url}
-                              className="w-full h-full object-cover"
-                              muted
-                              loop
-                            />
-                          )}
-                        </div>
+              <div className="absolute w-full h-full bg-[rgba(0,0,0,0.6)]"></div>
+              {nextStory.type === "image" ? (
+                <img
+                  src={nextStory.url}
+                  className="w-full h-full object-cover"
+                  alt="Next story"
+                />
+              ) : (
+                <video
+                  src={nextStory.url}
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                />
+              )}
+            </div>
           </div>
         )}
 
         {/* Current story (center) */}
-        <div className={`
+        <div
+          className={`
           relative z-10 
-          ${isMobile ? 'w-full h-full' : 'w-full max-w-md h-[80%] mx-4'}
-        `}>
+          ${isMobile ? "w-full h-full" : "w-full max-w-md h-[80%] mx-4"}
+        `}
+        >
           {/* Progress bars - Adjust top position for mobile */}
-          <div className={`
+          <div
+            className={`
             absolute flex gap-1 z-30
-            ${isMobile ? 'top-2 left-2 right-2' : 'top-4 left-4 right-4'}
-          `}>
+            ${isMobile ? "top-2 left-2 right-2" : "top-4 left-4 right-4"}
+          `}
+          >
             {stories.map((_story, index) => (
               <div
                 key={index}
@@ -685,7 +689,7 @@ export function StoryViewer({
             onClick={handlePrevContent}
             className={`
               absolute left-0 top-0 z-10 focus:outline-none
-              ${isMobile ? 'w-1/3 h-full' : 'w-1/4 h-full'}
+              ${isMobile ? "w-1/3 h-full" : "w-1/4 h-full"}
             `}
             disabled={!hasPrevious && currentContentIndex === 0}
           />
@@ -693,16 +697,18 @@ export function StoryViewer({
             onClick={handleNextContent}
             className={`
               absolute right-0 top-0 z-10 focus:outline-none
-              ${isMobile ? 'w-1/3 h-full' : 'w-1/4 h-full'}
+              ${isMobile ? "w-1/3 h-full" : "w-1/4 h-full"}
             `}
             disabled={!hasNext && currentContentIndex === stories.length - 1}
           />
 
           {/* Story Content - Full screen on mobile */}
-          <div className={`
+          <div
+            className={`
             relative h-full w-full bg-black overflow-hidden
-            ${isMobile ? '' : 'rounded-2xl'}
-          `}>
+            ${isMobile ? "" : "rounded-2xl"}
+          `}
+          >
             {currentStory.type === "image" ? (
               <img
                 src={currentStory.url}
@@ -726,7 +732,7 @@ export function StoryViewer({
                   onClick={toggleMute}
                   className={`
                     absolute z-30 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center
-                    ${isMobile ? 'top-4 right-4' : 'top-10 right-5'}
+                    ${isMobile ? "top-4 right-4" : "top-10 right-5"}
                   `}
                 >
                   {isMuted ? (
@@ -743,26 +749,44 @@ export function StoryViewer({
           </div>
 
           {/* User info - Adjust position for mobile */}
-          <div className={`
+          <div
+            className={`
             absolute flex flex-col gap-1 z-30
-            ${isMobile ? 'top-10 left-3 right-3' : 'top-16 left-4 right-4'}
-          `}>
+            ${isMobile ? "top-10 left-3 right-3" : "top-16 left-4 right-4"}
+          `}
+          >
             <div className="flex items-center gap-3">
-              <div className={`
+              <div
+                className={`
                 relative rounded-full p-[1.83px] bg-linear-to-r from-[#6340FF] to-[#D748EA]
-                ${isMobile ? 'w-10 h-10' : 'w-[42px] h-[42px]'}
-              `}>
-                <div className="w-full h-full rounded-full overflow-hidden object-cover bg-white p-px">
-                  <img
-                    src={userAvatar ? userAvatar : "/profile.png"}
-                    alt="User Avatar"
-                    className="w-full h-full rounded-full object-cover bg-white"
-                  />
-                </div>
-                <span className={`
+                ${isMobile ? "w-10 h-10" : "w-[42px] h-[42px]"}
+              `}
+              >
+                <Link
+                  to={
+                    loggedInUserID === userId
+                      ? `/dashboard/Profile`
+                      : `/dashboard/social/user-profile/${userId}`
+                  }
+                >
+                  <div className="w-full h-full rounded-full overflow-hidden object-cover bg-white p-px">
+                    <img
+                      src={userAvatar ? userAvatar : "/profile.png"}
+                      alt="User Avatar"
+                      className="w-full h-full rounded-full object-cover bg-white"
+                    />
+                  </div>
+                </Link>
+                <span
+                  className={`
                   absolute rounded-full bg-green-500 border border-white
-                  ${isMobile ? 'bottom-1 right-1 w-2 h-2' : 'bottom-[5px] right-2 w-2.5 h-2.5'}
-                `}></span>
+                  ${
+                    isMobile
+                      ? "bottom-1 right-1 w-2 h-2"
+                      : "bottom-[5px] right-2 w-2.5 h-2.5"
+                  }
+                `}
+                ></span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-white font-medium text-sm lg:text-base">
@@ -809,28 +833,33 @@ export function StoryViewer({
       </div>
 
       {/* Message input - Redesign for mobile */}
-      <div className={`
+      <div
+        className={`
         absolute z-30
-        ${isMobile 
-          ? 'bottom-6 left-3 right-3' 
-          : 'bottom-4 left-4 right-4 max-w-md mx-auto'
+        ${
+          isMobile
+            ? "bottom-6 left-3 right-3"
+            : "bottom-4 left-4 right-4 max-w-md mx-auto"
         }
-      `}>
-        <div className={`
+      `}
+      >
+        <div
+          className={`
           flex items-center gap-2 rounded-full p-2 bg-white/10 backdrop-blur-lg
-          ${isMobile ? 'px-3' : ''}
-        `}>
+          ${isMobile ? "px-3" : ""}
+        `}
+        >
           <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Reply..."
             className={`
               flex-1 bg-transparent border-none placeholder:text-white/70 focus-visible:ring-0 text-white
-              ${isMobile ? 'text-sm' : ''}
+              ${isMobile ? "text-sm" : ""}
             `}
             onClick={(e) => handleCommentClick(e)}
           />
-          
+
           {/* Like Button */}
           <div className="relative">
             <Button
@@ -838,10 +867,14 @@ export function StoryViewer({
               className={`
                 rounded-full 
                 ${is_liked ? "bg-[#7077FE]" : "bg-[#7077FE]"} 
-                ${isAnimating && is_liked ? "pulse-glow like-button-animate" : ""}
+                ${
+                  isAnimating && is_liked
+                    ? "pulse-glow like-button-animate"
+                    : ""
+                }
                 ${isAnimating && !is_liked ? "bg-unlike-pulse" : ""}
                 text-white hover:bg-[#7077FE]/90 
-                ${isMobile ? 'w-7 h-7' : 'w-8 h-8'} 
+                ${isMobile ? "w-7 h-7" : "w-8 h-8"} 
                 p-0 transition-all duration-300 relative
               `}
               onClick={(e) => handleLikeClick(e)}
@@ -861,7 +894,7 @@ export function StoryViewer({
                 <img
                   src={Like}
                   className={`
-                    ${isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'}
+                    ${isMobile ? "w-3.5 h-3.5" : "w-4 h-4"}
                     transition-all duration-300 
                     ${is_liked ? "transform scale-110" : ""}
                     ${isAnimating ? "opacity-0" : "opacity-100"}
@@ -873,13 +906,15 @@ export function StoryViewer({
 
             {/* Like count badge */}
             {likes_count > 0 && (
-              <div className={`
+              <div
+                className={`
                 absolute -top-1.5 -right-1.5 
                 bg-white rounded-full 
-                ${isMobile ? 'w-4 h-4 text-[10px]' : 'w-5 h-5 text-xs'}
+                ${isMobile ? "w-4 h-4 text-[10px]" : "w-5 h-5 text-xs"}
                 flex items-center justify-center font-bold text-[#7077FE]
-              `}>
-                {likes_count > 99 ? '99+' : likes_count}
+              `}
+              >
+                {likes_count > 99 ? "99+" : likes_count}
               </div>
             )}
           </div>
@@ -890,27 +925,29 @@ export function StoryViewer({
               size="sm"
               className={`
                 rounded-full bg-[#F07EFF] text-white hover:bg-[#F07EFF]/90
-                ${isMobile ? 'w-7 h-7' : 'w-8 h-8'} 
+                ${isMobile ? "w-7 h-7" : "w-8 h-8"} 
                 p-0
               `}
               onClick={(e) => handleCommentClick(e)}
             >
-              <img 
-                src={comment} 
-                className={isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} 
-                alt="Comment" 
+              <img
+                src={comment}
+                className={isMobile ? "w-3.5 h-3.5" : "w-4 h-4"}
+                alt="Comment"
               />
             </Button>
 
             {/* Comment count badge */}
             {comments_count > 0 && (
-              <div className={`
+              <div
+                className={`
                 absolute -top-1.5 -right-1.5 
                 bg-white rounded-full 
-                ${isMobile ? 'w-4 h-4 text-[10px]' : 'w-5 h-5 text-xs'}
+                ${isMobile ? "w-4 h-4 text-[10px]" : "w-5 h-5 text-xs"}
                 flex items-center justify-center font-bold text-[#F07EFF]
-              `}>
-                {comments_count > 99 ? '99+' : comments_count}
+              `}
+              >
+                {comments_count > 99 ? "99+" : comments_count}
               </div>
             )}
           </div>
@@ -921,7 +958,7 @@ export function StoryViewer({
               size="sm"
               className={`
                 rounded-full bg-[#6ACFAD] text-white hover:bg-[#6ACFAD]/90
-                ${isMobile ? 'w-7 h-7' : 'w-8 h-8'} 
+                ${isMobile ? "w-7 h-7" : "w-8 h-8"} 
                 p-0
               `}
               onClick={(e) => {
@@ -929,10 +966,10 @@ export function StoryViewer({
                 handleShare();
               }}
             >
-              <img 
-                src={share} 
-                className={isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'} 
-                alt="Share" 
+              <img
+                src={share}
+                className={isMobile ? "w-3.5 h-3.5" : "w-4 h-4"}
+                alt="Share"
               />
             </Button>
             {showSharePopup && (
@@ -952,8 +989,9 @@ export function StoryViewer({
         <>
           {hasPrevious && (
             <div className="absolute left-2 top-1/2 -translate-y-1/2 z-20">
-              <div className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center cursor-pointer"
-              onClick={onPrevious}
+              <div
+                className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center cursor-pointer"
+                onClick={onPrevious}
               >
                 <ChevronLeft className="w-5 h-5 text-white" />
               </div>
@@ -961,8 +999,9 @@ export function StoryViewer({
           )}
           {hasNext && (
             <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20">
-              <div className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center cursor-pointer"
-              onClick={onNext}
+              <div
+                className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center cursor-pointer"
+                onClick={onNext}
               >
                 <ChevronRight className="w-5 h-5 text-white" />
               </div>

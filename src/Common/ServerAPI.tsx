@@ -1664,7 +1664,7 @@ export const GetConnectionUser = (
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
-  if (page) params["page"] = page;
+  if (page) params["page_no"] = page;
   if (limit) params["limit"] = limit;
 
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection, params);
@@ -1677,7 +1677,7 @@ export const GetSearchFriend = (
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
-  if (page) params["page"] = page;
+  if (page) params["page_no"] = page;
   if (limit) params["limit"] = limit;
 
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.friend_search, params);
@@ -1704,7 +1704,7 @@ export const GetFriendRequest = (
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
-  if (page) params["page"] = page;
+  if (page) params["page_no"] = page;
   if (limit) params["limit"] = limit;
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.connection_request, params);
 };
@@ -1716,7 +1716,7 @@ export const GetSuggestedFriend = (
   let data = {};
   let params: { [key: string]: any } = {};
   params["search"] = search;
-  if (page) params["page"] = page;
+  if (page) params["page_no"] = page;
   if (limit) params["limit"] = limit;
   return executeAPI(ServerAPI.APIMethod.GET, data, EndPoint.suggested_connection, params);
 };
@@ -2589,7 +2589,7 @@ export const GetProductReviws = (
 ): ApiResponse => {
   const queryParams = new URLSearchParams();
 
-  if (params?.page) queryParams.append("page", params.page.toString());
+  if (params?.page) queryParams.append("page_no", params.page.toString());
   if (params?.limit) queryParams.append("limit", params.limit.toString());
 
   const queryString = queryParams.toString();
@@ -2644,7 +2644,7 @@ export const GetLibraryrDetails = (params?: {
 }): ApiResponse => {
   const queryParams = new URLSearchParams();
 
-  if (params?.page) queryParams.append("page", params.page.toString());
+  if (params?.page) queryParams.append("page_no", params.page.toString());
   if (params?.limit) queryParams.append("limit", params.limit.toString());
   if (params?.category_slug) queryParams.append("category_slug", params.category_slug.toString());
   if (params?.sort_by) queryParams.append("sort_by", params.sort_by.toString());

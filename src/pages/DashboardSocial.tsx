@@ -1865,7 +1865,11 @@ export default function SocialTopBar() {
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 md:gap-3">
                           <Link
-                            to={`/dashboard/social/user-profile/${singlePost?.profile?.user_id}`}
+                            to={
+                              loggedInUserID === singlePost?.profile?.user_id
+                                ? `/dashboard/Profile`
+                                : `/dashboard/social/user-profile/${singlePost?.profile?.user_id}`
+                            }
                           >
                             <img
                               src={
@@ -1890,18 +1894,25 @@ export default function SocialTopBar() {
                           <div>
                             <p className="font-semibold text-sm md:text-base text-black">
                               <Link
-                                to={`/dashboard/social/user-profile/${singlePost?.profile?.user_id}`}
+                                to={
+                                  loggedInUserID ===
+                                  singlePost?.profile?.user_id
+                                    ? `/dashboard/Profile`
+                                    : `/dashboard/social/user-profile/${singlePost?.profile?.user_id}`
+                                }
                               >
-                                {" "}
-                                {singlePost.profile.first_name}{" "}
+                                {singlePost.profile.first_name}
                                 {singlePost.profile.last_name}
                               </Link>
                               <span className="text-[#999999] text-xs md:text-[12px] font-light">
-                                {" "}
                                 <Link
-                                  to={`/dashboard/social/user-profile/${singlePost?.profile?.user_id}`}
+                                  to={
+                                    loggedInUserID ===
+                                    singlePost?.profile?.user_id
+                                      ? `/dashboard/Profile`
+                                      : `/dashboard/social/user-profile/${singlePost?.profile?.user_id}`
+                                  }
                                 >
-                                  {" "}
                                   @{singlePost.user.username}
                                 </Link>
                               </span>
@@ -2095,7 +2106,8 @@ export default function SocialTopBar() {
                                         <button
                                           onClick={() => {
                                             copyPostLink(
-                                              `${window.location.origin}/post/${singlePost.id}`,
+                                              `${window.location.origin}/social?p=${singlePost.id}`,
+
                                               (msg) =>
                                                 showToast({
                                                   type: "success",
@@ -2614,7 +2626,11 @@ export default function SocialTopBar() {
                           <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2 md:gap-3">
                               <Link
-                                to={`/dashboard/social/user-profile/${post?.profile?.user_id}`}
+                                to={
+                                  loggedInUserID === post?.profile?.user_id
+                                    ? `/dashboard/Profile`
+                                    : `/dashboard/social/user-profile/${post?.profile?.user_id}`
+                                }
                               >
                                 <img
                                   src={
@@ -2639,7 +2655,11 @@ export default function SocialTopBar() {
                               <div>
                                 <p className="font-semibold text-sm md:text-base text-black">
                                   <Link
-                                    to={`/dashboard/social/user-profile/${post?.profile?.user_id}`}
+                                    to={
+                                      loggedInUserID === post?.profile?.user_id
+                                        ? `/dashboard/Profile`
+                                        : `/dashboard/social/user-profile/${post?.profile?.user_id}`
+                                    }
                                   >
                                     {" "}
                                     {post.profile.first_name}{" "}
@@ -2648,7 +2668,12 @@ export default function SocialTopBar() {
                                   <span className="text-[#999999] text-xs md:text-[12px] font-light">
                                     {" "}
                                     <Link
-                                      to={`/dashboard/social/user-profile${post?.profile?.user_id}`}
+                                      to={
+                                        loggedInUserID ===
+                                        post?.profile?.user_id
+                                          ? `/dashboard/Profile`
+                                          : `/dashboard/social/user-profile/${post?.profile?.user_id}`
+                                      }
                                     >
                                       {" "}
                                       @{post.user.username}
@@ -2841,7 +2866,7 @@ export default function SocialTopBar() {
                                             <button
                                               onClick={() => {
                                                 copyPostLink(
-                                                  `${window.location.origin}/post/${post.id}`,
+                                                  `${window.location.origin}/social?p=${post.id}`,
                                                   (msg) =>
                                                     showToast({
                                                       type: "success",

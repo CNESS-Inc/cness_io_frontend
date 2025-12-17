@@ -60,7 +60,6 @@ export interface Media {
 
 export default function SocialUserProfile() {
   const { userId } = useParams<{ userId: string }>();
-  console.log("🚀 ~ SocialUserProfile ~ userId:", userId);
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [profiles, setProfiles] = useState<any[]>([
@@ -76,7 +75,6 @@ export default function SocialUserProfile() {
       ],
     },
   ]);
-  console.log("🚀 ~ SocialUserProfile ~ profiles:", profiles)
   const [activeTab, setActiveTab] = useState(
     location.state?.activeTab || "Conscious Acts"
   );
@@ -109,6 +107,7 @@ const fetchProfileData = async () => {
       userData = res?.data?.data;
     }
 
+    console.log("🚀 ~ fetchProfileData ~ userData:", userData)
     if (userData) {
 
       // Format profile picture URL
@@ -142,6 +141,7 @@ const fetchProfileData = async () => {
           professions: userData.professions || [],
           postCount: userData.post_count || [],
             badge: userData.badge || [],
+            about: userData.about_us || [],
           tabs: [
             { label: "Conscious Acts", icon: <Copy size={16} /> },
             { label: "Inspiration Reels", icon: <CirclePlay size={16} /> },

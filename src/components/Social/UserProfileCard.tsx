@@ -1,56 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import profilefill from "../../assets/profile-fill.svg";
-import { GetSocialProfileDetails } from "../../Common/ServerAPI";
-
-// Updated interfaces to match API response
-interface Interest {
-  id: string;
-  name: string;
-}
-
-interface Profession {
-  profession_id: string;
-  title: string;
-  description: string | null;
-}
-
-interface Location {
-  city: string;
-  postal_code: string;
-  address: string;
-}
-
-interface Country {
-  id: string;
-  name: string;
-}
-
-interface User {
-  id: string;
-  username: string;
-}
-
-interface ProfileData {
-  id: string;
-  badge?: {
-    level: string;
-    slug: string;
-    id: string;
-  } | null;
-  user_id: string;
-  first_name: string;
-  last_name: string;
-  profile_picture: string;
-  location: Location;
-  interests: Interest[];
-  professions: Profession[];
-  country: Country;
-  user: User;
-  about_us: string;
-  following_count: number;
-  followers_count: number;
-  post_count: number;
-}
 
 interface TagButtonProps {
   text: string;
@@ -75,7 +24,7 @@ interface ProfileCardNewProps {
   interests?: any[];
   professions?: any[];
   location?: string;
-badge?:any;
+  badge?: any;
   tabs: { label: string; icon: React.ReactNode }[];
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -112,83 +61,15 @@ const UserProfileCard: React.FC<ProfileCardNewProps> = ({
   interests = [],
   professions = [],
   tabs,
+  about,
   activeTab,
   onTabChange,
   onOpenFollowers,
   onOpenFollowing,
 }) => {
-  const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const badgeImg = badge?.level
     ? levels.find((el) => el.key === badge?.level)?.img
     : "";
-
-  const fetchMeDetails = async () => {
-    try {
-      setLoading(true);
-      const res = await GetSocialProfileDetails();
-      console.log("🚀 ~ fetchMeDetails ~ res:", res);
-
-      if (res?.success?.status && res?.data?.data) {
-        setProfileData(res.data.data);
-      } else {
-        setError("Failed to load profile data");
-      }
-    } catch (error) {
-      console.error("Error fetching profile details:", error);
-      setError("An error occurred while fetching profile data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMeDetails();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="p-6 pb-5 bg-white rounded-2xl">
-        <div className="animate-pulse">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-[120px] h-20 bg-gray-200 rounded-full"></div>
-              <div className="space-y-3">
-                <div className="h-4 bg-gray-200 rounded w-32"></div>
-                <div className="flex gap-3.5">
-                  <div className="h-3 bg-gray-200 rounded w-20"></div>
-                  <div className="h-3 bg-gray-200 rounded w-20"></div>
-                  <div className="h-3 bg-gray-200 rounded w-16"></div>
-                </div>
-              </div>
-            </div>
-            <div className="h-10 bg-gray-200 rounded-full w-32"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-6 pb-5 bg-white rounded-2xl">
-        <div className="text-center text-red-500">{error}</div>
-        <button
-          onClick={fetchMeDetails}
-          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-full mx-auto block"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  if (!profileData) {
-    return null;
-  }
-  const aboutText = profileData.about_us;
 
   return (
     <div className="px-3 sm:px-6 py-1 bg-white rounded-2xl">
@@ -284,7 +165,7 @@ const UserProfileCard: React.FC<ProfileCardNewProps> = ({
             color: "#64748B",
           }}
         >
-          {aboutText || "No description available"}
+          {about || "No description available"}
         </p>
       </div>
 

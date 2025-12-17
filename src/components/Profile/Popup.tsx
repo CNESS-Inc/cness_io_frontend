@@ -103,6 +103,7 @@ const PostPopup: React.FC<PopupProps> = ({
   const [loadingReplies, setLoadingReplies] = useState<Record<string, boolean>>(
     {}
   );
+  const loggedInUserID = localStorage.getItem("Id");
 
   const { showToast } = useToast();
 
@@ -451,7 +452,11 @@ const PostPopup: React.FC<PopupProps> = ({
   const navigate = useNavigate()
 
   const handleUserProfileRedirection = (user_id:any) =>{
-    navigate(`/dashboard/social/user-profile/${user_id}`) 
+    if(loggedInUserID === user_id){
+    navigate(`/dashboard/Profile`);
+    }else{
+    navigate(`/dashboard/social/user-profile/${user_id}`);
+    }
     onClose()
   }
 
@@ -805,6 +810,7 @@ const PostPopup: React.FC<PopupProps> = ({
       <EditPostModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
+        popupModalClose={onClose}
         posts={post}
         onPostUpdated={handlePostUpdatedCallback}
       />

@@ -35,7 +35,7 @@ const MyConnection = () => {
   }, [location.state]);
 
   // keep search in sync with ?s= query param
- useEffect(() => {
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     const urlSearch = params.get("s") || "";
     setSearchValue(urlSearch);
@@ -72,8 +72,9 @@ const MyConnection = () => {
       params.delete("t");
     }
     const newSearch = params.toString();
-    const newUrl = `${location.pathname}${newSearch ? `?${newSearch}` : ""}${location.hash || ""
-      }`;
+    const newUrl = `${location.pathname}${newSearch ? `?${newSearch}` : ""}${
+      location.hash || ""
+    }`;
     window.history.pushState(null, "", newUrl);
   };
 
@@ -103,6 +104,12 @@ const MyConnection = () => {
     
     // Manually update searchTerm to avoid race conditions
     setSearchTerm(searchValue);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
@@ -145,6 +152,7 @@ const MyConnection = () => {
                 placeholder="Search..."
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full rounded-full border border-gray-300 pl-4 pr-10 py-2 text-sm focus:outline-none focus:border-indigo-500"
               />
               <svg
@@ -179,9 +187,10 @@ const MyConnection = () => {
           />
         )}
         {activeTab === "Friend Requests" && (
-          <FriendRequests searchTerm={searchTerm}
-            onSelect={(user) => setSelectedFriend(user)} />
-
+          <FriendRequests 
+            searchTerm={searchTerm}
+            onSelect={(user) => setSelectedFriend(user)} 
+          />
         )}
         {activeTab === "Suggestions" && (
           <Suggestions

@@ -2,7 +2,15 @@ import { ChevronLeft, ChevronRight, TrendingUp } from "lucide-react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { TagTopicPostsDetails, PostsLike, SendFollowRequest, UnFriend, SendFriendRequest, SavePost, UnsavePost } from "../Common/ServerAPI";
+import {
+  TagTopicPostsDetails,
+  PostsLike,
+  SendFollowRequest,
+  UnFriend,
+  SendFriendRequest,
+  SavePost,
+  UnsavePost,
+} from "../Common/ServerAPI";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import { IoTrendingUpSharp } from "react-icons/io5";
 import {
@@ -74,7 +82,7 @@ function PostCarousel({ mediaItems }: any) {
     <div className="relative w-full ">
       {/* Media Container */}
       <div className="w-full aspect-video rounded-3xl  bg-black">
-        {mediaItems.map((item:any, index:any) => (
+        {mediaItems.map((item: any, index: any) => (
           <div
             key={index}
             className={`w-full h-full transition-opacity duration-500 ${
@@ -127,7 +135,7 @@ function PostCarousel({ mediaItems }: any) {
       {/* Show dots only if there are multiple items */}
       {mediaItems.length > 1 && (
         <div className="flex justify-center gap-1 mt-2">
-          {mediaItems.map((_:any, idx:any) => (
+          {mediaItems.map((_: any, idx: any) => (
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
@@ -147,7 +155,7 @@ export default function Topic() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { showToast } = useToast();
-  
+
   // Get both topic and tag from URL search params
   const topicSlug = searchParams.get("topic");
   const tagSlug = searchParams.get("tag");
@@ -163,7 +171,9 @@ export default function Topic() {
   const lastPostElementRef = useRef<HTMLDivElement>(null);
   const initialLoad = useRef(true);
 
-  const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
+  const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>(
+    {}
+  );
   const [openMenu, setOpenMenu] = useState<{
     postId: string | null;
     type: "options" | "share" | null;
@@ -181,18 +191,17 @@ export default function Topic() {
   const shareMenuRef = useRef<HTMLDivElement>(null);
   const [userPosts, setUserPosts] = useState<any[]>([]);
 
-
   // Determine which type of feed we're showing
   const isTagFeed = !!tagSlug;
   const isTopicFeed = !!topicSlug;
-  
+
   // Get the display title based on what we're showing
   const getDisplayTitle = () => {
     if (isTagFeed) {
       return `#${tagSlug}`;
     }
     if (isTopicFeed) {
-      const topic = topics?.find(item => item?.slug === topicSlug);
+      const topic = topics?.find((item) => item?.slug === topicSlug);
       return topic?.topic_name || "Topic";
     }
     return "Posts";
@@ -204,8 +213,10 @@ export default function Topic() {
       return `Explore posts tagged with #${tagSlug}.`;
     }
     if (isTopicFeed) {
-      const topic = topics?.find(item => item?.slug === topicSlug);
-      return `Join the community sharing insights about ${topic?.topic_name || "this topic"}.`;
+      const topic = topics?.find((item) => item?.slug === topicSlug);
+      return `Join the community sharing insights about ${
+        topic?.topic_name || "this topic"
+      }.`;
     }
     return "Explore posts from the community.";
   };
@@ -351,7 +362,7 @@ export default function Topic() {
             : post
         )
       );
-      
+
       showToast({
         message: "Follow status updated",
         type: "success",
@@ -503,8 +514,13 @@ export default function Topic() {
     }
   };
 
-  const copyPostLink = (url: string, onSuccess: (msg: string) => void, onError: (msg: string) => void) => {
-    navigator.clipboard.writeText(url)
+  const copyPostLink = (
+    url: string,
+    onSuccess: (msg: string) => void,
+    onError: (msg: string) => void
+  ) => {
+    navigator.clipboard
+      .writeText(url)
       .then(() => onSuccess("Link copied to clipboard!"))
       .catch(() => onError("Failed to copy link"));
   };
@@ -554,7 +570,11 @@ export default function Topic() {
       setIsLoading(true);
       try {
         // The API should handle filtering by either or both
-        const res = await TagTopicPostsDetails(requestedPage, tagSlug || null, topicSlug || null);
+        const res = await TagTopicPostsDetails(
+          requestedPage,
+          tagSlug || null,
+          topicSlug || null
+        );
 
         if (res?.data?.data?.rows) {
           const rows: any[] = res?.data?.data?.rows ?? [];
@@ -564,8 +584,8 @@ export default function Topic() {
             typeof rawCount === "number"
               ? rawCount
               : Array.isArray(rawCount)
-                ? rawCount.length
-                : Number(rawCount) || 0;
+              ? rawCount.length
+              : Number(rawCount) || 0;
           const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_LIMIT));
 
           if (rows.length === 0) {
@@ -655,7 +675,11 @@ export default function Topic() {
     // Load first page immediately
     const loadFirstPage = async () => {
       try {
-        const res = await TagTopicPostsDetails(1, tagSlug || null, topicSlug || null);
+        const res = await TagTopicPostsDetails(
+          1,
+          tagSlug || null,
+          topicSlug || null
+        );
         console.log("Initial load response:", res);
 
         const rows: any[] = res?.data?.data?.rows ?? [];
@@ -664,8 +688,8 @@ export default function Topic() {
           typeof rawCount === "number"
             ? rawCount
             : Array.isArray(rawCount)
-              ? rawCount.length
-              : Number(rawCount) || 0;
+            ? rawCount.length
+            : Number(rawCount) || 0;
 
         const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_LIMIT));
 
@@ -786,9 +810,7 @@ export default function Topic() {
         </div>
       </div>
 
-      <p className="mb-6 text-sm text-gray-500">
-        {getDescription()}
-      </p>
+      <p className="mb-6 text-sm text-gray-500">{getDescription()}</p>
 
       {/* Full-width 2-col layout */}
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_380px] gap-6">
@@ -812,17 +834,18 @@ export default function Topic() {
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 md:gap-3">
                         <Link
-                          to={`/dashboard/social/user-profile/${post?.profile?.user_id}`}
+                          to={
+                            loggedInUserID === post?.profile?.user_id
+                              ? `/dashboard/Profile`
+                              : `/dashboard/social/user-profile/${post?.profile?.user_id}`
+                          }
                         >
                           <img
                             src={
                               !post.profile.profile_picture ||
                               post.profile.profile_picture === "null" ||
-                              post.profile.profile_picture ===
-                                "undefined" ||
-                              !post.profile.profile_picture.startsWith(
-                                "http"
-                              )
+                              post.profile.profile_picture === "undefined" ||
+                              !post.profile.profile_picture.startsWith("http")
                                 ? "/profile.png"
                                 : post.profile.profile_picture
                             }
@@ -837,16 +860,23 @@ export default function Topic() {
                         <div>
                           <p className="font-semibold text-sm md:text-base text-black">
                             <Link
-                              to={`/dashboard/userprofile/${post?.profile?.user_id}`}
+                              to={
+                                loggedInUserID === post?.profile?.user_id
+                                  ? `/dashboard/Profile`
+                                  : `/dashboard/social/user-profile/${post?.profile?.user_id}`
+                              }
                             >
                               {" "}
-                              {post.profile.first_name}{" "}
-                              {post.profile.last_name}
+                              {post.profile.first_name} {post.profile.last_name}
                             </Link>
                             <span className="text-[#999999] text-xs md:text-[12px] font-light">
                               {" "}
                               <Link
-                                to={`/dashboard/userprofile/${post?.profile?.user_id}`}
+                                to={
+                                  loggedInUserID === post?.profile?.user_id
+                                    ? `/dashboard/Profile`
+                                    : `/dashboard/social/user-profile/${post?.profile?.user_id}`
+                                }
                               >
                                 {" "}
                                 @{post.user.username}
@@ -907,9 +937,7 @@ export default function Topic() {
                           {/* Three Dots Menu */}
                           <div className="relative">
                             <button
-                              onClick={() =>
-                                toggleMenu(post.id, "options")
-                              }
+                              onClick={() => toggleMenu(post.id, "options")}
                               className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
                               title="More options"
                             >
@@ -939,7 +967,8 @@ export default function Topic() {
                                         post.friend_request_status === "ACCEPT"
                                           ? "Connected"
                                           : !post.if_friend &&
-                                            post.friend_request_status === "PENDING"
+                                            post.friend_request_status ===
+                                              "PENDING"
                                           ? "Requested"
                                           : "Connect"}
                                       </button>
@@ -977,9 +1006,7 @@ export default function Topic() {
                                         className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
                                       >
                                         <Bookmark className="w-4 h-4" />
-                                        {post.is_saved
-                                          ? "Unsave"
-                                          : "Save Act"}
+                                        {post.is_saved ? "Unsave" : "Save Act"}
                                       </button>
                                     </li>
                                   </ul>
@@ -994,9 +1021,7 @@ export default function Topic() {
                           {/* Three Dots Menu */}
                           <div className="relative">
                             <button
-                              onClick={() =>
-                                toggleMenu(post.id, "options")
-                              }
+                              onClick={() => toggleMenu(post.id, "options")}
                               className="flex items-center border-[#ECEEF2] border shadow-sm justify-center w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
                               title="More options"
                             >
@@ -1047,9 +1072,7 @@ export default function Topic() {
                                         className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
                                       >
                                         <Bookmark className="w-4 h-4" />
-                                        {post.is_saved
-                                          ? "Unsave"
-                                          : "Save Post"}
+                                        {post.is_saved ? "Unsave" : "Save Post"}
                                       </button>
                                     </li>
                                   </ul>
@@ -1066,9 +1089,7 @@ export default function Topic() {
                         <span>
                           {expandedPosts[post.id] ||
                           post?.content?.length <= CONTENT_LIMIT
-                            ? renderContentWithHashtags(
-                                post.content || ""
-                              )
+                            ? renderContentWithHashtags(post.content || "")
                             : renderContentWithHashtags(
                                 `${post?.content?.substring(
                                   0,
@@ -1081,9 +1102,7 @@ export default function Topic() {
                             onClick={() => toggleExpand(post.id)}
                             className="text-blue-500 ml-1 text-xs md:text-sm font-medium hover:underline focus:outline-none"
                           >
-                            {expandedPosts[post.id]
-                              ? "Show less"
-                              : "Read more"}
+                            {expandedPosts[post.id] ? "Show less" : "Read more"}
                           </button>
                         )}
                       </p>
@@ -1202,9 +1221,7 @@ export default function Topic() {
 
                         <span
                           className={`hidden sm:flex ${
-                            post.is_liked
-                              ? "text-[#7077FE]"
-                              : "text-black"
+                            post.is_liked ? "text-[#7077FE]" : "text-black"
                           }`}
                         >
                           Appreciate
@@ -1223,15 +1240,9 @@ export default function Topic() {
                       >
                         <MessageSquare
                           className="w-5 h-5 md:w-6 md:h-6 filter transiton-all"
-                          fill={
-                            selectedPostId === post.id
-                              ? "#7077FE"
-                              : "none"
-                          }
+                          fill={selectedPostId === post.id ? "#7077FE" : "none"}
                           stroke={
-                            selectedPostId === post.id
-                              ? "#7077FE"
-                              : "#000"
+                            selectedPostId === post.id ? "#7077FE" : "#000"
                           }
                         />{" "}
                         <span
@@ -1354,8 +1365,9 @@ export default function Topic() {
         />
       )}
       <div
-        className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${isTopicsOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${
+          isTopicsOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         role="dialog"
         aria-modal="true"
         aria-label="Topics"
@@ -1372,7 +1384,12 @@ export default function Topic() {
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>

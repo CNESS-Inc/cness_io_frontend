@@ -46,6 +46,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const [postVideoPreviewUrl, setPostVideoPreviewUrl] = useState<string | null>(
     null
   );
+  const loggedInUserID = localStorage.getItem("Id");
   const [selectedTopic, setSelectedTopic] = useState<string>("");
   const [isTopicDropdownOpen, setIsTopicDropdownOpen] = useState(false);
   const [topicSearchQuery, setTopicSearchQuery] = useState("");
@@ -627,7 +628,13 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
           </div>
 
           <div className="px-6 pt-5 flex items-center gap-2 md:gap-3">
-            <Link to={`/dashboard/social/user-profile/${userInfo?.id}`}>
+            <Link
+              to={
+                loggedInUserID === userInfo?.id
+                  ? `/dashboard/Profile`
+                  : `/dashboard/social/user-profile/${userInfo?.id}`
+              }
+            >
               <img
                 src={
                   !userInfo?.profile_picture ||
@@ -648,7 +655,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-1 text-sm md:text-base">
                 <Link
-                  to={`/dashboard/social/user-profile/${userInfo?.id}`}
+                  to={
+                    loggedInUserID === userInfo?.id
+                      ? `/dashboard/Profile`
+                      : `/dashboard/social/user-profile/${userInfo?.id}`
+                  }
                   className="font-semibold text-black hover:underline"
                 >
                   {userInfo?.name || "User"}
@@ -924,7 +935,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 </button>
 
                 {isTopicDropdownOpen && (
-  <div className="absolute bottom-full mb-1 z-10 w-full bg-white border border-[#ECEEF2] rounded-md shadow-lg max-h-64 overflow-hidden">
+                  <div className="absolute bottom-full mb-1 z-10 w-full bg-white border border-[#ECEEF2] rounded-md shadow-lg max-h-64 overflow-hidden">
                     <div className="p-2 border-b border-[#ECEEF2] sticky top-0 bg-white">
                       <input
                         type="text"
@@ -1240,7 +1251,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
               {isLoadingLocations ? (
                 <div className="p-4 text-center text-gray-500">
                   <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                  {locationSearchQuery.length === 0 ? "Loading suggestions..." : "Searching..."}
+                  {locationSearchQuery.length === 0
+                    ? "Loading suggestions..."
+                    : "Searching..."}
                 </div>
               ) : locationResults.length > 0 ? (
                 <div className="space-y-2">
@@ -1295,14 +1308,16 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                     </svg>
                   </div>
                   <p className="text-gray-900 font-semibold text-base mb-1">
-                    {locationSearchQuery.length > 0 && locationSearchQuery.length < 3
+                    {locationSearchQuery.length > 0 &&
+                    locationSearchQuery.length < 3
                       ? "Type at least 3 characters"
                       : locationSearchQuery.length >= 3
                       ? "No locations found"
                       : "No suggestions available"}
                   </p>
                   <p className="text-gray-500 text-sm">
-                    {locationSearchQuery.length > 0 && locationSearchQuery.length < 3
+                    {locationSearchQuery.length > 0 &&
+                    locationSearchQuery.length < 3
                       ? "Continue typing to search"
                       : locationSearchQuery.length >= 3
                       ? "Try searching with a different name"
