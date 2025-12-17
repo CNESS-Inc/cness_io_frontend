@@ -1685,7 +1685,7 @@ export function CertificationCard({
     px-4 sm:px-6 
     text-sm sm:text-[14px] 
     rounded-full 
-    bg-[#7077FE] text-white  items-center justify-center gap-[7px] px-5 sm:px-6 font-opensans text-[13px] sm:text-[14px] leading-[100%] text-white shadow hover:bg-[#5A61E8] transition"
+    bg-[#7077FE] text-white gap-[7px] font-opensans text-[13px] leading-[100%] shadow hover:bg-[#5A61E8] transition"
                       >
                         Upgrade to {getNextLevel()}
                       </button>
@@ -1961,7 +1961,7 @@ export function BestPracticesSection({
                   `/dashboard/bestpractices/${bp.id}/${slugify(bp.title)}`
                 )
               }
-              className="snap-start w-[90%] sm:w-[272px] max-w-[320px] h-auto flex-shrink-0
+              className="snap-start w-[90%] sm:w-[272px] max-w-[320px] h-auto shrink-0
              rounded-xl border border-[#ECEEF2] bg-white p-3 flex flex-col gap-3 cursor-pointer"            >
               {/* Image */}
               <div className="h-[135px] rounded-lg overflow-hidden">
@@ -3128,7 +3128,7 @@ export function SocialStackCard({
                   <button
                     onClick={() => handleConnect(f.id)}
                     disabled={connectingUsers[f.id]}
-                    className={`flex justify-center items-center gap-1 text-[11px] sm:text-xs px-2 sm:px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-[32px] sm:h-[35px] shrink-0 whitespace-nowrap
+                    className={`flex justify-center items-center gap-1 text-[11px] sm:text-xs px-2 sm:px-3 py-1.5 rounded-full transition-colors font-family-open-sans h-8 sm:h-[35px] shrink-0 whitespace-nowrap
                       ${["connected", "requested"].includes(getFriendStatus(f.id))
                         ? "bg-gray-400 text-white cursor-not-allowed"
                         : "bg-white text-black shadow-md"

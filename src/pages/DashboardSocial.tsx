@@ -1787,7 +1787,7 @@ export default function SocialTopBar() {
                   <div className="bg-linear-to-r from-[#7077fe36] to-[#f07eff21] p-4 md:p-10 rounded-xl mb-4 md:mb-5">
                     <div className="flex flex-col gap-2 md:gap-3">
                       <div className="flex items-center gap-6">
-                        <Link to={`/dashboard/Profile/${loggedInUserID}`}>
+                        <Link to={`/dashboard/Profile`}>
                           <img
                             src={
                               !userProfilePicture ||
