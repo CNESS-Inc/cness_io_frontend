@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-resolve: {
+  resolve: {
     alias: {
       // Ensure Vite knows these are packages, not relative files
       '@fortawesome/fontawesome-svg-core': '@fortawesome/fontawesome-svg-core',
@@ -12,19 +12,19 @@ resolve: {
       '@fortawesome/react-fontawesome': '@fortawesome/react-fontawesome',
     },
   },
-  // ✅ Add server config here
-  // server: {
-  //   port: 3000,    
-  //    host: '0.0.0.0',   // fixed port
-  //   strictPort: true,  // error if port is taken, instead of switching
-  //   hmr: {
-  //     overlay: true,   // shows error overlay in browser
-  //   },
-  //   watch: {
-  //     usePolling: true,  // improves stability, especially on macOS
-  //     interval: 300,
-  //   },
-  // },
+  server: {
+    port: 3000,    
+    host: '0.0.0.0',
+    strictPort: true,
+    allowedHosts: ['f0295bbb-572d-4a52-b809-f11cdfaf3fa0.preview.emergentagent.com', 'localhost'],
+    hmr: {
+      overlay: true,
+    },
+    watch: {
+      usePolling: true,
+      interval: 300,
+    },
+  },
 
   build: {
     rollupOptions: {
