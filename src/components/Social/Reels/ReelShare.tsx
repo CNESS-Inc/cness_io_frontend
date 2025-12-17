@@ -69,7 +69,7 @@ const ReelShare: React.FC<ReelShareProps> = ({ urldata, setOpenMenuReelId }) => 
                   >
                     <MdContentCopy size={30} className="text-gray-600" />
                     {copy &&
-                      <div className="absolute z-[9999999999] w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all z-20">
+                      <div className="absolute z-9999999999 w-[100px] top-10 left-1/2 -translate-x-1/2 bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-xs font-semibold shadow transition-all">
                         Link Copied!
                       </div>
                     }

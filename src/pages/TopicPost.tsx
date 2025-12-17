@@ -1304,7 +1304,7 @@ export default function Topic() {
                                   <button
                                     onClick={() => {
                                       navigator.clipboard.writeText(
-                                        `${window.location.origin}/post/${post.id}`
+                                            `${window.location.origin}/social?p=${post.id}`
                                       );
                                       setCopy(true);
                                       setTimeout(() => setCopy(false), 1500);

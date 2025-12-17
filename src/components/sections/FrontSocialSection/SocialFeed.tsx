@@ -196,8 +196,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
         {mediaItems.map((item, index) => (
           <div
             key={index}
-            className={`w-full h-full transition-opacity duration-500 ${index === current ? "block" : "hidden"
-              }`}
+            className={`w-full h-full transition-opacity duration-500 ${
+              index === current ? "block" : "hidden"
+            }`}
           >
             {item.type === "image" ? (
               <img
@@ -249,8 +250,9 @@ function PostCarousel({ mediaItems }: PostCarouselProps) {
             <button
               key={idx}
               onClick={() => setCurrent(idx)}
-              className={`w-2 h-2 rounded-full transition-colors ${idx === current ? "bg-indigo-500" : "bg-gray-300"
-                }`}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                idx === current ? "bg-indigo-500" : "bg-gray-300"
+              }`}
             ></button>
           ))}
         </div>
@@ -970,19 +972,25 @@ export default function SocialFeed() {
                       <Link
                         to={`/dashboard/userprofile/${singlePost?.profile?.id}`}
                       >
-                        <img
-                          src={
-                            singlePost.profile.profile_picture
-                              ? singlePost.profile.profile_picture
-                              : "/profile.png"
-                          }
- className="w-full h-full rounded-full object-cover"                   
-    alt="User"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/profile.png";
-                          }}
-                        />
+                        <div
+                          className="w-8 aspect-square
+      md:w-[55px] lg:w-[63px]
+      shrink-0 overflow-hidden rounded-full"
+                        >
+                          <img
+                            src={
+                              singlePost.profile.profile_picture
+                                ? singlePost.profile.profile_picture
+                                : "/profile.png"
+                            }
+                            className="w-full h-full rounded-full object-cover "
+                            alt="User"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "/profile.png";
+                            }}
+                          />
+                        </div>
                       </Link>
                       <div>
                         <p className="font-semibold text-sm md:text-base text-gray-800">
@@ -1008,6 +1016,215 @@ export default function SocialFeed() {
                         </p>
                       </div>
                     </div>
+                    {singlePost.user_id !== loggedInUserID && (
+                      <div className="flex gap-2">
+                        {/* Connect Button */}
+                        <button
+                          onClick={() => setOpenSignup(true)}
+                          disabled={
+                            connectingUsers[singlePost.user_id] || false
+                          }
+                          className={`hidden sm:flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
+                                ${
+                                  // getFriendStatus(post.user_id) === "connected"
+                                  //   ? "bg-red-500 text-white hover:bg-red-600"
+                                  //   :
+                                  getFriendStatus(singlePost.user_id) ===
+                                  "requested"
+                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                    : "bg-white text-black shadow-md"
+                                }`}
+                        >
+                          <img
+                            src={iconMap["userplus"]}
+                            alt="userplus"
+                            className="w-4 h-4"
+                          />
+                          {connectingUsers[singlePost.user_id]
+                            ? "Loading..."
+                            : // : getFriendStatus(post.user_id) === "connected"
+                            // ? "Connected"
+                            getFriendStatus(singlePost.user_id) === "requested"
+                            ? "Requested"
+                            : "Connect"}
+                        </button>
+                        {/* Follow Button */}
+                        <button
+                          onClick={() => setOpenSignup(true)}
+                          className={`flex w-[100px] justify-center items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
+                                ${
+                                  singlePost.if_following
+                                    ? "bg-transparent text-blue-500 hover:text-blue-600"
+                                    : "bg-[#7C81FF] text-white hover:bg-indigo-600"
+                                }`}
+                        >
+                          {singlePost.if_following ? (
+                            <>
+                              <TrendingUp className="w-60 h-60" /> Resonating
+                            </>
+                          ) : (
+                            "+ Resonate"
+                          )}
+                        </button>
+
+                        {/* Three Dots Menu */}
+                        <div className="relative">
+                          <button
+                            onClick={() => toggleMenu(singlePost.id, "options")}
+                            className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
+                            title="More options"
+                          >
+                            <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                          </button>
+
+                          {openMenu.postId === singlePost.id &&
+                            openMenu.type === "options" && (
+                              <div
+                                className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                ref={(el) => {
+                                  const key = `${singlePost.id}-options`;
+                                  if (el) menuRef.current[key] = el;
+                                  else delete menuRef.current[key];
+                                }}
+                              >
+                                <ul className="space-y-1">
+                                  <li className="sm:hidden">
+                                    <button
+                                      onClick={() => setOpenSignup(true)}
+                                      disabled={
+                                        connectingUsers[singlePost.user_id] ||
+                                        false
+                                      }
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                    >
+                                      <img
+                                        src={iconMap["userplus"]}
+                                        alt="userplus"
+                                        className="w-4 h-4"
+                                      />
+                                      {connectingUsers[singlePost.user_id]
+                                        ? "Loading..."
+                                        : getFriendStatus(
+                                            singlePost.user_id
+                                          ) === "requested"
+                                        ? "Requested"
+                                        : "Connect"}
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      // onClick={() => setOpenSignup(true)}
+                                      onClick={() => {
+                                        copyPostLink(
+                                          `${window.location.origin}/social?p=${singlePost.id}`,
+                                          (msg) =>
+                                            showToast({
+                                              type: "success",
+                                              message: msg,
+                                              duration: 2000,
+                                            }),
+                                          (msg) =>
+                                            showToast({
+                                              type: "error",
+                                              message: msg,
+                                              duration: 2000,
+                                            })
+                                        );
+                                      }}
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                    >
+                                      <LinkIcon className="w-4 h-4" />
+                                      Copy Act Link
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      onClick={() => setOpenSignup(true)}
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                    >
+                                      <Bookmark className="w-4 h-4" />
+                                      {singlePost.is_saved
+                                        ? "Unsave"
+                                        : "Save Act"}
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      onClick={() => setOpenSignup(true)}
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                    >
+                                      <Flag className="w-4 h-4" />
+                                      Report Act
+                                    </button>
+                                  </li>
+                                  {getFriendStatus(singlePost.user_id) ===
+                                    "connected" && (
+                                    <li>
+                                      <button
+                                        onClick={() => setOpenSignup(true)}
+                                        className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                      >
+                                        <CiCircleRemove className="w-4 h-4 text-black" />
+                                        Remove Connection
+                                      </button>
+                                    </li>
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    )}
+
+                    {singlePost.user_id == loggedInUserID && (
+                      <div className="flex gap-2">
+                        {/* Three Dots Menu */}
+                        <div className="relative">
+                          <button
+                            onClick={() => toggleMenu(singlePost.id, "options")}
+                            className="flex items-center justify-center border-[#ECEEF2] border shadow-sm w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
+                            title="More options"
+                          >
+                            <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                          </button>
+
+                          {openMenu.postId === singlePost.id &&
+                            openMenu.type === "options" && (
+                              <div
+                                className="absolute top-10 right-0 bg-white shadow-lg rounded-lg p-2 z-50 min-w-[180px]"
+                                ref={(el) => {
+                                  const key = `${singlePost.id}-options`;
+                                  if (el) menuRef.current[key] = el;
+                                  else delete menuRef.current[key];
+                                }}
+                              >
+                                <ul className="space-y-1">
+                                  <li>
+                                    <button
+                                      onClick={() => setOpenSignup(true)}
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                                    >
+                                      <LinkIcon className="w-4 h-4" />
+                                      Copy Post Link
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      onClick={() => setOpenSignup(true)}
+                                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                    >
+                                      <Bookmark className="w-4 h-4" />
+                                      {singlePost.is_saved
+                                        ? "Unsave"
+                                        : "Save Post"}
+                                    </button>
+                                  </li>
+                                </ul>
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Post Content */}
@@ -1106,8 +1323,9 @@ export default function SocialFeed() {
                     <button
                       onClick={() => setOpenSignup(true)}
                       disabled={isLoading}
-                      className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
+                      className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${
+                        isLoading ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     >
                       <ThumbsUp
                         className="w-5 h-5 md:w-6 md:h-6 shrink-0"
@@ -1115,8 +1333,9 @@ export default function SocialFeed() {
                         stroke={singlePost.is_liked ? "#7077FE" : "#000"} // keeps border visible
                       />
                       <span
-                        className={`hidden sm:flex ${singlePost.is_liked ? "#7077FE" : "text-black"
-                          }`}
+                        className={`hidden sm:flex ${
+                          singlePost.is_liked ? "#7077FE" : "text-black"
+                        }`}
                       >
                         {" "}
                         Appreciate
@@ -1136,10 +1355,11 @@ export default function SocialFeed() {
                         }
                       />{" "}
                       <span
-                        className={`hidden sm:flex ${selectedPostId === singlePost.id
-                          ? "#7077FE"
-                          : "text-black"
-                          }`}
+                        className={`hidden sm:flex ${
+                          selectedPostId === singlePost.id
+                            ? "#7077FE"
+                            : "text-black"
+                        }`}
                       >
                         Reflections
                       </span>
@@ -1365,25 +1585,25 @@ export default function SocialFeed() {
                             to={`/dashboard/userprofile/${post?.profile?.id}`}
                           >
                             <div
-    className="
+                              className="
       w-8 aspect-square
       md:w-[55px] lg:w-[63px]
       shrink-0 overflow-hidden rounded-full
     "
-  >
-                            <img
-                              src={
-                                post.profile.profile_picture
-                                  ? post.profile.profile_picture
-                                  : "/profile.png"
-                              }
-      className="w-full h-full object-cover rounded-full"
-                              alt="User"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = "/profile.png";
-                              }}
-                            />
+                            >
+                              <img
+                                src={
+                                  post.profile.profile_picture
+                                    ? post.profile.profile_picture
+                                    : "/profile.png"
+                                }
+                                className="w-full h-full object-cover rounded-full"
+                                alt="User"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = "/profile.png";
+                                }}
+                              />
                             </div>
                           </Link>
                           <div>
@@ -1418,12 +1638,12 @@ export default function SocialFeed() {
                               disabled={connectingUsers[post.user_id] || false}
                               className={`hidden sm:flex w-[100px] justify-center items-center gap-1 text-[12px] md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors font-family-open-sans h-[35px]
                                 ${
-                                // getFriendStatus(post.user_id) === "connected"
-                                //   ? "bg-red-500 text-white hover:bg-red-600"
-                                //   :
-                                getFriendStatus(post.user_id) === "requested"
-                                  ? "bg-gray-400 text-white cursor-not-allowed"
-                                  : "bg-white text-black shadow-md"
+                                  // getFriendStatus(post.user_id) === "connected"
+                                  //   ? "bg-red-500 text-white hover:bg-red-600"
+                                  //   :
+                                  getFriendStatus(post.user_id) === "requested"
+                                    ? "bg-gray-400 text-white cursor-not-allowed"
+                                    : "bg-white text-black shadow-md"
                                 }`}
                             >
                               <img
@@ -1436,16 +1656,17 @@ export default function SocialFeed() {
                                 : // : getFriendStatus(post.user_id) === "connected"
                                 // ? "Connected"
                                 getFriendStatus(post.user_id) === "requested"
-                                  ? "Requested"
-                                  : "Connect"}
+                                ? "Requested"
+                                : "Connect"}
                             </button>
                             {/* Follow Button */}
                             <button
                               onClick={() => setOpenSignup(true)}
                               className={`flex w-[100px] justify-center items-center gap-1 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 rounded-full transition-colors
-                                ${post.if_following
-                                  ? "bg-transparent text-blue-500 hover:text-blue-600"
-                                  : "bg-[#7C81FF] text-white hover:bg-indigo-600"
+                                ${
+                                  post.if_following
+                                    ? "bg-transparent text-blue-500 hover:text-blue-600"
+                                    : "bg-[#7C81FF] text-white hover:bg-indigo-600"
                                 }`}
                             >
                               {post.if_following ? (
@@ -1497,8 +1718,8 @@ export default function SocialFeed() {
                                             ? "Loading..."
                                             : getFriendStatus(post.user_id) ===
                                               "requested"
-                                              ? "Requested"
-                                              : "Connect"}
+                                            ? "Requested"
+                                            : "Connect"}
                                         </button>
                                       </li>
                                       <li>
@@ -1549,16 +1770,16 @@ export default function SocialFeed() {
                                       </li>
                                       {getFriendStatus(post.user_id) ===
                                         "connected" && (
-                                          <li>
-                                            <button
-                                              onClick={() => setOpenSignup(true)}
-                                              className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
-                                            >
-                                              <CiCircleRemove className="w-4 h-4 text-black" />
-                                              Remove Connection
-                                            </button>
-                                          </li>
-                                        )}
+                                        <li>
+                                          <button
+                                            onClick={() => setOpenSignup(true)}
+                                            className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                                          >
+                                            <CiCircleRemove className="w-4 h-4 text-black" />
+                                            Remove Connection
+                                          </button>
+                                        </li>
+                                      )}
                                     </ul>
                                   </div>
                                 )}
@@ -1621,12 +1842,12 @@ export default function SocialFeed() {
                       <div className="mt-3 md:mt-4">
                         <p className="text-gray-800 text-sm md:text-base mb-2 md:mb-3">
                           {expandedPosts[post.id] ||
-                            post?.content?.length <= CONTENT_LIMIT
+                          post?.content?.length <= CONTENT_LIMIT
                             ? post.content
                             : `${post?.content?.substring(
-                              0,
-                              CONTENT_LIMIT
-                            )}...`}
+                                0,
+                                CONTENT_LIMIT
+                              )}...`}
                           {post?.content?.length > CONTENT_LIMIT && (
                             <button
                               onClick={() => setOpenSignup(true)}
@@ -1729,8 +1950,9 @@ export default function SocialFeed() {
                         <button
                           onClick={() => setOpenSignup(true)}
                           disabled={isLoading}
-                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
+                          className={`flex items-center justify-center gap-2 py-1 h-[45px] font-opensans font-normal text-sm md:text-base leading-[150%] rounded-md bg-white text-[#7077FE] hover:bg-gray-50 ${
+                            isLoading ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
                         >
                           <ThumbsUp
                             className="w-5 h-5 md:w-6 md:h-6 shrink-0"
@@ -1738,8 +1960,9 @@ export default function SocialFeed() {
                             stroke={post.is_liked ? "#7077FE" : "#000"} // keeps border visible
                           />
                           <span
-                            className={`hidden sm:flex ${post.is_liked ? "#7077FE" : "text-black"
-                              }`}
+                            className={`hidden sm:flex ${
+                              post.is_liked ? "#7077FE" : "text-black"
+                            }`}
                           >
                             {" "}
                             Appreciate
@@ -1759,10 +1982,11 @@ export default function SocialFeed() {
                             }
                           />{" "}
                           <span
-                            className={`hidden sm:flex ${selectedPostId === post.id
-                              ? "#7077FE"
-                              : "text-black"
-                              }`}
+                            className={`hidden sm:flex ${
+                              selectedPostId === post.id
+                                ? "#7077FE"
+                                : "text-black"
+                            }`}
                           >
                             Reflections
                           </span>
@@ -1925,10 +2149,11 @@ export default function SocialFeed() {
 
         {/* Right Sidebar Container */}
         <div
-          className={`fixed xl:static top-0 right-0 h-full xl:h-auto w-[280px] sm:w-[320px] xl:w-[25%] max-w-[90vw] xl:max-w-none bg-white xl:bg-transparent shadow-xl xl:shadow-none transform transition-transform duration-300 ease-in-out ${isSidebarOpen
-            ? "translate-x-0 p-3"
-            : "translate-x-full xl:translate-x-0"
-            } z-50 xl:z-auto overflow-y-auto flex flex-col gap-4`}
+          className={`fixed xl:static top-0 right-0 h-full xl:h-auto w-[280px] sm:w-[320px] xl:w-[25%] max-w-[90vw] xl:max-w-none bg-white xl:bg-transparent shadow-xl xl:shadow-none transform transition-transform duration-300 ease-in-out ${
+            isSidebarOpen
+              ? "translate-x-0 p-3"
+              : "translate-x-full xl:translate-x-0"
+          } z-50 xl:z-auto overflow-y-auto flex flex-col gap-4`}
         >
           {/* Close button for mobile */}
           <div className="xl:hidden flex justify-between items-center px-4 pb-4 border-b border-gray-200 sticky top-0 bg-white z-10 pt-4">
@@ -1991,8 +2216,9 @@ export default function SocialFeed() {
           />
         )}
         <div
-          className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${isTopicsOpen ? "translate-x-0" : "translate-x-full"
-            }`}
+          className={`xl:hidden fixed right-0 top-0 h-full w-[85vw] max-w-[380px] bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${
+            isTopicsOpen ? "translate-x-0" : "translate-x-full"
+          }`}
           role="dialog"
           aria-modal="true"
           aria-label="Trending topics"

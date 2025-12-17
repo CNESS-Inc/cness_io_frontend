@@ -510,6 +510,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [openMenu]);
+  
 
   const toggleMenu = (postId: string, type: "options" | "share") => {
     setOpenMenu((prev) => {
@@ -1090,7 +1091,7 @@ const CollectionList = ({ items }: { items: any[] }) => {
                               <button
                                 onClick={() => {
                                   navigator.clipboard.writeText(
-                                    `${window.location.origin}/post/${collectionItem.originalData.id}`
+                                          `${window.location.origin}/social?p=${collectionItem.originalData.id}`
                                   );
                                   setCopy(true);
                                   setTimeout(() => setCopy(false), 1500);

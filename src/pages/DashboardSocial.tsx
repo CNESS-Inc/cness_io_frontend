@@ -362,6 +362,7 @@ export default function SocialTopBar() {
   >("posts");
   const [followedUsers, setFollowedUsers] = useState<FollowedUser[]>([]);
   const [collectionItems, setCollectionItems] = useState<CollectionItem[]>([]);
+  console.log("🚀 ~ SocialTopBar ~ collectionItems:", collectionItems)
 
   const [_isPostsLoading, setIsPostsLoading] = useState(false);
   const [isFollowingLoading, setIsFollowingLoading] = useState(false);
@@ -369,11 +370,12 @@ export default function SocialTopBar() {
   const [isCollectionLoading, setIsCollectionLoading] = useState(false);
   const [storiesData, setStoriesData] = useState<Story[]>([]);
   const [storiesCount, setStoriesCount] = useState<any>();
-  console.log("🚀 ~ SocialTopBar ~ storiesData:", storiesData);
   // const [addNewPost, setAddNewPost] = useState(false)
-
+  // Add these states with your existing states
+  const [collectionPage, setCollectionPage] = useState(1);
+  const [hasMoreCollection, setHasMoreCollection] = useState(true);
+  const [isLoadingCollectionMore, setIsLoadingCollectionMore] = useState(false);
   const [userInfo, setUserInfo] = useState<any>();
-  console.log("🚀 ~ SocialTopBar ~ userInfo:", userInfo);
   // const [isAdult, setIsAdult] = useState<Boolean>(
   //   localStorage.getItem("isAdult") === "true" ? true : false
   // );
@@ -627,11 +629,18 @@ export default function SocialTopBar() {
     }
   };
 
-  const fetchCollectionItems = async () => {
-    setIsCollectionLoading(true);
+  const fetchCollectionItems = async (page = 1, append = false) => {
+    if (append) {
+      setIsLoadingCollectionMore(true);
+    } else {
+      setIsCollectionLoading(true);
+    }
+
     setActiveView("collection");
+
     try {
-      const res = await GetSavedPosts();
+      // Pass page parameter to API
+      const res = await GetSavedPosts(page);
 
       // Transform the API response to match CollectionItem interface
       const transformedItems = res.data.data.rows.map((item: any) => {
@@ -657,17 +666,46 @@ export default function SocialTopBar() {
         };
       });
 
-      setCollectionItems(transformedItems);
+      // Check if we have more items
+      const totalCount = res?.data?.data?.count || 0;
+      const totalPages = Math.ceil(totalCount / 12); // Assuming limit = 12
+
+      // Update hasMore state
+      setHasMoreCollection(page < totalPages);
+
+      // Append or replace items
+      if (append) {
+        // Append new items, filter out duplicates
+        const existingIds = new Set(collectionItems.map((item) => item.id));
+        const newItems = transformedItems.filter(
+          (item: any) => !existingIds.has(item.id)
+        );
+        setCollectionItems((prev) => [...prev, ...newItems]);
+        setCollectionPage(page + 1);
+      } else {
+        // Replace items for initial load
+        setCollectionItems(transformedItems);
+        setCollectionPage(2); // Set next page to 2
+      }
     } catch (error) {
       console.error("Error fetching collection items:", error);
-      // Optional: Show error to user
       showToast({
         message: "Failed to load collection items",
         type: "error",
         duration: 3000,
       });
     } finally {
-      setIsCollectionLoading(false);
+      if (append) {
+        setIsLoadingCollectionMore(false);
+      } else {
+        setIsCollectionLoading(false);
+      }
+    }
+  };
+
+  const handleLoadMoreCollection = () => {
+    if (!isLoadingCollectionMore && hasMoreCollection) {
+      fetchCollectionItems(collectionPage, true);
     }
   };
 
@@ -2404,7 +2442,7 @@ export default function SocialTopBar() {
                                     <button
                                       onClick={() => {
                                         navigator.clipboard.writeText(
-                                          `${window.location.origin}/post/${singlePost.id}`
+                                          `${window.location.origin}/social?p=${singlePost.id}`
                                         );
                                         setCopy(true);
                                         setTimeout(() => setCopy(false), 1500);
@@ -3182,7 +3220,7 @@ export default function SocialTopBar() {
                                         <button
                                           onClick={() => {
                                             navigator.clipboard.writeText(
-                                              `${window.location.origin}/post/${post.id}`
+                                              `${window.location.origin}/social?p=${post.id}`
                                             );
                                             setCopy(true);
                                             setTimeout(
@@ -3359,7 +3397,42 @@ export default function SocialTopBar() {
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
                   </div>
                 ) : (
-                  <CollectionList items={collectionItems} />
+                  <>
+                    {collectionItems.length === 0 ? (
+                      <div className="text-center py-10 text-gray-500">
+                        No posts saved to collection yet
+                      </div>
+                    ) : (
+                      <>
+<CollectionList 
+  key={`collection-${collectionItems.length}-${collectionPage}`}
+  items={collectionItems}
+/>
+
+                        {/* Load More Button */}
+                        {hasMoreCollection && collectionItems.length > 0 && (
+                          <div className="flex justify-center pt-6 mt-4">
+                            <button
+                              onClick={handleLoadMoreCollection}
+                              disabled={isLoadingCollectionMore}
+                              className="font-['Open_Sans'] px-6 py-3 text-sm rounded-full border border-gray-300 hover:border-indigo-400 hover:text-indigo-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors bg-white"
+                            >
+                              {isLoadingCollectionMore
+                                ? "Loading..."
+                                : "Load More Saved Posts"}
+                            </button>
+                          </div>
+                        )}
+
+                        {/* No more posts message */}
+                        {!hasMoreCollection && collectionItems.length > 0 && (
+                          <div className="text-center py-4 text-gray-500">
+                            You've reached the end of your collection
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
                 )}
               </div>
             )}

@@ -504,7 +504,7 @@ const SocialPostCart: React.FC<SocialPostCartProps> = ({
             />
             <Button
               variant="gradient-primary"
-              className="absolute right-4 top-[2px] transform px-6 py-1 rounded-[100px] self-stretch transition-colors duration-500 ease-in-out"
+              className="absolute right-4 top-0.5 transform px-6 py-1 rounded-[100px] self-stretch transition-colors duration-500 ease-in-out"
               onClick={() => handleCommentSubmit(id !== undefined ? id : 0)}
               style={{ cursor: "pointer" }}
             >
