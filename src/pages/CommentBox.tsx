@@ -16,6 +16,7 @@ import { useToast } from "../components/ui/Toast/ToastProvider";
 import { useMention } from "../hooks/useMention";
 import FriendSuggestion from "../components/ui/FriendSuggestion";
 import TextWithMentions from "../components/ui/TextWithMentions";
+import { Link } from "react-router-dom";
 
 type ButtonVariant = "primary" | "white-outline";
 
@@ -134,7 +135,7 @@ const CommentBox = ({
   setUserPosts,
 }: CommentBoxProps) => {
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [showReply, setShowReply] = useState<string | null>(null);
@@ -632,7 +633,7 @@ const CommentBox = ({
             comment.id === editingReply.commentId
               ? {
                   ...comment,
-                  replies: comment.replies?.map((reply) =>
+                  replies: comment.replies?.map((reply: any) =>
                     reply.id === editingReply.replyId
                       ? { ...reply, text: editText }
                       : reply
@@ -730,8 +731,9 @@ const CommentBox = ({
               ? {
                   ...comment,
                   replies:
-                    comment.replies?.filter((reply) => reply.id !== replyId) ||
-                    [],
+                    comment.replies?.filter(
+                      (reply: any) => reply.id !== replyId
+                    ) || [],
                   child_comment_count: Math.max(
                     0,
                     comment.child_comment_count - 1
@@ -949,19 +951,23 @@ const CommentBox = ({
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between">
                           <div className="flex items-center gap-2 mb-2.5">
-                            <img
-                              src={
-                                comment.profile.profile_picture
-                                  ? comment.profile.profile_picture
-                                  : "/profile.png"
-                              }
-                              alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
-                              className="w-9 h-9 rounded-full object-cover shrink-0"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = "/profile.png";
-                              }}
-                            />
+                            <Link
+                              to={`/dashboard/social/user-profile/${comment?.profile?.user_id}`}
+                            >
+                              <img
+                                src={
+                                  comment.profile.profile_picture
+                                    ? comment.profile.profile_picture
+                                    : "/profile.png"
+                                }
+                                alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
+                                className="w-9 h-9 rounded-full object-cover shrink-0"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = "/profile.png";
+                                }}
+                              />
+                            </Link>
                             <span className="font-semibold text-[#081021] text-[14px]">
                               {comment.profile.first_name}{" "}
                               {comment.profile.last_name}
@@ -1248,11 +1254,14 @@ const CommentBox = ({
                       comment.replies &&
                       comment.replies.length > 0 && (
                         <div className="ml-12 space-y-3 border-0 border-gray-200 pl-3">
-                          {comment.replies.map((reply) => (
+                          {comment.replies.map((reply: any) => (
                             <>
                               <div key={reply.id} className="flex gap-3 pt-2">
                                 <img
-                                  src={reply.profile.profile_picture || "/public.png"}
+                                  src={
+                                    reply.profile.profile_picture ||
+                                    "/public.png"
+                                  }
                                   alt={`${reply.profile.first_name} ${reply.profile.last_name}`}
                                   className="w-[27px] h-[27px] rounded-full object-cover shrink-0"
                                   onError={(e) => {

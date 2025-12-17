@@ -12,11 +12,12 @@ import { FiEdit2, FiLink2, FiSend, FiTrash2, FiX } from "react-icons/fi";
 import { useToast } from "../ui/Toast/ToastProvider";
 import { FaRegSmile } from "react-icons/fa";
 import SharePopup from "../Social/SharePopup";
-import {copyPostLink } from "../../lib/utils";
+import { copyPostLink } from "../../lib/utils";
 import like from "../../assets/like.svg";
 import comment from "../../assets/comment.svg";
 import EditPostModal from "../../pages/EditPostModal";
 import { useClickOutside } from "../../hooks/useClickOutside";
+import { useNavigate } from "react-router-dom";
 
 interface Media {
   type: "image" | "video" | "text";
@@ -88,7 +89,7 @@ const PostPopup: React.FC<PopupProps> = ({
   onPostUpdated,
 }) => {
   const isReel = post.is_reel;
-  const [comments, setComments] = useState<CommentItem[]>([]);
+  const [comments, setComments] = useState<any[]>([]);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
   const [openLeftMenu, setOpenLeftMenu] = useState(false);
   const [openRightMenu, setOpenRightMenu] = useState(false);
@@ -308,7 +309,6 @@ const PostPopup: React.FC<PopupProps> = ({
     setExpandedComments((prev) => ({ ...prev, [commentId]: true }));
   };
 
-
   // Menu component to avoid duplication
   const MenuContent = ({ side }: { side: "left" | "right" }) => {
     const [showSharePopup, setShowSharePopup] = useState(false);
@@ -448,6 +448,12 @@ const PostPopup: React.FC<PopupProps> = ({
       onPostUpdated();
     }
   };
+  const navigate = useNavigate()
+
+  const handleUserProfileRedirection = (user_id:any) =>{
+    navigate(`/dashboard/social/user-profile/${user_id}`) 
+    onClose()
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
@@ -617,11 +623,15 @@ const PostPopup: React.FC<PopupProps> = ({
                 <div key={comment.id} className="flex flex-col gap-3 w-full">
                   <div className="flex items-center justify-between">
                     <div className="flex justify-start items-center gap-2">
-                      <img
-                        src={comment.profile.profile_picture || "/profile.png"}
-                        alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
-                        className="w-10 h-10 rounded-full object-cover shrink-0"
-                      />
+                      <div className="cursor-pointer" onClick={()=>handleUserProfileRedirection(comment.user_id)}>
+                        <img
+                          src={
+                            comment.profile.profile_picture || "/profile.png"
+                          }
+                          alt={`${comment.profile.first_name} ${comment.profile.last_name}`}
+                          className="w-10 h-10 rounded-full object-cover shrink-0"
+                        />
+                      </div>
                       <span className="text-sm font-semibold text-gray-900">
                         {comment.profile.first_name} {comment.profile.last_name}
                       </span>
@@ -695,7 +705,7 @@ const PostPopup: React.FC<PopupProps> = ({
                         comment.replies &&
                         comment.replies.length > 0 && (
                           <div className="ml-12 space-y-3 border-l-2 border-gray-200 pl-3">
-                            {comment.replies.map((reply) => (
+                            {comment.replies.map((reply: any) => (
                               <div key={reply.id} className="flex gap-3 pt-2">
                                 <img
                                   src={
