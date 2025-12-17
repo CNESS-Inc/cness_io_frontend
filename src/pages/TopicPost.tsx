@@ -812,7 +812,7 @@ export default function Topic() {
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 md:gap-3">
                         <Link
-                          to={`/dashboard/userprofile/${post?.profile?.user_id}`}
+                          to={`/dashboard/social/user-profile/${post?.profile?.user_id}`}
                         >
                           <img
                             src={
