@@ -16,7 +16,7 @@ export default defineConfig({
     port: 3000,    
     host: '0.0.0.0',
     strictPort: true,
-    allowedHosts: ['f0295bbb-572d-4a52-b809-f11cdfaf3fa0.preview.emergentagent.com', 'localhost', 'https://github.com/cnessviji/cness_io_frontend_foremergent/blob/new/'],
+    allowedHosts: ['f0295bbb-572d-4a52-b809-f11cdfaf3fa0.preview.emergentagent.com', 'localhost', 'https://github.com/cnessviji/cness_io_frontend_foremergent/blob/new/', 'cness-social.preview.emergentagent.com'],
     hmr: {
       overlay: true,
     },
