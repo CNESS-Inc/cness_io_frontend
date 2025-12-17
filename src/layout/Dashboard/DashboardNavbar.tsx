@@ -173,25 +173,23 @@ const mainNavItems = [
       { label: "Connections", path: "/dashboard/MyConnection" },
     ],
   },
-  // Conditionally include marketplace item
-  ...(import.meta.env.VITE_ENV_STAGE === "test" || import.meta.env.VITE_ENV_STAGE === "uat" ? [
-    {
-      id: "market-place",
-      icon: <img src={iconMap["market"]} alt="Home Icon" className="w-5 h-5" />,
-      label: "Marketplace",
-      active: false,
-      path: "/dashboard/market-place",
-      isMarketplaceDropdown: true,
-      childPaths: ["/dashboard/market-place", "/dashboard/createshop", "/dashboard/Tracking", "/dashboard/CreatorGuideline", "/dashboard/seller-dashboard"],
-      children: [
-        { label: "Buy Digital Products", path: "/dashboard/market-place" },
-        { label: "Sell your Products", path: "/dashboard/createshop" },
-        // { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
-        // { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
-        ...(isSeller ? [{ label: "Seller Dashboard", path: "/dashboard/seller-dashboard" }] : [])
-      ]
-    }
-  ] : []),
+  // Marketplace item - always visible
+  {
+    id: "market-place",
+    icon: <img src={iconMap["market"]} alt="Marketplace Icon" className="w-5 h-5" />,
+    label: "Marketplace",
+    active: false,
+    path: "/dashboard/market-place",
+    isMarketplaceDropdown: true,
+    childPaths: ["/dashboard/market-place", "/dashboard/createshop", "/dashboard/Tracking", "/dashboard/CreatorGuideline", "/dashboard/seller-dashboard"],
+    children: [
+      { label: "Buy Digital Products", path: "/dashboard/market-place" },
+      { label: "Sell your Products", path: "/dashboard/createshop" },
+      // { label: "Track Purchase & Sales", path: "/dashboard/Tracking" },
+      // { label: "Creator Guideline", path: "/dashboard/CreatorGuideline" },
+      ...(isSeller ? [{ label: "Seller Dashboard", path: "/dashboard/seller-dashboard" }] : [])
+    ]
+  },
   {
     id: "MentorPartnerHub",
     icon: <Zap className="w-5 h-5 text-gray-500" />,
