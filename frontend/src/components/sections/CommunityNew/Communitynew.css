@@ -1,0 +1,760 @@
+/* Main Section Styles */
+.community-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  overflow: hidden;
+  padding: 40px 0;
+  position: relative;
+  padding-bottom: 0;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Safari-specific fixes */
+  -webkit-transform: translateY(50px);
+  -webkit-transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.community-section.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+  -webkit-transform: translateY(0);
+}
+
+/* Header Styles */
+.community-header {
+  text-align: center;
+  margin-bottom: 60px;
+  z-index: 10;
+  position: relative;
+  animation: fadeInUp 1s ease-out 0.5s both;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+}
+
+/* Animation Container */
+.animation-container {
+  position: relative;
+  width: 100%;
+  height: 700px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  /* Safari-specific fixes */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Main Image Container - Base State (Step 0) - Screenshot_1.png */
+.main-image-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  animation: float 4s ease-in-out infinite;
+  /* Safari-specific positioning fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.main-community-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 20px;
+  transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Safari image rendering fixes */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Step 1: Full Width Banner - Screenshot_2.png */
+.main-image-container.step-1 {
+  width: 100%;
+  max-width: none;
+  height: 662px;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  border-radius: 0;
+  /* Safari banner positioning fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.main-image-container.step-1 .main-community-image {
+  width: 100%;
+  height: 662px !important;
+  object-fit: cover;
+  border-radius: 0;
+  /* Safari banner image fixes */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.main-image-container.step-1 .main-community-image img {
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Step 2: Vertical Thumbnail - Screenshot_3.png */
+.main-image-container.step-2 {
+  width: 300px;
+  max-width: 300px;
+  height: 300px;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  /* Safari thumbnail centering fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.main-image-container.step-2 .main-community-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+/* Step 3: Small Size with Background Cards - Screenshot_4.png */
+.main-image-container.step-3 {
+  width: 250px;
+  max-width: 250px;
+  height: 250px;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  border-radius: 20px;
+  /* Safari centering fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.main-image-container.step-3 .main-community-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+/* Step 4: Return to Original - Screenshot_5.png (same as Step 0) */
+.main-image-container.step-4 {
+  width: 200px;
+  height: 200px;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  border-radius: 20px;
+  object-fit: cover;
+  /* Safari centering fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.main-image-container.step-4 .main-community-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+/* Background Cards */
+.background-cards {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.background-card {
+  position: absolute;
+  border-radius: 16px;
+  max-width: 280px;
+  opacity: 0;
+  transform: scale(0.6) translateY(50px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Safari transform fixes */
+  -webkit-transform: scale(0.6) translateY(50px);
+  -webkit-transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.background-card.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  animation: cardFadeIn 0.8s ease-out;
+  -webkit-transform: scale(1) translateY(0);
+}
+
+.background-card.fade-out {
+  opacity: 0;
+  transform: scale(0.8) translateY(20px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transform: scale(0.8) translateY(20px);
+  -webkit-transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bg-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.bg-card-icon {
+  width: 200px;
+  height: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 0;
+  transition: all 0.3s ease;
+}
+
+
+.bg-card-icon img {
+  border-radius: 16px;
+}
+
+.bg-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Safari image rendering fix */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.bg-card-text h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.bg-card-text p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Background Card Positions - 7 cards positioned around the main image */
+.bg-card-1 {
+  top: 38%;
+  right: 32%;
+  transition-delay: 0.1s;
+}
+
+
+
+.bg-card-2 {
+  top: 51%;
+  left: 50%;
+  transition-delay: 0.2s;
+  z-index: 1;
+}
+
+.bg-card-3 {
+  top: 25%;
+  right: 38%;
+  transition-delay: 0.3s;
+  z-index: 1;
+}
+
+.bg-card-4 {
+  top: 35%;
+  left: 28%;
+  transform: translateY(-50%);
+  transition-delay: 0.4s;
+}
+
+.bg-card-5 {
+  top: 20%;
+  left: 34%;
+  transform: translateY(-50%);
+  transition-delay: 0.5s;
+}
+
+.bg-card-6 {
+  bottom: 30%;
+  left: 38%;
+  transition-delay: 0.6s;
+}
+
+.bg-card-7 {
+  top: 14%;
+  right: 46%;
+  transition-delay: 0.7s;
+  z-index: 2;
+}
+
+/* Animation Controls */
+.animation-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+}
+
+.control-btn {
+  background: linear-gradient(135deg, #7077FE, #9747FF);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+  transform: translateY(-2px);
+}
+
+.control-btn:active {
+  transform: translateY(0);
+}
+
+.main-image-container {
+  position: absolute !important;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Safari positioning fixes */
+  -webkit-transform: translate(-50%, -50%);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.main-image-container.step-1 {
+  position: relative !important;
+  top: unset !important;
+  left: unset !important;
+  transform: unset !important;
+  width: 100%;
+}
+
+.main-image-container.step-2 .girl-img {
+  width: 300px;
+  height: 300px;
+  top: 0;
+  left: 0; 
+}
+
+.main-image-container.step-3 .girl-img {
+  width: 300px;
+  height: 300px;
+  top: -42px;
+  left: -15px; 
+}
+
+.main-image-container.step-4 .girl-img {
+  width: 250px;
+  height: 250px;
+  top: -40px;
+  left: -20px; 
+}
+.main-community-image {
+  transition: opacity 0.7s ease-in-out;
+  /* Safari transition fix */
+  -webkit-transition: opacity 0.7s ease-in-out;
+}
+
+.main-image-container.step-1  .main-community-image img{
+  border-radius: 0 !important;
+}
+
+/* Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0px);
+    -webkit-transform: translate(-50%, -50%) translateY(0px);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) translateY(-10px);
+    -webkit-transform: translate(-50%, -50%) translateY(-10px);
+  }
+}
+
+@keyframes cardFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(50px);
+    -webkit-transform: scale(0.6) translateY(50px);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05) translateY(-5px);
+    -webkit-transform: scale(1.05) translateY(-5px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    -webkit-transform: scale(1) translateY(0);
+  }
+}
+
+/* Responsive Styles */
+@media (max-width:1536px) {
+
+  .bg-card-1 {
+    top: 38%;
+    right: 25%;
+  }
+
+  .bg-card-2 {
+    top: 51%;
+    left: 50%;
+    z-index: 1;
+  }
+
+  .bg-card-3 {
+    top: 26%;
+    right: 34%;
+    z-index: 1;
+  }
+
+  .bg-card-4 {
+    top: 37%;
+    left: 23%;
+  }
+
+  .bg-card-5 {
+    top: 20%;
+    left: 31%;
+  }
+
+  .bg-card-6 {
+    bottom: 28%;
+    left: 34%;
+  }
+
+  .bg-card-7 {
+    top: 14%;
+    right: 46%;
+    z-index: 2;
+  }
+
+  .main-image-container.step-1 .girl-img {
+    left: -155px;
+    top: -330px;
+  }
+
+  .main-image-container.step-1 h2 {
+    width: 90%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .animation-container {
+    height: 700px;
+  }
+
+  .main-image-container.step-2 {
+    width: 250px;
+    height: 250px;
+  }
+
+  .main-image-container.step-2 .girl-img {
+    width: 250px;
+    height: 250px;
+  }
+
+  .main-image-container.step-3 .girl-img {
+    width: 240px;
+    height: 245px;
+  }
+
+  .main-image-container.step-3 {
+    width: 200px;
+    height: 200px;
+  }
+
+  .bg-card-3 {
+    top: 20%;
+    right: 20%;
+  }
+
+  .bg-card-1 {
+    top: 20%;
+    left: 20%;
+  }
+
+  .bg-card-2 {
+    left: 19%;
+    top: 40%;
+  }
+
+  .bg-card-6 {
+    bottom: 6%;
+    left: 53%;
+  }
+
+  .bg-card-5 {
+    top: 58%;
+    right: 52%;
+  }
+
+  .bg-card-4 {
+    top: 40%;
+    left: 53%;
+    z-index: 9;
+  }
+
+  .background-card {
+    max-width: 220px;
+    padding: 15px;
+  }
+
+  .community-section {
+    padding: 60px 0;
+    padding-bottom: 0;
+  }
+
+  .community-header {
+    padding: 0 24px;
+  }
+
+  .main-image-container h2 {
+    top: 20px;
+    width: 90%;
+  }
+
+  .main-image-container.step-1 .girl-img {
+    display: block;
+    width: 1370px;
+    height: 1030px;
+    left: -315px;
+    top: -194px;
+  }
+
+  .main-image-container h2 {
+    top: 5% !important;
+    width: 90% !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .animation-container {
+    height: 700px;
+  }
+  .main-image-container.step-2 {
+    width: 200px;
+    height: 300px;
+  }
+
+  .main-image-container.step-3 {
+    width: 180px;
+    height: 180px;
+  }
+
+  .background-card {
+    max-width: 180px;
+    padding: 12px;
+  }
+
+  .bg-card-icon {
+    width: 100px;
+    height: 100px;
+  }
+
+  .background-card {
+    backdrop-filter: unset;
+  }
+
+  .control-btn {
+    padding: 10px 20px;
+    font-size: 12px;
+  }
+
+  .bg-card-1 {
+    top: 25%;
+    left: 13%;
+  }
+
+  .bg-card-3 {
+    top: 28%;
+    right: 18%;
+  }
+
+  .bg-card-2 {
+    top: 45%;
+    left: 8%;
+  }
+
+  .bg-card-4 {
+    left: 3%;
+    top: 35%;
+  }
+
+  .bg-card-5 {
+    top: 55%;
+    right: 18%;
+  }
+
+  .bg-card-6 {
+    bottom: 40.5%;
+    left: 60%;
+  }
+  .bg-card-7 {
+    top: 25%;
+    left: 45%; 
+  }
+
+  .hero-round-circle {
+    min-width: 150vw !important;
+    min-height: 65vh !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .community-section {
+    padding: 60px 0;
+    padding-bottom: 0;
+  }
+
+  .animation-container {
+    height: 330px;
+  }
+  .community-header {
+      margin-bottom: 0;
+  }
+
+  .main-image-container.step-2 {
+    width: 200px;
+    height: 200px;
+  }
+
+  .main-image-container.step-2 .girl-img {
+    width: 220px;
+    height: 195px;
+  }
+
+  .main-image-container.step-3 {
+    width: 180px;
+    height: 180px;
+  }
+
+  .main-image-container.step-3 .girl-img {
+    width: 230px;
+    height: 225px;
+  }
+
+  .background-card {
+    max-width: 140px;
+    padding: 10px;
+  }
+
+  .bg-card-text h4 {
+    font-size: 14px;
+  }
+
+  .bg-card-text p {
+    font-size: 12px;
+  }
+
+  .main-image-container h2 {
+    top: 15% !important;
+    font-size: 70px !important;
+  }
+
+  .main-image-container.step-1 .girl-img {
+    width: 1450px;
+    height: 1010px;
+    left: -545px;
+    top: -194px;
+  }
+}
+
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Safari-specific fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .main-community-image,
+  .bg-card-image {
+    image-rendering: -webkit-optimize-contrast;
+  }
+  
+  .main-image-container,
+  .background-card {
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .main-community-image,
+  .bg-card-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Animation performance optimizations for Safari */
+@supports (-webkit-appearance: none) {
+  .animation-container,
+  .main-image-container,
+  .background-card {
+    will-change: transform;
+    -webkit-will-change: transform;
+  }
+  
+  .main-community-image {
+    will-change: transform;
+    -webkit-will-change: transform;
+  }
+}
+

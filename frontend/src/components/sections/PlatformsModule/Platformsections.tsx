@@ -1,0 +1,130 @@
+import { useNavigate } from "react-router-dom";
+import Button from "../../ui/Button";
+import Image from "../../ui/Image";
+
+export default function PlatformSections() {
+  const navigate = useNavigate();
+  return (
+    <section className="bg-[#F3F1FF] px-4 sm:px-6 pb-8 sm:pb-12 lg:pb-[52px]">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="pt-6 sm:pt-8 text-center">
+          <h2 className="poppins font-bold text-lg sm:text-xl lg:text-2xl leading-none tracking-wider uppercase text-[#7077FE] mb-3 sm:mb-4 lg:mb-6">
+            PLATFORM MODULES OVERVIEW
+          </h2>
+          <p className="poppins font-medium text-2xl sm:text-3xl lg:text-[52px] leading-tight sm:leading-snug lg:leading-[69px] text-[#222224] mb-4 sm:mb-5 lg:mb-6">
+            Crafting a meaningful narrative is{" "}
+            <br className="hidden sm:block" /> essential for engaging
+            communication.
+          </p>
+        </div>
+      </div>
+
+      {/* Platform Cards */}
+      {[
+        {
+          title: "Certification Engine",
+          image: "/certification_engine.jpg",
+          reverse: false,
+          tagline: "Proof of purpose 1. Measured with precision.",
+          features: [
+            "Sector and size-specific assessment engine",
+            "Conscious Impact Score (CIS)",
+            "Public badge + year-long visibility",
+          ],
+        },
+        {
+          title: "Learning Lab",
+          image: "/learning_lab.jpg",
+          reverse: true,
+          tagline: "Grow Beyond good Intentions.",
+          features: [
+            "Micro-modular LMS",
+            "Six pillars of conscious leadership",
+            "Required for renewals & upgrades",
+          ],
+          navigateTo: "/about",
+        },
+        {
+          title: "Directory",
+          image: "/directory.jpg",
+          reverse: false,
+          tagline: "A new kind of visibility.",
+          features: [
+            "Searchable by sector, geography, level",
+            "Premium spotlight listings",
+            "Conscious badges",
+          ],
+          navigateTo: "/directory",
+        },
+        {
+          title: "Council | Mentors | Partners",
+          image: "/council.jpg",
+          reverse: true,
+          tagline: "Co-create the movement.",
+          features: [
+            "Early adopters & conscious leaders",
+            "Revenue-share mentorship model",
+            "Revenue-share mentorship model",
+          ],
+        },
+      ].map((platform, index) => (
+        <div
+          key={index}
+          className="mx-4 sm:mx-8 lg:mx-[52px] bg-white p-4 sm:p-6 lg:p-8 xl:p-[52px] rounded-xl lg:rounded-[24px] mt-4 sm:mt-6 lg:mt-8"
+        >
+          <div
+            className={`grid grid-cols-1 md:grid-cols-12 md:gap-6 lg:gap-8 items-center ${
+              platform.reverse ? "md:flex-row-reverse" : ""
+            }`}
+          >
+            {/* Image Section */}
+            <div className={`md:col-span-5`}>
+              <Image
+                src={platform.image}
+                alt={platform.title}
+                height={364}
+                className="w-full max-w-[336px] mx-auto h-auto aspect-[336/364] rounded-xl lg:rounded-[24px] object-cover"
+              />
+            </div>
+
+            {/* Content Section */}
+            <div className="md:col-span-7 mt-6 md:mt-0">
+              <div className="max-w-xl mx-auto md:mx-0">
+                <h2 className="poppins text-base sm:text-lg lg:text-xl tracking-normal leading-none text-[#D748EA] mb-3 sm:mb-4 lg:mb-6">
+                  {platform.title}
+                </h2>
+
+                <p className="poppins font-semibold text-lg sm:text-xl lg:text-2xl xl:text-[32px] leading-snug sm:leading-normal lg:leading-tight text-[#222224] mb-3 sm:mb-4 lg:mb-6 whitespace-pre-line">
+                  {" "}
+                  {platform.tagline}
+                </p>
+
+                <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-5 lg:mb-6">
+                  {platform.features.map((feature, i) => (
+                    <li
+                      key={i}
+                      className="openSans w-fit text-sm sm:text-base lg:text-lg xl:text-xl leading-tight tracking-normal text-black bg-[#F7F7F7] px-4 py-2 rounded-full sm:rounded-[90px] text-left"
+                    >
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  variant="gradient-primary"
+                  className="rounded-[100px] cursor-pointer py-3 px-8 transition-colors duration-500 ease-in-out"
+                  onClick={() =>
+                    platform.navigateTo ? navigate(platform.navigateTo) : null
+                  }
+                >
+                  Learn More
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
