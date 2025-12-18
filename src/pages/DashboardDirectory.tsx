@@ -441,7 +441,7 @@ export default function DashboardDirectory() {
             <div className="w-full flex flex-col gap-2 justify-center items-center mb-4 sm:mb-6">
               <div
                 className="w-full bg-white rounded-full sm:rounded-full
-                  flex items-center p-3 sm:p-0 sm:pl-5 sm:pr-1 h-11 lg:h-14 max-w-[650px] 2xl:max-w-[720px] border border-1 border-[#C6C1C1] justify-between"
+                  flex items-center p-3 sm:p-0 sm:pl-5 sm:pr-1 h-11 lg:h-14 max-w-[650px] 2xl:max-w-[720px] border border-[#C6C1C1] justify-between"
               >
                 <div className="flex items-center flex-1">
                   <span className="text-[#7077FE] mr-3 text-lg">

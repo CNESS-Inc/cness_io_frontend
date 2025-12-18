@@ -131,7 +131,7 @@ export default function UserProfileView() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mineBestPractices, setmineBestPractices] = useState<any[]>([]);
-  const [expandedDescriptions] = useState<Record<string, boolean>>({});
+  const [expandedDescriptions,setExpandedDescriptions] = useState<Record<string, boolean>>({});
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     isOpen: boolean;
     practiceId: string | null;
@@ -951,6 +951,14 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
       document.title = 'CNESS';
     };
   }, [userDetails, id]);
+
+    const toggleDescription = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setExpandedDescriptions((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   return (
     <>
@@ -1871,11 +1879,11 @@ const fetchFollowerFollowingCounts = async (profileUserId: string | undefined) =
                                       {company.description.length > 100 && (
                                         <span
                                           className="text-purple-600 underline cursor-pointer ml-1"
-                                          // onClick={(e) => toggleDescription(e, company.id)}
+                                          onClick={(e) => toggleDescription(e, company.id)}
                                         >
-                                          {/* {expandedDescriptions[company.id]
+                                          {expandedDescriptions[company.id]
                                         ? "Read Less"
-                                        : "Read More"} */}
+                                        : "Read More"}
                                         </span>
                                       )}
                                     </p>

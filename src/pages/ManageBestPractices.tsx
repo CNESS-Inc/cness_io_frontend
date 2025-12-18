@@ -22,6 +22,7 @@ import Button from "../components/ui/Button";
 import AddBestPracticeModal from "../components/sections/bestPractiseHub/AddBestPractiseModal";
 import EditBestPracticeModal from "../components/sections/bestPractiseHub/EditBestPracticesModel";
 import DOMPurify from "dompurify";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 
 interface PaginationProps {
   currentPage: number;
@@ -136,7 +137,7 @@ const Managebestpractices = () => {
   const [activeTab, setActiveTab] = useState<"saved" | "mine">("saved");
   const [inputValue, setInputValue] = useState("");
   const [editInputValue, setEditInputValue] = useState("");
-
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const [activeStatusTab, setActiveStatusTab] = useState<0 | 1 | 2>(0);
 
   const navigate = useNavigate();
@@ -1086,9 +1087,18 @@ const Managebestpractices = () => {
                         </p>
 
                         <p className="text-xs sm:text-sm text-gray-600 mb-2 leading-snug wrap-break-word whitespace-pre-line">
-                          {expandedDescriptions[company.id]
-                            ? company.description
-                            : truncateText(company.description, 80)}
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(
+                                expandedDescriptions[company.id]
+                                  ? company.description
+                                  : truncateText(
+                                    company.description,
+                                    isMobile ? 80 : 100
+                                  )
+                              ),
+                            }}
+                          />
                           {company.description.length > 80 && (
                             <span
                               className="text-purple-600 underline cursor-pointer ml-1 text-xs sm:text-sm"
