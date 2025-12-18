@@ -81,19 +81,9 @@ export default function CompanyCard({
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [targetPath, setTargetPath] = useState<string | null>(null);
   const handleCardClick = () => {
-    const Id = localStorage.getItem("Id");
     if (routeKey) {
       // Special case (dashboard route)
       navigate(`/dashboard/directory-profile/${id}`);
-    } else {
-      if (Id && Id !== "undefined") {
-        // User is logged in → proceed
-        navigate(`/directory/user-profile/${id}`);
-      } else {
-        // User is not logged in → store the intended path and show modal
-        setTargetPath(`/directory/user-profile/${id}`);
-        setShowLoginPrompt(true);
-      }
     }
   };
 
