@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import DOMPurify from "dompurify";
 
 type BestPracticeCardProps = {
   id?: string;
@@ -10,7 +11,9 @@ type BestPracticeCardProps = {
   description: string;
   link?: string;
   ifFollowing?: boolean;
-  onToggleFollow?: (id: string) => void | Promise<void>; // Allow async functions
+  onToggleFollow?: (id: string) => void | Promise<void>;
+  expandedDescriptions?: Record<string, boolean>;
+  toggleDescription?: (e: React.MouseEvent, id: string) => void;
 };
 
 export default function BestPracticeCard({
@@ -21,26 +24,57 @@ export default function BestPracticeCard({
   coverImage,
   title,
   description,
-  link,
   ifFollowing,
-  onToggleFollow
+  onToggleFollow,
+  expandedDescriptions,
+  toggleDescription
 }: BestPracticeCardProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Helper function to truncate text
+  const truncateText = (text: string, maxLength: number): string => {
+    if (!text) return "";
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+
+  // Use shared expanded state if provided, otherwise use local state
+  const isDescriptionExpanded = expandedDescriptions && id 
+    ? expandedDescriptions[id] || false 
+    : isExpanded;
+
+  const handleToggleDescription = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (toggleDescription && id) {
+      toggleDescription(e, id);
+    } else {
+      setIsExpanded(!isExpanded);
+    }
+  };
 
   const handleToggleFollow = async (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    if (!onToggleFollow || isLoading) return;
+    if (!onToggleFollow || isLoading || !id) return;
     
     setIsLoading(true);
     try {
-      await onToggleFollow(id || "");
+      await onToggleFollow(id);
     } catch (error) {
       console.error("Error toggling follow:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Determine description to show
+  const displayDescription = isDescriptionExpanded 
+    ? description 
+    : truncateText(description, 100);
+
+  // Check if description needs truncation
+  const needsTruncation = description.length > 100;
 
   return (
     <div
@@ -58,6 +92,9 @@ export default function BestPracticeCard({
           src={profileImage}
           alt={name}
           className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = "/profile.png";
+          }}
         />
         <div className="min-w-0">
           <span className="block font-['Open_Sans'] font-semibold text-[14px] sm:text-[15px] text-[#0F1728] truncate">
@@ -69,41 +106,44 @@ export default function BestPracticeCard({
         </div>
       </div>
 
-      {/* Cover Image (keeps proportion, fits different widths) */}
+      {/* Cover Image */}
       <div className="w-full overflow-hidden rounded-lg h-[250px] xl:h-[150px] 2xl:h-[200px] bg-gray-100">
         <img
-          src={coverImage || "/placeholder.png"}
+          src={coverImage}
           alt={title}
           className="w-full h-full object-cover"
           loading="lazy"
           referrerPolicy="no-referrer"
           onError={(e) => {
-            (e.currentTarget as HTMLImageElement).src = "/placeholder.png";
+            (e.currentTarget as HTMLImageElement).src = "https://cdn.cness.io/banner.webp";
           }}
         />
       </div>
 
       {/* Content */}
       <div className="flex flex-col mt-1 sm:mt-2 flex-1">
-        <h4 className="font-['Open_Sans'] font-semibold text-[14px] sm:text-[15px] text-[#0F1728]">
+        <h4 className="font-['Open_Sans'] font-semibold text-[14px] sm:text-[15px] text-[#0F1728] mb-2">
           {title}
         </h4>
 
-        {/* Clamp to keep row heights tidy; remove if you want full text */}
-        <p className="mt-1 text-[12px] sm:text-[13px] text-[#475467] leading-[18px] sm:leading-5 line-clamp-1">
-          {description}
-        </p>
+        {/* Description with HTML sanitization */}
+        <div className="text-[12px] sm:text-[13px] text-[#475467] leading-[18px] sm:leading-5 wrap-break-word whitespace-pre-line mb-2">
+          <span
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(displayDescription)
+            }}
+          />
+          {needsTruncation && (
+            <span
+              className="text-purple-600 underline cursor-pointer ml-1"
+              onClick={handleToggleDescription}
+            >
+              {isDescriptionExpanded ? "Read Less" : "Read More"}
+            </span>
+          )}
+        </div>
 
-        {link && (
-          <a
-            href={link}
-            className="inline-flex items-center text-[12px] sm:text-[13px] font-semibold text-[#D748EA] hover:underline self-start"
-          >
-            Read More
-          </a>
-        )}
-
-        {onToggleFollow && (
+        {onToggleFollow && id && (
           <div className="flex justify-end mt-auto pt-3">
             {isLoading ? (
               // Loading state
@@ -112,6 +152,7 @@ export default function BestPracticeCard({
                 className="w-full inline-flex items-center justify-center rounded-full bg-gray-300 px-4 py-2
                 font-opensans text-[14px] font-semibold text-gray-500
                 shadow transition cursor-not-allowed"
+                onClick={(e) => e.stopPropagation()}
               >
                 <svg 
                   className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500" 
