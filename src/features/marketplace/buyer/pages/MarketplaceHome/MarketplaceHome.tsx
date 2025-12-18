@@ -5,8 +5,8 @@
  */
 
 import React from "react";
-import MarketplaceNavBar from "../components/MarketplaceNavBar";
-import "./MarketplaceHome/MarketplaceHome.css";
+import MarketplaceNavBar from "../../components/MarketplaceNavBar";
+import "./MarketplaceHome.css";
 
 export default function MarketplaceHome() {
   const handleSearch = (query: string) => {

@@ -5,8 +5,8 @@ import ComingSoon from "../pages/ComingSoon";
 // import MarketplaceLayout from "../layout/Marketplace/MarketplaceLayout";
 // import SellerLayout from "../layout/Marketplace/SellerLayout";
 
-// Buyer Pages - Lazy loaded (replace with your actual page paths)
-const MarketplaceHome = lazy(() => import("../pages/ComingSoon"));
+// Buyer Pages - Lazy loaded
+const MarketplaceHome = lazy(() => import("../features/marketplace/buyer/pages/MarketplaceHome"));
 const BuyerProducts = lazy(() => import("../pages/ComingSoon"));
 const BuyerProductDetail = lazy(() => import("../pages/ComingSoon"));
 const BuyerCart = lazy(() => import("../pages/ComingSoon"));

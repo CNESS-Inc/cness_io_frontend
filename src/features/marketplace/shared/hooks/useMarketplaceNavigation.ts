@@ -14,8 +14,14 @@
  * goToProductDetail('product-123');
  */
 
-import { useNavigate, useLocation, NavigateOptions } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { BUYER_ROUTES, SELLER_ROUTES } from "../constants/routes";
+
+// Navigation options type (compatible with react-router-dom v6/v7)
+type NavOptions = {
+  replace?: boolean;
+  state?: any;
+};
 
 export const useMarketplaceNavigation = () => {
   const navigate = useNavigate();
@@ -25,47 +31,47 @@ export const useMarketplaceNavigation = () => {
   // BUYER NAVIGATION
   // ========================================
 
-  const goToHome = (options?: NavigateOptions) => {
+  const goToHome = (options?: NavOptions) => {
     navigate(BUYER_ROUTES.HOME, options);
   };
 
-  const goToProducts = (options?: NavigateOptions) => {
+  const goToProducts = (options?: NavOptions) => {
     navigate(BUYER_ROUTES.PRODUCTS, options);
   };
 
-  const goToCart = (options?: NavigateOptions) => {
+  const goToCart = (options?: NavOptions) => {
     navigate(BUYER_ROUTES.CART, options);
   };
 
-  const goToCheckout = (options?: NavigateOptions) => {
+  const goToCheckout = (options?: NavOptions) => {
     navigate(BUYER_ROUTES.CHECKOUT, options);
   };
 
-  const goToOrders = (options?: NavigateOptions) => {
+  const goToOrders = (options?: NavOptions) => {
     navigate(BUYER_ROUTES.ORDERS, options);
   };
 
-  const goToWishlist = (options?: NavigateOptions) => {
+  const goToWishlist = (options?: NavOptions) => {
     navigate(BUYER_ROUTES.WISHLIST, options);
   };
 
-  const goToSearch = (options?: NavigateOptions) => {
+  const goToSearch = (options?: NavOptions) => {
     navigate(BUYER_ROUTES.SEARCH, options);
   };
 
-  const goToProductDetail = (id: string, options?: NavigateOptions) => {
+  const goToProductDetail = (id: string, options?: NavOptions) => {
     navigate(BUYER_ROUTES.PRODUCT_DETAIL(id), options);
   };
 
-  const goToOrderDetail = (id: string, options?: NavigateOptions) => {
+  const goToOrderDetail = (id: string, options?: NavOptions) => {
     navigate(BUYER_ROUTES.ORDER_DETAIL(id), options);
   };
 
-  const goToCategory = (categoryId: string, options?: NavigateOptions) => {
+  const goToCategory = (categoryId: string, options?: NavOptions) => {
     navigate(BUYER_ROUTES.CATEGORY(categoryId), options);
   };
 
-  const goToShop = (shopId: string, options?: NavigateOptions) => {
+  const goToShop = (shopId: string, options?: NavOptions) => {
     navigate(BUYER_ROUTES.SHOP(shopId), options);
   };
 
@@ -73,43 +79,43 @@ export const useMarketplaceNavigation = () => {
   // SELLER NAVIGATION
   // ========================================
 
-  const goToSellerDashboard = (options?: NavigateOptions) => {
+  const goToSellerDashboard = (options?: NavOptions) => {
     navigate(SELLER_ROUTES.DASHBOARD, options);
   };
 
-  const goToSellerProducts = (options?: NavigateOptions) => {
+  const goToSellerProducts = (options?: NavOptions) => {
     navigate(SELLER_ROUTES.PRODUCTS, options);
   };
 
-  const goToAddProduct = (options?: NavigateOptions) => {
+  const goToAddProduct = (options?: NavOptions) => {
     navigate(SELLER_ROUTES.ADD_PRODUCT, options);
   };
 
-  const goToEditProduct = (productId: string, options?: NavigateOptions) => {
+  const goToEditProduct = (productId: string, options?: NavOptions) => {
     navigate(SELLER_ROUTES.EDIT_PRODUCT(productId), options);
   };
 
-  const goToSellerOrders = (options?: NavigateOptions) => {
+  const goToSellerOrders = (options?: NavOptions) => {
     navigate(SELLER_ROUTES.ORDERS, options);
   };
 
-  const goToSellerOrderDetail = (orderId: string, options?: NavigateOptions) => {
+  const goToSellerOrderDetail = (orderId: string, options?: NavOptions) => {
     navigate(SELLER_ROUTES.ORDER_DETAIL(orderId), options);
   };
 
-  const goToAnalytics = (options?: NavigateOptions) => {
+  const goToAnalytics = (options?: NavOptions) => {
     navigate(SELLER_ROUTES.ANALYTICS, options);
   };
 
-  const goToSellerSettings = (options?: NavigateOptions) => {
+  const goToSellerSettings = (options?: NavOptions) => {
     navigate(SELLER_ROUTES.SETTINGS, options);
   };
 
-  const goToEarnings = (options?: NavigateOptions) => {
+  const goToEarnings = (options?: NavOptions) => {
     navigate(SELLER_ROUTES.EARNINGS, options);
   };
 
-  const goToProductPreview = (productId: string, options?: NavigateOptions) => {
+  const goToProductPreview = (productId: string, options?: NavOptions) => {
     navigate(SELLER_ROUTES.PRODUCT_PREVIEW(productId), options);
   };
 
