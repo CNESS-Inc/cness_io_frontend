@@ -223,7 +223,7 @@ export const generateBreadcrumbs = (
 
   let currentPath = "";
 
-  parts.forEach((part, index) => {
+  parts.forEach((part) => {
     currentPath += `/${part}`;
 
     // Format the label (capitalize and replace hyphens)
