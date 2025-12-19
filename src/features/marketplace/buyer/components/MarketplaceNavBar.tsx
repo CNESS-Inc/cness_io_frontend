@@ -1,4 +1,3 @@
-
 interface NavItem {
   label: string;
   icon?: string;
@@ -19,15 +18,14 @@ export default function MarketplaceNavBar() {
   ];
 
   return (
-<header className="w-full bg-white border-b border-gray-200">
-<div className="flex w-full px-6 py-3 justify-between items-center">
-        
+    <header className="w-full bg-white border-b border-gray-200">
+      <div className="flex w-full px-6 py-3 justify-between items-center">
         {/* LEFT NAVIGATION */}
         <nav className="flex items-center gap-[18px]">
           {navItems.map((item, index) => (
             <div
               key={index}
-              className="relative flex items-center gap-2 h-[50px] px-[10px] cursor-pointer"
+              className="relative flex items-center gap-2 h-[50px] px-2.5 cursor-pointer"
             >
               {item.icon && (
                 <img
@@ -74,7 +72,6 @@ export default function MarketplaceNavBar() {
             </span>
           </div>
         </div>
-
       </div>
     </header>
   );
