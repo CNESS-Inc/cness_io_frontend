@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Users, Sparkles } from 'lucide-react';
-import { Circle } from '../../services/circlesApi';
+import type { Circle } from '../../types/circles';
 
 interface FeaturedCarouselProps {
   circles: Circle[];
