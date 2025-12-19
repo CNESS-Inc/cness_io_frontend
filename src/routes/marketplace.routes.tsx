@@ -2,7 +2,7 @@ import { lazy } from "react";
 import ComingSoon from "../pages/ComingSoon";
 
 // Layout components (create these if needed)
-// import MarketplaceLayout from "../layout/Marketplace/MarketplaceLayout";
+ import MarketplaceLayout from "../features/marketplace/shared/layout/Marketplacelayout";
 // import SellerLayout from "../layout/Marketplace/SellerLayout";
 
 // Buyer Pages - Lazy loaded
@@ -30,7 +30,7 @@ const SellerAnalytics = lazy(() => import("../pages/ComingSoon"));
  */
 export const marketplaceRoutes = {
   path: "new-marketplace",
-  // element: <MarketplaceLayout />, // Optional: Add layout wrapper if needed
+   element: <MarketplaceLayout />, // Optional: Add layout wrapper if needed
   children: [
     // ========================================
     // BUYER ROUTES (No /buyer prefix)
