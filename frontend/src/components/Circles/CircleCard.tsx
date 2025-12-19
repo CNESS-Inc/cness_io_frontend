@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Activity, Briefcase, Heart, Flame, Newspaper } from 'lucide-react';
-import { Circle, joinCircle, leaveCircle } from '../../services/circlesApi';
+import type { Circle } from '../../types/circles';
+import { joinCircle, leaveCircle } from '../../services/circlesApi';
 
 interface CircleCardProps {
   circle: Circle;
