@@ -1674,12 +1674,8 @@ const EditDirectory: React.FC = () => {
                     value={selectedLocation}
                     onChange={handleLocationChange} // Use the new handler
                     placeholder="Search for a location..."
+                    error={errors.location?.message}
                   />
-                  {errors.location && (
-                    <span className="text-red-500 text-xs sm:text-sm">
-                      {errors.location.message}
-                    </span>
-                  )}
                 </div>
 
                 {/* Contact */}
