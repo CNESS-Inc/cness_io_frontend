@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
+import { marketplaceRoutes } from "./marketplace.routes";
 import EmailVerify from "../components/ui/EmailVerify";
 import PaymentVerify from "../components/ui/PaymentVerify";
 import ResetPassword from "../components/ui/ResetPassword";
@@ -680,6 +681,10 @@ export const router = createBrowserRouter([
             path: "DashboardDirectory/technology",
             element: <DashboardTechnology />, // reuse or wrap TechnologyAndAI
           },
+          // ========================================
+          // MARKETPLACE ROUTES (imported from separate file)
+          // ========================================
+          marketplaceRoutes,
         ],
       },
     ],
