@@ -539,6 +539,14 @@ export const router = createBrowserRouter([
             path: "Feed",
             element: <DashboardSocial />,
           },
+          {
+            path: "circles",
+            element: <CirclesHub />,
+          },
+          {
+            path: "circles/:circleId",
+            element: <CircleDetail />,
+          },
 
           {
             path: "trendingpost",
