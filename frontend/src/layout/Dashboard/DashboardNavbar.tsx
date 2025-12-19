@@ -165,11 +165,11 @@ const mainNavItems = [
     label: "Social",
     active: false,
     isSocialDropdown: true,
-    childPaths: ["/dashboard/Feed", "/dashboard/Profile", "/dashboard/MyConnection", "/dashboard/Certification"],
+    childPaths: ["/dashboard/Feed", "/dashboard/Profile", "/dashboard/MyConnection", "/dashboard/Certification", "/dashboard/circles"],
     children: [
       { label: "Feed", path: "/dashboard/feed" },
+      { label: "Circles", path: "/dashboard/circles" },
       { label: "Dashboard", path: "/dashboard/Profile" },
-      // { label: "Certification", path: "/dashboard/Certification" },
       { label: "Connections", path: "/dashboard/MyConnection" },
     ],
   },
