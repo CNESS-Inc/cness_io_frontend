@@ -4,7 +4,8 @@ import {
   Heart, MessageCircle, Share2, MoreHorizontal, Users, 
   Activity, ArrowRight, UserPlus, Globe, Flag, MapPin 
 } from 'lucide-react';
-import { Circle, CirclePost, likeCirclePost } from '../../services/circlesApi';
+import type { Circle, CirclePost } from '../../types/circles';
+import { likeCirclePost } from '../../services/circlesApi';
 
 interface CirclePostCardProps {
   post: CirclePost;
