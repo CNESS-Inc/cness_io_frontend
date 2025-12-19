@@ -38,7 +38,6 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
     "Sydney"
   ];
 
-
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -161,10 +160,10 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
     <div className="relative w-full" ref={dropdownRef}>
       <div className="relative">
         {value ? (
-          // Display selected location
+          // Display selected location - ADD ERROR BORDER HERE
           <div
             className={`w-full px-4 py-2 border ${
-              error ? "border-red-500" : "border-gray-300"
+              error ? "border-red-500" : "border-[#CBD5E1]"
             } rounded-xl bg-white flex items-center justify-between`}
           >
             <div className="flex-1 min-w-0">
@@ -194,7 +193,7 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
             </button>
           </div>
         ) : (
-          // Search input
+          // Search input - ADD ERROR BORDER HERE
           <div className="relative">
             <input
               type="text"
@@ -203,10 +202,10 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
               onFocus={() => setIsOpen(true)}
               placeholder={placeholder}
               className={`w-full px-4 py-2 border ${
-                error ? "border-red-500" : "border-gray-300"
+                error ? "border-red-500" : "border-[#CBD5E1]"
               } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
                 error ? "focus:ring-red-500" : "focus:ring-purple-500"
-              }`}
+              } h-[43px]`}
             />
             {isLoading && (
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -250,7 +249,7 @@ const LocationSearchDropdown: React.FC<LocationSearchDropdownProps> = ({
         </div>
       )}
 
-      {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+      {error && <p className="text-red-500 text-xs sm:text-sm mt-1">{error}</p>}
 
       {searchQuery.length > 0 && searchQuery.length < 3 && !value && (
         <p className="text-xs text-gray-500 mt-1">

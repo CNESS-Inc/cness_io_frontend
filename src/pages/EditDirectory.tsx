@@ -487,77 +487,92 @@ const EditDirectory: React.FC = () => {
     return { mobile_code: 0, mobile_no: 0 };
   };
 
-  const onSubmit = async (data: DirectoryFormData) => {
-    setIsSubmitting(true); // Start loading
+const onSubmit = async (data: DirectoryFormData) => {
+  setIsSubmitting(true);
 
-    try {
-      // Parse phone number with dial code if available
-      const { mobile_code, mobile_no } = parsePhoneNumber(
-        data.contact,
-        phoneDialCode
-      );
+  try {
+    // Parse phone number with dial code if available
+    const { mobile_code, mobile_no } = parsePhoneNumber(
+      data.contact,
+      phoneDialCode
+    );
 
-      // Validate that we got valid phone number parts
-      if (!mobile_code || !mobile_no) {
-        showToast({
-          message: "Please enter a valid phone number",
-          type: "error",
-          duration: 5000,
-        });
-        setIsSubmitting(false);
-        return;
-      }
+    // Prepare the payload - conditionally include fields
+    const payload: any = {
+      bussiness_name: data.bussiness_name,
+      location: selectedLocation || null,
+      website: data.website || null,
+      mobile_no: mobile_no,
+      mobile_code: mobile_code,
+      about: data.about,
+      service_ids: data.services,
+    };
 
-      // Transform form data to match API payload structure
-      const payload = {
-        bussiness_name: data.bussiness_name,
-        location: selectedLocation || null,
-        website: data.website || null,
-        mobile_no: mobile_no,
-        mobile_code: mobile_code,
-        email: data.email,
-        about: data.about,
-        service_ids: data.services,
-      };
+    // Only include email if it has a value
+    if (data.email && data.email.trim() !== '') {
+      payload.email = data.email.trim();
+    }
 
-      console.log("Payload:", payload);
-      console.log("Parsed phone - Code:", mobile_code, "Number:", mobile_no);
+    // Only include website if it has a value
+    if (data.website && data.website.trim() !== '') {
+      payload.website = data.website.trim();
+    }
 
-      const response = await CreateOrUpdateBasicInfo(payload);
-      const status = response?.success?.status;
-
-      console.log("response:", response);
-
-      if (status) {
-        showToast({
-          message: response?.success?.message,
-          type: "success",
-          duration: 5000,
-        });
-        // navigate("/dashboard/DashboardDirectory");
+    // Only include phone if contact has a value
+    if (data.contact && data.contact.trim() !== '') {
+      // Re-parse to ensure we have valid values
+      const parsedPhone = parsePhoneNumber(data.contact, phoneDialCode);
+      if (parsedPhone.mobile_code !== 0 && parsedPhone.mobile_no !== 0) {
+        payload.mobile_code = parsedPhone.mobile_code;
+        payload.mobile_no = parsedPhone.mobile_no;
       } else {
-        showToast({
-          message: response?.error?.message,
-          type: "error",
-          duration: 5000,
-        });
+        // If parsing failed, pass null or don't include
+        delete payload.mobile_code;
+        delete payload.mobile_no;
       }
+    } else {
+      // If contact is empty, don't include phone fields
+      delete payload.mobile_code;
+      delete payload.mobile_no;
+    }
 
-      // Submit business hours separately
-      await handleBusinessHoursSubmit(data);
-    } catch (error: any) {
-      console.log("🚀 ~ onSubmit ~ error:", error);
+    console.log("Payload:", payload);
+
+    const response = await CreateOrUpdateBasicInfo(payload);
+    const status = response?.success?.status;
+
+    console.log("response:", response);
+
+    if (status) {
       showToast({
-        message:
-          error?.response?.data?.error?.message ||
-          "Failed to save directory information",
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+      // navigate("/dashboard/DashboardDirectory");
+    } else {
+      showToast({
+        message: response?.error?.message,
         type: "error",
         duration: 5000,
       });
-    } finally {
-      setIsSubmitting(false); // Stop loading regardless of success/error
     }
-  };
+
+    // Submit business hours separately
+    await handleBusinessHoursSubmit(data);
+  } catch (error: any) {
+    console.log("🚀 ~ onSubmit ~ error:", error);
+    showToast({
+      message:
+        error?.response?.data?.error?.message ||
+        "Failed to save directory information",
+      type: "error",
+      duration: 5000,
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   // Handle business hours submission
   const handleBusinessHoursSubmit = async (data: DirectoryFormData) => {
@@ -1674,12 +1689,8 @@ const EditDirectory: React.FC = () => {
                     value={selectedLocation}
                     onChange={handleLocationChange} // Use the new handler
                     placeholder="Search for a location..."
+                    error={errors.location?.message}
                   />
-                  {errors.location && (
-                    <span className="text-red-500 text-xs sm:text-sm">
-                      {errors.location.message}
-                    </span>
-                  )}
                 </div>
 
                 {/* Contact */}
