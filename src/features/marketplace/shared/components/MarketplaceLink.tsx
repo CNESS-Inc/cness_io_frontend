@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { Link, LinkProps } from "react-router-dom";
+import { Link } from "react-router-dom";
+import type { LinkProps } from "react-router-dom";
 
 // ========================================
 // TYPES
