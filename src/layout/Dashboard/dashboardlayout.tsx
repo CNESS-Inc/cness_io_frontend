@@ -2,15 +2,13 @@ import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import DashboardHeader from "./DashboardHeader";
 import DashboardNavbar from "./DashboardNavbar";
-import MarketHeader from "../../components/MarketPlace/Buyerheader";
 import DashboardFilterSidebar from "./DashboardFilterSidebar";
 import hambur from "../../assets/hambur.png";
 import DashboardFooter from "../Footer/DashboardFooter";
 import { MessagingProvider } from "../../components/Messaging/MessagingContext";
 import PersistentMessagingWidget from "../../components/Messaging/PersistentMessagingWidget";
-import SellerHeader from "../../components/MarketPlace/SellerHeader";
 import { CartWishlistProvider } from "../../components/MarketPlace/context/CartWishlistContext";
-
+import MarketplaceNavBar from "../../features/marketplace/buyer/components/MarketplaceNavBar";
 const DashboardLayout = () => {
   const location = useLocation();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -120,37 +118,11 @@ const DashboardLayout = () => {
                     isMobileNavOpen={isMobileNavOpen}
                   />
                 </div>
-
-                {/* Market Header below */}
-                <div
-                  className={`fixed top-20 right-0 z-40 bg-white transition-all duration-300 ${isMobileNavOpen ? "left-64" : "left-0"
-                    }`}
-                >
-                  <MarketHeader
-                    toggleMobileNav={toggleMobileNav}
-                    isMobileNavOpen={isMobileNavOpen}
-                  />
-                </div>
-              </>
-            ) : isSellerPage ? (
-              <>
-                {/* Fixed Dashboard Header */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  <DashboardHeader
-                    toggleMobileNav={toggleMobileNav}
-                    isMobileNavOpen={isMobileNavOpen}
-                  />
-                </div>
-
-                {/* Seller Header below */}
-                <div
-                  className={`fixed top-20 right-0 z-40 bg-white transition-all duration-300 ${isMobileNavOpen ? "left-64" : "left-0"
-                    }`}
-                >
-                  <SellerHeader
-                    toggleMobileNav={toggleMobileNav}
-                  />
-                </div>
+{/* Marketplace Navbar */}
+    <div className="fixed top-[72px] left-0 right-0 z-40 bg-white border-b">
+  <MarketplaceNavBar />
+</div>
+               
               </>
             ) : (
               <div className="relative">
@@ -182,19 +154,10 @@ const DashboardLayout = () => {
               className={`
             flex-1 min-h-screen overflow-y-auto transition-all duration-300
             ${hasNoPadding || isCreateShopPage ? "px-2 py-2 pb-14" : "px-4 py-3 pb-14"}
-            ${isMarketplacePage
-                  ? "sm:pt-[120px] md:pt-40 lg:pt-40 xl:pt-40 2xl:pt-40"
-                  : isSellerPage
-                    ? "sm:pt-[120px] md:pt-40 lg:pt-40 xl:pt-40 2xl:pt-40"
-                    : isCreateShopPage
-                      ? "pt-0"
-                      : ""
-                }
+            ${isMarketplacePage ? "pt-0" : "pt-0"}
             sm:px-4 sm:py-3
-            md:px-6 md:py-4
-            lg:px-2 lg:py-2
-            xl:px-2 xl:py-2
-            2xl:px-2 2xl:py-2
+    md:px-6 md:py-4
+    lg:px-2 lg:py-2
           `}
             >
 

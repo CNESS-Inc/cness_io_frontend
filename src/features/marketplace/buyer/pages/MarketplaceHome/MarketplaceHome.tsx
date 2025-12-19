@@ -2,7 +2,7 @@
  * Marketplace Home Page
  *
  * Main landing page for the marketplace with navigation bar.
- */
+ 
 
 import React from "react";
 import MarketplaceNavBar from "../../components/MarketplaceNavBar";
@@ -18,10 +18,10 @@ export default function MarketplaceHome() {
     <div className="marketplace-home">
       <MarketplaceNavBar onSearch={handleSearch} />
 
-      {/* Main Content */}
+      {/* Main Content 
       <div className="marketplace-content">
         <div className="container">
-          {/* Hero Section */}
+          {/* Hero Section 
           <section className="hero-section">
             <div className="hero-content">
               <h1 className="hero-title">
@@ -37,7 +37,7 @@ export default function MarketplaceHome() {
               </div>
             </div>
             <div className="hero-image">
-              {/* Placeholder for hero image */}
+              {/* Placeholder for hero image 
               <div className="hero-placeholder">
                 <svg
                   width="400"
@@ -72,7 +72,7 @@ export default function MarketplaceHome() {
             </div>
           </section>
 
-          {/* Categories Section */}
+          {/* Categories Section 
           <section className="categories-section">
             <h2 className="section-title">Browse by Category</h2>
             <div className="categories-grid">
@@ -97,7 +97,7 @@ export default function MarketplaceHome() {
             </div>
           </section>
 
-          {/* Featured Products Section */}
+          {/* Featured Products Section 
           <section className="featured-section">
             <div className="section-header">
               <h2 className="section-title">Featured Products</h2>
@@ -116,7 +116,7 @@ export default function MarketplaceHome() {
             </div>
           </section>
 
-          {/* Stats Section */}
+          {/* Stats Section 
           <section className="stats-section">
             <div className="stats-grid">
               <div className="stat-card">
@@ -142,3 +142,4 @@ export default function MarketplaceHome() {
     </div>
   );
 }
+*/
