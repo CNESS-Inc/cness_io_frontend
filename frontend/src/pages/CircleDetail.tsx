@@ -5,8 +5,9 @@ import {
   Briefcase, Heart, Flame, Newspaper, Share2, Settings,
   MessageSquare, BookOpen, UserPlus, Loader2
 } from 'lucide-react';
+import type { Circle, CirclePost } from '../types/circles';
 import { 
-  Circle, CirclePost, getCircle, getCirclePosts, 
+  getCircle, getCirclePosts, 
   checkMembership, joinCircle, leaveCircle, createCirclePost 
 } from '../services/circlesApi';
 import CirclePostCard from '../components/Circles/CirclePostCard';
