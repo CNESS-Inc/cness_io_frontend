@@ -58,6 +58,8 @@ import { StoriesApp } from "../components/Social/Story/StoryApp";
 import Trendingpost from "../pages/TrendingPost";
 import Mycollectionview from "../pages/Mycollectionview";
 import TrendingAI from "../pages/TrendingAI";
+import CirclesHub from "../pages/CirclesHub";
+import CircleDetail from "../pages/CircleDetail";
 import BecomePartner from "../pages/BecomePartner";
 import Pricing from "../pages/Pricing";
 import TopicPost from "../pages/TopicPost";
