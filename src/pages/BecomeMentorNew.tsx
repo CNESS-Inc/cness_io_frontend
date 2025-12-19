@@ -1111,7 +1111,7 @@ function Select({
         {children}
       </select>
       {/* Custom dropdown arrow */}
-      <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center px-2 text-gray-700 border-l border-gray-300 h-fit top-1/2 -translate-y-2/2">
+      <div className={`pointer-events-none absolute inset-y-0 right-2 flex items-center px-2 text-gray-700 border-l border-gray-300 h-fit top-1/2 -translate-y-1/2 ${showError ? "-translate-y-2/2" : ''}`}>
         <svg
           className={`fill-current h-5 w-5 group-focus-within:text-black ${
             showError ? "text-red-500" : "text-[#ccc]"
