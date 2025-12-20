@@ -1,8 +1,4 @@
-import Herosection from "../components/Herocards/Herosection";
-import RecommendationCard from "../components/Herocards/TopSellers";
-import Recommendedcard1 from "../components/Herocards/Recommendedcard1";
 import MoodSelector from "../components/Moodselector";
-import Spritual from "../components/Herocards/Spritual";
 import Category from "../components/Category";
 import Cnessrecommends  from "../components/Cnessrecommends";
 import ProductLabel from "../components/ProductLabel";
@@ -155,7 +151,7 @@ const trendingProducts: TrendingProduct[] = [
 ];
 
 
-export default function MarketplaceHome() {
+export default function Categories() {
     const [page, setPage] = useState(1);
       const [activeTab, setActiveTab] = useState("trending");
 const ITEMS_PER_LOAD = 5;
@@ -165,35 +161,7 @@ const visibleTrendingProducts = trendingProducts.slice(0, visibleCount);
   return (
 <div className="w-full flex flex-col gap-[30px] relative px-3 sm:px-0">
 
-      {/* ================= MAIN CONTENT ================= */}
-      <main
-        className="
-       w-full
-    pt-[80px]
-    px-[20px]
-    pb-[20px]
-    grid
-    grid-cols-12
-    gap-[20px]
-        "
-      >
-        {/* LEFT: HERO SECTION */}
-<div className="col-span-12 lg:col-span-6 row-span-2 -mx-7 sm:mx-0">
-          <Herosection />
-        </div>
-
-        {/* MIDDLE: RECOMMENDATION STACK */}
-        <div className="col-span-12 md:col-span-6 lg:col-span-3 flex flex-col gap-[20px]">
-         <Spritual />
-          <RecommendationCard />
-        </div>
-
-        {/* RIGHT: LARGE FEATURE CARD */}
-        <div className="col-span-12 md:col-span-6 lg:col-span-3">
-          <Recommendedcard1 />
-        </div>
-      </main>
-
+    
       {/* ================= MOOD SELECTOR ================= */}
       <section className="w-full px-[1px]">
         <MoodSelector />
@@ -207,6 +175,8 @@ const visibleTrendingProducts = trendingProducts.slice(0, visibleCount);
       <Category />
     </div>
 
+
+
     {/* RIGHT */}
     <div className="w-full lg:max-w-[300px]">
       <Cnessrecommends />
@@ -214,6 +184,10 @@ const visibleTrendingProducts = trendingProducts.slice(0, visibleCount);
 
   </div>
 </section>
+
+  <section className="w-full px-[1px]">
+        <MoodSelector />
+      </section>
 
       {/* ================= FEATURED PRODUCTS ================= */}
          <ProductLabel
@@ -226,14 +200,18 @@ const visibleTrendingProducts = trendingProducts.slice(0, visibleCount);
         onNext={() => setPage((p) => p + 1)}
       />
 
-<div className="
-  grid
-  grid-cols-1
-  lg:grid-cols-2
-  gap-[20px] px-5
-">  {Featureproducts.map((product) => (
-    <FeatureProduct key={product.id} {...product} />
-  ))}
+<div className="mt-1 sm:mt-2">
+  <div className="
+    grid
+    grid-cols-1
+    lg:grid-cols-2
+    gap-[20px]
+    px-3 sm:px-4 lg:px-5
+  ">
+    {Featureproducts.map((product) => (
+      <FeatureProduct key={product.id} {...product} />
+    ))}
+  </div>
 </div>
 
       {/* ================= Trending PRODUCTS ================= */}

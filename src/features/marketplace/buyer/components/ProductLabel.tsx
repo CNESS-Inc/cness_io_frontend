@@ -23,71 +23,90 @@ export default function ProductLabel({
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   return (
-    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 ">
-      
+    <div
+      className="
+        flex flex-col gap-3
+        sm:flex-row sm:items-center sm:justify-between
+        mb-6
+      "
+    >
       {/* LEFT: Icon + Title */}
-      <div className="flex items-center -space-x-1">
+      <div className="flex items-center gap-2">
         {icon && (
-          <div className="w-12 h-12 flex items-center justify-center  text-[#F07EFF]">
+          <div
+            className="
+              w-9 h-9 sm:w-12 sm:h-12
+              flex items-center justify-center
+              text-[#F07EFF]
+            "
+          >
             {icon}
           </div>
         )}
 
-        <h2 className="font-[Poppins] text-[20px] font-medium text-[#080f20]">
+        <h2
+          className="
+            font-[Poppins]
+            text-[18px] sm:text-[20px]
+            font-medium
+            text-[#080f20]
+          "
+        >
           {title}
         </h2>
       </div>
 
       {/* RIGHT: Pagination */}
       {totalPages > 1 && (
-     <div
-    className="
-      flex items-center gap-[10px]
-      px-[12px] py-[5px]
-      rounded-full
-      border border-[#CBD5E1]
-      bg-white
-    "
-  >
-    {/* Prev */}
-    <button
-      onClick={onPrev}
-      disabled={currentPage === 1}
-      className="
-        flex items-center justify-center
-        w-[24px] h-[24px]
-        rounded-full
-        text-[#6366F1]
-        hover:bg-[#F1F3FF]
-        disabled:opacity-40
-        disabled:hover:bg-transparent
-      "
-    >
-      <ArrowLeft size={16} />
-    </button>
+        <div
+          className="
+            self-start sm:self-auto
+            flex items-center gap-2
+            px-3 py-1.5
+            rounded-full
+            border border-[#CBD5E1]
+            bg-white
+          "
+        >
+          {/* Prev */}
+          <button
+            onClick={onPrev}
+            disabled={currentPage === 1}
+            className="
+              flex items-center justify-center
+              w-8 h-8 sm:w-7 sm:h-7
+              rounded-full
+              text-[#6366F1]
+              hover:bg-[#F1F3FF]
+              disabled:opacity-40
+              disabled:hover:bg-transparent
+            "
+          >
+            <ArrowLeft size={16} />
+          </button>
 
-    {/* Page text */}
-    <span className="text-[14px] font-medium text-[#080F20]">
-      {currentPage}/{totalPages}
-    </span>
+          {/* Page text */}
+          <span className="text-[13px] sm:text-[14px] font-medium text-[#080F20]">
+            {currentPage}/{totalPages}
+          </span>
 
-    {/* Next */}
-    <button
-      onClick={onNext}
-      disabled={currentPage === totalPages}
-      className="
-        flex items-center justify-center
-        w-[24px] h-[24px]
-        rounded-full
-        text-[#6366F1]
-        hover:bg-[#F1F3FF]
-        disabled:opacity-40
-        disabled:hover:bg-transparent
-      "
-    >
-      <ArrowRight size={16} />
-    </button>
-  </div>
+          {/* Next */}
+          <button
+            onClick={onNext}
+            disabled={currentPage === totalPages}
+            className="
+              flex items-center justify-center
+              w-8 h-8 sm:w-7 sm:h-7
+              rounded-full
+              text-[#6366F1]
+              hover:bg-[#F1F3FF]
+              disabled:opacity-40
+              disabled:hover:bg-transparent
+            "
+          >
+            <ArrowRight size={16} />
+          </button>
+        </div>
       )}
     </div>
   );

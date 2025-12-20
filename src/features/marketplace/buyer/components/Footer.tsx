@@ -1,14 +1,14 @@
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-[#0A142F] text-white">
       <div className="max-w-7xl mx-auto px-4 lg:px-6 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <div className="w-20 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
-              <span className="text-sm font-semibold">LOGO</span>
-            </div>
+            <div className="w-20 h-12   rounded-lg flex items-center justify-center">
+<img src="https://cdn.cness.io/cness%20(2).svg" />   
+         </div>
             <div className="space-y-2">
               <p className="text-lg">+1 (7635) 547-12-97</p>
               <p className="text-gray-300">support@cness.co</p>
@@ -52,9 +52,12 @@ export default function Footer() {
         <div className="border-t border-gray-700 mt-12 pt-8 flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
           <div className="flex space-x-6">
             {/* Social Icons */}
-            <div className="w-8 h-8 bg-white bg-opacity-20 rounded-lg"></div>
-            <div className="w-8 h-8 bg-white bg-opacity-20 rounded-lg"></div>
-            <div className="w-8 h-8 bg-white bg-opacity-20 rounded-lg"></div>
+            <img src="https://cdn.cness.io/Linkedin.svg"></img>
+
+            <img src="https://cdn.cness.io/facebook.svg"></img>
+
+          <img src="https://cdn.cness.io/Twitter.svg"></img>
+
           </div>
           <p className="text-gray-300">© 2025 CNESS. All rights reserved</p>
         </div>
