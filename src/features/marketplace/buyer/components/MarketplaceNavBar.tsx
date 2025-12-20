@@ -30,7 +30,7 @@ const navItems: NavItem[] = [
           {navItems.map((item, index) => (
             <div
               key={index}
-              className="relative flex items-center gap-2 h-[50px] px-[10px] cursor-pointer"
+              className="relative flex items-center gap-2 h-[50px] px-2.5 cursor-pointer"
             >
               {item.icon && (
                 <img
@@ -84,7 +84,6 @@ const navItems: NavItem[] = [
             </span>
           </div>
         </div>
-
       </div>
     </header>
   );

@@ -58,6 +58,14 @@ interface DirectoryFormData {
   temporaryStartDate?: string;
   temporaryEndDate?: string;
   photos?: FileList | null;
+  location?: {
+    // Add location to the form data
+    placeId: string;
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+  } | null;
 }
 interface DeleteConfirmation {
   isOpen: boolean;
@@ -141,7 +149,6 @@ const EditDirectory: React.FC = () => {
 
   const { showToast } = useToast();
 
-  // Validation schema
   const validationSchema = yup.object().shape({
     bussiness_name: yup
       .string()
@@ -152,10 +159,53 @@ const EditDirectory: React.FC = () => {
       .of(yup.string())
       .min(1, "At least one service is required"),
     contact: yup.string().required("Contact number is required"),
-    email: yup
+    website: yup // Add proper website validation
       .string()
-      .required("Email is required")
-      .email("Please enter a valid email address"),
+      .optional() // Make it optional since it's not marked as required in your UI
+      .test(
+        "is-valid-url",
+        "Please enter a valid URL (e.g., https://www.example.com)",
+        (value) => {
+          // If no value is provided, it's valid (since it's optional)
+          if (!value) return true;
+
+          // If value is provided, validate it
+          try {
+            // Allow URLs without protocol by adding https:// if missing
+            let urlToValidate = value;
+            if (!/^https?:\/\//i.test(value)) {
+              urlToValidate = `https://${value}`;
+            }
+
+            const url = new URL(urlToValidate);
+
+            // Basic URL validation
+            // Allow common protocols: http, https
+            const allowedProtocols = ["http:", "https:"];
+            if (!allowedProtocols.includes(url.protocol)) {
+              return false;
+            }
+
+            // Optional: You can add more specific validation if needed
+            // e.g., require a domain name
+            if (!url.hostname || url.hostname === "") {
+              return false;
+            }
+
+            return true;
+          } catch {
+            return false;
+          }
+        }
+      )
+      .transform((value, originalValue) => {
+        // Trim whitespace
+        if (typeof originalValue === "string") {
+          return originalValue.trim();
+        }
+        return value;
+      }),
+    email: yup.string().optional(),
     about: yup
       .string()
       .required("About section is required")
@@ -200,8 +250,18 @@ const EditDirectory: React.FC = () => {
       .optional(),
     logo: yup.mixed().nullable().optional(),
     photos: yup.mixed().nullable().optional(),
+    location: yup
+      .object()
+      .shape({
+        placeId: yup.string().required("Place ID is required"),
+        name: yup.string().required("Location name is required"),
+        address: yup.string().required("Address is required"),
+        lat: yup.number().required("Latitude is required"),
+        lng: yup.number().required("Longitude is required"),
+      })
+      .nullable()
+      .required("Location is required"),
   });
-
   const defaultDays: DayType[] = [
     { name: "Monday", isOpen: true, openTime: "10:00", closeTime: "19:00" },
     { name: "Tuesday", isOpen: false, openTime: "10:00", closeTime: "19:00" },
@@ -227,6 +287,7 @@ const EditDirectory: React.FC = () => {
       temporaryStartDate: "",
       temporaryEndDate: "",
       photos: null,
+      location: null,
     },
     mode: "onChange",
   });
@@ -318,6 +379,7 @@ const EditDirectory: React.FC = () => {
     watch,
     setValue,
     formState: { errors },
+    clearErrors,
   } = publicProfileForm;
 
   const mode = watch("operationMode");
@@ -425,76 +487,92 @@ const EditDirectory: React.FC = () => {
     return { mobile_code: 0, mobile_no: 0 };
   };
 
-  const onSubmit = async (data: DirectoryFormData) => {
-    setIsSubmitting(true); // Start loading
+const onSubmit = async (data: DirectoryFormData) => {
+  setIsSubmitting(true);
 
-    try {
-      // Parse phone number with dial code if available
-      const { mobile_code, mobile_no } = parsePhoneNumber(
-        data.contact,
-        phoneDialCode
-      );
+  try {
+    // Parse phone number with dial code if available
+    const { mobile_code, mobile_no } = parsePhoneNumber(
+      data.contact,
+      phoneDialCode
+    );
 
-      // Validate that we got valid phone number parts
-      if (!mobile_code || !mobile_no) {
-        showToast({
-          message: "Please enter a valid phone number",
-          type: "error",
-          duration: 5000,
-        });
-        setIsSubmitting(false);
-        return;
-      }
+    // Prepare the payload - conditionally include fields
+    const payload: any = {
+      bussiness_name: data.bussiness_name,
+      location: selectedLocation || null,
+      website: data.website || null,
+      mobile_no: mobile_no,
+      mobile_code: mobile_code,
+      about: data.about,
+      service_ids: data.services,
+    };
 
-      // Transform form data to match API payload structure
-      const payload = {
-        bussiness_name: data.bussiness_name,
-        location: selectedLocation || null,
-        website: data.website || null,
-        mobile_no: mobile_no,
-        mobile_code: mobile_code,
-        email: data.email,
-        about: data.about,
-        service_ids: data.services,
-      };
+    // Only include email if it has a value
+    if (data.email && data.email.trim() !== '') {
+      payload.email = data.email.trim();
+    }
 
-      console.log("Payload:", payload);
-      console.log("Parsed phone - Code:", mobile_code, "Number:", mobile_no);
+    // Only include website if it has a value
+    if (data.website && data.website.trim() !== '') {
+      payload.website = data.website.trim();
+    }
 
-      const response = await CreateOrUpdateBasicInfo(payload);
-      const status = response?.success?.status;
-
-      console.log("response:", response);
-
-      if (status) {
-        showToast({
-          message: response?.success?.message,
-          type: "success",
-          duration: 5000,
-        });
-        // navigate("/dashboard/DashboardDirectory");
+    // Only include phone if contact has a value
+    if (data.contact && data.contact.trim() !== '') {
+      // Re-parse to ensure we have valid values
+      const parsedPhone = parsePhoneNumber(data.contact, phoneDialCode);
+      if (parsedPhone.mobile_code !== 0 && parsedPhone.mobile_no !== 0) {
+        payload.mobile_code = parsedPhone.mobile_code;
+        payload.mobile_no = parsedPhone.mobile_no;
       } else {
-        showToast({
-          message: response?.error?.message,
-          type: "error",
-          duration: 5000,
-        });
+        // If parsing failed, pass null or don't include
+        delete payload.mobile_code;
+        delete payload.mobile_no;
       }
+    } else {
+      // If contact is empty, don't include phone fields
+      delete payload.mobile_code;
+      delete payload.mobile_no;
+    }
 
-      // Submit business hours separately
-      await handleBusinessHoursSubmit(data);
-    } catch (error: any) {
+    console.log("Payload:", payload);
+
+    const response = await CreateOrUpdateBasicInfo(payload);
+    const status = response?.success?.status;
+
+    console.log("response:", response);
+
+    if (status) {
       showToast({
-        message:
-          error?.response?.error?.message ||
-          "Failed to save directory information",
+        message: response?.success?.message,
+        type: "success",
+        duration: 5000,
+      });
+      // navigate("/dashboard/DashboardDirectory");
+    } else {
+      showToast({
+        message: response?.error?.message,
         type: "error",
         duration: 5000,
       });
-    } finally {
-      setIsSubmitting(false); // Stop loading regardless of success/error
     }
-  };
+
+    // Submit business hours separately
+    await handleBusinessHoursSubmit(data);
+  } catch (error: any) {
+    console.log("🚀 ~ onSubmit ~ error:", error);
+    showToast({
+      message:
+        error?.response?.data?.error?.message ||
+        "Failed to save directory information",
+      type: "error",
+      duration: 5000,
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   // Handle business hours submission
   const handleBusinessHoursSubmit = async (data: DirectoryFormData) => {
@@ -819,6 +897,10 @@ const EditDirectory: React.FC = () => {
         if (data.user_id) {
           setUserId(data.user_id);
         }
+        if (data.location) {
+          setSelectedLocation(data.location);
+          setValue("location", data.location); // Set location in form
+        }
 
         setValue("bussiness_name", data.bussiness_name || "");
         // Reconstruct phone number from mobile_code and mobile_no
@@ -942,6 +1024,23 @@ const EditDirectory: React.FC = () => {
       //   type: "error",
       //   duration: 5000,
       // });
+    }
+  };
+
+  const handleLocationChange = (
+    location: {
+      placeId: string;
+      name: string;
+      address: string;
+      lat: number;
+      lng: number;
+    } | null
+  ) => {
+    setSelectedLocation(location);
+    setValue("location", location, { shouldValidate: true });
+
+    if (location) {
+      clearErrors("location");
     }
   };
 
@@ -1588,15 +1687,16 @@ const EditDirectory: React.FC = () => {
                   </label>
                   <LocationSearchDropdown
                     value={selectedLocation}
-                    onChange={setSelectedLocation}
+                    onChange={handleLocationChange} // Use the new handler
                     placeholder="Search for a location..."
+                    error={errors.location?.message}
                   />
                 </div>
 
                 {/* Contact */}
                 <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
-                    Contact 
+                    Contact
                   </label>
 
                   <Controller
@@ -1680,21 +1780,14 @@ const EditDirectory: React.FC = () => {
                 {/* Email */}
                 <div className="w-full flex flex-col gap-1.5">
                   <label className="text-[#64748B] font-[Poppins] font-medium text-sm sm:text-base">
-                    Email 
+                    Email
                   </label>
                   <input
                     type="email"
                     {...register("email")}
                     className={`h-[43px] border rounded-lg px-3 
-                       text-[#081021] font-semibold text-sm sm:text-base outline-none ${
-                         errors.email ? "border-red-500" : "border-[#CBD5E1]"
-                       }`}
+                       text-[#081021] font-semibold text-sm sm:text-base outline-none `}
                   />
-                  {errors.email && (
-                    <span className="text-red-500 text-xs sm:text-sm">
-                      {errors.email.message}
-                    </span>
-                  )}
                 </div>
               </div>
 

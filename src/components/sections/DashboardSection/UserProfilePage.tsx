@@ -2584,10 +2584,7 @@ const UserProfilePage = () => {
             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => {
-                          const currentEmail = contactInfoForm.getValues("email");
-                          contactInfoForm.reset();
-                          // Restore the email after reset
-                          contactInfoForm.setValue("email", currentEmail);
+                          basicInfoForm.reset();
                         }}
                       >
                         Reset
