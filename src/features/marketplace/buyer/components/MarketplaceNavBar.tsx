@@ -1,25 +1,30 @@
+import home from "../../../../assets/house.svg";
+
+
 interface NavItem {
-  label: string;
+  label?: string;
   icon?: string;
   badge?: string;
+  
 }
 
 export default function MarketplaceNavBar() {
-  const navItems: NavItem[] = [
-    {
-      label: "Categories",
-      icon: "https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-18/YUepoGSUmt.png",
-    },
-    { label: "Sellers" },
-    { label: "Order History" },
-    { label: "My Library" },
-    { label: "Wishlist" },
-    { label: "Cart", badge: "05" },
-  ];
+const navItems: NavItem[] = [
+  { icon: home },          // Home icon only
+  { label: "Categories" },
+  { label: "Sellers" },
+  { label: "Order History" },
+  { label: "My Library" },
+  { label: "Wishlist" },
+  { label: "Cart", badge: "05" },
+];
 
   return (
-    <header className="w-full bg-white border-b border-gray-200">
-      <div className="flex w-full px-6 py-3 justify-between items-center">
+<header className=" w-full
+    bg-gradient-to-r from-white to-[#F1F3FF]
+    border-b border-[#0000001a]">
+<div className="flex w-full px-6 py-4 justify-between items-center">
+        
         {/* LEFT NAVIGATION */}
         <nav className="flex items-center gap-[18px]">
           {navItems.map((item, index) => (
@@ -40,7 +45,14 @@ export default function MarketplaceNavBar() {
               </span>
 
               {item.badge && (
-                <span className="absolute -top-1 -right-1 bg-[#7076fe] text-white text-[10px] font-medium px-2 py-[2px] rounded-full">
+                <span className="absolute -top-1 -right-1
+    flex items-center justify-center
+    h-[20px]
+    px-[4px] py-[8px]
+    text-[10px] font-medium text-white
+    rounded-[30px]
+    bg-gradient-to-r from-[#D479D7] to-[#483EC5]
+    leading-none">
                   {item.badge}
                 </span>
               )}
