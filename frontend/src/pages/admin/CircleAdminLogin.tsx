@@ -26,7 +26,7 @@ const CircleAdminLogin: React.FC = () => {
         // Store admin token
         localStorage.setItem('circleAdminToken', response.data.token);
         localStorage.setItem('circleAdminUser', response.data.username);
-        navigate('/dashboard/circles/circleadmin/dashboard');
+        navigate('/circles/circleadmin/dashboard');
       }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Invalid credentials');
