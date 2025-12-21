@@ -156,14 +156,32 @@ async def get_professions_from_external_api(auth_token: Optional[str] = None):
             )
             if response.status_code == 200:
                 data = response.json()
+                print(f"Professions API response type: {type(data)}")
+                
                 # Handle different response formats
+                professions_list = []
                 if isinstance(data, list):
-                    return data
+                    professions_list = data
                 elif isinstance(data, dict) and "data" in data:
-                    return data["data"]
+                    professions_list = data["data"]
                 elif isinstance(data, dict) and "professions" in data:
-                    return data["professions"]
-                return []
+                    professions_list = data["professions"]
+                
+                # Normalize the profession format
+                normalized = []
+                for prof in professions_list:
+                    if isinstance(prof, str):
+                        # If it's just a string, create a dict
+                        normalized.append({"_id": prof.lower().replace(" ", "-"), "name": prof})
+                    elif isinstance(prof, dict):
+                        # Ensure it has both _id and name
+                        prof_id = prof.get("_id") or prof.get("id") or prof.get("name", "unknown").lower().replace(" ", "-")
+                        prof_name = prof.get("name") or prof.get("title") or prof.get("_id") or "Unknown"
+                        normalized.append({"_id": prof_id, "name": prof_name})
+                
+                if normalized:
+                    return normalized
+                    
     except Exception as e:
         print(f"Error fetching professions: {e}")
     
