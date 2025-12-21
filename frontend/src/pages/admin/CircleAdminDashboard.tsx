@@ -67,7 +67,7 @@ const CircleAdminDashboard: React.FC = () => {
   const handleLogout = () => {
     localStorage.removeItem('circleAdminToken');
     localStorage.removeItem('circleAdminUser');
-    navigate('/dashboard/circles/circleadmin');
+    navigate('/circles/circleadmin');
   };
 
   const menuItems = [
