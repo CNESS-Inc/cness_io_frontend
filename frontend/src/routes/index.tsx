@@ -60,6 +60,8 @@ import Mycollectionview from "../pages/Mycollectionview";
 import TrendingAI from "../pages/TrendingAI";
 import CirclesHub from "../pages/CirclesHub";
 import CircleDetail from "../pages/CircleDetail";
+import CircleAdminLogin from "../pages/admin/CircleAdminLogin";
+import CircleAdminDashboard from "../pages/admin/CircleAdminDashboard";
 import BecomePartner from "../pages/BecomePartner";
 import Pricing from "../pages/Pricing";
 import TopicPost from "../pages/TopicPost";
