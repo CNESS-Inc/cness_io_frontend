@@ -812,4 +812,12 @@ export const router = createBrowserRouter([
     path: "/pricing",
     element: <Pricing />,
   },
+  {
+    path: "/circles/circleadmin",
+    element: <CircleAdminLogin />,
+  },
+  {
+    path: "/circles/circleadmin/dashboard",
+    element: <CircleAdminDashboard />,
+  },
 ]);
