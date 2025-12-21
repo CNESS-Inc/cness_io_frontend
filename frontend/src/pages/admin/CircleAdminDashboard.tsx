@@ -41,7 +41,7 @@ const CircleAdminDashboard: React.FC = () => {
     const user = localStorage.getItem('circleAdminUser');
     
     if (!token) {
-      navigate('/dashboard/circles/circleadmin');
+      navigate('/circles/circleadmin');
       return;
     }
     
