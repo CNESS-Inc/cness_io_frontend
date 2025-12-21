@@ -549,6 +549,14 @@ export const router = createBrowserRouter([
             path: "circles/:circleId",
             element: <CircleDetail />,
           },
+          {
+            path: "circles/circleadmin",
+            element: <CircleAdminLogin />,
+          },
+          {
+            path: "circles/circleadmin/dashboard",
+            element: <CircleAdminDashboard />,
+          },
 
           {
             path: "trendingpost",
