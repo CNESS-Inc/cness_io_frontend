@@ -4,7 +4,7 @@ import type { Circle, CirclePost } from '../types/circles';
 // Re-export types for convenience
 export type { Circle, CirclePost };
 
-// Use local backend for circles API
+// Use local backend for circles API (proxied through Vite)
 const CIRCLES_API_BASE = '/api';
 
 const circlesAxios = axios.create({
@@ -14,20 +14,73 @@ const circlesAxios = axios.create({
   },
 });
 
-// Get user ID from localStorage
-const getUserId = () => localStorage.getItem('Id') || 'guest';
+// Get user ID from localStorage - this links to the existing PostgreSQL user
+const getUserId = (): string => {
+  // Try different possible storage keys
+  const userId = localStorage.getItem('Id') || 
+                 localStorage.getItem('userId') || 
+                 localStorage.getItem('user_id') ||
+                 localStorage.getItem('uid');
+  
+  if (!userId) {
+    console.warn('No user ID found in localStorage. Using guest.');
+    return 'guest';
+  }
+  return userId;
+};
+
+// Get user's location from localStorage or profile
+const getUserLocation = (): { country?: string; province?: string } => {
+  try {
+    const profile = localStorage.getItem('profile');
+    if (profile) {
+      const parsed = JSON.parse(profile);
+      return {
+        country: parsed.country || parsed.location?.country,
+        province: parsed.province || parsed.state || parsed.location?.province
+      };
+    }
+  } catch (e) {
+    console.warn('Error parsing user profile:', e);
+  }
+  return {};
+};
 
 // ============== CIRCLE APIs ==============
 
 export const getCircles = async (params?: {
   scope?: string;
   category?: string;
+  country?: string;
+  province?: string;
+  profession_id?: string;
+  interest_id?: string;
   search?: string;
   sort?: string;
   page?: number;
   limit?: number;
 }) => {
   const response = await circlesAxios.get('/circles', { params });
+  return response.data;
+};
+
+export const getCirclesByLocation = async (
+  country: string,
+  province?: string,
+  options?: {
+    include_national?: boolean;
+    include_global?: boolean;
+    category?: string;
+  }
+) => {
+  const params = {
+    country,
+    province,
+    include_national: options?.include_national ?? true,
+    include_global: options?.include_global ?? true,
+    category: options?.category
+  };
+  const response = await circlesAxios.get('/circles/by-location', { params });
   return response.data;
 };
 
@@ -49,7 +102,7 @@ export const createCircle = async (circleData: {
   category: string;
   image_url?: string;
   country?: string;
-  city?: string;
+  province?: string;
   profession_id?: string;
   interest_id?: string;
 }) => {
@@ -102,7 +155,8 @@ export const getCircleMembers = async (circleId: string, page = 1, limit = 20) =
 };
 
 export const getUserCircles = async (userId?: string) => {
-  const response = await circlesAxios.get(`/circles/user/${userId || getUserId()}`);
+  const id = userId || getUserId();
+  const response = await circlesAxios.get(`/circles/user/${id}/joined`);
   return response.data;
 };
 
@@ -120,10 +174,7 @@ export const createCirclePost = async (circleId: string, postData: {
   media_urls?: string[];
   post_type?: string;
 }) => {
-  const response = await circlesAxios.post(`/circles/${circleId}/posts`, {
-    circle_id: circleId,
-    ...postData
-  }, {
+  const response = await circlesAxios.post(`/circles/${circleId}/posts`, postData, {
     params: { user_id: getUserId() }
   });
   return response.data;
@@ -159,9 +210,52 @@ export const deleteCirclePost = async (postId: string) => {
   return response.data;
 };
 
+// ============== BULK GENERATION APIs ==============
+
+export const generateCirclesForCountry = async (
+  country: string,
+  options?: {
+    create_national?: boolean;
+    create_local?: boolean;
+    create_for_professions?: boolean;
+    create_for_interests?: boolean;
+  }
+) => {
+  const response = await circlesAxios.post('/circles/generate/for-country', {
+    country,
+    create_national: options?.create_national ?? true,
+    create_local: options?.create_local ?? true,
+    create_for_professions: options?.create_for_professions ?? true,
+    create_for_interests: options?.create_for_interests ?? true
+  }, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+export const generateCirclesForAllCountries = async (createLocal = false) => {
+  const response = await circlesAxios.post('/circles/generate/all-countries', null, {
+    params: { user_id: getUserId(), create_local: createLocal }
+  });
+  return response.data;
+};
+
+export const getCirclesStats = async () => {
+  const response = await circlesAxios.get('/circles/stats');
+  return response.data;
+};
+
+export const getCountries = async () => {
+  const response = await circlesAxios.get('/circles/countries');
+  return response.data;
+};
+
 // ============== UTILITY ==============
 
 export const seedCircles = async () => {
   const response = await circlesAxios.post('/circles/seed');
   return response.data;
 };
+
+// Export helper functions
+export { getUserId, getUserLocation };
