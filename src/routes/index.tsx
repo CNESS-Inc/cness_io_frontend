@@ -90,7 +90,7 @@ import PaymentFailed from "../pages/PaymentFailed";
 import Wishlist from "../pages/Wishlist";
 import OrderHistory from "../pages/OrderHistory";
 import ProductSummery from "../pages/ProductSummery";
-import Category from "../pages/Category";
+//import Category from "../pages/Category";
 import ShopsList from "../pages/Shops";
 import VendorDashboard from "../pages/VendorDashboard";
 import CreateShopForm from "../pages/CreateShopForm";
@@ -357,8 +357,8 @@ export const router = createBrowserRouter([
           },
 
           {
-            path: "categories",
-            element: <Category />,
+           // path: "categories",
+           // element: <Category />,
           },
 
           {

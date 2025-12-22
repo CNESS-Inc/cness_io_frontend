@@ -119,9 +119,10 @@ const DashboardLayout = () => {
                   />
                 </div>
 {/* Marketplace Navbar */}
-   <div
-  className={`fixed top-[72px] right-0 z-40 bg-white transition-all duration-300
-    ${isMobileNavOpen ? "md:left-64" : "md:left-0"}
+  <div
+  className={`fixed top-[72px] z-40 bg-white transition-all duration-300
+    inset-x-0
+    ${isMobileNavOpen ? "md:ml-64" : "md:ml-0"}
   `}
 >
   <MarketplaceNavBar />
