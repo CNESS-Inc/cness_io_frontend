@@ -49,6 +49,80 @@ admin_sessions_collection = db.admin_sessions
 # External API base URL
 EXTERNAL_API_BASE = os.environ.get("EXTERNAL_API_BASE", "https://uatapi.cness.io")
 
+# ============== WEBSOCKET CONNECTION MANAGER ==============
+
+class ConnectionManager:
+    """Manages WebSocket connections for real-time chat"""
+    
+    def __init__(self):
+        # Map chatroom_id -> set of (user_id, websocket) tuples
+        self.active_connections: Dict[str, Set[tuple]] = {}
+        # Map websocket -> (chatroom_id, user_id)
+        self.connection_info: Dict[WebSocket, tuple] = {}
+    
+    async def connect(self, websocket: WebSocket, chatroom_id: str, user_id: str):
+        await websocket.accept()
+        if chatroom_id not in self.active_connections:
+            self.active_connections[chatroom_id] = set()
+        self.active_connections[chatroom_id].add((user_id, websocket))
+        self.connection_info[websocket] = (chatroom_id, user_id)
+        
+        # Notify others that user joined
+        await self.broadcast_system_message(
+            chatroom_id, 
+            f"User {user_id[:8]} joined the chat", 
+            exclude_websocket=websocket
+        )
+    
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.connection_info:
+            chatroom_id, user_id = self.connection_info[websocket]
+            if chatroom_id in self.active_connections:
+                self.active_connections[chatroom_id].discard((user_id, websocket))
+                if not self.active_connections[chatroom_id]:
+                    del self.active_connections[chatroom_id]
+            del self.connection_info[websocket]
+            return chatroom_id, user_id
+        return None, None
+    
+    async def broadcast_message(self, chatroom_id: str, message: dict):
+        """Broadcast message to all connections in a chatroom"""
+        if chatroom_id in self.active_connections:
+            disconnected = []
+            for user_id, websocket in self.active_connections[chatroom_id]:
+                try:
+                    await websocket.send_json(message)
+                except Exception:
+                    disconnected.append((user_id, websocket))
+            
+            # Clean up disconnected websockets
+            for conn in disconnected:
+                self.active_connections[chatroom_id].discard(conn)
+    
+    async def broadcast_system_message(self, chatroom_id: str, message: str, exclude_websocket: WebSocket = None):
+        """Broadcast system message to chatroom"""
+        system_msg = {
+            "type": "system",
+            "message": message,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        if chatroom_id in self.active_connections:
+            for user_id, websocket in self.active_connections[chatroom_id]:
+                if websocket != exclude_websocket:
+                    try:
+                        await websocket.send_json(system_msg)
+                    except Exception:
+                        pass
+    
+    def get_online_users(self, chatroom_id: str) -> List[str]:
+        """Get list of online user IDs in a chatroom"""
+        if chatroom_id in self.active_connections:
+            return list(set(user_id for user_id, _ in self.active_connections[chatroom_id]))
+        return []
+
+# Global connection manager instance
+chat_manager = ConnectionManager()
+
 # Admin credentials
 ADMIN_CREDENTIALS = {
     "superadmin@cness.co": "Sadmin108@"
