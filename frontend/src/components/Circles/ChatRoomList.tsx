@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, MessageCircle, Plus, Users, Lock, Loader2, AtSign } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { X, Send, MessageCircle, Plus, Users, Lock, Loader2, Wifi, WifiOff } from 'lucide-react';
 import { 
   getCircleChatrooms, createChatroom, joinChatroom, 
   getChatMessages, sendChatMessage, checkChatPermission, getUserId 
@@ -40,7 +40,6 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({ circleId, isOpen, onClose }
   const [newRoomName, setNewRoomName] = useState('');
   const [newRoomDesc, setNewRoomDesc] = useState('');
   const [creating, setCreating] = useState(false);
-  const [canCreateRoom, setCanCreateRoom] = useState(false);
   const currentUserId = getUserId();
 
   useEffect(() => {
@@ -229,7 +228,7 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({ circleId, isOpen, onClose }
   );
 };
 
-// Chat Room View Component
+// Chat Room View Component with WebSocket support
 const ChatRoomView: React.FC<{
   chatroom: ChatRoom;
   onBack: () => void;
@@ -241,17 +240,160 @@ const ChatRoomView: React.FC<{
   const [sending, setSending] = useState(false);
   const [canSend, setCanSend] = useState(false);
   const [userLevel, setUserLevel] = useState('');
+  const [wsConnected, setWsConnected] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const currentUserId = getUserId();
+
+  // Get WebSocket URL from backend URL
+  const getWebSocketUrl = useCallback(() => {
+    const backendUrl = import.meta.env.REACT_APP_BACKEND_URL || window.location.origin;
+    const wsProtocol = backendUrl.startsWith('https') ? 'wss' : 'ws';
+    const baseUrl = backendUrl.replace(/^https?:\/\//, '');
+    return `${wsProtocol}://${baseUrl}/ws/chat/${chatroom.id}?user_id=${currentUserId}`;
+  }, [chatroom.id, currentUserId]);
+
+  // Connect to WebSocket
+  const connectWebSocket = useCallback(() => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) return;
+    
+    try {
+      const wsUrl = getWebSocketUrl();
+      console.log('Connecting to WebSocket:', wsUrl);
+      
+      const ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
+      
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+        setWsConnected(true);
+      };
+      
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          
+          switch (data.type) {
+            case 'message':
+              setMessages(prev => [...prev, {
+                id: data.id,
+                chatroom_id: chatroom.id,
+                user_id: data.user_id,
+                content: data.content,
+                mentions: data.mentions || [],
+                created_at: data.created_at
+              }]);
+              break;
+              
+            case 'system':
+              // Handle system messages (user joined/left)
+              console.log('System message:', data.message);
+              break;
+              
+            case 'typing':
+              if (data.user_id !== currentUserId) {
+                setTypingUsers(prev => {
+                  const newSet = new Set(prev);
+                  if (data.is_typing) {
+                    newSet.add(data.user_id);
+                  } else {
+                    newSet.delete(data.user_id);
+                  }
+                  return newSet;
+                });
+              }
+              break;
+              
+            case 'error':
+              alert(data.message);
+              break;
+              
+            case 'pong':
+              // Keep-alive response
+              break;
+          }
+        } catch (e) {
+          console.error('Error parsing WebSocket message:', e);
+        }
+      };
+      
+      ws.onclose = (event) => {
+        console.log('WebSocket disconnected:', event.code, event.reason);
+        setWsConnected(false);
+        
+        // Attempt to reconnect after 3 seconds
+        if (!reconnectTimeoutRef.current) {
+          reconnectTimeoutRef.current = setTimeout(() => {
+            reconnectTimeoutRef.current = null;
+            connectWebSocket();
+          }, 3000);
+        }
+      };
+      
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+      
+    } catch (e) {
+      console.error('Failed to connect WebSocket:', e);
+    }
+  }, [chatroom.id, currentUserId, getWebSocketUrl]);
+
+  // Disconnect WebSocket
+  const disconnectWebSocket = useCallback(() => {
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+  }, []);
+
+  // Send message via WebSocket
+  const sendMessageViaWs = useCallback((content: string) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({
+        type: 'message',
+        content: content
+      }));
+      return true;
+    }
+    return false;
+  }, []);
+
+  // Send typing indicator
+  const sendTypingIndicator = useCallback((isTyping: boolean) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({
+        type: 'typing',
+        is_typing: isTyping
+      }));
+    }
+  }, []);
 
   useEffect(() => {
     fetchMessages();
     checkPermission();
+    connectWebSocket();
     
-    // Poll for new messages every 5 seconds
-    const interval = setInterval(fetchMessages, 5000);
-    return () => clearInterval(interval);
-  }, [chatroom.id]);
+    // Ping every 30 seconds to keep connection alive
+    const pingInterval = setInterval(() => {
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({ type: 'ping' }));
+      }
+    }, 30000);
+    
+    return () => {
+      clearInterval(pingInterval);
+      disconnectWebSocket();
+    };
+  }, [chatroom.id, connectWebSocket, disconnectWebSocket]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -277,16 +419,43 @@ const ChatRoomView: React.FC<{
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+    
+    // Send typing indicator
+    sendTypingIndicator(true);
+    
+    // Clear existing timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    // Stop typing indicator after 2 seconds of no input
+    typingTimeoutRef.current = setTimeout(() => {
+      sendTypingIndicator(false);
+    }, 2000);
+  };
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !canSend) return;
     
+    const messageContent = newMessage.trim();
+    setNewMessage('');
+    sendTypingIndicator(false);
+    
+    // Try WebSocket first
+    if (sendMessageViaWs(messageContent)) {
+      return;
+    }
+    
+    // Fallback to REST API
     setSending(true);
     try {
-      await sendChatMessage(chatroom.id, newMessage);
-      setNewMessage('');
+      await sendChatMessage(chatroom.id, messageContent);
       fetchMessages();
     } catch (error: any) {
       alert(error.response?.data?.detail || 'Failed to send message');
+      setNewMessage(messageContent); // Restore message on error
     }
     setSending(false);
   };
@@ -328,8 +497,18 @@ const ChatRoomView: React.FC<{
             <X className="w-5 h-5 text-gray-500" />
           </button>
           <div className="flex-1">
-            <h3 className="font-semibold text-gray-900">{chatroom.name}</h3>
-            <p className="text-xs text-gray-500">{chatroom.member_count} members</p>
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900">{chatroom.name}</h3>
+              {wsConnected ? (
+                <Wifi className="w-4 h-4 text-green-500" />
+              ) : (
+                <WifiOff className="w-4 h-4 text-red-500" />
+              )}
+            </div>
+            <p className="text-xs text-gray-500">
+              {chatroom.member_count} members
+              {wsConnected && ' • Live'}
+            </p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
             <X className="w-5 h-5 text-gray-500" />
@@ -394,6 +573,24 @@ const ChatRoomView: React.FC<{
               </div>
             ))
           )}
+          
+          {/* Typing indicator */}
+          {typingUsers.size > 0 && (
+            <div className="flex items-center gap-2 text-sm text-gray-500 ml-2">
+              <div className="flex gap-1">
+                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+              <span>
+                {typingUsers.size === 1 
+                  ? `User ${Array.from(typingUsers)[0].slice(0, 8)} is typing...`
+                  : `${typingUsers.size} people are typing...`
+                }
+              </span>
+            </div>
+          )}
+          
           <div ref={messagesEndRef} />
         </div>
 
@@ -408,7 +605,7 @@ const ChatRoomView: React.FC<{
             <div className="flex items-center gap-3">
               <input
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={handleInputChange}
                 placeholder="Type a message... Use @ to mention"
                 className="flex-1 px-4 py-2.5 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
                 onKeyDown={(e) => {
