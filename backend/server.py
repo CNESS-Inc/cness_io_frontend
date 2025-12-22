@@ -2574,6 +2574,171 @@ async def check_create_circle_permission(
         **permission
     }
 
+# ============== WEBSOCKET CHAT ENDPOINT ==============
+
+@app.websocket("/ws/chat/{chatroom_id}")
+async def websocket_chat_endpoint(
+    websocket: WebSocket,
+    chatroom_id: str,
+    user_id: str = Query(...)
+):
+    """
+    WebSocket endpoint for real-time chat in chatrooms.
+    
+    Connect with: ws://host/ws/chat/{chatroom_id}?user_id={user_id}
+    
+    Message format to send:
+    {
+        "type": "message",
+        "content": "Hello world!"
+    }
+    
+    Message format received:
+    {
+        "type": "message" | "system",
+        "id": "uuid",
+        "user_id": "user-id",
+        "content": "message content",
+        "mentions": [],
+        "created_at": "iso-timestamp"
+    }
+    """
+    # Verify chatroom exists
+    chatroom = await circle_chatrooms_collection.find_one({"id": chatroom_id})
+    if not chatroom:
+        await websocket.close(code=4004, reason="Chatroom not found")
+        return
+    
+    # Check if user is member of the circle
+    membership = await circle_members_collection.find_one({
+        "circle_id": chatroom["circle_id"],
+        "user_id": user_id
+    })
+    if not membership:
+        await websocket.close(code=4003, reason="Must be a circle member")
+        return
+    
+    # Check if user is chatroom member, auto-join if not
+    if user_id not in chatroom.get("members", []):
+        await circle_chatrooms_collection.update_one(
+            {"id": chatroom_id},
+            {
+                "$push": {"members": user_id},
+                "$inc": {"member_count": 1}
+            }
+        )
+    
+    # Connect to chatroom
+    await chat_manager.connect(websocket, chatroom_id, user_id)
+    
+    try:
+        while True:
+            # Receive message from client
+            data = await websocket.receive_json()
+            
+            if data.get("type") == "message":
+                content = data.get("content", "").strip()
+                if not content:
+                    continue
+                
+                # Check chat permission
+                chat_perm = await check_chat_permission(user_id, None)
+                if not chat_perm["can_chat"]:
+                    await websocket.send_json({
+                        "type": "error",
+                        "message": f"Your level ({chat_perm['user_level']}) cannot send messages. Get Aspiring certification first."
+                    })
+                    continue
+                
+                # Extract mentions
+                mentions = await extract_mentions(content)
+                
+                # Create message in database
+                message_id = str(uuid.uuid4())
+                now = datetime.utcnow()
+                
+                message_doc = {
+                    "id": message_id,
+                    "chatroom_id": chatroom_id,
+                    "circle_id": chatroom["circle_id"],
+                    "user_id": user_id,
+                    "content": content,
+                    "mentions": mentions,
+                    "created_at": now
+                }
+                
+                await circle_chat_messages_collection.insert_one(message_doc)
+                
+                # Update chatroom stats
+                await circle_chatrooms_collection.update_one(
+                    {"id": chatroom_id},
+                    {
+                        "$inc": {"message_count": 1},
+                        "$set": {"last_message_at": now}
+                    }
+                )
+                
+                # Broadcast message to all connected clients
+                broadcast_msg = {
+                    "type": "message",
+                    "id": message_id,
+                    "user_id": user_id,
+                    "content": content,
+                    "mentions": mentions,
+                    "created_at": now.isoformat()
+                }
+                
+                await chat_manager.broadcast_message(chatroom_id, broadcast_msg)
+                
+                # Create notifications for mentioned users
+                for mentioned_user in mentions:
+                    if mentioned_user != user_id:
+                        await create_notification(
+                            user_id=mentioned_user,
+                            notification_type="chat_mention",
+                            title="You were mentioned in chat",
+                            message=f"Someone mentioned you in a chatroom",
+                            data={
+                                "chatroom_id": chatroom_id,
+                                "message_id": message_id,
+                                "circle_id": chatroom["circle_id"],
+                                "mentioned_by": user_id
+                            }
+                        )
+            
+            elif data.get("type") == "typing":
+                # Broadcast typing indicator
+                await chat_manager.broadcast_message(chatroom_id, {
+                    "type": "typing",
+                    "user_id": user_id,
+                    "is_typing": data.get("is_typing", False)
+                })
+            
+            elif data.get("type") == "ping":
+                # Respond to ping to keep connection alive
+                await websocket.send_json({"type": "pong"})
+                
+    except WebSocketDisconnect:
+        chatroom_id, user_id = chat_manager.disconnect(websocket)
+        if chatroom_id:
+            await chat_manager.broadcast_system_message(
+                chatroom_id,
+                f"User {user_id[:8]} left the chat"
+            )
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+        chat_manager.disconnect(websocket)
+
+@app.get("/api/circles/chatrooms/{chatroom_id}/online-users")
+async def get_chatroom_online_users(chatroom_id: str):
+    """Get list of online users in a chatroom"""
+    online_users = chat_manager.get_online_users(chatroom_id)
+    return {
+        "success": True,
+        "online_users": online_users,
+        "count": len(online_users)
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
