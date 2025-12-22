@@ -250,6 +250,143 @@ export const getCountries = async () => {
   return response.data;
 };
 
+// ============== COMMENTS APIs ==============
+
+export const getPostComments = async (postId: string, page = 1, limit = 20) => {
+  const response = await circlesAxios.get(`/circles/posts/${postId}/comments`, {
+    params: { page, limit }
+  });
+  return response.data;
+};
+
+export const createComment = async (postId: string, content: string, parentCommentId?: string) => {
+  const response = await circlesAxios.post(`/circles/posts/${postId}/comments`, {
+    content,
+    parent_comment_id: parentCommentId
+  }, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+export const likeComment = async (commentId: string) => {
+  const response = await circlesAxios.post(`/circles/comments/${commentId}/like`, null, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+export const deleteComment = async (commentId: string) => {
+  const response = await circlesAxios.delete(`/circles/comments/${commentId}`, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+// ============== POST INTERACTIONS ==============
+
+export const toggleLikePost = async (postId: string) => {
+  const response = await circlesAxios.post(`/circles/posts/${postId}/like`, null, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+export const getLikeStatus = async (postId: string) => {
+  const response = await circlesAxios.get(`/circles/posts/${postId}/like-status`, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+export const sharePost = async (postId: string, platform = 'copy') => {
+  const response = await circlesAxios.post(`/circles/posts/${postId}/share`, null, {
+    params: { user_id: getUserId(), platform }
+  });
+  return response.data;
+};
+
+// ============== CHATROOM APIs ==============
+
+export const getCircleChatrooms = async (circleId: string, page = 1, limit = 20) => {
+  const response = await circlesAxios.get(`/circles/${circleId}/chatrooms`, {
+    params: { page, limit }
+  });
+  return response.data;
+};
+
+export const createChatroom = async (circleId: string, name: string, description?: string) => {
+  const response = await circlesAxios.post(`/circles/${circleId}/chatrooms`, {
+    name,
+    description
+  }, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+export const joinChatroom = async (chatroomId: string) => {
+  const response = await circlesAxios.post(`/circles/chatrooms/${chatroomId}/join`, null, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+export const getChatMessages = async (chatroomId: string, page = 1, limit = 50) => {
+  const response = await circlesAxios.get(`/circles/chatrooms/${chatroomId}/messages`, {
+    params: { page, limit }
+  });
+  return response.data;
+};
+
+export const sendChatMessage = async (chatroomId: string, content: string) => {
+  const response = await circlesAxios.post(`/circles/chatrooms/${chatroomId}/messages`, {
+    content
+  }, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+export const checkChatPermission = async (chatroomId: string) => {
+  const response = await circlesAxios.get(`/circles/chatrooms/${chatroomId}/check-permission`, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+// ============== NOTIFICATIONS APIs ==============
+
+export const getNotifications = async (page = 1, limit = 20) => {
+  const response = await circlesAxios.get('/notifications', {
+    params: { user_id: getUserId(), page, limit }
+  });
+  return response.data;
+};
+
+export const markNotificationRead = async (notificationId: string) => {
+  const response = await circlesAxios.post(`/notifications/${notificationId}/read`, null, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+export const markAllNotificationsRead = async () => {
+  const response = await circlesAxios.post('/notifications/mark-all-read', null, {
+    params: { user_id: getUserId() }
+  });
+  return response.data;
+};
+
+// ============== PERMISSION CHECK APIs ==============
+
+export const checkCircleCreatePermission = async (category: string) => {
+  const response = await circlesAxios.get('/circles/check-create-permission', {
+    params: { user_id: getUserId(), category }
+  });
+  return response.data;
+};
+
 // ============== UTILITY ==============
 
 export const seedCircles = async () => {
