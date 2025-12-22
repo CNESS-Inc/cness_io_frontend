@@ -134,8 +134,11 @@ const CircleDetail: React.FC = () => {
     }
   };
 
+  const [showChat, setShowChat] = useState(false);
+
   const tabs = [
     { id: 'feed', label: 'Feed', icon: MessageSquare },
+    { id: 'chat', label: 'Chat', icon: MessageCircle },
     { id: 'prompts', label: 'Prompts', icon: BookOpen },
     { id: 'members', label: 'Members', icon: Users },
     { id: 'resources', label: 'Resources', icon: BookOpen },
