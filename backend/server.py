@@ -870,8 +870,24 @@ async def get_countries():
     }
 
 @app.post("/api/circles")
-async def create_circle(circle: CircleCreate, user_id: str = Query(...)):
-    """Create a new circle"""
+async def create_circle(
+    circle: CircleCreate, 
+    user_id: str = Query(...),
+    authorization: Optional[str] = Header(None)
+):
+    """Create a new circle (Living and News categories require Aspiring certification)"""
+    # Check permission for creating circles of specific category
+    auth_token = authorization[7:] if authorization and authorization.startswith("Bearer ") else None
+    
+    # Only check permission for living and news categories - anyone can view/join any circle
+    if circle.category in ["living", "news"]:
+        permission = await check_circle_creation_permission(user_id, circle.category, auth_token)
+        if not permission["can_create"]:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Your level ({permission['user_level']}) cannot create {circle.category} circles. {permission['reason']}"
+            )
+    
     circle_id = str(uuid.uuid4())
     now = datetime.utcnow()
     
