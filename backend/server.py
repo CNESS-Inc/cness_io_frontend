@@ -1936,6 +1936,552 @@ async def seed_circles():
         "circles_count": len(sample_circles)
     }
 
+# ============== COMMENTS APIS ==============
+
+@app.post("/api/circles/posts/{post_id}/comments")
+async def create_comment(
+    post_id: str,
+    comment: CommentCreate,
+    user_id: str = Query(...),
+    authorization: Optional[str] = Header(None)
+):
+    """Create a comment on a post"""
+    post = await circle_posts_collection.find_one({"id": post_id})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    # Check if user is member of the circle
+    membership = await circle_members_collection.find_one({
+        "circle_id": post["circle_id"],
+        "user_id": user_id
+    })
+    if not membership:
+        raise HTTPException(status_code=403, detail="Must be a member to comment")
+    
+    comment_id = str(uuid.uuid4())
+    now = datetime.utcnow()
+    
+    # Extract mentions from content
+    mentions = await extract_mentions(comment.content)
+    
+    comment_doc = {
+        "id": comment_id,
+        "post_id": post_id,
+        "circle_id": post["circle_id"],
+        "user_id": user_id,
+        "content": comment.content,
+        "parent_comment_id": comment.parent_comment_id,
+        "mentions": mentions,
+        "likes_count": 0,
+        "replies_count": 0,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await circle_comments_collection.insert_one(comment_doc)
+    
+    # Update post comment count
+    await circle_posts_collection.update_one(
+        {"id": post_id},
+        {"$inc": {"comments_count": 1}}
+    )
+    
+    # If this is a reply, update parent comment replies count
+    if comment.parent_comment_id:
+        await circle_comments_collection.update_one(
+            {"id": comment.parent_comment_id},
+            {"$inc": {"replies_count": 1}}
+        )
+    
+    # Create notifications for mentions
+    for mentioned_user in mentions:
+        await create_notification(
+            user_id=mentioned_user,
+            notification_type="mention",
+            title="You were mentioned",
+            message=f"Someone mentioned you in a comment",
+            data={
+                "post_id": post_id,
+                "comment_id": comment_id,
+                "circle_id": post["circle_id"],
+                "mentioned_by": user_id
+            }
+        )
+    
+    comment_doc.pop("_id", None)
+    comment_doc["created_at"] = comment_doc["created_at"].isoformat()
+    comment_doc["updated_at"] = comment_doc["updated_at"].isoformat()
+    
+    return {"success": True, "comment": comment_doc}
+
+@app.get("/api/circles/posts/{post_id}/comments")
+async def get_post_comments(
+    post_id: str,
+    page: int = 1,
+    limit: int = 20
+):
+    """Get comments for a post (top-level only, with replies nested)"""
+    query = {"post_id": post_id, "parent_comment_id": None}
+    
+    skip = (page - 1) * limit
+    
+    cursor = circle_comments_collection.find(query).sort("created_at", -1).skip(skip).limit(limit)
+    comments = await cursor.to_list(length=limit)
+    
+    # Get replies for each comment
+    for comment in comments:
+        comment.pop("_id", None)
+        if isinstance(comment.get("created_at"), datetime):
+            comment["created_at"] = comment["created_at"].isoformat()
+        if isinstance(comment.get("updated_at"), datetime):
+            comment["updated_at"] = comment["updated_at"].isoformat()
+        
+        # Get replies (single level thread)
+        replies_cursor = circle_comments_collection.find({
+            "parent_comment_id": comment["id"]
+        }).sort("created_at", 1).limit(50)
+        replies = await replies_cursor.to_list(length=50)
+        
+        for reply in replies:
+            reply.pop("_id", None)
+            if isinstance(reply.get("created_at"), datetime):
+                reply["created_at"] = reply["created_at"].isoformat()
+            if isinstance(reply.get("updated_at"), datetime):
+                reply["updated_at"] = reply["updated_at"].isoformat()
+        
+        comment["replies"] = replies
+    
+    total = await circle_comments_collection.count_documents(query)
+    
+    return {"success": True, "comments": comments, "total": total}
+
+@app.post("/api/circles/comments/{comment_id}/like")
+async def like_comment(comment_id: str, user_id: str = Query(...)):
+    """Like a comment"""
+    comment = await circle_comments_collection.find_one({"id": comment_id})
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    
+    # Check if already liked
+    existing_like = await circle_comment_likes_collection.find_one({
+        "comment_id": comment_id,
+        "user_id": user_id
+    })
+    
+    if existing_like:
+        # Unlike
+        await circle_comment_likes_collection.delete_one({
+            "comment_id": comment_id,
+            "user_id": user_id
+        })
+        await circle_comments_collection.update_one(
+            {"id": comment_id},
+            {"$inc": {"likes_count": -1}}
+        )
+        return {"success": True, "liked": False}
+    else:
+        # Like
+        await circle_comment_likes_collection.insert_one({
+            "id": str(uuid.uuid4()),
+            "comment_id": comment_id,
+            "user_id": user_id,
+            "created_at": datetime.utcnow()
+        })
+        await circle_comments_collection.update_one(
+            {"id": comment_id},
+            {"$inc": {"likes_count": 1}}
+        )
+        return {"success": True, "liked": True}
+
+@app.delete("/api/circles/comments/{comment_id}")
+async def delete_comment(comment_id: str, user_id: str = Query(...)):
+    """Delete a comment"""
+    comment = await circle_comments_collection.find_one({"id": comment_id})
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    
+    if comment["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Only author can delete comment")
+    
+    # Delete replies first
+    await circle_comments_collection.delete_many({"parent_comment_id": comment_id})
+    
+    # Delete the comment
+    await circle_comments_collection.delete_one({"id": comment_id})
+    
+    # Update post comment count
+    await circle_posts_collection.update_one(
+        {"id": comment["post_id"]},
+        {"$inc": {"comments_count": -1 - comment.get("replies_count", 0)}}
+    )
+    
+    # Update parent comment if this was a reply
+    if comment.get("parent_comment_id"):
+        await circle_comments_collection.update_one(
+            {"id": comment["parent_comment_id"]},
+            {"$inc": {"replies_count": -1}}
+        )
+    
+    return {"success": True, "message": "Comment deleted"}
+
+# ============== POST LIKE/SHARE APIS ==============
+
+@app.post("/api/circles/posts/{post_id}/like")
+async def toggle_like_post(post_id: str, user_id: str = Query(...)):
+    """Toggle like on a post"""
+    post = await circle_posts_collection.find_one({"id": post_id})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    # Check if already liked
+    existing_like = await circle_post_likes_collection.find_one({
+        "post_id": post_id,
+        "user_id": user_id
+    })
+    
+    if existing_like:
+        # Unlike
+        await circle_post_likes_collection.delete_one({
+            "post_id": post_id,
+            "user_id": user_id
+        })
+        await circle_posts_collection.update_one(
+            {"id": post_id},
+            {"$inc": {"likes_count": -1}}
+        )
+        return {"success": True, "liked": False, "likes_count": post["likes_count"] - 1}
+    else:
+        # Like
+        await circle_post_likes_collection.insert_one({
+            "id": str(uuid.uuid4()),
+            "post_id": post_id,
+            "user_id": user_id,
+            "created_at": datetime.utcnow()
+        })
+        await circle_posts_collection.update_one(
+            {"id": post_id},
+            {"$inc": {"likes_count": 1}}
+        )
+        return {"success": True, "liked": True, "likes_count": post["likes_count"] + 1}
+
+@app.get("/api/circles/posts/{post_id}/like-status")
+async def get_like_status(post_id: str, user_id: str = Query(...)):
+    """Check if user has liked a post"""
+    existing_like = await circle_post_likes_collection.find_one({
+        "post_id": post_id,
+        "user_id": user_id
+    })
+    
+    return {"success": True, "liked": existing_like is not None}
+
+@app.post("/api/circles/posts/{post_id}/share")
+async def share_post(post_id: str, user_id: str = Query(...), platform: str = Query(default="copy")):
+    """Track post share"""
+    post = await circle_posts_collection.find_one({"id": post_id})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    # Increment share count
+    await circle_posts_collection.update_one(
+        {"id": post_id},
+        {"$inc": {"shares_count": 1}}
+    )
+    
+    return {"success": True, "message": "Post shared", "platform": platform}
+
+# ============== CHATROOM APIS ==============
+
+@app.post("/api/circles/{circle_id}/chatrooms")
+async def create_chatroom(
+    circle_id: str,
+    chatroom: ChatRoomCreate,
+    user_id: str = Query(...),
+    authorization: Optional[str] = Header(None)
+):
+    """Create a chatroom in a circle (only certified users)"""
+    circle = await circles_collection.find_one({"id": circle_id})
+    if not circle:
+        raise HTTPException(status_code=404, detail="Circle not found")
+    
+    # Check membership
+    membership = await circle_members_collection.find_one({
+        "circle_id": circle_id,
+        "user_id": user_id
+    })
+    if not membership:
+        raise HTTPException(status_code=403, detail="Must be a member to create chatroom")
+    
+    # Check chat permission (only certified users can create)
+    auth_token = authorization[7:] if authorization and authorization.startswith("Bearer ") else None
+    chat_perm = await check_chat_permission(user_id, auth_token)
+    
+    if not chat_perm["can_create_chatroom"]:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Your level ({chat_perm['user_level']}) cannot create chatrooms. Get certified first."
+        )
+    
+    chatroom_id = str(uuid.uuid4())
+    now = datetime.utcnow()
+    
+    chatroom_doc = {
+        "id": chatroom_id,
+        "circle_id": circle_id,
+        "name": chatroom.name,
+        "description": chatroom.description,
+        "creator_id": user_id,
+        "members": [user_id],
+        "member_count": 1,
+        "message_count": 0,
+        "last_message_at": now,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await circle_chatrooms_collection.insert_one(chatroom_doc)
+    
+    chatroom_doc.pop("_id", None)
+    chatroom_doc["created_at"] = chatroom_doc["created_at"].isoformat()
+    chatroom_doc["updated_at"] = chatroom_doc["updated_at"].isoformat()
+    chatroom_doc["last_message_at"] = chatroom_doc["last_message_at"].isoformat()
+    
+    return {"success": True, "chatroom": chatroom_doc}
+
+@app.get("/api/circles/{circle_id}/chatrooms")
+async def get_circle_chatrooms(circle_id: str, page: int = 1, limit: int = 20):
+    """Get chatrooms in a circle (anyone can view)"""
+    query = {"circle_id": circle_id}
+    
+    skip = (page - 1) * limit
+    
+    cursor = circle_chatrooms_collection.find(query).sort("last_message_at", -1).skip(skip).limit(limit)
+    chatrooms = await cursor.to_list(length=limit)
+    
+    for chatroom in chatrooms:
+        chatroom.pop("_id", None)
+        if isinstance(chatroom.get("created_at"), datetime):
+            chatroom["created_at"] = chatroom["created_at"].isoformat()
+        if isinstance(chatroom.get("updated_at"), datetime):
+            chatroom["updated_at"] = chatroom["updated_at"].isoformat()
+        if isinstance(chatroom.get("last_message_at"), datetime):
+            chatroom["last_message_at"] = chatroom["last_message_at"].isoformat()
+    
+    total = await circle_chatrooms_collection.count_documents(query)
+    
+    return {"success": True, "chatrooms": chatrooms, "total": total}
+
+@app.post("/api/circles/chatrooms/{chatroom_id}/join")
+async def join_chatroom(chatroom_id: str, user_id: str = Query(...)):
+    """Join a chatroom"""
+    chatroom = await circle_chatrooms_collection.find_one({"id": chatroom_id})
+    if not chatroom:
+        raise HTTPException(status_code=404, detail="Chatroom not found")
+    
+    # Check if user is member of the circle
+    membership = await circle_members_collection.find_one({
+        "circle_id": chatroom["circle_id"],
+        "user_id": user_id
+    })
+    if not membership:
+        raise HTTPException(status_code=403, detail="Must be a circle member to join chatroom")
+    
+    # Check if already a member
+    if user_id in chatroom.get("members", []):
+        return {"success": True, "message": "Already a member"}
+    
+    # Add to chatroom
+    await circle_chatrooms_collection.update_one(
+        {"id": chatroom_id},
+        {
+            "$push": {"members": user_id},
+            "$inc": {"member_count": 1}
+        }
+    )
+    
+    return {"success": True, "message": "Joined chatroom"}
+
+@app.post("/api/circles/chatrooms/{chatroom_id}/messages")
+async def send_chat_message(
+    chatroom_id: str,
+    message: ChatMessageCreate,
+    user_id: str = Query(...),
+    authorization: Optional[str] = Header(None)
+):
+    """Send a message to chatroom (only certified users can post)"""
+    chatroom = await circle_chatrooms_collection.find_one({"id": chatroom_id})
+    if not chatroom:
+        raise HTTPException(status_code=404, detail="Chatroom not found")
+    
+    # Check if user is member of chatroom
+    if user_id not in chatroom.get("members", []):
+        raise HTTPException(status_code=403, detail="Must join the chatroom first")
+    
+    # Check chat permission (only certified users can send messages)
+    auth_token = authorization[7:] if authorization and authorization.startswith("Bearer ") else None
+    chat_perm = await check_chat_permission(user_id, auth_token)
+    
+    if not chat_perm["can_chat"]:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Your level ({chat_perm['user_level']}) cannot send messages. Get Aspiring certification first."
+        )
+    
+    message_id = str(uuid.uuid4())
+    now = datetime.utcnow()
+    
+    # Extract mentions
+    mentions = await extract_mentions(message.content)
+    
+    message_doc = {
+        "id": message_id,
+        "chatroom_id": chatroom_id,
+        "circle_id": chatroom["circle_id"],
+        "user_id": user_id,
+        "content": message.content,
+        "mentions": mentions,
+        "created_at": now
+    }
+    
+    await circle_chat_messages_collection.insert_one(message_doc)
+    
+    # Update chatroom stats
+    await circle_chatrooms_collection.update_one(
+        {"id": chatroom_id},
+        {
+            "$inc": {"message_count": 1},
+            "$set": {"last_message_at": now}
+        }
+    )
+    
+    # Create notifications for mentions
+    for mentioned_user in mentions:
+        if mentioned_user in chatroom.get("members", []):
+            await create_notification(
+                user_id=mentioned_user,
+                notification_type="chat_mention",
+                title="You were mentioned in chat",
+                message=f"Someone mentioned you in a chatroom",
+                data={
+                    "chatroom_id": chatroom_id,
+                    "message_id": message_id,
+                    "circle_id": chatroom["circle_id"],
+                    "mentioned_by": user_id
+                }
+            )
+    
+    message_doc.pop("_id", None)
+    message_doc["created_at"] = message_doc["created_at"].isoformat()
+    
+    return {"success": True, "message": message_doc}
+
+@app.get("/api/circles/chatrooms/{chatroom_id}/messages")
+async def get_chat_messages(
+    chatroom_id: str,
+    page: int = 1,
+    limit: int = 50,
+    before: Optional[str] = None  # For pagination (message ID)
+):
+    """Get messages from chatroom (anyone can view)"""
+    query = {"chatroom_id": chatroom_id}
+    
+    skip = (page - 1) * limit
+    
+    cursor = circle_chat_messages_collection.find(query).sort("created_at", -1).skip(skip).limit(limit)
+    messages = await cursor.to_list(length=limit)
+    
+    for msg in messages:
+        msg.pop("_id", None)
+        if isinstance(msg.get("created_at"), datetime):
+            msg["created_at"] = msg["created_at"].isoformat()
+    
+    # Reverse to show oldest first
+    messages.reverse()
+    
+    total = await circle_chat_messages_collection.count_documents(query)
+    
+    return {"success": True, "messages": messages, "total": total}
+
+@app.get("/api/circles/chatrooms/{chatroom_id}/check-permission")
+async def check_chat_permission_api(
+    chatroom_id: str,
+    user_id: str = Query(...),
+    authorization: Optional[str] = Header(None)
+):
+    """Check if user can send messages in chatroom"""
+    chatroom = await circle_chatrooms_collection.find_one({"id": chatroom_id})
+    if not chatroom:
+        raise HTTPException(status_code=404, detail="Chatroom not found")
+    
+    is_member = user_id in chatroom.get("members", [])
+    
+    auth_token = authorization[7:] if authorization and authorization.startswith("Bearer ") else None
+    chat_perm = await check_chat_permission(user_id, auth_token)
+    
+    return {
+        "success": True,
+        "is_chatroom_member": is_member,
+        "can_send_messages": chat_perm["can_chat"] and is_member,
+        "can_create_chatroom": chat_perm["can_create_chatroom"],
+        "user_level": chat_perm["user_level"]
+    }
+
+# ============== NOTIFICATIONS APIS ==============
+
+@app.get("/api/notifications")
+async def get_notifications(user_id: str = Query(...), page: int = 1, limit: int = 20):
+    """Get user notifications"""
+    query = {"user_id": user_id}
+    
+    skip = (page - 1) * limit
+    
+    cursor = notifications_collection.find(query).sort("created_at", -1).skip(skip).limit(limit)
+    notifications = await cursor.to_list(length=limit)
+    
+    for notif in notifications:
+        notif.pop("_id", None)
+        if isinstance(notif.get("created_at"), datetime):
+            notif["created_at"] = notif["created_at"].isoformat()
+    
+    total = await notifications_collection.count_documents(query)
+    unread = await notifications_collection.count_documents({**query, "read": False})
+    
+    return {"success": True, "notifications": notifications, "total": total, "unread": unread}
+
+@app.post("/api/notifications/{notification_id}/read")
+async def mark_notification_read(notification_id: str, user_id: str = Query(...)):
+    """Mark notification as read"""
+    await notifications_collection.update_one(
+        {"id": notification_id, "user_id": user_id},
+        {"$set": {"read": True}}
+    )
+    return {"success": True}
+
+@app.post("/api/notifications/mark-all-read")
+async def mark_all_notifications_read(user_id: str = Query(...)):
+    """Mark all notifications as read"""
+    await notifications_collection.update_many(
+        {"user_id": user_id, "read": False},
+        {"$set": {"read": True}}
+    )
+    return {"success": True}
+
+# ============== CIRCLE CREATION PERMISSION CHECK ==============
+
+@app.get("/api/circles/check-create-permission")
+async def check_create_circle_permission(
+    category: str = Query(...),
+    user_id: str = Query(...),
+    authorization: Optional[str] = Header(None)
+):
+    """Check if user can create a circle of specific category"""
+    auth_token = authorization[7:] if authorization and authorization.startswith("Bearer ") else None
+    permission = await check_circle_creation_permission(user_id, category, auth_token)
+    
+    return {
+        "success": True,
+        **permission
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
