@@ -384,6 +384,15 @@ const CircleDetail: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Chat Room Modal */}
+      {showChat && circleId && (
+        <ChatRoomList
+          circleId={circleId}
+          isOpen={showChat}
+          onClose={() => setShowChat(false)}
+        />
+      )}
     </div>
   );
 };
