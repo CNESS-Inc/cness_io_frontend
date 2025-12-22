@@ -350,6 +350,66 @@ async def check_resource_permission(user_id: str, circle_scope: str, auth_token:
         "circle_scope": circle_scope
     }
 
+async def check_circle_creation_permission(user_id: str, category: str, auth_token: Optional[str] = None) -> dict:
+    """Check if user can create a circle of a specific category"""
+    user_info = await get_user_level(user_id, auth_token)
+    user_level = user_info.get("level", "Guest")
+    
+    permissions = await get_role_permissions()
+    level_perms = permissions.get(user_level, permissions.get("Guest", {}))
+    
+    category_mapping = {
+        "profession": "can_create_circle_profession",
+        "interest": "can_create_circle_interest",
+        "living": "can_create_circle_living",
+        "news": "can_create_circle_news"
+    }
+    
+    perm_key = category_mapping.get(category, "can_create_circle_profession")
+    can_create = level_perms.get(perm_key, False)
+    
+    return {
+        "can_create": can_create,
+        "user_level": user_level,
+        "category": category,
+        "reason": f"{user_level} level {'can' if can_create else 'cannot'} create {category} circles"
+    }
+
+async def check_chat_permission(user_id: str, auth_token: Optional[str] = None) -> dict:
+    """Check if user can chat/create chatrooms"""
+    user_info = await get_user_level(user_id, auth_token)
+    user_level = user_info.get("level", "Guest")
+    
+    permissions = await get_role_permissions()
+    level_perms = permissions.get(user_level, permissions.get("Guest", {}))
+    
+    return {
+        "can_chat": level_perms.get("can_chat", False),
+        "can_create_chatroom": level_perms.get("can_create_chatroom", False),
+        "user_level": user_level
+    }
+
+async def create_notification(user_id: str, notification_type: str, title: str, message: str, data: dict = None):
+    """Create a notification for a user"""
+    notification = {
+        "id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "type": notification_type,
+        "title": title,
+        "message": message,
+        "data": data or {},
+        "read": False,
+        "created_at": datetime.utcnow()
+    }
+    await notifications_collection.insert_one(notification)
+    return notification
+
+async def extract_mentions(content: str) -> List[str]:
+    """Extract @mentions from content"""
+    import re
+    mentions = re.findall(r'@(\S+)', content)
+    return mentions
+
 async def get_professions_from_external_api(auth_token: Optional[str] = None):
     """Fetch professions from external CNESS API"""
     try:
