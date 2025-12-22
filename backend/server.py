@@ -61,7 +61,13 @@ DEFAULT_ROLE_PERMISSIONS = {
         "can_upload_resources_local": True,
         "can_upload_resources_national": False,
         "can_upload_resources_global": False,
-        "description": "Can post and upload resources in Local circles only"
+        "can_create_circle_profession": False,
+        "can_create_circle_interest": False,
+        "can_create_circle_living": True,
+        "can_create_circle_news": True,
+        "can_create_chatroom": True,
+        "can_chat": True,
+        "description": "Can post in Local circles, create Living/News circles, and chat"
     },
     "Inspired": {
         "can_post_local": True,
@@ -70,7 +76,13 @@ DEFAULT_ROLE_PERMISSIONS = {
         "can_upload_resources_local": True,
         "can_upload_resources_national": True,
         "can_upload_resources_global": False,
-        "description": "Can post and upload resources in Local and National circles"
+        "can_create_circle_profession": True,
+        "can_create_circle_interest": True,
+        "can_create_circle_living": True,
+        "can_create_circle_news": True,
+        "can_create_chatroom": True,
+        "can_chat": True,
+        "description": "Can post in Local and National circles, create all circle types"
     },
     "Leader": {
         "can_post_local": True,
@@ -79,7 +91,28 @@ DEFAULT_ROLE_PERMISSIONS = {
         "can_upload_resources_local": True,
         "can_upload_resources_national": True,
         "can_upload_resources_global": True,
-        "description": "Can post and upload resources in all circles"
+        "can_create_circle_profession": True,
+        "can_create_circle_interest": True,
+        "can_create_circle_living": True,
+        "can_create_circle_news": True,
+        "can_create_chatroom": True,
+        "can_chat": True,
+        "description": "Can post and upload resources in all circles, create all types"
+    },
+    "Guest": {
+        "can_post_local": False,
+        "can_post_national": False,
+        "can_post_global": False,
+        "can_upload_resources_local": False,
+        "can_upload_resources_national": False,
+        "can_upload_resources_global": False,
+        "can_create_circle_profession": False,
+        "can_create_circle_interest": False,
+        "can_create_circle_living": False,
+        "can_create_circle_news": False,
+        "can_create_chatroom": False,
+        "can_chat": False,
+        "description": "Can only view circles and join"
     }
 }
 
