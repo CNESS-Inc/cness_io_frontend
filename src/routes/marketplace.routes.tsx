@@ -8,6 +8,8 @@ import ComingSoon from "../pages/ComingSoon";
 // Buyer Pages - Lazy loaded
 const MarketplaceHome = lazy(() => import("../features/marketplace/buyer/pages/MarketplaceHome"));
 const Categories = lazy(() => import("../features/marketplace/buyer/pages/Categories"));
+const Curators = lazy(() => import("../features/marketplace/buyer/pages/Curators"));
+const CuratorsDetail = lazy(() => import("../features/marketplace/buyer/pages/CuratorsDetail.tsx"));
 const BuyerProductDetail = lazy(() => import("../pages/ComingSoon"));
 const BuyerCart = lazy(() => import("../pages/ComingSoon"));
 const BuyerCheckout = lazy(() => import("../pages/ComingSoon"));
@@ -42,6 +44,14 @@ export const marketplaceRoutes = {
     {
       path: "categories",
       element: <Categories />,
+    },
+        {
+      path: "curators",
+      element: <Curators />,
+    },
+    {
+      path: "curator/:id",
+      element: <CuratorsDetail />,
     },
     {
       path: "product/:id",
