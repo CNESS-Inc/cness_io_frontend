@@ -211,6 +211,15 @@ export const router = createBrowserRouter([
         path: "social",
         element: <Social />,
       },
+      // Public Circles routes (accessible without authentication)
+      {
+        path: "circles",
+        element: <CirclesHub />,
+      },
+      {
+        path: "circles/:circleId",
+        element: <CircleDetail />,
+      },
       {
         path: "dashboard",
         element: <DashboardLayout />, // ✅ now it's wrapped!
