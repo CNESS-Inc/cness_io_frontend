@@ -2078,7 +2078,7 @@ async def create_comment(
             user_id=mentioned_user,
             notification_type="mention",
             title="You were mentioned",
-            message=f"Someone mentioned you in a comment",
+            message="Someone mentioned you in a comment",
             data={
                 "post_id": post_id,
                 "comment_id": comment_id,
@@ -2439,7 +2439,7 @@ async def send_chat_message(
                 user_id=mentioned_user,
                 notification_type="chat_mention",
                 title="You were mentioned in chat",
-                message=f"Someone mentioned you in a chatroom",
+                message="Someone mentioned you in a chatroom",
                 data={
                     "chatroom_id": chatroom_id,
                     "message_id": message_id,
@@ -2684,7 +2684,7 @@ async def websocket_chat_endpoint(
                             user_id=mentioned_user,
                             notification_type="chat_mention",
                             title="You were mentioned in chat",
-                            message=f"Someone mentioned you in a chatroom",
+                            message="Someone mentioned you in a chatroom",
                             data={
                                 "chatroom_id": chatroom_id,
                                 "message_id": message_id,
