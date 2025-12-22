@@ -1495,20 +1495,7 @@ async def get_circles_feed(user_id: str = Query(...), page: int = 1, limit: int 
     
     return {"success": True, "posts": posts, "total": total}
 
-@app.post("/api/circles/posts/{post_id}/like")
-async def like_circle_post(post_id: str, user_id: str = Query(...)):
-    """Like a circle post"""
-    post = await circle_posts_collection.find_one({"id": post_id})
-    
-    if not post:
-        raise HTTPException(status_code=404, detail="Post not found")
-    
-    await circle_posts_collection.update_one(
-        {"id": post_id},
-        {"$inc": {"likes_count": 1}}
-    )
-    
-    return {"success": True, "message": "Post liked"}
+# Note: Post like toggle endpoint is defined later in POST LIKE/SHARE APIS section
 
 @app.delete("/api/circles/posts/{post_id}")
 async def delete_circle_post(post_id: str, user_id: str = Query(...)):
