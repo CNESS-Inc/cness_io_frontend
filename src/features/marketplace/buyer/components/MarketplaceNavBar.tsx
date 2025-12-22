@@ -1,22 +1,23 @@
 import home from "../../../../assets/house.svg";
+import { Link } from "react-router-dom";
 
 
 interface NavItem {
   label?: string;
   icon?: string;
   badge?: string;
-  
+  path: string;
 }
 
 export default function MarketplaceNavBar() {
 const navItems: NavItem[] = [
-  { icon: home },          // Home icon only
-  { label: "Categories" },
-  { label: "Sellers" },
-  { label: "Order History" },
-  { label: "My Library" },
-  { label: "Wishlist" },
-  { label: "Cart", badge: "05" },
+  { icon: home, path: "/dashboard/new-marketplace" }, // Home
+  { label: "Categories", path: "/dashboard/new-marketplace/categories" },
+  { label: "Sellers", path: "/dashboard/new-marketplace/sellers" },
+  { label: "Order History", path: "/dashboard/new-marketplace/orders" },
+  { label: "My Library", path: "/dashboard/new-marketplace/library" },
+  { label: "Wishlist", path: "/dashboard/new-marketplace/wishlist" },
+  { label: "Cart", badge: "05", path: "/dashboard/new-marketplace/cart" },
 ];
 
   return (
@@ -38,17 +39,19 @@ const navItems: NavItem[] = [
       "
     >
       {navItems.map((item, index) => (
-        <div
-          key={index}
-          className="
-            relative
-            flex items-center gap-2
-            h-[44px] sm:h-[50px]
-            px-2 sm:px-2.5
-            cursor-pointer
-            shrink-0
-          "
-        >
+      <Link
+  key={index}
+  to={item.path}
+  className="
+    relative
+    flex items-center gap-2
+    h-[44px] sm:h-[50px]
+    px-2 sm:px-2.5
+    cursor-pointer
+    shrink-0
+    hover:text-[#7076fe]
+  "
+>
           {item.icon && (
             <img
               src={item.icon}
@@ -93,7 +96,7 @@ const navItems: NavItem[] = [
               {item.badge}
             </span>
           )}
-        </div>
+       </Link>
       ))}
     </nav>
 
