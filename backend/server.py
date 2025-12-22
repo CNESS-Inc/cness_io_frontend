@@ -238,6 +238,28 @@ class RolePermissionUpdate(BaseModel):
     can_upload_resources_local: bool
     can_upload_resources_national: bool
     can_upload_resources_global: bool
+    can_create_circle_profession: Optional[bool] = None
+    can_create_circle_interest: Optional[bool] = None
+    can_create_circle_living: Optional[bool] = None
+    can_create_circle_news: Optional[bool] = None
+    can_create_chatroom: Optional[bool] = None
+    can_chat: Optional[bool] = None
+
+class CommentCreate(BaseModel):
+    content: str
+    parent_comment_id: Optional[str] = None  # For reply comments
+    mentions: Optional[List[str]] = []  # User IDs mentioned with @
+
+class CommentUpdate(BaseModel):
+    content: str
+
+class ChatRoomCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class ChatMessageCreate(BaseModel):
+    content: str
+    mentions: Optional[List[str]] = []
 
 # ============== HELPER FUNCTIONS ==============
 
