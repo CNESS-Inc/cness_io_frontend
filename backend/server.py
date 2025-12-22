@@ -35,6 +35,12 @@ circles_collection = db.circles
 circle_members_collection = db.circle_members
 circle_posts_collection = db.circle_posts
 circle_resources_collection = db.circle_resources
+circle_comments_collection = db.circle_comments
+circle_comment_likes_collection = db.circle_comment_likes
+circle_post_likes_collection = db.circle_post_likes
+circle_chatrooms_collection = db.circle_chatrooms
+circle_chat_messages_collection = db.circle_chat_messages
+notifications_collection = db.notifications
 admin_settings_collection = db.admin_settings
 admin_sessions_collection = db.admin_sessions
 
