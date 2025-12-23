@@ -422,6 +422,7 @@ export default function SellerDashboard() {
 
       closeModal();
       navigate("/dashboard/bestpractices");
+      setTags([]);
       setIsModalOpen(false);
     } catch (error: any) {
       console.error("Error creating best practice:", error);

@@ -2105,7 +2105,7 @@ export function BestPracticesSection({
               </div>
 
               <span
-                className="mt-2 font-opensans text-[14px] leading-[150%] text-[#667085] line-clamp-2"
+                className="my-2 font-opensans text-[14px] leading-[150%] text-[#667085] line-clamp-2"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(bp.description),
                 }}

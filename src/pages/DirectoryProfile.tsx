@@ -1149,7 +1149,7 @@ const DirectoryProfile = () => {
 
   return (
     <>
-      <main className="flex-1 md:p-4 md:p-6 space-y-4 md:space-y-6">
+      <main className="flex-1 md:p-4 space-y-4 md:space-y-6">
         {/* Profile Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* Business Profile Section */}
@@ -1263,9 +1263,9 @@ const DirectoryProfile = () => {
 
                 {/* Default profile icon */}
                 <FaUserCircle
-                  onClick={() =>
-                    navigate(`/dashboard/userprofile/${userProfile?.user_id}`)
-                  }
+                  // onClick={() =>
+                  //   navigate(`/dashboard/userprofile/${userProfile?.user_id}`)
+                  // }
                   className="w-[75px] h-[75px] rounded-full border-2 border-white text-gray-400 z-0 cursor-pointer"
                 />
 
@@ -1275,9 +1275,9 @@ const DirectoryProfile = () => {
                       src={userProfile.profile_picture}
                       alt="Profile"
                       className="w-[75px] h-[75px] rounded-full object-cover border-2 border-white z-10 absolute left-0 cursor-pointer"
-                      onClick={() =>
-                        navigate(`/dashboard/userprofile/${userProfile?.user_id}`)
-                      }
+                      // onClick={() =>
+                      //   navigate(`/dashboard/userprofile/${userProfile?.user_id}`)
+                      // }
                       onError={(e) => {
                         // hide broken image so the FaUserCircle icon shows instead
                         e.currentTarget.style.display = "none";
@@ -1287,7 +1287,7 @@ const DirectoryProfile = () => {
               </div>
 
               <div className="flex-1 text-center sm:text-left">
-                <Link to={`/dashboard/userprofile/${userProfile?.user_id}`} className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
+                <Link to={""} className="text-lg sm:text-xl font-[Poppins] font-semibold text-[#081021]">
                   {`${userProfile.first_name || ""} ${userProfile.last_name || ""
                     }`.trim() || "User Name"}
                 </Link>
