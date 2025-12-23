@@ -27,7 +27,7 @@ export default function ProductLabel({
       className="
         flex flex-col gap-3
         sm:flex-row sm:items-center sm:justify-between
-        mb-6
+        
       "
     >
       {/* LEFT: Icon + Title */}
@@ -37,7 +37,7 @@ export default function ProductLabel({
             className="
               w-9 h-9 sm:w-12 sm:h-12
               flex items-center justify-center
-              text-[#F07EFF]
+             
             "
           >
             {icon}

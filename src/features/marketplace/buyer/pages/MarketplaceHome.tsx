@@ -218,7 +218,7 @@ const visibleTrendingProducts = trendingProducts.slice(0, visibleCount);
       {/* ================= FEATURED PRODUCTS ================= */}
          <ProductLabel
         title="Featured Products"
-        icon={<Star size={21} />}
+        icon={<Star size={21} stroke="#F07EFF" />}
         currentPage={page}
         totalItems={48}
         itemsPerPage={6}

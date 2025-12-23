@@ -1,10 +1,19 @@
-import Search from './Search';
+import Search from '../Search';
+import DateFilter from '../Ui/DateFilter';
+import { useState } from "react";
 
 interface HeaderProps {
   orderCount: number;
 }
 
+const dateOptions = [
+  { label: "Past 3 months", value: "3m" },
+  { label: "Past 6 months", value: "6m" },
+  { label: "Past 1 year", value: "1y" },
+];
+
 export default function OrderHeader({ orderCount }: HeaderProps) {
+    const [range, setRange] = useState("3m");
   return (
     <div className="flex w-full pt-[80px] pr-0 pb-0 pl-[20px] gap-[20px] items-center shrink-0 flex-nowrap relative z-[1]">
       <div className="flex justify-between items-center grow shrink-0 basis-0 flex-nowrap relative z-[2]">
@@ -21,12 +30,11 @@ export default function OrderHeader({ orderCount }: HeaderProps) {
         </div>
         <div className="flex w-[447px] gap-[10px] items-center shrink-0 flex-nowrap relative z-[8]">
         <Search />
-          <div className="flex w-[172px] h-[38px] pt-[5px] pr-[20px] pb-[5px] pl-[20px] gap-[10px] justify-center items-center shrink-0 flex-nowrap bg-[#f3f4ff] rounded-[10px] relative z-[13]">
-            <span className="h-[21px] shrink-0 basis-auto font-['Poppins'] text-[14px] font-medium leading-[21px] text-[#102b6b] tracking-[-0.27px] relative text-left whitespace-nowrap z-[14]">
-              Past 3 months
-            </span>
-            <div className="w-[24px] h-[24px] shrink-0 bg-[url(https://codia-f2c.s3.us-west-1.amazonaws.com/image/2025-12-22/L4R8FeA4t5.png)] bg-cover bg-no-repeat relative overflow-hidden z-[15]" />
-          </div>
+  <DateFilter
+        options={dateOptions}
+        value={range}
+        onChange={setRange}
+      />
         </div>
       </div>
     </div>

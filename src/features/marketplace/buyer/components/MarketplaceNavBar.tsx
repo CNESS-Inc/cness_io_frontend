@@ -14,7 +14,7 @@ const navItems: NavItem[] = [
   { icon: home, path: "/dashboard/new-marketplace" }, // Home
   { label: "Categories", path: "/dashboard/new-marketplace/categories" },
   { label: "Sellers", path: "/dashboard/new-marketplace/sellers" },
-  { label: "Order History", path: "/dashboard/new-marketplace/orders" },
+  { label: "Order History", path: "/dashboard/new-marketplace/ordershistory" },
   { label: "My Library", path: "/dashboard/new-marketplace/library" },
   { label: "Wishlist", path: "/dashboard/new-marketplace/wishlist" },
   { label: "Cart", badge: "05", path: "/dashboard/new-marketplace/cart" },
