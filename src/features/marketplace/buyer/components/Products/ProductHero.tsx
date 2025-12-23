@@ -1,10 +1,10 @@
 import React from 'react';
 import { CategoryTag } from './CategoryTag';
 import { StarRating } from './StarRating';
-import { AuthorInfo } from './authorInfo';
 import  PriceDisplay  from './PriceDisplay';
 import { ActionButtons } from './ActionButtons';
 import Link from '../../../../../assets/link.svg';
+import { AuthorInfo } from './AuthorInfo';
 interface ProductHeroProps {
   product: {
     title: string;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AuthorInfo } from '../Products/authorInfo';
+import { AuthorInfo } from '../Products/AuthorInfo';
 
 interface RelatedProductCardProps {
   image: string;
