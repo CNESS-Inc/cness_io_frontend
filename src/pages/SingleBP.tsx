@@ -118,6 +118,18 @@ const SingleBP = () => {
   const [replyErrors, setReplyErrors] = useState<{ [key: string]: string }>({});
   const [animations, _setAnimations] = useState<any[]>([]);
   const [relatedBestPractices, setRelatedBestPractices] = useState<any[]>([]);
+  const [likedComments, setLikedComments] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [likedReplies, setLikedReplies] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+  const [commentLikeLoading, setCommentLikeLoading] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [replyLikeLoading, setReplyLikeLoading] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   // Loading states
   const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false);
@@ -494,9 +506,16 @@ const SingleBP = () => {
             <div className="flex items-center space-x-4 mt-4 text-xs text-gray-600 my-3">
               <button
                 onClick={() => handleCommentLike(comment.id, comment.post_id)}
-                className="flex items-center space-x-1 hover:text-gray-700"
+                disabled={commentLikeLoading[comment.id]}
+                className="flex items-center space-x-1 hover:text-gray-700 disabled:opacity-50"
               >
-                <HandThumbUpIcon className="w-6 h-6" />
+                <HandThumbUpIcon
+                  className={`w-6 h-6 ${
+                    likedComments[comment.id]
+                      ? "text-[#7077FE]"
+                      : "text-gray-600"
+                  }`}
+                />
                 <span className="text-[12px]">{comment.likes_count}</span>
               </button>
               <div className="h-4 border-l border-gray-300"></div>
@@ -518,10 +537,11 @@ const SingleBP = () => {
                   value={replyText}
                   onChange={(e) => handleReplyChange(e, comment.id)}
                   disabled={isReplyLoading[comment.id]}
-                  className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${isReplyLoading[comment.id]
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                    }`}
+                  className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${
+                    isReplyLoading[comment.id]
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
                 ></textarea>
 
                 {replyErrors[comment.id] && (
@@ -536,10 +556,11 @@ const SingleBP = () => {
                       handleReplySubmit(comment.id, comment.post_id)
                     }
                     disabled={isReplyLoading[comment.id]}
-                    className={`bg-linear-to-r from-purple-500 to-pink-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 ${isReplyLoading[comment.id]
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                      }`}
+                    className={`bg-linear-to-r from-purple-500 to-pink-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 ${
+                      isReplyLoading[comment.id]
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
                     style={{
                       background:
                         "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
@@ -557,10 +578,11 @@ const SingleBP = () => {
                   <button
                     onClick={() => setReplyingTo(null)}
                     disabled={isReplyLoading[comment.id]}
-                    className={`text-gray-500 px-3 py-1 rounded-full text-sm border border-gray-300 ${isReplyLoading[comment.id]
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                      }`}
+                    className={`text-gray-500 px-3 py-1 rounded-full text-sm border border-gray-300 ${
+                      isReplyLoading[comment.id]
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
                   >
                     Cancel
                   </button>
@@ -682,9 +704,16 @@ const SingleBP = () => {
                           comment.id
                         )
                       }
-                      className="flex items-center space-x-1 hover:text-gray-700"
+                      disabled={replyLikeLoading[reply.id]}
+                      className="flex items-center space-x-1 hover:text-gray-700 disabled:opacity-50"
                     >
-                      <HandThumbUpIcon className="w-5 h-5" />
+                      <HandThumbUpIcon
+                        className={`w-5 h-5 ${
+                          likedReplies[reply.id]
+                            ? "text-[#7077FE]"
+                            : "text-gray-600"
+                        }`}
+                      />
                       <span className="text-[12px]">{reply.likes_count}</span>
                     </button>
                   </div>
@@ -713,7 +742,22 @@ const SingleBP = () => {
     try {
       if (!id) throw new Error("Post ID is required");
       const res = await GetBestpracticesComment({ post_id: id });
-      setPostComment(res?.data?.data?.rows || []);
+      const comments = res?.data?.data?.rows || [];
+
+      const commentLikes: { [key: string]: boolean } = {};
+      const replyLikes: { [key: string]: boolean } = {};
+
+      comments.forEach((comment: any) => {
+        commentLikes[comment.id] = comment.is_liked || false;
+
+        comment.replies?.forEach((reply: any) => {
+          replyLikes[reply.id] = reply.is_liked || false;
+        });
+      });
+
+      setLikedComments(commentLikes);
+      setLikedReplies(replyLikes);
+      setPostComment(comments);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
@@ -846,32 +890,60 @@ const SingleBP = () => {
     }
   };
 
-  // NEW: Handle comment like
   const handleCommentLike = async (commentId: string, post_id: any) => {
     try {
-      // You'll need to create this API function
+      setCommentLikeLoading((prev) => ({ ...prev, [commentId]: true }));
+
       await BPCommentLike({ comment_id: commentId, post_id: post_id });
-      // Refresh comments to get updated like counts
+
+      setLikedComments((prev) => ({
+        ...prev,
+        [commentId]: !prev[commentId],
+      }));
+
       fetchComments();
     } catch (error) {
       console.error("Error liking comment:", error);
+      showToast({
+        message: "Failed to like comment",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setCommentLikeLoading((prev) => ({ ...prev, [commentId]: false }));
     }
   };
   const handleReplyCommentLike = async (
     commentId: string,
     post_id: any,
-    id: any
+    parentCommentId: any
   ) => {
     try {
-      // You'll need to create this API function
+      // Set loading state for this reply
+      setReplyLikeLoading((prev) => ({ ...prev, [commentId]: true }));
+
       await CreateBestpracticesCommentReplyLike({
         child_comment_id: commentId,
         post_id: post_id,
-        parent_comment_id: id,
+        parent_comment_id: parentCommentId,
       });
+
+      // Toggle the like status locally
+      setLikedReplies((prev) => ({
+        ...prev,
+        [commentId]: !prev[commentId],
+      }));
+
       fetchComments();
     } catch (error) {
-      console.error("Error liking comment:", error);
+      console.error("Error liking reply:", error);
+      showToast({
+        message: "Failed to like reply",
+        type: "error",
+        duration: 3000,
+      });
+    } finally {
+      setReplyLikeLoading((prev) => ({ ...prev, [commentId]: false }));
     }
   };
 
@@ -1100,7 +1172,7 @@ const SingleBP = () => {
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 mb-5 sm:mb-10 relative">
                 {/* Left Section - Post Info */}
                 <div className="col-span-12 xl:col-span-8 ">
-                  <div className="grid grid-cols-1 grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-0">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-0">
                     {/* Created By */}
                     <div className="flex items-center gap-3 py-2 relative">
                       <img
@@ -1153,13 +1225,15 @@ const SingleBP = () => {
                         data-comment-button
                         onClick={handleLike}
                         disabled={isAppreciateLoading}
-                        className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${isLiked
-                          ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
-                          : "border-[#7B78FE] text-dark hover:bg-gray-100"
-                          } ${isAppreciateLoading
+                        className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${
+                          isLiked
+                            ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
+                            : "border-[#7B78FE] text-dark hover:bg-gray-100"
+                        } ${
+                          isAppreciateLoading
                             ? "opacity-50 cursor-not-allowed"
                             : ""
-                          }`}
+                        }`}
                       >
                         {isAppreciateLoading ? (
                           <div className="w-4 h-4 border-2 border-[#7178FF] border-t-transparent rounded-full animate-spin"></div>
@@ -1201,13 +1275,15 @@ const SingleBP = () => {
                         data-comment-button
                         onClick={handleLike}
                         disabled={isAppreciateLoading}
-                        className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${isLiked
-                          ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
-                          : "border-[#7B78FE] text-dark hover:bg-gray-100"
-                          } ${isAppreciateLoading
+                        className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${
+                          isLiked
+                            ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
+                            : "border-[#7B78FE] text-dark hover:bg-gray-100"
+                        } ${
+                          isAppreciateLoading
                             ? "opacity-50 cursor-not-allowed"
                             : ""
-                          }`}
+                        }`}
                       >
                         {isAppreciateLoading ? (
                           <div className="w-4 h-4 border-2 border-[#7178FF] border-t-transparent rounded-full animate-spin"></div>
@@ -1230,8 +1306,9 @@ const SingleBP = () => {
                       <button
                         onClick={fetchSavedPost}
                         disabled={isSaveLoading}
-                        className={`flex items-center gap-2 text-black text-sm font-medium px-3 py-1.5 rounded-full hover:bg-gray-50 whitespace-nowrap ${isSaveLoading ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
+                        className={`flex items-center gap-2 text-black text-sm font-medium px-3 py-1.5 rounded-full hover:bg-gray-50 whitespace-nowrap ${
+                          isSaveLoading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                       >
                         {isSaveLoading ? (
                           <div className="w-4 h-4 border-2 border-[#D77CFF] border-t-transparent rounded-full animate-spin"></div>
@@ -1240,14 +1317,19 @@ const SingleBP = () => {
                         ) : (
                           <FaRegBookmark className="text-base text-[#D77CFF]" />
                         )}
-                        {isSaveLoading ? "Saving..." : isSaved ? "Saved" : "Save"}
+                        {isSaveLoading
+                          ? "Saving..."
+                          : isSaved
+                          ? "Saved"
+                          : "Save"}
                       </button>
 
                       <button
                         onClick={toggleFollowPost}
                         disabled={isFollowLoading}
-                        className={`text-white px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-full text-sm font-medium transition whitespace-nowrap ${isFollowLoading ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
+                        className={`text-white px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-full text-sm font-medium transition whitespace-nowrap ${
+                          isFollowLoading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                         style={{
                           background:
                             "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
@@ -1326,10 +1408,11 @@ const SingleBP = () => {
                         value={comment}
                         onChange={handleCommentChange}
                         disabled={isCommentLoading} // Disable textarea during loading
-                        className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${isCommentLoading
-                          ? "opacity-50 cursor-not-allowed"
-                          : ""
-                          }`}
+                        className={`w-full border-none focus:ring-0 focus:outline-none text-sm resize-none ${
+                          isCommentLoading
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }`}
                       ></textarea>
 
                       {commentError && (
@@ -1344,10 +1427,11 @@ const SingleBP = () => {
                         <button
                           onClick={handleCommentSubmit}
                           disabled={isCommentLoading}
-                          className={`bg-linear-to-r me-2 from-purple-500 to-pink-400 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-full text-sm flex items-center gap-2 ${isCommentLoading
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                            }`}
+                          className={`bg-linear-to-r me-2 from-purple-500 to-pink-400 text-white px-4 py-2.5 sm:px-5 sm:py-3 rounded-full text-sm flex items-center gap-2 ${
+                            isCommentLoading
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }`}
                           style={{
                             background:
                               "linear-gradient(97.01deg, #7077FE 7.84%, #F07EFF 106.58%)",
@@ -1420,7 +1504,8 @@ const SingleBP = () => {
                           className="flex gap-3 items-start p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer"
                           onClick={() => {
                             navigate(
-                              `/dashboard/bestpractices/${practice.id
+                              `/dashboard/bestpractices/${
+                                practice.id
                               }/${slugify(practice.title)}`
                             );
                           }}

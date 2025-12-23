@@ -10,7 +10,7 @@ import type { BreadcrumbItem } from "../components/Ui/MarketBreadCrumbs";
 
 
 const MOCK_PRODUCT = {
- 
+
   title: " Dance of Siddhars",
   description:
     "Awaken the primal desire to unite! Call of ancientMaster of Light within ourselves. Let's begin theinner journey through the sacred resonance setting alight the inner lamp of the root chakra! The Magical moment of the awakened moment of NOW!",
@@ -34,10 +34,10 @@ const MOCK_PRODUCT = {
 };
 
 export default function MarketProductDetail() {
-//const { id } = useParams<{ id: string }>();
+  //const { id } = useParams<{ id: string }>();
   const product = MOCK_PRODUCT;
 
- const breadcrumbs: BreadcrumbItem[] = [
+  const breadcrumbs: BreadcrumbItem[] = [
     { label: "Categories", href: "/dashboard/new-marketplace/categories" },
     { label: product.categories[0].label },
     { label: product.title },
@@ -46,12 +46,12 @@ export default function MarketProductDetail() {
   return (
     <>
       <div className="w-full flex flex-col gap-[16px] pt-[72px]">
-<div className="px-[20px] py-[12px]  bg-white">
-        <MarketBreadcrumbs items={breadcrumbs} />
-      </div>
+        <div className="px-[20px] py-[12px]  bg-white">
+          <MarketBreadcrumbs items={breadcrumbs} />
+        </div>
 
-      <ProductHero product={MOCK_PRODUCT} />
-       <div className="flex flex-col items-start self-stretch shrink-0 flex-nowrap relative">
+        <ProductHero product={MOCK_PRODUCT} />
+        <div className="flex flex-col items-start self-stretch shrink-0 flex-nowrap relative">
           <div className="flex pt-0 pr-[20px] pb-0 pl-[20px] flex-col gap-[10px] items-start self-stretch shrink-0 flex-nowrap relative">
             <div className="flex pt-[20px] pr-0 pb-[20px] pl-0 flex-col gap-[33px] justify-center items-start self-stretch shrink-0 flex-nowrap rounded-[24px] relative">
               <div className="flex gap-[20px] items-start self-stretch shrink-0 flex-nowrap relative">
@@ -64,13 +64,13 @@ export default function MarketProductDetail() {
           </div>
         </div>
 
-      
-    </div>
-<RelatedProducts />
- <TestimonialSection />
-  <Footer />
 
- </>
+      </div>
+      <RelatedProducts />
+      <TestimonialSection />
+      <Footer />
+
+    </>
 
   );
 }

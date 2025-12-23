@@ -618,6 +618,7 @@ const Managebestpractices = () => {
 
       closeCreateModal();
       await fetchMineBestPractices();
+      setTags([]);
     } catch (error: any) {
       console.error("Error creating best practice:", error);
       showToast({
