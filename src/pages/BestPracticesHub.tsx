@@ -690,6 +690,7 @@ export default function BestPracticesHub() {
       // Refetch both sections after creating new practice
       fetchBestPracticesByProfession(1, "", "");
       fetchBestPracticesByInterest(1, "", "");
+      setTags([]);
       setActiveModal(null);
     } catch (error: any) {
       console.error("Error creating best practice:", error);

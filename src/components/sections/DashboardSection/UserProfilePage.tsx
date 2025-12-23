@@ -2969,6 +2969,7 @@ if (isoCountry === "US") {
                             );
                             handleFormChange("contact");
                           }}
+                          maxLength={11}
                           placeholder="Enter postal code"
                           className={`w-full px-3 sm:px-4 py-2 sm:py-3 border h-11 sm:h-[46px] bg-white ${
                             contactInfoForm.formState.errors.postalCode

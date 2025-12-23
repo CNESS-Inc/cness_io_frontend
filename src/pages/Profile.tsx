@@ -753,6 +753,13 @@ export default function Profile() {
       {/* Content */}
       <div className="flex-1 py-4 sm:py-4">
         {activeTab === "Conscious Acts" && (
+          (userPosts.length === 0 ? (
+            // Empty state without any button
+            <div className="border border-dashed border-[#C4B5FD] rounded-xl bg-[#F8F6FF] py-8 sm:py-12 flex items-center justify-center">
+              <p className="text-sm text-gray-500">No Post yet</p>
+            </div>
+          ) : (
+
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
               {userPosts.length ? (
@@ -806,6 +813,8 @@ export default function Profile() {
               </div>
             )}
           </>
+          ))
+
         )}
         {selectedPost && (
           /*<PostPopup
@@ -865,7 +874,7 @@ export default function Profile() {
           (collectionItems.length === 0 ? (
             // Empty state without any button
             <div className="border border-dashed border-[#C4B5FD] rounded-xl bg-[#F8F6FF] py-8 sm:py-12 flex items-center justify-center">
-              <p className="text-sm text-gray-500">No collections yet</p>
+              <p className="text-sm text-gray-500">No Collections yet</p>
             </div>
           ) : (
             // Collections exist: header + list
@@ -929,6 +938,12 @@ export default function Profile() {
           ))}
 
         {activeTab === "Inspiration Reels" && (
+           (userReels.length === 0 ? (
+            // Empty state without any button
+            <div className="border border-dashed border-[#C4B5FD] rounded-xl bg-[#F8F6FF] py-8 sm:py-12 flex items-center justify-center">
+              <p className="text-sm text-gray-500">No Reels yet</p>
+            </div>
+          ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
               {userReels.length ? (
@@ -982,6 +997,7 @@ export default function Profile() {
               </div>
             )}
           </>
+          ))
         )}
 
         {activeTab === "Connections" &&
@@ -1004,8 +1020,8 @@ export default function Profile() {
               onUnfriend={(id) => unFriendUser(id)}
             />
           ) : (
-            <div className="text-gray-400 text-center py-16">
-              No Connections yet.
+            <div className="border border-dashed border-[#C4B5FD] rounded-xl bg-[#F8F6FF] py-8 sm:py-12 flex items-center justify-center">
+              <p className="text-sm text-gray-500">No Connection yet</p>
             </div>
           ))}
         {activeTab === "About" && (

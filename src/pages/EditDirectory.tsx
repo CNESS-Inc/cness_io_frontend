@@ -3045,7 +3045,7 @@ const onSubmit = async (data: DirectoryFormData) => {
             className="bg-white shadow-sm rounded-full px-5 py-3 flex items-center justify-center gap-2 w-full sm:w-auto"
           >
             <span className="text-[#081021] font-Rubik leading-[16.59px] text-sm sm:text-base">
-              Cancel
+              Clear
             </span>
           </button>
 
