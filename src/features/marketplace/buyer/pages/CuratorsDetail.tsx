@@ -3,8 +3,6 @@ import { useState } from "react";
 import { Flame } from "lucide-react";
 import Testimonial from "../components/Testimonial";
 import Footer from "../components/Footer";
-import Filter from "../components/Filter";
-import Responsivefiletr from "../components/Ui/Responsivefilter";
 import LoadMoreButton from "../components/Ui/LoadmoreButton";
 import SingleSeller from "../components/SingleSeller";
 import SellerInfo from "../components/SellerInfo";
@@ -15,6 +13,8 @@ import wbinar from "../../../../assets/webinarimg.jpg";
 import nandhiji from "../../../../assets/nandhiji.svg";
 import TrendingTabs from "../components/Trendingtabs";
 import SellerProductCard from "../components/SellerProductCard";
+import ReviewsSection from "../components/Products/ReviewsSection";
+import RelatedProducts from "../components/Products/RelatedProducts";
 
 interface TrendingProduct {
     id: number;
@@ -28,7 +28,7 @@ interface TrendingProduct {
     reviews: number;
     image: string;
     logo: string;
-    creator:boolean;
+    creator: boolean;
 }
 
 
@@ -57,7 +57,7 @@ const trendingProducts: TrendingProduct[] = [
         reviews: 70,
         image: happy,
         logo: nandhiji,
-        creator:true
+        creator: true
     },
     {
         id: 2,
@@ -71,7 +71,7 @@ const trendingProducts: TrendingProduct[] = [
         reviews: 97,
         image: whycness,
         logo: nandhiji,
-        creator:true
+        creator: true
     },
     {
         id: 3,
@@ -85,7 +85,7 @@ const trendingProducts: TrendingProduct[] = [
         reviews: 97,
         image: wbinar,
         logo: nandhiji,
-        creator:true
+        creator: true
     },
     {
         id: 4,
@@ -99,7 +99,7 @@ const trendingProducts: TrendingProduct[] = [
         reviews: 97,
         image: wbinar,
         logo: nandhiji,
-        creator:true
+        creator: true
     },
 
     {
@@ -114,7 +114,7 @@ const trendingProducts: TrendingProduct[] = [
         reviews: 97,
         image: happy,
         logo: nandhiji,
-        creator:true
+        creator: true
     },
     {
         id: 1,
@@ -128,7 +128,7 @@ const trendingProducts: TrendingProduct[] = [
         reviews: 97,
         image: happy,
         logo: nandhiji,
-        creator:true
+        creator: true
     },
 ];
 
@@ -169,20 +169,9 @@ export default function CuratorsDetail() {
             </div>
 
             {/* ================= Trending PRODUCTS ================= */}
-
-
-
-
-
-            {/* Mobile Filter (Hamburger + Drawer) */}
-            <div className="px-4 lg:hidden mt-3">
-                <Responsivefiletr title="Filters">
-                    <Filter />
-                </Responsivefiletr>
-            </div>
             <div>
-                <div className="flex mt-3">
-                    <div className="flex-1 mb-3">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-3">
+                    <div className="flex-1 mb-3 lg:col-span-2">
                         <SellerInfo />
 
                         <TrendingTabs
@@ -196,7 +185,6 @@ export default function CuratorsDetail() {
                             activeTab={activeTab}
                             onTabChange={setActiveTab}
                         />
-
                         <div className="flex-1 mt-4.5">
 
                             {activeTab === "trending" && (
@@ -220,15 +208,16 @@ export default function CuratorsDetail() {
 
 
                         </div>
-
-
                     </div>
-
-                    <div className="hidden lg:block w-[280px]">
-                        <Filter />
+                    <div className="lg:col-span-1">
+                        <ReviewsSection />
                     </div>
                 </div>
             </div>
+
+
+            <RelatedProducts />
+
 
             { /* ================= Testimonial ================= */}
 
