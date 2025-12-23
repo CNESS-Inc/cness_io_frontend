@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 import LoadMoreButton from "../components/Ui/LoadmoreButton";
 import SingleSeller from "../components/SingleSeller";
 import SellerInfo from "../components/SellerInfo";
-import type { ProductCategory } from "../components/ProductCard";   
+import type { ProductCategory } from "../components/ProductCard";
 import happy from "../../../../assets/happy.svg";
 import whycness from "../../../../assets/whycness.jpg";
 import wbinar from "../../../../assets/webinarimg.jpg";
@@ -156,7 +156,7 @@ export default function CuratorsDetail() {
 
             </section>
 
-            <div className="px-[20px] py-[12px] mt-20 bg-white">
+            <div className="w-full sm:px-[20px] mt-18">
                 <MarketBreadcrumbs items={breadcrumbs} />
             </div>
 
