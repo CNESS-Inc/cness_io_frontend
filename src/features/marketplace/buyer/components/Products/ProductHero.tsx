@@ -2,7 +2,7 @@ import React from 'react';
 import { CategoryTag } from './CategoryTag';
 import { StarRating } from './StarRating';
 import { AuthorInfo } from './authorInfo';
-import { PriceDisplay } from './PriceDisplay';
+import  PriceDisplay  from './PriceDisplay';
 import { ActionButtons } from './ActionButtons';
 import Link from '../../../../../assets/link.svg';
 interface ProductHeroProps {
@@ -26,7 +26,7 @@ interface ProductHeroProps {
 
 export const ProductHero: React.FC<ProductHeroProps> = ({ product }) => {
   return (
-    <div className="w-full pt-20 px-0 sm:px-0 lg:px-0">
+    <div className="w-full  px-0 sm:px-0 lg:px-0">
   <div className="
     relative
     flex flex-col lg:flex-row

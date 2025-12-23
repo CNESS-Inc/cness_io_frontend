@@ -6,8 +6,11 @@ interface PriceDisplayProps {
   discount: string;
 }
 
-export const PriceDisplay: React.FC<PriceDisplayProps> = ({ originalPrice, currentPrice, discount }) => {
-  return (
+const PriceDisplay: React.FC<PriceDisplayProps> = ({
+  originalPrice,
+  currentPrice,
+  discount,
+}) => {  return (
     <div className="flex flex-col gap-[10px] justify-center items-start grow shrink-0 basis-0 flex-nowrap relative">
       <div className="flex flex-col gap-[3px] items-start shrink-0 flex-nowrap relative">
         <div className="flex gap-[14px] justify-end items-center shrink-0 flex-nowrap relative">
@@ -27,3 +30,4 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({ originalPrice, curre
     </div>
   );
 };
+export default PriceDisplay;

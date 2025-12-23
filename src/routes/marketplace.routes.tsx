@@ -3,6 +3,7 @@ import ComingSoon from "../pages/ComingSoon";
 
 // Layout components (create these if needed)
  import MarketplaceLayout from "../features/marketplace/shared/layout/Marketplacelayout";
+//import OrderHistory from "../features/marketplace/buyer/pages/OrderHistory";
 // import SellerLayout from "../layout/Marketplace/SellerLayout";
 
 // Buyer Pages - Lazy loaded
@@ -11,7 +12,7 @@ const MarketplaceCategories = lazy(() => import("../features/marketplace/buyer/p
 const MarketProductDetail = lazy(() => import("../features/marketplace/buyer/pages/MarketProductDetail"));
 const BuyerCart = lazy(() => import("../pages/ComingSoon"));
 const BuyerCheckout = lazy(() => import("../pages/ComingSoon"));
-const BuyerOrders = lazy(() => import("../pages/ComingSoon"));
+const OrderHistory = lazy(() => import("../features/marketplace/buyer/pages/OrderHistory"));
 
 // Seller Pages - Lazy loaded (replace with your actual page paths)
 const SellerDashboard = lazy(() => import("../pages/ComingSoon"));
@@ -56,8 +57,8 @@ export const marketplaceRoutes = {
       element: <BuyerCheckout />,
     },
     {
-      path: "orders",
-      element: <BuyerOrders />,
+      path: "ordershistory",
+      element: <OrderHistory />,
     },
     {
       path: "wishlist",

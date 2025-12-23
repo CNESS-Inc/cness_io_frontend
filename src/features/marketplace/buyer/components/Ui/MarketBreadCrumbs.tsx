@@ -5,13 +5,13 @@ export interface BreadcrumbItem {
   href?: string;
 }
 
-export interface BreadcrumbProps {
+interface BreadcrumbProps {
   items: BreadcrumbItem[];
 }
 
-const MarketBreadcrumbs: React.FC<BreadcrumbProps> = ({ items }) => {
+export default function MarketBreadcrumbs({ items }: BreadcrumbProps) {
   return (
-    <nav className="flex items-center gap-[8px] text-[13px] text-[#6b7280]">
+    <nav className="flex items-center gap-[8px] text-[13px] text-[#8D8D8D]">
       {items.map((item, index) => (
         <div key={index} className="flex items-center gap-[8px]">
           {item.href ? (
@@ -34,6 +34,4 @@ const MarketBreadcrumbs: React.FC<BreadcrumbProps> = ({ items }) => {
       ))}
     </nav>
   );
-};
-
-export default MarketBreadcrumbs;
+}

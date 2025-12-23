@@ -5,13 +5,13 @@ import ReviewsSection from "../components/Products/ReviewsSection";
 import RelatedProducts from "../components/Products/RelatedProducts";
 import TestimonialSection from "../components/Testimonial";
 import Footer from "../components/Footer";
-import MarketBreadcrumb from "../components/Ui/MarketBreadCrumbs";
+import MarketBreadcrumbs from "../components/Ui/MarketBreadCrumbs";
 import type { BreadcrumbItem } from "../components/Ui/MarketBreadCrumbs";
 
 
 const MOCK_PRODUCT = {
  
-  title: "Cosmic Dance of Siddhars",
+  title: " Dance of Siddhars",
   description:
     "Awaken the primal desire to unite! Call of ancientMaster of Light within ourselves. Let's begin theinner journey through the sacred resonance setting alight the inner lamp of the root chakra! The Magical moment of the awakened moment of NOW!",
   image:
@@ -45,9 +45,9 @@ export default function MarketProductDetail() {
 
   return (
     <>
-    <div className="w-full flex flex-col gap-[16px]">
-     <div className="px-[20px] pt-[16px]">
-        <MarketBreadcrumb items={breadcrumbs} />
+      <div className="w-full flex flex-col gap-[16px] pt-[72px]">
+<div className="px-[20px] py-[12px]  bg-white">
+        <MarketBreadcrumbs items={breadcrumbs} />
       </div>
 
       <ProductHero product={MOCK_PRODUCT} />

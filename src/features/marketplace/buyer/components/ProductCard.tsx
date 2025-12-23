@@ -12,6 +12,7 @@ import {
   GraduationCap,Star,MessageSquareMore,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 /* ---------------- TYPES ---------------- */
 
@@ -24,6 +25,7 @@ export type ProductCategory =
   | "Video";
 
 interface ProductCardProps {
+    id: number;
   title: string;
   price: number;
   originalPrice?: number;
@@ -50,7 +52,10 @@ const categoryIcons: Record<ProductCategory, ReactNode> = {
 /* ---------------- COMPONENT ---------------- */
 
 export default function ProductCard(props: ProductCardProps) {
+
+  
   const {
+    id,
     title,
     price,
     originalPrice,
@@ -64,6 +69,11 @@ export default function ProductCard(props: ProductCardProps) {
   } = props;
 
   return (
+
+    <Link
+    to={`/dashboard/new-marketplace/categories/product/${id}`}
+    className="block"
+  >
     <div
       className="
         w-full
@@ -208,5 +218,6 @@ export default function ProductCard(props: ProductCardProps) {
         </div>
       </div>
     </div>
+    </Link>
   );
 }
