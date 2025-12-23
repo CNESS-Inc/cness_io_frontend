@@ -1,4 +1,3 @@
-import MoodSelector from "../components/Moodselector";
 import { useState } from "react";
 import { Flame } from "lucide-react";
 import Testimonial from "../components/Testimonial";
@@ -6,7 +5,7 @@ import Footer from "../components/Footer";
 import LoadMoreButton from "../components/Ui/LoadmoreButton";
 import SingleSeller from "../components/SingleSeller";
 import SellerInfo from "../components/SellerInfo";
-import type { ProductCategory } from "../components/ProductCard";
+import type { ProductCategory } from "../components/ProductCard";   
 import happy from "../../../../assets/happy.svg";
 import whycness from "../../../../assets/whycness.jpg";
 import wbinar from "../../../../assets/webinarimg.jpg";
@@ -15,6 +14,7 @@ import TrendingTabs from "../components/Trendingtabs";
 import SellerProductCard from "../components/SellerProductCard";
 import ReviewsSection from "../components/Products/ReviewsSection";
 import RelatedProducts from "../components/Products/RelatedProducts";
+import MarketBreadcrumbs, { type BreadcrumbItem } from "../components/Ui/MarketBreadCrumbs";
 
 interface TrendingProduct {
     id: number;
@@ -141,7 +141,10 @@ export default function CuratorsDetail() {
     const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
     const visibleTrendingProducts = trendingProducts.slice(0, visibleCount);
 
-
+    const breadcrumbs: BreadcrumbItem[] = [
+        { label: "Sellers", href: "/dashboard/new-marketplace/curators" },
+        { label: Seller[0].title },
+    ];
     return (
         <div className="w-full flex flex-col  relative px-3 sm:px-0">
             {/* ================= MOOD SELECTOR ================= */}
@@ -153,9 +156,9 @@ export default function CuratorsDetail() {
 
             </section>
 
-            <section className="w-full sm:px-[20px] mt-18">
-                <MoodSelector />
-            </section>
+            <div className="px-[20px] py-[12px] mt-20 bg-white">
+                <MarketBreadcrumbs items={breadcrumbs} />
+            </div>
 
             <div className="mt-1 sm:mt-2">
                 <div className="
