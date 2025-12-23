@@ -37,32 +37,49 @@ export default function CategoryGrid() {
         "
       >
         {categories.map((category) => (
-          <div
-            key={category.name}
-            className="
-              h-[140px]
-              rounded-[15px]
-              bg-gradient-to-b from-[#FFFFFF] to-[#F1F3FF]
-              flex
-              flex-col
-              items-center
-              justify-center
-              gap-[12px]
-              cursor-pointer
-              transition-all
-              hover:border hover:border-[#6366f1]
-              hover:-translate-y-[2px]
-            "
-          >
-            <img
-              src={category.icon}
-              alt={category.name}
-              className="w-[34px] h-[34px]"
-            />
+        <div
+  key={category.name}
+  className="
+    group
+    h-[140px]
+    rounded-[15px]
+    bg-gradient-to-b from-[#FFFFFF] to-[#F1F3FF]
+    flex flex-col items-center justify-center
+    gap-[12px]
+    cursor-pointer
+    transition-all duration-300
+    hover:border hover:border-[#6366f1]
+    hover:bg-gradient-to-b
+    hover:from-[#7077FE]
+    hover:to-[#424ADC]
+    hover:-translate-y-[2px]
+  "
+><img
+  src={category.icon}
+  alt={category.name}
+  className="
+    w-[34px] h-[34px]
+    transition-all duration-300
+    group-hover:brightness-0
+    group-hover:invert
+  "
+/>
 
-            <span className="font-[poppins] text-[12px] font-medium text-[#080f20] text-center leading-[16px] px-[6px]">
-              {category.name}
-            </span>
+            <span
+  className="
+    font-[poppins]
+    text-[12px]
+    font-medium
+    text-[#080f20]
+    text-center
+    leading-[16px]
+    px-[6px]
+    transition-colors duration-300
+    group-hover:text-white
+  "
+>
+  {category.name}
+</span>
           </div>
         ))}
       </div>
