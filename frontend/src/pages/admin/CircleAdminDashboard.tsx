@@ -724,6 +724,7 @@ const SettingsTab: React.FC = () => {
     if (!selected) return;
     
     const id = selected._id || selected.id;
+    const name = selected.name || selected.interestName || '';
     
     setGeneratingGlobal(true);
     setGlobalResult(null);
@@ -733,6 +734,16 @@ const SettingsTab: React.FC = () => {
         profession_id: type === 'profession' ? id : null,
         interest_id: type === 'interest' ? id : null
       });
+      
+      // Show success modal
+      setModalConfig({
+        type: 'success',
+        title: 'Circle Created Successfully!',
+        message: `Global ${type} circle for "${name}" has been created.`,
+        details: response.data.message
+      });
+      setShowModal(true);
+      
       setGlobalResult(response.data);
       fetchGlobalCirclesCount();
       if (type === 'profession') {
@@ -743,7 +754,17 @@ const SettingsTab: React.FC = () => {
         setInterestSearch('');
       }
     } catch (error: any) {
-      setGlobalResult({ error: error.response?.data?.detail || 'Failed to create global circle' });
+      const errorMsg = error.response?.data?.detail || 'Failed to create global circle';
+      
+      // Show error modal
+      setModalConfig({
+        type: 'error',
+        title: 'Failed to Create Circle',
+        message: errorMsg
+      });
+      setShowModal(true);
+      
+      setGlobalResult({ error: errorMsg });
     }
     setGeneratingGlobal(false);
   };
