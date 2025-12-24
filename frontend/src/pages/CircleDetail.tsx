@@ -271,6 +271,17 @@ const CircleDetail: React.FC = () => {
                   </>
                 )}
               </button>
+              
+              {/* Join Error Message */}
+              {joinError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 max-w-xs">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-red-700">{joinError}</p>
+                  </div>
+                </div>
+              )}
+              
               <div className="flex gap-2">
                 <button className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50">
                   <Share2 className="w-5 h-5 text-gray-500" />
