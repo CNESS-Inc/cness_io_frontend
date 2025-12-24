@@ -784,10 +784,32 @@ const SettingsTab: React.FC = () => {
     setGlobalResult(null);
     try {
       const response = await axios.post('/api/circles/generate/all-global', { type });
+      
+      // Show success modal
+      setModalConfig({
+        type: 'success',
+        title: 'Bulk Generation Complete!',
+        message: response.data.message || `Successfully generated ${type} circles.`,
+        details: response.data.created_count !== undefined 
+          ? `Created ${response.data.created_count} new circles` 
+          : undefined
+      });
+      setShowModal(true);
+      
       setGlobalResult(response.data);
       fetchGlobalCirclesCount();
     } catch (error: any) {
-      setGlobalResult({ error: error.response?.data?.detail || 'Failed to generate global circles' });
+      const errorMsg = error.response?.data?.detail || 'Failed to generate global circles';
+      
+      // Show error modal
+      setModalConfig({
+        type: 'error',
+        title: 'Bulk Generation Failed',
+        message: errorMsg
+      });
+      setShowModal(true);
+      
+      setGlobalResult({ error: errorMsg });
     }
     setGeneratingGlobal(false);
   };
@@ -805,6 +827,18 @@ const SettingsTab: React.FC = () => {
           ...createOptions
         }
       );
+      
+      // Show success modal
+      setModalConfig({
+        type: 'success',
+        title: 'Circles Generated Successfully!',
+        message: response.data.message || `Circles for ${selectedCountry} have been created.`,
+        details: response.data.created_count !== undefined 
+          ? `Created ${response.data.created_count} circles` 
+          : undefined
+      });
+      setShowModal(true);
+      
       setGenerationResult(response.data);
       fetchCountries();
     } catch (error: any) {
