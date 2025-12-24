@@ -4,6 +4,8 @@ import ComingSoon from "../pages/ComingSoon";
 // Layout components (create these if needed)
  import MarketplaceLayout from "../features/marketplace/shared/layout/Marketplacelayout";
 import Recommendation from "../features/marketplace/buyer/pages/Recommendation";
+import PaymentSuccess from "../features/marketplace/buyer/pages/PaymentSuccess.tsx";
+import PaymentFailed from "../features/marketplace/buyer/pages/PaymentFail.tsx";
 //import OrderHistory from "../features/marketplace/buyer/pages/OrderHistory";
 // import SellerLayout from "../layout/Marketplace/SellerLayout";
 
@@ -85,6 +87,14 @@ export const marketplaceRoutes = {
     {
       path:"recommendation",
        element: <Recommendation />,
+    },
+    {
+      path :"payment-success",
+      element: <PaymentSuccess />,
+    },
+    {
+      path :"payment-fail",
+      element: <PaymentFailed />,
     },
 
     // ========================================
