@@ -1042,9 +1042,13 @@ async def get_circles(
     if interest_id:
         query["interest_id"] = interest_id
     if search:
+        # Search in name, description, profession_name, and interest_name
         query["$or"] = [
             {"name": {"$regex": search, "$options": "i"}},
-            {"description": {"$regex": search, "$options": "i"}}
+            {"description": {"$regex": search, "$options": "i"}},
+            {"profession_name": {"$regex": search, "$options": "i"}},
+            {"interest_name": {"$regex": search, "$options": "i"}},
+            {"intention": {"$regex": search, "$options": "i"}}
         ]
     
     sort_options = {
