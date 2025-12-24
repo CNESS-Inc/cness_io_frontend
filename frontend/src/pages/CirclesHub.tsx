@@ -31,6 +31,7 @@ const CirclesHub: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
   const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [userProvince, setUserProvince] = useState<string | null>(null);
   const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
   const [selectedInterest, setSelectedInterest] = useState<Interest | null>(null);
 
