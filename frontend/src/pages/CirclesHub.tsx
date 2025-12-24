@@ -6,6 +6,17 @@ import CircleCard from '../components/Circles/CircleCard';
 import FeaturedCarousel from '../components/Circles/FeaturedCarousel';
 import CircleFilters from '../components/Circles/CircleFilters';
 import CreateCircleModal from '../components/Circles/CreateCircleModal';
+import ProfessionInterestFilter from '../components/Circles/ProfessionInterestFilter';
+
+interface Profession {
+  _id: string;
+  name: string;
+}
+
+interface Interest {
+  id: string;
+  name: string;
+}
 
 const CirclesHub: React.FC = () => {
   const [circles, setCircles] = useState<Circle[]>([]);
@@ -20,6 +31,8 @@ const CirclesHub: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
   const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [selectedProfession, setSelectedProfession] = useState<Profession | null>(null);
+  const [selectedInterest, setSelectedInterest] = useState<Interest | null>(null);
 
   const fetchCircles = async () => {
     setLoading(true);
@@ -36,6 +49,18 @@ const CirclesHub: React.FC = () => {
       // Add country filter when national scope is selected
       if (selectedScope === 'national' && userCountry) {
         params.country = userCountry;
+      }
+      
+      // Add profession filter
+      if (selectedProfession) {
+        params.profession_id = selectedProfession._id;
+        params.category = 'profession';
+      }
+      
+      // Add interest filter
+      if (selectedInterest) {
+        params.interest_id = selectedInterest.id;
+        params.category = 'interest';
       }
 
       const [circlesRes, featuredRes, userCirclesRes] = await Promise.all([
