@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, SlidersHorizontal, Globe, Flag, MapPin, Briefcase, Heart, Flame, Newspaper } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, SlidersHorizontal, Globe, Flag, MapPin, Briefcase, Heart, Flame, Newspaper, Loader2 } from 'lucide-react';
 
 interface CircleFiltersProps {
   selectedScope: string | null;
@@ -10,6 +10,8 @@ interface CircleFiltersProps {
   setSearchQuery: (query: string) => void;
   sortBy: string;
   setSortBy: (sort: string) => void;
+  userCountry?: string;
+  onCountryDetected?: (country: string) => void;
 }
 
 const CircleFilters: React.FC<CircleFiltersProps> = ({
@@ -21,7 +23,12 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
   setSearchQuery,
   sortBy,
   setSortBy,
+  userCountry,
+  onCountryDetected,
 }) => {
+  const [detectingCountry, setDetectingCountry] = useState(false);
+  const [detectedCountry, setDetectedCountry] = useState<string | null>(userCountry || null);
+
   const scopes = [
     { id: 'local', label: 'Local', icon: MapPin, color: 'blue' },
     { id: 'national', label: 'National', icon: Flag, color: 'purple' },
@@ -51,6 +58,57 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
     return 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300';
   };
 
+  // Detect country from IP when National is clicked
+  const detectCountryFromIP = async () => {
+    if (detectedCountry) return detectedCountry;
+    
+    setDetectingCountry(true);
+    try {
+      // Use a free IP geolocation API
+      const response = await fetch('https://ipapi.co/json/');
+      const data = await response.json();
+      const country = data.country_name || data.country;
+      
+      if (country) {
+        setDetectedCountry(country);
+        onCountryDetected?.(country);
+        return country;
+      }
+    } catch (error) {
+      console.error('Error detecting country:', error);
+      // Fallback to a secondary API
+      try {
+        const response = await fetch('https://ip-api.com/json/');
+        const data = await response.json();
+        const country = data.country;
+        if (country) {
+          setDetectedCountry(country);
+          onCountryDetected?.(country);
+          return country;
+        }
+      } catch (e) {
+        console.error('Fallback country detection failed:', e);
+      }
+    }
+    setDetectingCountry(false);
+    return null;
+  };
+
+  const handleScopeClick = async (scopeId: string) => {
+    if (selectedScope === scopeId) {
+      setSelectedScope(null);
+      return;
+    }
+
+    if (scopeId === 'national') {
+      // Detect country first if not already detected
+      const country = await detectCountryFromIP();
+      setDetectingCountry(false);
+    }
+
+    setSelectedScope(scopeId);
+  };
+
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-6">
       {/* Top Row: Search and Sort */}
@@ -60,7 +118,7 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Search circles..."
+            placeholder="Search circles by name, profession, or interest..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -88,14 +146,24 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
         {scopes.map((scope) => {
           const Icon = scope.icon;
           const isSelected = selectedScope === scope.id;
+          const showCountry = scope.id === 'national' && isSelected && detectedCountry;
+          
           return (
             <button
               key={scope.id}
-              onClick={() => setSelectedScope(isSelected ? null : scope.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${getChipStyle(isSelected, scope.color)}`}
+              onClick={() => handleScopeClick(scope.id)}
+              disabled={detectingCountry && scope.id === 'national'}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${getChipStyle(isSelected, scope.color)} ${detectingCountry && scope.id === 'national' ? 'opacity-70' : ''}`}
             >
-              <Icon className="w-4 h-4" />
+              {detectingCountry && scope.id === 'national' ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Icon className="w-4 h-4" />
+              )}
               {scope.label}
+              {showCountry && (
+                <span className="ml-1 opacity-90">({detectedCountry})</span>
+              )}
             </button>
           );
         })}
