@@ -16,6 +16,8 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ui/Toast/ToastProvider";
 import CompanyFilters from "../components/directory/CompanyFilters";
 import Pagination from "../components/directory/CompanyPagination";
+import { ChevronDown, Search, X } from "lucide-react";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 type Company = {
   interests: any;
@@ -43,12 +45,20 @@ type PaginationData = {
   itemsPerPage: number;
 };
 
+type SelectedFilter = {
+  id: string | number;
+  type: "profession";
+} | null;
 export default function DashboardDirectory() {
   const navigate = useNavigate();
   const { showToast } = useToast();
 
   const [selectedDomain, setSelectedDomain] = useState("");
   const [searchQuery, setSearchQuery] = useState<any>("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useClickOutside(() => {
+    setIsDropdownOpen(false);
+  });
   const [, setSelectedDomainText] = useState("");
   const [, setTextWidth] = useState(0);
   const [Domain, setDomain] = useState<
@@ -57,7 +67,7 @@ export default function DashboardDirectory() {
   const [badge, setBadge] = useState<any>([]);
   const measureRef = useRef<HTMLSpanElement>(null);
   const hasFetched = useRef(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [, setIsMobile] = useState(false);
 
   type Filter = "" | "popular" | "aspiring" | "inspired";
   const [selected, setSelected] = useState<Filter>(""); // All
@@ -75,14 +85,14 @@ export default function DashboardDirectory() {
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 10,
+    itemsPerPage: 12,
   });
 
   const [aspiringPagination, setAspiringPagination] = useState<PaginationData>({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 10,
+    itemsPerPage: 12,
   });
 
   const [inspiringPagination, setInspiringPagination] =
@@ -94,9 +104,14 @@ export default function DashboardDirectory() {
     });
 
   const [popularCompanies, setPopularCompanies] = useState<Company[]>([]);
-  console.log("🚀 ~ DashboardDirectory ~ popularCompanies:", popularCompanies);
   const [aspiringCompanies, setAspiringCompanies] = useState<Company[]>([]);
   const [inspiringCompanies, setInspiringCompanies] = useState<Company[]>([]);
+
+  const filteredProfessions = Domain.filter((prof) =>
+    prof.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const [selectedFilter, setSelectedFilter] = useState<SelectedFilter>(null);
 
   // Check for mobile screen
   useEffect(() => {
@@ -105,9 +120,9 @@ export default function DashboardDirectory() {
     };
 
     checkMobile();
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
 
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
@@ -412,111 +427,172 @@ export default function DashboardDirectory() {
       };
     return null; // All
   })();
-  console.log("🚀 ~ DashboardDirectory ~ activeList:", activeList);
 
   return (
     <>
       <div className="px-1">
         {/* Hero Section - Mobile Optimized */}
         {/* <section className="relative h-auto max-w-full sm:h-[350px] md:h-[400px] lg:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 sm:mt-4 flex items-center justify-center"> */}
-        <section className="relative mx-auto mt-2 sm:mt-4 overflow-hidden rounded-xl">
+        <section className="relative mx-auto mt-2 sm:mt-4  rounded-xl">
           {/* Background Image Full Fit */}
           <img
             src="https://cdn.cness.io/Directory.svg"
             alt="City Skyline"
-           className="w-full lg:w-screen h-[300px] lg:h-auto rounded-xl pointer-events-none select-none object-cover"
+            className="w-full lg:w-screen h-[300px] lg:h-auto rounded-xl pointer-events-none select-none object-cover"
           />
 
           {/* CENTER CONTENT - Mobile Responsive */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4 sm:px-6 pb-8 sm:pb-10">
-           <h1
-  className="text-center font-[poppins] font-semibold mb-4 sm:mb-6
-    text-xl sm:text-2xl lg:text-[32px] leading-[1.3] sm:leading-[1.4]
-    bg-linear-to-b from-[#4E4E4E] to-[#232323] 
-    bg-clip-text text-transparent"
->
- Search for Individuals and Services
-</h1>
+            <h1
+              className="text-center font-[poppins] font-semibold mb-4 sm:mb-6
+                  text-xl sm:text-2xl lg:text-[32px] leading-[1.3] sm:leading-[1.4]
+                  bg-linear-to-b from-[#4E4E4E] to-[#232323] 
+                  bg-clip-text text-transparent"
+            >
+              Search for Individuals and Services
+            </h1>
             {/* Search Bar Wrapper - Mobile Responsive */}
-            <div className="w-full flex flex-col gap-2 justify-center items-center mb-4 sm:mb-6">
-              <div
-                className="w-full bg-white rounded-full sm:rounded-full
-                  flex items-center p-3 sm:p-0 sm:pl-5 sm:pr-1 h-11 lg:h-14 max-w-[650px] 2xl:max-w-[720px] border border-[#C6C1C1] justify-between"
-              >
-                <div className="flex items-center flex-1">
-                  <span className="text-[#7077FE] mr-3 text-lg">
-                    <CiSearch />
-                  </span>
+            <div className="w-full max-w-xl items-center gap-3 mt-4 sm:mt-5 px-2 mb-2">
+              {/* Combined Search Input + Professions Pill */}
+              <div className="relative w-full">
+                <div className="flex items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden sm:overflow-visible min-h-11">
+                  {/* Left search icon + text input */}
+                  <div className="flex items-center pl-3 shrink-0">
+                    <CiSearch className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                  </div>
+
                   <input
                     type="text"
-                    placeholder="Search Conscious professionals "
-                    className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none w-full sm:w-auto"
-                    value={searchQuery || ""}
+                    placeholder="Search Best Practice"
+                    className="flex-1 min-w-0 text-xs sm:text-sm md:text-base font-openSans py-2 sm:py-3 pr-2 sm:pr-4 pl-2 text-gray-700 placeholder:text-gray-400 outline-none bg-transparent"
+                    value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={handleKeyPress}
+                    aria-label="Search best practices"
                   />
-                </div>
 
-                {/* Dropdown - Mobile Responsive */}
-                <div className="hidden sm:flex relative shrink-0 border-t sm:border-t-0 sm:border-l border-gray-200 sm:border-gray-300 rounded-full">
-                  <select
-                    className="bg-[#6340FF] text-white font-semibold rounded-full sm:rounded-full h-9 lg:h-12 px-4 sm:px-6 pr-10 text-sm appearance-none 
-                      focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]
-                      w-full sm:w-auto roun"
-                    value={selectedDomain}
-                    onChange={(e) => {
-                      setSelectedDomain(e.target.value);
-                      const selectedText =
-                        e.target.options[e.target.selectedIndex].text;
-                      setSelectedDomainText(selectedText);
-                    }}
-                  >
-                    <option value="">Professions</option>
-                    {Domain.map((domain) => (
-                      <option key={domain.id} value={domain.id}>
-                        {isMobile && domain.title.length > 20
-                          ? `${domain.title.substring(0, 20)}...`
-                          : domain.title}
-                      </option>
-                    ))}
-                  </select>
+                  {/* Right purple pill (dropdown trigger) */}
+                  <div className="relative shrink-0" ref={dropdownRef}>
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="flex items-center gap-1 sm:gap-2 bg-[#7077FE] text-white font-semibold rounded-full px-3 sm:px-4 py-2 h-full focus:outline-none whitespace-nowrap min-h-11"
+                      aria-haspopup="listbox"
+                      aria-expanded={isDropdownOpen}
+                      type="button"
+                    >
+                      <span className="text-xs">Professions</span>
+                      <ChevronDown
+                        className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 ${
+                          isDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
 
-                  <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white text-xs">
-                    ▼
+                    {isDropdownOpen && (
+                      <div
+                        className="
+                          fixed inset-x-0 top-0 bottom-0
+                          sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2
+                          w-full sm:w-80
+                          bg-white border border-gray-200 rounded-lg shadow-lg
+                          z-9999
+                          sm:max-h-96 max-h-full
+                          overflow-hidden
+                        "
+                      >
+                        {/* Mobile header for dropdown */}
+                        <div className="flex items-center justify-between p-4 border-b border-gray-200 sm:hidden bg-[#7077FE] text-white">
+                          <h3 className="font-semibold">Filter by</h3>
+                          <button
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="p-1"
+                            aria-label="Close filter"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+
+                        {/* Search inside dropdown */}
+                        <div className="p-3 border-b border-gray-100">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-4 sm:h-4" />
+                            <input
+                              type="text"
+                              placeholder="Search professions & interests..."
+                              className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent"
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            {searchQuery && (
+                              <button
+                                onClick={() => setSearchQuery("")}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                              >
+                                <X className="w-4 h-4 sm:w-4 sm:h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="overflow-y-auto h-full sm:max-h-64">
+                          <div className="border-b border-gray-100">
+                            <button
+                              className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 
+                                
+                                `}
+                              onClick={() => {
+                                // clearFilter();
+                                setIsDropdownOpen(false);
+                              }}
+                            >
+                              All Profession
+                            </button>
+                          </div>
+
+                          {filteredProfessions.map((prof) => (
+                            <button
+                              key={`p-${prof.id}`}
+                              className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${
+                                selectedFilter?.id === prof.id &&
+                                selectedFilter?.type === "profession"
+                                  ? "bg-blue-50 text-[#7077FE] font-medium"
+                                  : ""
+                              }`}
+                              onClick={() => {
+                                setSelectedFilter({
+                                  id: prof.id,
+                                  type: "profession",
+                                });
+                                setSelectedDomain(prof.id.toString());
+                                setSelectedDomainText(prof.title);
+                                setIsDropdownOpen(false);
+                              }}
+                            >
+                              {prof.title}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Close button for mobile (full-width) */}
+                        <div className="sm:hidden p-4 border-t border-gray-200 bg-white">
+                          <button
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="w-full py-3 bg-[#7077FE] text-white rounded-lg font-medium"
+                          >
+                            Close
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-              </div>
-              <div className="flex sm:hidden relative shrink-0 border-t sm:border-t-0 sm:border-l border-gray-200 sm:border-gray-300 rounded-full">
-                <select
-                  className="bg-[#6340FF] text-white font-semibold rounded-full sm:rounded-full h-12 px-4 sm:px-6 pr-10 text-sm appearance-none 
-                      focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]
-                      w-full sm:w-auto roun"
-                  value={selectedDomain}
-                  onChange={(e) => {
-                    setSelectedDomain(e.target.value);
-                    const selectedText =
-                      e.target.options[e.target.selectedIndex].text;
-                    setSelectedDomainText(selectedText);
-                  }}
-                >
-                  <option value="">Professions</option>
-                  {Domain.map((domain) => (
-                    <option key={domain.id} value={domain.id}>
-                      {isMobile && domain.title.length > 20
-                        ? `${domain.title.substring(0, 20)}...`
-                        : domain.title}
-                    </option>
-                  ))}
-                </select>
-
-                <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white text-xs">
-                  ▼
                 </div>
               </div>
             </div>
 
             <p className="text-xs sm:text-sm text-[#6340FF] font-semibold">
-  Showcase your professional services and connect with like-minded individuals.
+              Showcase your professional services and connect with like-minded
+              individuals.
             </p>
           </div>
         </section>
@@ -529,10 +605,10 @@ export default function DashboardDirectory() {
             {selected === "popular"
               ? "Leader Board"
               : selected === "aspiring"
-                ? "Aspiring People"
-                : selected === "inspired"
-                  ? "Inspired People"
-                  : "All Individuals"}
+              ? "Aspiring People"
+              : selected === "inspired"
+              ? "Inspired People"
+              : "All Individuals"}
           </h2>
 
           <CompanyFilters
@@ -593,7 +669,9 @@ export default function DashboardDirectory() {
                 </div>
               </>
             ) : (
-              <p className="text-gray-500 text-center py-8 sm:py-10">No results found.</p>
+              <p className="text-gray-500 text-center py-8 sm:py-10">
+                No results found.
+              </p>
             )}
           </div>
         </section>
@@ -641,7 +719,9 @@ export default function DashboardDirectory() {
                   </div>
                 </>
               ) : (
-                <p className="text-gray-500 text-center py-8 sm:py-10">No popular people found.</p>
+                <p className="text-gray-500 text-center py-8 sm:py-10">
+                  No popular people found.
+                </p>
               )}
             </div>
           </section>

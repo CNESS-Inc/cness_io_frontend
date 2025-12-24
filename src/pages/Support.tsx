@@ -2,6 +2,7 @@ import { useState } from "react";
 import FAQSection from "../components/ui/Faq";
 import tollfree from "..//assets/tollfree.png";
 import ContactUsPopup from "../components/zohoforms/contactus";
+import { useNavigate } from "react-router-dom";
 
 declare global {
   interface Window {
@@ -11,6 +12,7 @@ declare global {
 }
 
 const Support = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"tickets" | "faq">("faq");
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState<"contact" | "feedback" | null>(null);
@@ -38,11 +40,19 @@ const Support = () => {
       <div className="max-w-8xl mx-auto">
         {/* Header Section */}
         <header className="mb-8">
-          <h1 className="font-['Poppins',Helvetica] text-2xl md:text-[32px] leading-8 mb-5">
-            <span className="font-semibold text-[#222224]">
-              Support Center{" "}
-            </span>
-          </h1>
+          <div className="flex justify-between items-center">
+            <h1 className="font-['Poppins',Helvetica] text-2xl md:text-[32px] leading-8 mb-5">
+              <span className="font-semibold text-[#222224]">
+                Support Center{" "}
+              </span>
+            </h1>
+            <button
+              className="flex items-center gap-1 text-black border border-[#D77CFF] rounded-full px-4 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition"
+              onClick={() => navigate("/dashboard/bestpractices")}
+            >
+              Go Back
+            </button>
+          </div>
           <p className="text-gray-600">
             Find answers to your questions or get help from our support team
           </p>

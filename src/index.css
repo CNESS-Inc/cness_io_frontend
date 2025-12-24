@@ -56,3 +56,24 @@ a {
   background: linear-gradient(50deg, #F07EFF, #897AFF);
   border-color: transparent; /* optional */
 }
+
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  background: white;
+  border: 2px solid #7c3aed;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type="range"]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  background: white;
+  border: 2px solid #7c3aed;
+  border-radius: 50%;
+  cursor: pointer;
+}

@@ -419,9 +419,10 @@ export default function SellerDashboard() {
         type: "success",
         duration: 5000,
       });
-
+      setTags([]);
       closeModal();
       navigate("/dashboard/bestpractices");
+      setTags([]);
       setIsModalOpen(false);
     } catch (error: any) {
       console.error("Error creating best practice:", error);
@@ -621,6 +622,7 @@ export default function SellerDashboard() {
         profession={professions}
         interest={interests}
         tags={tags}
+        setTags={setTags}
         inputValue={inputValue}
         setInputValue={setInputValue}
         removeTag={removeTag}

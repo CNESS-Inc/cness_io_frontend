@@ -6,6 +6,10 @@ import {
   PostComments,
   FetchCommentStory,
   CommentStory,
+  UpdateComment,
+  UpdateChildComment,
+  DeleteComment,
+  DeleteChildComment,
 } from "../../Common/ServerAPI";
 import { BsThreeDots } from "react-icons/bs";
 import { FiEdit2, FiLink2, FiSend, FiTrash2, FiX } from "react-icons/fi";
@@ -78,6 +82,65 @@ interface PopupProps {
   onPostUpdated?: () => void;
 }
 
+// Delete confirmation modal component
+const DeleteConfirmationModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  type,
+  isDeleting,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  type: "comment" | "reply";
+  isDeleting: boolean;
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50">
+      <div className="absolute inset-0" onClick={onClose} />
+      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+        <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
+          <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
+          <p className="mb-6">
+            Are you sure you want to delete this {type}? This action cannot be
+            undone.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              disabled={isDeleting}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={onConfirm}
+              className={`flex w-[100px] justify-center items-center gap-1 text-xs lg:text-sm px-4 py-2 rounded-full bg-[#7077FE] text-white hover:bg-[#7077FE] disabled:bg-gray-400 disabled:cursor-not-allowed ${
+                isDeleting ? "opacity-70" : ""
+              }`}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const PostPopup: React.FC<PopupProps> = ({
   post,
   onClose,
@@ -94,6 +157,9 @@ const PostPopup: React.FC<PopupProps> = ({
   const [openLeftMenu, setOpenLeftMenu] = useState(false);
   const [openRightMenu, setOpenRightMenu] = useState(false);
   const [posting, setPosting] = useState(false);
+    const [submittingReplies, setSubmittingReplies] = useState<
+      Record<string, boolean>
+    >({});
   const [commentInput, setCommentInput] = useState("");
   const [replyInput, setReplyInput] = useState("");
   const [showReplyBoxFor, setShowReplyBoxFor] = useState<string | null>(null);
@@ -104,6 +170,23 @@ const PostPopup: React.FC<PopupProps> = ({
     {}
   );
   const loggedInUserID = localStorage.getItem("Id");
+
+  // Edit states
+  const [editingComment, setEditingComment] = useState<string | null>(null);
+  const [editingReply, setEditingReply] = useState<{
+    commentId: string;
+    replyId: string;
+  } | null>(null);
+  const [editText, setEditText] = useState("");
+
+  // Delete states
+  const [deleteConfirmation, setDeleteConfirmation] = useState({
+    isOpen: false,
+    type: "comment" as "comment" | "reply",
+    commentId: undefined as string | undefined,
+    replyId: undefined as string | undefined,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { showToast } = useToast();
 
@@ -160,8 +243,12 @@ const PostPopup: React.FC<PopupProps> = ({
         })
         .catch(() => setComments([]));
     } catch (error) {
-      // Handle error
       console.error("Error posting comment:", error);
+      showToast({
+        message: "Failed to post comment",
+        type: "error",
+        duration: 3000,
+      });
     }
     setPosting(false);
   };
@@ -186,7 +273,6 @@ const PostPopup: React.FC<PopupProps> = ({
     setIsCommentsLoading(true);
 
     if (isReel) {
-      // Use reel comment APIs
       FetchCommentStory(post.id)
         .then((data) => {
           const rows = data.data.data?.rows || [];
@@ -210,7 +296,6 @@ const PostPopup: React.FC<PopupProps> = ({
         .catch(() => setComments([]))
         .finally(() => setIsCommentsLoading(false));
     } else {
-      // Use post comment APIs (existing code)
       GetComment(post.id, 1)
         .then((data) => {
           const rows = data.data.data?.rows || [];
@@ -237,9 +322,10 @@ const PostPopup: React.FC<PopupProps> = ({
   }, [post.id, isReel]);
 
   const handleReplySubmit = async (id: string) => {
-    if (!replyInput.trim()) return;
-    // setPosting(true);
+    if (submittingReplies[id] || !replyInput.trim()) return;
+
     try {
+      setSubmittingReplies((prev) => ({ ...prev, [id]: true }));
       await PostChildComments({
         post_id: post.id,
         comment_id: id,
@@ -270,9 +356,16 @@ const PostPopup: React.FC<PopupProps> = ({
         })
         .catch(() => setComments([]));
     } catch (error) {
-      // Optionally show error to user
+      console.error("Error posting reply:", error);
+      showToast({
+        message: "Failed to post reply",
+        type: "error",
+        duration: 3000,
+      });
     }
-    setPosting(false);
+finally {
+      setSubmittingReplies((prev) => ({ ...prev, [id]: false }));
+    }
   };
 
   const fetchAndToggleReplies = async (commentId: string) => {
@@ -303,11 +396,221 @@ const PostPopup: React.FC<PopupProps> = ({
             c.id === commentId ? { ...c, replies: mappedReplies } : c
           )
         );
+      } catch (error) {
+        console.error("Error fetching replies:", error);
+        showToast({
+          message: "Failed to load replies",
+          type: "error",
+          duration: 3000,
+        });
       } finally {
         setLoadingReplies((prev) => ({ ...prev, [commentId]: false }));
       }
     }
     setExpandedComments((prev) => ({ ...prev, [commentId]: true }));
+  };
+
+  // Edit functions
+  const handleEditComment = (comment: CommentItem) => {
+    setEditingComment(comment.id);
+    setEditText(comment.text);
+  };
+
+  const handleEditReply = (commentId: string, reply: Reply) => {
+    setEditingReply({ commentId, replyId: reply.id });
+    setEditText(reply.text);
+  };
+
+  const handleUpdateComment = async () => {
+    if (!editText.trim() || !editingComment) return;
+
+    try {
+      const formattedData = {
+        id: editingComment,
+        text: editText,
+      };
+
+      const response = await UpdateComment(formattedData);
+
+      if (response?.data?.data) {
+        setComments((prev) =>
+          prev.map((comment) =>
+            comment.id === editingComment
+              ? { ...comment, text: editText }
+              : comment
+          )
+        );
+        setEditingComment(null);
+        setEditText("");
+        showToast({
+          message: "Comment updated successfully",
+          type: "success",
+          duration: 3000,
+        });
+      }
+    } catch (error: any) {
+      console.error("Error updating comment:", error.message || error);
+      showToast({
+        message:
+          error?.response?.data?.error?.message || "Failed to update comment",
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const handleUpdateReply = async () => {
+    if (!editText.trim() || !editingReply) return;
+
+    try {
+      const formattedData = {
+        id: editingReply.replyId,
+        text: editText,
+      };
+
+      const response = await UpdateChildComment(formattedData);
+
+      if (response?.data?.data) {
+        setComments((prev) =>
+          prev.map((comment) =>
+            comment.id === editingReply.commentId
+              ? {
+                  ...comment,
+                  replies: comment.replies?.map((reply: any) =>
+                    reply.id === editingReply.replyId
+                      ? { ...reply, text: editText }
+                      : reply
+                  ),
+                }
+              : comment
+          )
+        );
+        setEditingReply(null);
+        setEditText("");
+        showToast({
+          message: "Reply updated successfully",
+          type: "success",
+          duration: 3000,
+        });
+      }
+    } catch (error: any) {
+      console.error("Error updating reply:", error.message || error);
+      showToast({
+        message:
+          error?.response?.data?.error?.message || "Failed to update reply",
+        type: "error",
+        duration: 5000,
+      });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingComment(null);
+    setEditingReply(null);
+    setEditText("");
+  };
+
+  // Delete functions
+  const showDeleteConfirmation = (
+    type: "comment" | "reply",
+    commentId: string,
+    replyId?: string
+  ) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      type,
+      commentId,
+      replyId,
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const { type, commentId, replyId } = deleteConfirmation;
+
+    if (!commentId) return;
+
+    setIsDeleting(true);
+
+    try {
+      if (type === "comment") {
+        const formattedData = {
+          id: commentId,
+        };
+        await DeleteComment(formattedData);
+
+        setComments((prev) =>
+          prev.filter((comment) => comment.id !== commentId)
+        );
+
+        showToast({
+          message: "Comment deleted successfully",
+          type: "success",
+          duration: 3000,
+        });
+      } else if (type === "reply" && replyId) {
+        const formattedData = {
+          id: replyId,
+        };
+        await DeleteChildComment(formattedData);
+
+        setComments((prev) =>
+          prev.map((comment) =>
+            comment.id === commentId
+              ? {
+                  ...comment,
+                  replies:
+                    comment.replies?.filter(
+                      (reply: any) => reply.id !== replyId
+                    ) || [],
+                  child_comment_count: Math.max(
+                    0,
+                    comment.child_comment_count - 1
+                  ),
+                }
+              : comment
+          )
+        );
+
+        showToast({
+          message: "Reply deleted successfully",
+          type: "success",
+          duration: 3000,
+        });
+      }
+
+      // Close the confirmation modal
+      setDeleteConfirmation({
+        isOpen: false,
+        type: "comment",
+        commentId: undefined,
+        replyId: undefined,
+      });
+    } catch (error: any) {
+      console.error(`Error deleting ${type}:`, error.message || error);
+      showToast({
+        message:
+          error?.response?.data?.error?.message || `Failed to delete ${type}`,
+        type: "error",
+        duration: 5000,
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    if (isDeleting) return;
+    setDeleteConfirmation({
+      isOpen: false,
+      type: "comment",
+      commentId: undefined,
+      replyId: undefined,
+    });
+  };
+
+  // Check if current user is the owner of comment/reply
+  const isCurrentUserComment = (userId: string) => {
+    return userId === loggedInUserID;
   };
 
   // Menu component to avoid duplication
@@ -327,14 +630,6 @@ const PostPopup: React.FC<PopupProps> = ({
       >
         {/* Header with close */}
         <div className="flex items-center justify-between px-4 py-4 bg-[rgba(137,122,255,0.1)]">
-          <button
-            // className="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm shadow-gray-200/60 hover:shadow-xl hover:scale-[1.03] active:scale-100 transition"
-            onClick={() =>
-              side === "left" ? setOpenLeftMenu(false) : setOpenRightMenu(false)
-            }
-          >
-            {/* <BsThreeDots className="text-gray-800" /> */}
-          </button>
           <button
             onClick={() =>
               side === "left" ? setOpenLeftMenu(false) : setOpenRightMenu(false)
@@ -449,16 +744,16 @@ const PostPopup: React.FC<PopupProps> = ({
       onPostUpdated();
     }
   };
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const handleUserProfileRedirection = (user_id:any) =>{
-    if(loggedInUserID === user_id){
-    navigate(`/dashboard/Profile`);
-    }else{
-    navigate(`/dashboard/social/user-profile/${user_id}`);
+  const handleUserProfileRedirection = (user_id: any) => {
+    if (loggedInUserID === user_id) {
+      navigate(`/dashboard/Profile`);
+    } else {
+      navigate(`/dashboard/social/user-profile/${user_id}`);
     }
-    onClose()
-  }
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
@@ -628,7 +923,12 @@ const PostPopup: React.FC<PopupProps> = ({
                 <div key={comment.id} className="flex flex-col gap-3 w-full">
                   <div className="flex items-center justify-between">
                     <div className="flex justify-start items-center gap-2">
-                      <div className="cursor-pointer" onClick={()=>handleUserProfileRedirection(comment.user_id)}>
+                      <div
+                        className="cursor-pointer"
+                        onClick={() =>
+                          handleUserProfileRedirection(comment.user_id)
+                        }
+                      >
                         <img
                           src={
                             comment.profile.profile_picture || "/profile.png"
@@ -644,23 +944,70 @@ const PostPopup: React.FC<PopupProps> = ({
                         {timeAgo(comment.createdAt)}
                       </span>
                     </div>
-                    {!isReel && (
-                      <button
-                        className="text-sm text-blue-500 hover:underline"
-                        onClick={() =>
-                          setShowReplyBoxFor(
-                            showReplyBoxFor === comment.id ? null : comment.id
-                          )
-                        }
-                      >
-                        Reply
-                      </button>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {!isReel && (
+                        <button
+                          className="text-sm text-blue-500 hover:underline"
+                          onClick={() =>
+                            setShowReplyBoxFor(
+                              showReplyBoxFor === comment.id ? null : comment.id
+                            )
+                          }
+                        >
+                          Reply
+                        </button>
+                      )}
+                      {/* Edit/Delete buttons for comment owner */}
+                      {isCurrentUserComment(comment.user_id) && !isReel && (
+                        <>
+                          <button
+                            onClick={() => handleEditComment(comment)}
+                            className="text-sm text-blue-500 hover:underline"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() =>
+                              showDeleteConfirmation("comment", comment.id)
+                            }
+                            className="text-sm text-red-500 hover:underline"
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-3 px-4 text-sm text-gray-800">
-                    {comment.text}
-                  </div>
+                  {/* Comment Content or Edit Field */}
+                  {editingComment === comment.id ? (
+                    <div className="mt-1">
+                      <textarea
+                        className="w-full rounded-lg px-4 py-2 focus:outline-none bg-gray-100 border border-gray-300 resize-none"
+                        value={editText}
+                        onChange={(e) => setEditText(e.target.value)}
+                        rows={3}
+                      />
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          onClick={handleUpdateComment}
+                          className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={handleCancelEdit}
+                          className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-gray-50 rounded-lg p-3 px-4 text-sm text-gray-800">
+                      {comment.text}
+                    </div>
+                  )}
 
                   {!isReel && (
                     <>
@@ -681,29 +1028,35 @@ const PostPopup: React.FC<PopupProps> = ({
                       </div>
 
                       {showReplyBoxFor === comment.id && (
-                        <div className="ml-12 mb-2 flex gap-2">
-                          <input
-                            type="text"
-                            placeholder="Add a reflection..."
-                            className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none text-sm"
-                            value={replyInput}
-                            onChange={(e) => setReplyInput(e.target.value)}
-                            onKeyDown={(e) =>
-                              e.key === "Enter" && handleReplySubmit(comment.id)
-                            }
-                          />
-                          <button
-                            className={`px-3 py-1 rounded-full text-sm ${
-                              replyInput
-                                ? "text-purple-600 hover:text-purple-700"
-                                : "text-purple-300 cursor-not-allowed"
-                            }`}
-                            disabled={!replyInput}
-                            onClick={() => handleReplySubmit(comment.id)}
-                          >
-                            Post
-                          </button>
-                        </div>
+                        <>
+                          {showReplyBoxFor === comment.id && (
+                            <div className="ml-12 mb-2 flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="Add a reflection..."
+                                className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none text-sm"
+                                value={replyInput}
+                                onChange={(e) => setReplyInput(e.target.value)}
+                                onKeyDown={(e) =>
+                                  e.key === "Enter" &&
+                                  handleReplySubmit(comment.id)
+                                }
+                                disabled={submittingReplies[comment.id]}
+                              />
+                              <button
+                                className={`px-3 py-1 rounded-full text-sm ${
+                                  replyInput && !submittingReplies[comment.id]
+                                    ? "text-purple-600 hover:text-purple-700"
+                                    : "text-purple-300 cursor-not-allowed"
+                                }`}
+                                disabled={!replyInput || submittingReplies[comment.id]} 
+                                onClick={() => handleReplySubmit(comment.id)}
+                              >
+                                {submittingReplies[comment.id] ? "Posting..." : "Post"}
+                              </button>
+                            </div>
+                          )}
+                        </>
                       )}
 
                       {expandedComments[comment.id] &&
@@ -711,26 +1064,86 @@ const PostPopup: React.FC<PopupProps> = ({
                         comment.replies.length > 0 && (
                           <div className="ml-12 space-y-3 border-l-2 border-gray-200 pl-3">
                             {comment.replies.map((reply: any) => (
-                              <div key={reply.id} className="flex gap-3 pt-2">
-                                <img
-                                  src={
-                                    reply.profile.profile_picture ||
-                                    "/profile.png"
-                                  }
-                                  alt={`${reply.profile.first_name} ${reply.profile.last_name}`}
-                                  className="w-8 h-8 rounded-full object-cover shrink-0"
-                                />
-                                <div className="flex items-center justify-between w-full">
-                                  <div className="flex items-baseline gap-2">
-                                    <span className="font-semibold text-sm">
-                                      {reply.profile.first_name}{" "}
-                                      {reply.profile.last_name}
-                                    </span>
-                                    <p className="text-sm wrap-break-word">
-                                      {reply.text}
-                                    </p>
+                              <div
+                                key={reply.id}
+                                className="flex flex-col gap-2 pt-2"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <img
+                                      src={
+                                        reply.profile.profile_picture ||
+                                        "/profile.png"
+                                      }
+                                      alt={`${reply.profile.first_name} ${reply.profile.last_name}`}
+                                      className="w-8 h-8 rounded-full object-cover shrink-0"
+                                    />
+                                    <div className="flex items-baseline gap-2">
+                                      <span className="font-semibold text-sm">
+                                        {reply.profile.first_name}{" "}
+                                        {reply.profile.last_name}
+                                      </span>
+                                    </div>
                                   </div>
+                                  {/* Edit/Delete buttons for reply owner */}
+                                  {isCurrentUserComment(reply.user_id) && (
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        onClick={() =>
+                                          handleEditReply(comment.id, reply)
+                                        }
+                                        className="text-xs text-blue-500 hover:underline"
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          showDeleteConfirmation(
+                                            "reply",
+                                            comment.id,
+                                            reply.id
+                                          )
+                                        }
+                                        className="text-xs text-red-500 hover:underline"
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
+
+                                {/* Reply Content or Edit Field */}
+                                {editingReply?.commentId === comment.id &&
+                                editingReply?.replyId === reply.id ? (
+                                  <div className="mt-1">
+                                    <textarea
+                                      className="w-full rounded-lg px-2 py-1 focus:outline-none bg-gray-100 border border-gray-300 resize-none text-sm"
+                                      value={editText}
+                                      onChange={(e) =>
+                                        setEditText(e.target.value)
+                                      }
+                                      rows={2}
+                                    />
+                                    <div className="flex gap-2 mt-2">
+                                      <button
+                                        onClick={handleUpdateReply}
+                                        className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={handleCancelEdit}
+                                        className="px-2 py-1 bg-gray-500 text-white rounded text-xs hover:bg-gray-600"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <p className="text-sm wrap-break-word">
+                                    {reply.text}
+                                  </p>
+                                )}
                               </div>
                             ))}
                           </div>
@@ -813,6 +1226,15 @@ const PostPopup: React.FC<PopupProps> = ({
         popupModalClose={onClose}
         posts={post}
         onPostUpdated={handlePostUpdatedCallback}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteConfirmation.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        type={deleteConfirmation.type}
+        isDeleting={isDeleting}
       />
     </div>
   );

@@ -3,15 +3,22 @@ import ComingSoon from "../pages/ComingSoon";
 
 // Layout components (create these if needed)
  import MarketplaceLayout from "../features/marketplace/shared/layout/Marketplacelayout";
+import Recommendation from "../features/marketplace/buyer/pages/Recommendation";
+//import OrderHistory from "../features/marketplace/buyer/pages/OrderHistory";
 // import SellerLayout from "../layout/Marketplace/SellerLayout";
 
 // Buyer Pages - Lazy loaded
 const MarketplaceHome = lazy(() => import("../features/marketplace/buyer/pages/MarketplaceHome"));
-const BuyerProducts = lazy(() => import("../pages/ComingSoon"));
-const BuyerProductDetail = lazy(() => import("../pages/ComingSoon"));
-const BuyerCart = lazy(() => import("../pages/ComingSoon"));
+// const Categories = lazy(() => import("../features/marketplace/buyer/pages/Categories"));
+const Curators = lazy(() => import("../features/marketplace/buyer/pages/Curators"));
+const CuratorsDetail = lazy(() => import("../features/marketplace/buyer/pages/CuratorsDetail.tsx"));
+// const BuyerProductDetail = lazy(() => import("../pages/ComingSoon"));
+const MarketplaceCategories = lazy(() => import("../features/marketplace/buyer/pages/MarketplaceCategories"));
+const MarketProductDetail = lazy(() => import("../features/marketplace/buyer/pages/MarketProductDetail"));
+const BuyerCart = lazy(() => import("../features/marketplace/buyer/pages/BuyerCart"));
 const BuyerCheckout = lazy(() => import("../pages/ComingSoon"));
-const BuyerOrders = lazy(() => import("../pages/ComingSoon"));
+const OrderHistory = lazy(() => import("../features/marketplace/buyer/pages/OrderHistory"));
+
 
 // Seller Pages - Lazy loaded (replace with your actual page paths)
 const SellerDashboard = lazy(() => import("../pages/ComingSoon"));
@@ -40,12 +47,20 @@ export const marketplaceRoutes = {
       element: <MarketplaceHome />,
     },
     {
-      path: "products",
-      element: <BuyerProducts />,
+      path: "categories",
+      element: <MarketplaceCategories />,
     },
+       {
+     path: "curators",
+     element: <Curators />,
+   },
+   {
+     path: "curator/:id",
+     element: <CuratorsDetail />,
+   },
     {
-      path: "product/:id",
-      element: <BuyerProductDetail />,
+      path: "categories/product/:id",
+      element: <MarketProductDetail />,
     },
     {
       path: "cart",
@@ -56,8 +71,8 @@ export const marketplaceRoutes = {
       element: <BuyerCheckout />,
     },
     {
-      path: "orders",
-      element: <BuyerOrders />,
+      path: "ordershistory",
+      element: <OrderHistory />,
     },
     {
       path: "wishlist",
@@ -66,6 +81,10 @@ export const marketplaceRoutes = {
     {
       path: "search",
       element: <ComingSoon />,
+    },
+    {
+      path:"recommendation",
+       element: <Recommendation />,
     },
 
     // ========================================

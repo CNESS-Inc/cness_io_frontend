@@ -125,12 +125,14 @@ const PersistentMessagingWidget: React.FC = () => {
 
   useEffect(() => {
     // Convert ID to string for consistent lookup
-    const typingStatus = selectedConnection ? typingUsers[selectedConnection.id.toString()] : false;
-    console.log('👀 Checking typing users:', {
+    const typingStatus = selectedConnection
+      ? typingUsers[selectedConnection.id.toString()]
+      : false;
+    console.log("👀 Checking typing users:", {
       selectedConnectionId: selectedConnection?.id,
       selectedConnectionIdString: selectedConnection?.id.toString(),
       typingUsers,
-      isTyping: typingStatus
+      isTyping: typingStatus,
     });
     if (selectedConnection && typingStatus) {
       console.log(`✅ ${selectedConnection.name} is typing...`);
@@ -146,7 +148,7 @@ const PersistentMessagingWidget: React.FC = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        emojiPickerRef.current && 
+        emojiPickerRef.current &&
         !emojiPickerRef.current.contains(event.target as Node) &&
         showEmojiPicker
       ) {
@@ -156,12 +158,12 @@ const PersistentMessagingWidget: React.FC = () => {
 
     // Add event listener when emoji picker is open
     if (showEmojiPicker) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     // Cleanup
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showEmojiPicker]);
 
@@ -169,9 +171,9 @@ const PersistentMessagingWidget: React.FC = () => {
     const handleOpenMessaging = async (event: CustomEvent) => {
       const { connection } = event.detail;
 
-      console.log('📱 Opening messaging from event:', {
+      console.log("📱 Opening messaging from event:", {
         connectionId: connection.id,
-        conversationId: connection.conversationId
+        conversationId: connection.conversationId,
       });
 
       // Open the messaging widget if it's not already open
@@ -191,12 +193,15 @@ const PersistentMessagingWidget: React.FC = () => {
       try {
         // Load messages - this updates conversations array in MessagingContext
         if (connection.conversationId) {
-          console.log('📥 Loading messages for conversation:', connection.conversationId);
+          console.log(
+            "📥 Loading messages for conversation:",
+            connection.conversationId
+          );
           await loadConversationMessages(connection.conversationId);
 
           // After loading, the useEffect will pick up the updated conversation
           // from conversations array and sync it to activeConversation and local messages
-          console.log('✅ Messages loaded, waiting for useEffect to sync');
+          console.log("✅ Messages loaded, waiting for useEffect to sync");
         }
       } catch (error) {
         console.error("Error loading conversation data:", error);
@@ -242,31 +247,41 @@ const PersistentMessagingWidget: React.FC = () => {
 
   // Sync local messages with activeConversation messages
   useEffect(() => {
-    console.log('🔄 Syncing messages from conversations and activeConversation:', {
-      activeConvId: activeConversation?.id,
-      activeMessageCount: activeConversation?.messages?.length,
-      currentMessageCount: messages.length,
-      selectedConnectionId: selectedConnection?.conversationId,
-      conversationsCount: conversations.length
-    });
+    console.log(
+      "🔄 Syncing messages from conversations and activeConversation:",
+      {
+        activeConvId: activeConversation?.id,
+        activeMessageCount: activeConversation?.messages?.length,
+        currentMessageCount: messages.length,
+        selectedConnectionId: selectedConnection?.conversationId,
+        conversationsCount: conversations.length,
+      }
+    );
 
     // Always try to get the latest conversation from conversations array
     if (selectedConnection?.conversationId) {
       const latestConversation = conversations.find(
-        (conv) => conv.id.toString() === selectedConnection.conversationId?.toString()
+        (conv) =>
+          conv.id.toString() === selectedConnection.conversationId?.toString()
       );
 
-      console.log('🔍 Found latest conversation:', {
+      console.log("🔍 Found latest conversation:", {
         found: !!latestConversation,
-        messageCount: latestConversation?.messages?.length
+        messageCount: latestConversation?.messages?.length,
       });
 
       if (latestConversation) {
         // If we found an updated conversation, sync it to activeConversation
-        if (!activeConversation ||
-            activeConversation.id.toString() !== latestConversation.id.toString() ||
-            activeConversation.messages.length !== latestConversation.messages.length) {
-          console.log('🔄 Updating activeConversation from conversations array');
+        if (
+          !activeConversation ||
+          activeConversation.id.toString() !==
+            latestConversation.id.toString() ||
+          activeConversation.messages.length !==
+            latestConversation.messages.length
+        ) {
+          console.log(
+            "🔄 Updating activeConversation from conversations array"
+          );
           setActiveConversation(latestConversation);
         }
 
@@ -283,16 +298,23 @@ const PersistentMessagingWidget: React.FC = () => {
           attachments: msg.attachments,
         }));
 
-        console.log('✅ Setting messages in widget:', transformedMessages.length);
+        console.log(
+          "✅ Setting messages in widget:",
+          transformedMessages.length
+        );
         setMessages(transformedMessages);
       }
     }
-  }, [conversations, selectedConnection?.conversationId, activeConversation?.messages?.length]);
+  }, [
+    conversations,
+    selectedConnection?.conversationId,
+    activeConversation?.messages?.length,
+  ]);
 
   const handleConnectionClick = async (connection: Connection) => {
-    console.log('📱 Connection clicked:', {
+    console.log("📱 Connection clicked:", {
       connectionId: connection.id,
-      conversationId: connection.conversationId
+      conversationId: connection.conversationId,
     });
 
     setSelectedConnection(connection);
@@ -304,10 +326,13 @@ const PersistentMessagingWidget: React.FC = () => {
       userId: connection.id, // Use friend's ID as userId
       userName: connection.name,
       userProfileImage: connection.profileImage,
-      lastMessage: connection.lastMessage || '',
+      lastMessage: connection.lastMessage || "",
       lastMessageTime: connection.lastMessageTime || new Date().toISOString(),
-      unreadCount: typeof connection.unreadCount === 'number' ? connection.unreadCount : parseInt(connection.unreadCount || '0'),
-      messages: []
+      unreadCount:
+        typeof connection.unreadCount === "number"
+          ? connection.unreadCount
+          : parseInt(connection.unreadCount || "0"),
+      messages: [],
     });
 
     // Join conversation room for real-time updates
@@ -317,12 +342,15 @@ const PersistentMessagingWidget: React.FC = () => {
 
     try {
       // Load messages first - this updates conversations array in MessagingContext
-      console.log('📥 Loading messages for conversation:', connection.conversationId);
+      console.log(
+        "📥 Loading messages for conversation:",
+        connection.conversationId
+      );
       await loadConversationMessages(connection.conversationId ?? "");
 
       // After loading, the useEffect will pick up the updated conversation from conversations array
       // and sync it to activeConversation and local messages
-      console.log('✅ Messages loaded, waiting for useEffect to sync');
+      console.log("✅ Messages loaded, waiting for useEffect to sync");
     } catch (error) {
       console.error("Error loading conversation data:", error);
       showToast({
@@ -612,7 +640,7 @@ const PersistentMessagingWidget: React.FC = () => {
     <>
       {/* Conversation Panel - Left Side */}
       {showConversationPanel && selectedConnection && (
-        <div className="fixed bottom-0 lg:right-[calc(31vw+24px)] right-6 lg:w-[25vw] w-[90vw] lg:h-[80vh] h-[60vh] bg-white rounded-lg rounded-bl-none rounded-br-none shadow-2xl border border-gray-200 z-[100] flex flex-col">
+        <div className="fixed bottom-0 lg:right-[calc(31vw+24px)] right-6 lg:w-[25vw] w-[90vw] lg:h-[80vh] h-[60vh] bg-white rounded-lg rounded-bl-none rounded-br-none shadow-2xl border border-gray-200 z-100 flex flex-col">
           {/* Chat Header */}
           <div className="flex items-center justify-between p-3 border-b border-[#ddd] bg-[#7C81FF] rounded-t-lg">
             <div className="flex items-center gap-3">
@@ -739,7 +767,10 @@ const PersistentMessagingWidget: React.FC = () => {
                                           openImageModal(attachment.url);
                                         }}
                                         onLoad={() => {
-                                          console.log('✅ Image loaded successfully:', attachment.url);
+                                          console.log(
+                                            "✅ Image loaded successfully:",
+                                            attachment.url
+                                          );
                                         }}
                                         onError={(e) => {
                                           // Handle image load errors
@@ -773,33 +804,34 @@ const PersistentMessagingWidget: React.FC = () => {
             })}
 
             {/* Typing indicator inside messages area */}
-            {selectedConnection && typingUsers[selectedConnection.id.toString()] && (
-              <div className="flex items-start gap-2 px-3 py-2">
-                <img
-                  src={selectedConnection.profileImage || "/profile.png"}
-                  alt={selectedConnection.name}
-                  className="w-8 h-8 rounded-full object-cover shrink-0"
-                />
-                <div className="flex flex-col items-start">
-                  <span className="text-xs font-medium text-gray-600 mb-1">
-                    {selectedConnection.name}
-                  </span>
-                  <div className="bg-gray-200 px-4 py-2 rounded-lg">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                      <div
-                        className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                        style={{ animationDelay: "0.1s" }}
-                      ></div>
-                      <div
-                        className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                        style={{ animationDelay: "0.2s" }}
-                      ></div>
+            {selectedConnection &&
+              typingUsers[selectedConnection.id.toString()] && (
+                <div className="flex items-start gap-2 px-3 py-2">
+                  <img
+                    src={selectedConnection.profileImage || "/profile.png"}
+                    alt={selectedConnection.name}
+                    className="w-8 h-8 rounded-full object-cover shrink-0"
+                  />
+                  <div className="flex flex-col items-start">
+                    <span className="text-xs font-medium text-gray-600 mb-1">
+                      {selectedConnection.name}
+                    </span>
+                    <div className="bg-gray-200 px-4 py-2 rounded-lg">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                        <div
+                          className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.1s" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.2s" }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
             <div ref={messagesEndRef} />
           </div>
@@ -957,7 +989,7 @@ const PersistentMessagingWidget: React.FC = () => {
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#ddd] mx-auto"></div>
                   <p className="mt-2">Loading connections...</p>
                 </div>
-              ) : (
+              ) : connections.length > 0 ? (
                 connections.map((connection) => {
                   const isTyping = typingUsers[connection.id.toString()];
                   return (
@@ -996,7 +1028,9 @@ const PersistentMessagingWidget: React.FC = () => {
                                 style={{ animationDelay: "0.2s" }}
                               ></div>
                             </div>
-                            <span className="text-xs text-blue-500 italic">typing...</span>
+                            <span className="text-xs text-blue-500 italic">
+                              typing...
+                            </span>
                           </div>
                         ) : (
                           <p className="text-xs text-gray-500 truncate">
@@ -1013,6 +1047,34 @@ const PersistentMessagingWidget: React.FC = () => {
                     </div>
                   );
                 })
+              ) : (
+                // Show message when no connections are available
+                <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+                  <div className="w-20 h-20 mb-4 text-gray-300">
+                    {/* You can add an icon here */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-full w-full"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-700 mb-2">
+                    No connections yet
+                  </h3>
+                  <p className="text-sm text-gray-500 max-w-xs">
+                    You don't have any connections to message yet. Start
+                    connecting with people to begin conversations.
+                  </p>
+                </div>
               )}
             </div>
           </div>
@@ -1022,7 +1084,7 @@ const PersistentMessagingWidget: React.FC = () => {
       {/* Image Modal */}
       {isImageModalOpen && selectedImageForModal && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70"
+          className="fixed inset-0 z-9999 flex items-center justify-center bg-black/70"
           onClick={closeImageModal} // Close modal when clicking outside
           onKeyDown={handleModalKeyDown} // Handle escape key
           tabIndex={0} // Make div focusable for keyboard events

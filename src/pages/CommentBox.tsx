@@ -154,7 +154,9 @@ const CommentBox = ({
   const [replySuggestions, setReplySuggestions] = useState<any[]>([]);
   const [showReplySuggestions, setShowReplySuggestions] = useState(false);
   const [selectedReplyMentionIndex, setSelectedReplyMentionIndex] = useState(0);
-
+  const [submittingReplies, setSubmittingReplies] = useState<
+    Record<string, boolean>
+  >({});
   // Load More States
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -182,6 +184,7 @@ const CommentBox = ({
       text: "",
     });
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Mention functionality for comments
   const {
@@ -398,7 +401,7 @@ const CommentBox = ({
 
   const handleSubmitComment = async () => {
     if (!commentText.trim()) return;
-
+    setIsSubmitting(true);
     try {
       const formattedData = {
         text: commentText,
@@ -471,13 +474,17 @@ const CommentBox = ({
         type: "error",
         duration: 5000,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleReplySubmit = async (commentId: string) => {
-    if (!replyText.trim()) return;
+    if (submittingReplies[commentId] || !replyText.trim()) return;
 
     try {
+      setSubmittingReplies((prev) => ({ ...prev, [commentId]: true }));
+
       const formattedData = {
         text: replyText,
         comment_id: commentId,
@@ -559,6 +566,8 @@ const CommentBox = ({
         type: "error",
         duration: 5000,
       });
+    } finally {
+      setSubmittingReplies((prev) => ({ ...prev, [commentId]: false }));
     }
   };
 
@@ -1240,14 +1249,23 @@ const CommentBox = ({
                             )}
                           <button
                             className={`px-3 py-1 rounded-full text-sm ${
-                              replyText
+                              replyText && !submittingReplies[comment.id]
                                 ? "text-purple-600 hover:text-purple-700"
                                 : "text-purple-300 cursor-not-allowed"
                             }`}
-                            disabled={!replyText}
+                            disabled={
+                              !replyText || submittingReplies[comment.id]
+                            }
                             onClick={() => handleReplySubmit(comment.id)}
                           >
-                            Post
+                            {submittingReplies[comment.id] ? (
+                              <>
+                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-purple-600 mr-1 inline-block"></div>
+                                Posting...
+                              </>
+                            ) : (
+                              "Post"
+                            )}
                           </button>
                         </div>
                       </div>
@@ -1464,11 +1482,20 @@ const CommentBox = ({
                     }
                   }}
                   onKeyDown={handleCommentKeyDown}
-                  onKeyPress={(e) =>
-                    e.key === "Enter" && !e.shiftKey && handleSubmitComment()
-                  }
+                  onKeyPress={(e) => {
+                    if (
+                      e.key === "Enter" &&
+                      !e.shiftKey &&
+                      !showCommentSuggestions &&
+                      !isSubmitting
+                    ) {
+                      e.preventDefault(); // Add this line
+                      handleSubmitComment();
+                    }
+                  }}
                   rows={1}
                   style={{ minHeight: "40px", maxHeight: "120px" }}
+                  disabled={isSubmitting} // Optional: disable while submitting
                 />
 
                 {/* Friend Suggestions */}

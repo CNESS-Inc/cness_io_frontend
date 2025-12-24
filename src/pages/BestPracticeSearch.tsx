@@ -535,6 +535,7 @@ export default function BestPracticeSearch() {
       interest: "",
       file: null,
     });
+    setTags([]);
   };
 
   const handleInputChange = (
@@ -662,9 +663,10 @@ export default function BestPracticeSearch() {
         type: "success",
         duration: 5000,
       });
-
+      setTags([]);
       closeModal();
       await fetchBestPractices();
+      setTags([]);
       setActiveModal(null);
     } catch (error: any) {
       console.error("Error creating best practice:", error);
@@ -1453,6 +1455,7 @@ export default function BestPracticeSearch() {
         profession={profession}
         interest={interest}
         tags={tags}
+        setTags={setTags}
         inputValue={inputValue}
         setInputValue={setInputValue}
         removeTag={removeTag}
