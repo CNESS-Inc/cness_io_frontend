@@ -63,40 +63,56 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
     return 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300';
   };
 
-  // Detect country from IP when National is clicked
-  const detectCountryFromIP = async () => {
-    if (detectedCountry) return detectedCountry;
+  // Detect location from IP
+  const detectLocationFromIP = async (type: 'country' | 'province') => {
+    if (type === 'country' && detectedCountry) return { country: detectedCountry, province: detectedProvince };
+    if (type === 'province' && detectedProvince) return { country: detectedCountry, province: detectedProvince };
     
-    setDetectingCountry(true);
+    setDetectingLocation(true);
     try {
-      // Use a free IP geolocation API
+      // Use ipapi.co which provides both country and region (state/province)
       const response = await fetch('https://ipapi.co/json/');
       const data = await response.json();
       const country = data.country_name || data.country;
+      const province = data.region || data.region_code || data.city;
       
       if (country) {
         setDetectedCountry(country);
         onCountryDetected?.(country);
-        return country;
       }
+      if (province) {
+        setDetectedProvince(province);
+        onProvinceDetected?.(province);
+      }
+      
+      setDetectingLocation(false);
+      return { country, province };
     } catch (error) {
-      console.error('Error detecting country:', error);
-      // Fallback to a secondary API
+      console.error('Error detecting location:', error);
+      // Fallback to ip-api.com
       try {
         const response = await fetch('https://ip-api.com/json/');
         const data = await response.json();
         const country = data.country;
+        const province = data.regionName || data.region || data.city;
+        
         if (country) {
           setDetectedCountry(country);
           onCountryDetected?.(country);
-          return country;
         }
+        if (province) {
+          setDetectedProvince(province);
+          onProvinceDetected?.(province);
+        }
+        
+        setDetectingLocation(false);
+        return { country, province };
       } catch (e) {
-        console.error('Fallback country detection failed:', e);
+        console.error('Fallback location detection failed:', e);
       }
     }
-    setDetectingCountry(false);
-    return null;
+    setDetectingLocation(false);
+    return { country: null, province: null };
   };
 
   const handleScopeClick = async (scopeId: string) => {
@@ -106,9 +122,11 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
     }
 
     if (scopeId === 'national') {
-      // Detect country first if not already detected
-      const country = await detectCountryFromIP();
-      setDetectingCountry(false);
+      // Detect country
+      await detectLocationFromIP('country');
+    } else if (scopeId === 'local') {
+      // Detect province
+      await detectLocationFromIP('province');
     }
 
     setSelectedScope(scopeId);
