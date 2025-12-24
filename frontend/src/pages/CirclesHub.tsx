@@ -19,6 +19,7 @@ const CirclesHub: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
+  const [userCountry, setUserCountry] = useState<string | null>(null);
 
   const fetchCircles = async () => {
     setLoading(true);
@@ -31,6 +32,11 @@ const CirclesHub: React.FC = () => {
       if (selectedScope) params.scope = selectedScope;
       if (selectedCategory) params.category = selectedCategory;
       if (searchQuery) params.search = searchQuery;
+      
+      // Add country filter when national scope is selected
+      if (selectedScope === 'national' && userCountry) {
+        params.country = userCountry;
+      }
 
       const [circlesRes, featuredRes, userCirclesRes] = await Promise.all([
         getCircles(params),
@@ -51,7 +57,11 @@ const CirclesHub: React.FC = () => {
 
   useEffect(() => {
     fetchCircles();
-  }, [selectedScope, selectedCategory, searchQuery, sortBy]);
+  }, [selectedScope, selectedCategory, searchQuery, sortBy, userCountry]);
+
+  const handleCountryDetected = (country: string) => {
+    setUserCountry(country);
+  };
 
   const handleCircleCreated = () => {
     setShowCreateModal(false);
