@@ -702,12 +702,20 @@ const SettingsTab: React.FC = () => {
       {/* Section Tabs */}
       <div className="flex gap-4 mb-6">
         <button
-          onClick={() => setActiveSection('circles')}
+          onClick={() => setActiveSection('global')}
           className={`px-4 py-2 rounded-lg font-medium ${
-            activeSection === 'circles' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'
+            activeSection === 'global' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'
           }`}
         >
-          Circle Generation
+          Global Circles
+        </button>
+        <button
+          onClick={() => setActiveSection('country')}
+          className={`px-4 py-2 rounded-lg font-medium ${
+            activeSection === 'country' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'
+          }`}
+        >
+          Country Circles
         </button>
         <button
           onClick={() => setActiveSection('permissions')}
@@ -719,9 +727,153 @@ const SettingsTab: React.FC = () => {
         </button>
       </div>
 
-      {activeSection === 'circles' && (
+      {/* Global Circles Section */}
+      {activeSection === 'global' && (
+        <div className="space-y-6">
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                  <Briefcase className="w-5 h-5 text-indigo-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Profession Global Circles</p>
+                  <p className="text-xl font-bold text-gray-900">{globalCirclesCount.professions}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                  <Heart className="w-5 h-5 text-pink-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Interest Global Circles</p>
+                  <p className="text-xl font-bold text-gray-900">{globalCirclesCount.interests}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Create Individual Global Circle */}
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold mb-4">Create Individual Global Circle</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Profession */}
+              <div className="p-4 border border-gray-200 rounded-lg">
+                <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-indigo-600" />
+                  Create Profession Circle
+                </h4>
+                <select
+                  value={selectedProfession}
+                  onChange={(e) => setSelectedProfession(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3"
+                >
+                  <option value="">Select profession...</option>
+                  {professions.map((p) => (
+                    <option key={p._id || p.id} value={p._id || p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => generateGlobalCircle('profession')}
+                  disabled={!selectedProfession || generatingGlobal}
+                  className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  Create Global Profession Circle
+                </button>
+              </div>
+
+              {/* Interest */}
+              <div className="p-4 border border-gray-200 rounded-lg">
+                <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-pink-600" />
+                  Create Interest Circle
+                </h4>
+                <select
+                  value={selectedInterest}
+                  onChange={(e) => setSelectedInterest(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3"
+                >
+                  <option value="">Select interest...</option>
+                  {interests.map((i) => (
+                    <option key={i.id} value={i.id}>
+                      {i.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => generateGlobalCircle('interest')}
+                  disabled={!selectedInterest || generatingGlobal}
+                  className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg font-medium hover:bg-pink-700 disabled:opacity-50"
+                >
+                  Create Global Interest Circle
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Bulk Generate Global Circles */}
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold mb-4">Bulk Generate All Global Circles</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Create global circles for all professions or interests at once. 
+              Only creates circles that don't already exist.
+            </p>
+            
+            <div className="flex gap-4">
+              <button
+                onClick={() => generateAllGlobalCircles('professions')}
+                disabled={generatingGlobal}
+                className="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {generatingGlobal ? (
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Briefcase className="w-5 h-5" />
+                )}
+                Generate All Profession Circles
+              </button>
+              <button
+                onClick={() => generateAllGlobalCircles('interests')}
+                disabled={generatingGlobal}
+                className="flex-1 px-4 py-3 bg-pink-600 text-white rounded-lg font-medium hover:bg-pink-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {generatingGlobal ? (
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Heart className="w-5 h-5" />
+                )}
+                Generate All Interest Circles
+              </button>
+            </div>
+          </div>
+
+          {globalResult && (
+            <div className={`p-4 rounded-lg ${globalResult.error ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+              {globalResult.error ? (
+                <p>{globalResult.error}</p>
+              ) : (
+                <div>
+                  <p className="font-medium">{globalResult.message}</p>
+                  {globalResult.created_count !== undefined && (
+                    <p className="text-sm mt-1">Created {globalResult.created_count} circles</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Country Circles Section */}
+      {activeSection === 'country' && (
         <div className="bg-white rounded-xl p-6 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">Generate Circles for Country</h3>
+          <h3 className="text-lg font-semibold mb-4">Generate National & Local Circles for Country</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Country Selection */}
@@ -757,15 +909,6 @@ const SettingsTab: React.FC = () => {
                 Options
               </label>
               <div className="space-y-3">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={createOptions.create_global}
-                    onChange={(e) => setCreateOptions({...createOptions, create_global: e.target.checked})}
-                    className="w-4 h-4 text-purple-600 rounded"
-                  />
-                  <span>Create Global circles (one per profession/interest)</span>
-                </label>
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
