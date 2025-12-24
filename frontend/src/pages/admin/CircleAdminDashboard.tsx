@@ -547,6 +547,7 @@ const SettingsTab: React.FC = () => {
   const [countries, setCountries] = useState<any[]>([]);
   const [selectedCountry, setSelectedCountry] = useState('');
   const [createOptions, setCreateOptions] = useState({
+    create_global: true,
     create_national: true,
     create_local: true,
     create_for_professions: true,
