@@ -157,6 +157,9 @@ const PostPopup: React.FC<PopupProps> = ({
   const [openLeftMenu, setOpenLeftMenu] = useState(false);
   const [openRightMenu, setOpenRightMenu] = useState(false);
   const [posting, setPosting] = useState(false);
+    const [submittingReplies, setSubmittingReplies] = useState<
+      Record<string, boolean>
+    >({});
   const [commentInput, setCommentInput] = useState("");
   const [replyInput, setReplyInput] = useState("");
   const [showReplyBoxFor, setShowReplyBoxFor] = useState<string | null>(null);
@@ -319,9 +322,10 @@ const PostPopup: React.FC<PopupProps> = ({
   }, [post.id, isReel]);
 
   const handleReplySubmit = async (id: string) => {
-    if (!replyInput.trim()) return;
-    setPosting(true);
+    if (submittingReplies[id] || !replyInput.trim()) return;
+
     try {
+      setSubmittingReplies((prev) => ({ ...prev, [id]: true }));
       await PostChildComments({
         post_id: post.id,
         comment_id: id,
@@ -359,7 +363,9 @@ const PostPopup: React.FC<PopupProps> = ({
         duration: 3000,
       });
     }
-    setPosting(false);
+finally {
+      setSubmittingReplies((prev) => ({ ...prev, [id]: false }));
+    }
   };
 
   const fetchAndToggleReplies = async (commentId: string) => {
@@ -1022,7 +1028,7 @@ const PostPopup: React.FC<PopupProps> = ({
                       </div>
 
                       {showReplyBoxFor === comment.id && (
-                        <div className="ml-12 mb-2 flex gap-2">
+                        <>
                           {showReplyBoxFor === comment.id && (
                             <div className="ml-12 mb-2 flex gap-2">
                               <input
@@ -1039,18 +1045,18 @@ const PostPopup: React.FC<PopupProps> = ({
                               />
                               <button
                                 className={`px-3 py-1 rounded-full text-sm ${
-                                  replyInput && !posting
+                                  replyInput && !submittingReplies[comment.id]
                                     ? "text-purple-600 hover:text-purple-700"
                                     : "text-purple-300 cursor-not-allowed"
                                 }`}
-                                disabled={!replyInput || posting} // Ensure posting disables button
+                                disabled={!replyInput || submittingReplies[comment.id]} // Ensure posting disables button
                                 onClick={() => handleReplySubmit(comment.id)}
                               >
-                                {posting ? "Posting..." : "Post"}
+                                {submittingReplies[comment.id] ? "Posting..." : "Post"}
                               </button>
                             </div>
                           )}
-                        </div>
+                        </>
                       )}
 
                       {expandedComments[comment.id] &&
