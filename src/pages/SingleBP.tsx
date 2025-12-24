@@ -31,7 +31,11 @@ import {
   FaTrash,
   FaTwitter,
 } from "react-icons/fa";
-import { ChatBubbleLeftIcon, HandThumbUpIcon } from "@heroicons/react/24/solid";
+import { 
+  HandThumbUpIcon as HandThumbUpIconSolid,
+  ChatBubbleLeftIcon 
+} from "@heroicons/react/24/solid";
+import { HandThumbUpIcon as HandThumbUpIconOutline } from "@heroicons/react/24/outline";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import CreditAnimation from "../Common/CreditAnimation";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -509,13 +513,11 @@ const SingleBP = () => {
                 disabled={commentLikeLoading[comment.id]}
                 className="flex items-center space-x-1 hover:text-gray-700 disabled:opacity-50"
               >
-                <HandThumbUpIcon
-                  className={`w-6 h-6 ${
-                    likedComments[comment.id]
-                      ? "text-[#7077FE]"
-                      : "text-gray-600"
-                  }`}
-                />
+                {likedComments[comment.id] ? (
+                  <HandThumbUpIconSolid className="w-6 h-6 text-[#7077FE]" />
+                ) : (
+                  <HandThumbUpIconOutline className="w-6 h-6 text-gray-600" />
+                )}
                 <span className="text-[12px]">{comment.likes_count}</span>
               </button>
               <div className="h-4 border-l border-gray-300"></div>
@@ -707,13 +709,11 @@ const SingleBP = () => {
                       disabled={replyLikeLoading[reply.id]}
                       className="flex items-center space-x-1 hover:text-gray-700 disabled:opacity-50"
                     >
-                      <HandThumbUpIcon
-                        className={`w-5 h-5 ${
-                          likedReplies[reply.id]
-                            ? "text-[#7077FE]"
-                            : "text-gray-600"
-                        }`}
-                      />
+                      {likedReplies[reply.id] ? (
+                        <HandThumbUpIconSolid className="w-5 h-5 text-[#7077FE]" />
+                      ) : (
+                        <HandThumbUpIconOutline className="w-5 h-5 text-gray-600" />
+                      )}
                       <span className="text-[12px]">{reply.likes_count}</span>
                     </button>
                   </div>
