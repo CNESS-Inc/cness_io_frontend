@@ -625,6 +625,60 @@ async def get_interests():
     # Fallback to default interests
     return {"success": True, "interests": DEFAULT_INTERESTS, "total": len(DEFAULT_INTERESTS)}
 
+@app.get("/api/user/profile")
+async def get_user_profile(authorization: Optional[str] = Header(None)):
+    """Get user's profile including professions and interests from external API"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Authorization token required")
+    
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(
+                f"{EXTERNAL_API_BASE}/api/profile",
+                headers={"Authorization": authorization}
+            )
+            if response.status_code == 200:
+                data = response.json()
+                profile_data = data.get("data", {}).get("data", {})
+                
+                # Extract professions and interests
+                professions = profile_data.get("professions", [])
+                interests = profile_data.get("interests", [])
+                country = profile_data.get("country", {})
+                
+                # Normalize professions format
+                user_profession_ids = []
+                for prof in professions:
+                    prof_id = prof.get("profession_id") or prof.get("id") or prof.get("_id")
+                    if prof_id:
+                        user_profession_ids.append(prof_id)
+                
+                # Normalize interests format
+                user_interest_ids = []
+                for interest in interests:
+                    int_id = interest.get("id") or interest.get("_id")
+                    if int_id:
+                        user_interest_ids.append(int_id)
+                
+                return {
+                    "success": True,
+                    "profile": {
+                        "first_name": profile_data.get("first_name"),
+                        "last_name": profile_data.get("last_name"),
+                        "email": profile_data.get("email"),
+                        "country": country.get("name") if country else None,
+                        "country_id": country.get("id") if country else None,
+                        "professions": professions,
+                        "profession_ids": user_profession_ids,
+                        "interests": interests,
+                        "interest_ids": user_interest_ids
+                    }
+                }
+            else:
+                raise HTTPException(status_code=response.status_code, detail="Failed to fetch profile")
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=503, detail=f"External API unavailable: {str(e)}")
+
 @app.get("/api/admin/verify")
 async def verify_admin_session(admin_token: str = Query(...)):
     """Verify admin session"""
