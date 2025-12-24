@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { GetUserNotification, GetUserNotificationCount, MarkNotificationAsRead } from '../Common/ServerAPI';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  GetUserNotification,
+  GetUserNotificationCount,
+  MarkNotificationAsRead,
+} from "../Common/ServerAPI";
 
 interface NotificationItem {
   id: string;
@@ -19,7 +23,8 @@ interface NotificationItem {
 
 const Notification: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedNotification, setSelectedNotification] = useState<NotificationItem | null>(null);
+  const [selectedNotification, setSelectedNotification] =
+    useState<NotificationItem | null>(null);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,19 +45,23 @@ const Notification: React.FC = () => {
   const markAsRead = async (notificationId: string) => {
     try {
       // Call API to mark as read
-      await MarkNotificationAsRead(notificationId,true);
-      
+      await MarkNotificationAsRead(notificationId, true);
+
       // Update local state
-      setNotifications(prev => prev.map(notif => 
-        notif.id === notificationId ? { ...notif, is_read: true } : notif
-      ));
-      
+      setNotifications((prev) =>
+        prev.map((notif) =>
+          notif.id === notificationId ? { ...notif, is_read: true } : notif
+        )
+      );
+
       // Update selected notification if it's the one being viewed
       if (selectedNotification?.id === notificationId) {
-        setSelectedNotification(prev => prev ? { ...prev, is_read: true } : null);
+        setSelectedNotification((prev) =>
+          prev ? { ...prev, is_read: true } : null
+        );
       }
 
-        await fetchNotificationCount();
+      await fetchNotificationCount();
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
@@ -69,7 +78,7 @@ const Notification: React.FC = () => {
     try {
       const res = await GetUserNotificationCount();
       if (res && res.data && res.data.data) {
-        localStorage.setItem("notification_count",res.data.data.count)
+        localStorage.setItem("notification_count", res.data.data.count);
       }
     } catch (error) {
       console.error("Error fetching notification count:", error);
@@ -144,11 +153,13 @@ const Notification: React.FC = () => {
     const now = new Date();
     const date = new Date(dateString);
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    
-    if (diffInSeconds < 60) return 'Just now';
+
+    if (diffInSeconds < 60) return "Just now";
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800)
+      return `${Math.floor(diffInSeconds / 86400)}d ago`;
     return `${Math.floor(diffInSeconds / 604800)}w ago`;
   };
 
@@ -158,7 +169,10 @@ const Notification: React.FC = () => {
         <div className="w-[440px] bg-white border-r border-gray-200 p-4 overflow-y-auto">
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="p-4 rounded-lg shadow-sm border bg-gray-50 border-gray-200 animate-pulse">
+              <div
+                key={i}
+                className="p-4 rounded-lg shadow-sm border bg-gray-50 border-gray-200 animate-pulse"
+              >
                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                 <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
                 <div className="h-3 bg-gray-200 rounded w-1/2"></div>
@@ -178,11 +192,11 @@ const Notification: React.FC = () => {
       {/* Notification Panel */}
       <aside className="w-[440px] bg-white border-r border-gray-200 p-4 overflow-y-auto">
         <button
-                  className="flex items-center gap-1 mb-3 text-black border border-[#D77CFF] rounded-full px-4 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition"
-                  onClick={() => navigate("/dashboard")}
-                >
-                  Go Back
-                </button>
+          className="flex items-center gap-1 mb-3 text-black border border-[#D77CFF] rounded-full px-4 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition"
+          onClick={() => navigate("/dashboard")}
+        >
+          Go Back
+        </button>
         <div className="space-y-4">
           {notifications?.length > 0 ? (
             notifications?.map((notification) => (
@@ -191,8 +205,8 @@ const Notification: React.FC = () => {
                 onClick={() => handleNotificationClick(notification)}
                 className={`cursor-pointer p-4 rounded-lg shadow-sm border transform transition hover:-translate-y-1 hover:shadow-md ${
                   !notification.is_read
-                    ? 'bg-purple-100 border-purple-500'
-                    : 'bg-gray-50 border-gray-200'
+                    ? "bg-purple-100 border-purple-500"
+                    : "bg-gray-50 border-gray-200"
                 }`}
               >
                 <div className="flex justify-between items-start">
@@ -237,9 +251,11 @@ const Notification: React.FC = () => {
         {selectedNotification ? (
           <div
             className={`max-w-2xl mx-auto bg-white p-6 rounded-lg shadow ${
-              (selectedNotification.redirection && selectedNotification.data_id) || selectedNotification.sender_id
-                ? 'cursor-pointer hover:shadow-lg transition-shadow'
-                : ''
+              (selectedNotification.redirection &&
+                selectedNotification.data_id) ||
+              selectedNotification.sender_id
+                ? "cursor-pointer hover:shadow-lg transition-shadow"
+                : ""
             }`}
             onClick={() => handleNotificationRedirect(selectedNotification)}
           >
@@ -252,18 +268,33 @@ const Notification: React.FC = () => {
             <p className="text-gray-700 text-base leading-relaxed">
               {selectedNotification.description}
             </p>
-            {((selectedNotification.redirection && selectedNotification.data_id) || selectedNotification.sender_id) && (
+            {((selectedNotification.redirection &&
+              selectedNotification.data_id) ||
+              selectedNotification.sender_id) && (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <p className="text-sm text-purple-600 font-medium flex items-center gap-2">
-                  {selectedNotification.redirection === 'my-connections' || !selectedNotification.redirection
-                    ? 'Click to view profile'
-                    : selectedNotification.redirection === 'order' || selectedNotification.redirection === 'order-confirmation'
-                    ? 'Click to view order'
-                    : selectedNotification.redirection === 'post'
-                    ? 'Click to view post'
-                    : 'Click to view'}
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  {selectedNotification.redirection === "my-connections" ||
+                  !selectedNotification.redirection
+                    ? "Click to view profile"
+                    : selectedNotification.redirection === "order" ||
+                      selectedNotification.redirection === "order-confirmation"
+                    ? "Click to view order"
+                    : selectedNotification.redirection === "post"
+                    ? "Click to view post"
+                    : "Click to view"}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </p>
               </div>

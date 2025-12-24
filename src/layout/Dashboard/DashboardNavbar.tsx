@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronDownIcon, ChevronUpIcon, TrendingUp, Zap } from "lucide-react";
+import { Bell, ChevronDownIcon, ChevronUpIcon, TrendingUp, Zap } from "lucide-react";
 import { NavLink, useLocation, Link } from "react-router-dom";
 import { iconMap } from "../../assets/icons";
 import hambur from "../../assets/hambur.png";
@@ -465,6 +465,13 @@ const DashboardNavbar = ({
         { label: "Mentor", path: "/dashboard/become-mentor" },
         { label: "Partner", path: "/dashboard/Become_partner" },
       ],
+    },
+    {
+      id: "notifications",
+      icon: <Bell className="w-5 h-5 text-gray-500" />,
+      label: "Notifications",
+      active: true,
+      path: "/dashboard/notification",
     },
   ];
 
