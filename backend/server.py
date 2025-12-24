@@ -1335,16 +1335,14 @@ async def delete_circle(circle_id: str, user_id: str = Query(...)):
 async def check_join_eligibility(
     circle_id: str,
     user_id: str = Query(...),
-    user_profession_id: Optional[str] = Query(None),
-    user_interests: Optional[str] = Query(None),  # Comma-separated interest IDs
     authorization: Optional[str] = Header(None)
 ):
     """
     Check if a user can join a circle based on their profession/interest
     
     Rules:
-    - For profession circles: User must have the same profession
-    - For interest circles: User must have the matching interest
+    - For profession circles: User must have the same profession in their profile
+    - For interest circles: User must have the matching interest in their profile
     - User must be Aspiring level or higher to join profession/interest circles
     - Living and News circles: Anyone can join
     """
@@ -1358,9 +1356,38 @@ async def check_join_eligibility(
     if existing:
         return {"success": True, "can_join": True, "reason": "Already a member", "is_member": True}
     
-    # Get user level from external API
+    # Get user level and profile from external API
     auth_token = authorization[7:] if authorization and authorization.startswith("Bearer ") else None
     user_level = await get_user_level(user_id, auth_token)
+    
+    # Get user's professions and interests from profile
+    user_profession_ids = []
+    user_interest_ids = []
+    
+    if auth_token:
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(
+                    f"{EXTERNAL_API_BASE}/api/profile",
+                    headers={"Authorization": f"Bearer {auth_token}"}
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    profile_data = data.get("data", {}).get("data", {})
+                    
+                    # Extract profession IDs
+                    for prof in profile_data.get("professions", []):
+                        prof_id = prof.get("profession_id") or prof.get("id") or prof.get("_id")
+                        if prof_id:
+                            user_profession_ids.append(prof_id)
+                    
+                    # Extract interest IDs
+                    for interest in profile_data.get("interests", []):
+                        int_id = interest.get("id") or interest.get("_id")
+                        if int_id:
+                            user_interest_ids.append(int_id)
+        except Exception as e:
+            print(f"Error fetching user profile: {e}")
     
     # Living and News circles: Anyone can join
     if circle.get("category") in ["living", "news"]:
@@ -1386,33 +1413,49 @@ async def check_join_eligibility(
     # Check profession match
     if circle.get("category") == "profession":
         circle_profession_id = circle.get("profession_id")
-        if circle_profession_id and user_profession_id:
-            if circle_profession_id != user_profession_id:
+        if circle_profession_id:
+            if not user_profession_ids:
                 return {
                     "success": True,
                     "can_join": False,
-                    "reason": f"This circle is for {circle.get('profession_name', 'a specific profession')}. You can only join circles matching your profession.",
+                    "reason": f"This circle is for {circle.get('profession_name', 'a specific profession')}. Please ensure you have selected your profession in your profile.",
+                    "is_member": False,
+                    "user_level": user_level,
+                    "circle_profession": circle.get("profession_name")
+                }
+            if circle_profession_id not in user_profession_ids:
+                return {
+                    "success": True,
+                    "can_join": False,
+                    "reason": f"This circle is for {circle.get('profession_name', 'a specific profession')}. You can only join circles that match your profession selected during onboarding.",
                     "is_member": False,
                     "user_level": user_level,
                     "circle_profession": circle.get("profession_name"),
-                    "user_profession_id": user_profession_id
+                    "user_profession_ids": user_profession_ids
                 }
-        # If no profession info provided, allow join (for backward compatibility)
     
     # Check interest match
     if circle.get("category") == "interest":
         circle_interest_id = circle.get("interest_id")
-        user_interest_list = user_interests.split(",") if user_interests else []
-        
-        if circle_interest_id and user_interest_list:
-            if circle_interest_id not in user_interest_list:
+        if circle_interest_id:
+            if not user_interest_ids:
                 return {
                     "success": True,
                     "can_join": False,
-                    "reason": f"This circle is for {circle.get('interest_name', 'a specific interest')}. You can only join circles matching your interests.",
+                    "reason": f"This circle is for {circle.get('interest_name', 'a specific interest')}. Please ensure you have selected your interests in your profile.",
                     "is_member": False,
                     "user_level": user_level,
                     "circle_interest": circle.get("interest_name")
+                }
+            if circle_interest_id not in user_interest_ids:
+                return {
+                    "success": True,
+                    "can_join": False,
+                    "reason": f"This circle is for {circle.get('interest_name', 'a specific interest')}. You can only join circles that match your interests selected during onboarding.",
+                    "is_member": False,
+                    "user_level": user_level,
+                    "circle_interest": circle.get("interest_name"),
+                    "user_interest_ids": user_interest_ids
                 }
     
     return {
