@@ -601,13 +601,19 @@ const SettingsTab: React.FC = () => {
         axios.get('https://uatapi.cness.io/api/interests/get-interests')
       ]);
       
-      // Parse professions from external API format
-      const professionData = profRes.data?.success?.data || profRes.data?.data || [];
-      setProfessions(Array.isArray(professionData) ? professionData : []);
+      // Parse professions from external API format - note: uses "title" not "name"
+      const professionData = profRes.data?.data?.data || profRes.data?.success?.data || [];
+      const mappedProfessions = Array.isArray(professionData) 
+        ? professionData.map((p: any) => ({ ...p, name: p.title || p.name, _id: p.id || p._id }))
+        : [];
+      setProfessions(mappedProfessions);
       
       // Parse interests from external API format
-      const interestData = intRes.data?.success?.data || intRes.data?.data || [];
-      setInterests(Array.isArray(interestData) ? interestData : []);
+      const interestData = intRes.data?.data?.data || intRes.data?.success?.data || intRes.data?.data || [];
+      const mappedInterests = Array.isArray(interestData) 
+        ? interestData.map((i: any) => ({ ...i, name: i.title || i.interestName || i.name, _id: i.id || i._id }))
+        : [];
+      setInterests(mappedInterests);
     } catch (error) {
       console.error('Error fetching professions/interests:', error);
       // Fallback to local APIs
