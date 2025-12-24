@@ -8,9 +8,12 @@ export interface Circle {
   category: 'profession' | 'interest' | 'living' | 'news';
   image_url: string;
   country?: string;
+  province?: string;
   city?: string;
   profession_id?: string;
+  profession_name?: string;
   interest_id?: string;
+  interest_name?: string;
   creator_id: string;
   member_count: number;
   active_today: number;
