@@ -10,7 +10,6 @@ import {
   UpdateChildComment,
   DeleteComment,
   DeleteChildComment,
-  getFriendsForTagging,
 } from "../../Common/ServerAPI";
 import { BsThreeDots } from "react-icons/bs";
 import { FiEdit2, FiLink2, FiSend, FiTrash2, FiX } from "react-icons/fi";
@@ -106,7 +105,8 @@ const DeleteConfirmationModal = ({
         <div className="p-4 sm:p-6 w-full max-w-md mx-auto">
           <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
           <p className="mb-6">
-            Are you sure you want to delete this {type}? This action cannot be undone.
+            Are you sure you want to delete this {type}? This action cannot be
+            undone.
           </p>
           <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
             <button
@@ -175,7 +175,7 @@ const PostPopup: React.FC<PopupProps> = ({
     replyId: string;
   } | null>(null);
   const [editText, setEditText] = useState("");
-  
+
   // Delete states
   const [deleteConfirmation, setDeleteConfirmation] = useState({
     isOpen: false,
@@ -738,16 +738,16 @@ const PostPopup: React.FC<PopupProps> = ({
       onPostUpdated();
     }
   };
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const handleUserProfileRedirection = (user_id:any) =>{
-    if(loggedInUserID === user_id){
-    navigate(`/dashboard/Profile`);
-    }else{
-    navigate(`/dashboard/social/user-profile/${user_id}`);
+  const handleUserProfileRedirection = (user_id: any) => {
+    if (loggedInUserID === user_id) {
+      navigate(`/dashboard/Profile`);
+    } else {
+      navigate(`/dashboard/social/user-profile/${user_id}`);
     }
-    onClose()
-  }
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
@@ -917,7 +917,12 @@ const PostPopup: React.FC<PopupProps> = ({
                 <div key={comment.id} className="flex flex-col gap-3 w-full">
                   <div className="flex items-center justify-between">
                     <div className="flex justify-start items-center gap-2">
-                      <div className="cursor-pointer" onClick={()=>handleUserProfileRedirection(comment.user_id)}>
+                      <div
+                        className="cursor-pointer"
+                        onClick={() =>
+                          handleUserProfileRedirection(comment.user_id)
+                        }
+                      >
                         <img
                           src={
                             comment.profile.profile_picture || "/profile.png"
@@ -1018,27 +1023,33 @@ const PostPopup: React.FC<PopupProps> = ({
 
                       {showReplyBoxFor === comment.id && (
                         <div className="ml-12 mb-2 flex gap-2">
-                          <input
-                            type="text"
-                            placeholder="Add a reflection..."
-                            className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none text-sm"
-                            value={replyInput}
-                            onChange={(e) => setReplyInput(e.target.value)}
-                            onKeyDown={(e) =>
-                              e.key === "Enter" && handleReplySubmit(comment.id)
-                            }
-                          />
-                          <button
-                            className={`px-3 py-1 rounded-full text-sm ${
-                              replyInput
-                                ? "text-purple-600 hover:text-purple-700"
-                                : "text-purple-300 cursor-not-allowed"
-                            }`}
-                            disabled={!replyInput}
-                            onClick={() => handleReplySubmit(comment.id)}
-                          >
-                            Post
-                          </button>
+                          {showReplyBoxFor === comment.id && (
+                            <div className="ml-12 mb-2 flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="Add a reflection..."
+                                className="flex-1 rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none text-sm"
+                                value={replyInput}
+                                onChange={(e) => setReplyInput(e.target.value)}
+                                onKeyDown={(e) =>
+                                  e.key === "Enter" &&
+                                  handleReplySubmit(comment.id)
+                                }
+                                disabled={posting} // Add disabled state to input too
+                              />
+                              <button
+                                className={`px-3 py-1 rounded-full text-sm ${
+                                  replyInput && !posting
+                                    ? "text-purple-600 hover:text-purple-700"
+                                    : "text-purple-300 cursor-not-allowed"
+                                }`}
+                                disabled={!replyInput || posting} // Ensure posting disables button
+                                onClick={() => handleReplySubmit(comment.id)}
+                              >
+                                {posting ? "Posting..." : "Post"}
+                              </button>
+                            </div>
+                          )}
                         </div>
                       )}
 
@@ -1047,7 +1058,10 @@ const PostPopup: React.FC<PopupProps> = ({
                         comment.replies.length > 0 && (
                           <div className="ml-12 space-y-3 border-l-2 border-gray-200 pl-3">
                             {comment.replies.map((reply: any) => (
-                              <div key={reply.id} className="flex flex-col gap-2 pt-2">
+                              <div
+                                key={reply.id}
+                                className="flex flex-col gap-2 pt-2"
+                              >
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-2">
                                     <img
@@ -1091,7 +1105,7 @@ const PostPopup: React.FC<PopupProps> = ({
                                     </div>
                                   )}
                                 </div>
-                                
+
                                 {/* Reply Content or Edit Field */}
                                 {editingReply?.commentId === comment.id &&
                                 editingReply?.replyId === reply.id ? (
@@ -1099,7 +1113,9 @@ const PostPopup: React.FC<PopupProps> = ({
                                     <textarea
                                       className="w-full rounded-lg px-2 py-1 focus:outline-none bg-gray-100 border border-gray-300 resize-none text-sm"
                                       value={editText}
-                                      onChange={(e) => setEditText(e.target.value)}
+                                      onChange={(e) =>
+                                        setEditText(e.target.value)
+                                      }
                                       rows={2}
                                     />
                                     <div className="flex gap-2 mt-2">

@@ -154,7 +154,9 @@ const CommentBox = ({
   const [replySuggestions, setReplySuggestions] = useState<any[]>([]);
   const [showReplySuggestions, setShowReplySuggestions] = useState(false);
   const [selectedReplyMentionIndex, setSelectedReplyMentionIndex] = useState(0);
-
+  const [submittingReplies, setSubmittingReplies] = useState<
+    Record<string, boolean>
+  >({});
   // Load More States
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -399,7 +401,7 @@ const CommentBox = ({
 
   const handleSubmitComment = async () => {
     if (!commentText.trim()) return;
-setIsSubmitting(true);
+    setIsSubmitting(true);
     try {
       const formattedData = {
         text: commentText,
@@ -472,15 +474,17 @@ setIsSubmitting(true);
         type: "error",
         duration: 5000,
       });
-    }finally {
-    setIsSubmitting(false);
-  }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReplySubmit = async (commentId: string) => {
-    if (!replyText.trim()) return;
+    if (submittingReplies[commentId] || !replyText.trim()) return;
 
     try {
+      setSubmittingReplies((prev) => ({ ...prev, [commentId]: true }));
+
       const formattedData = {
         text: replyText,
         comment_id: commentId,
@@ -562,6 +566,8 @@ setIsSubmitting(true);
         type: "error",
         duration: 5000,
       });
+    } finally {
+      setSubmittingReplies((prev) => ({ ...prev, [commentId]: false }));
     }
   };
 
@@ -1243,14 +1249,23 @@ setIsSubmitting(true);
                             )}
                           <button
                             className={`px-3 py-1 rounded-full text-sm ${
-                              replyText
+                              replyText && !submittingReplies[comment.id]
                                 ? "text-purple-600 hover:text-purple-700"
                                 : "text-purple-300 cursor-not-allowed"
                             }`}
-                            disabled={!replyText}
+                            disabled={
+                              !replyText || submittingReplies[comment.id]
+                            }
                             onClick={() => handleReplySubmit(comment.id)}
                           >
-                            Post
+                            {submittingReplies[comment.id] ? (
+                              <>
+                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-purple-600 mr-1 inline-block"></div>
+                                Posting...
+                              </>
+                            ) : (
+                              "Post"
+                            )}
                           </button>
                         </div>
                       </div>
@@ -1451,31 +1466,37 @@ setIsSubmitting(true);
             <div className="flex items-center gap-2">
               <div className="flex-1 relative">
                 <textarea
-  ref={commentTextareaRef}
-  placeholder="Add a reflection... (use @ to mention friends)"
-  className="w-full rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none resize-none"
-  value={commentText}
-  onChange={(e) => {
-    handleCommentTextChange(e.target.value);
-    // Fetch suggestions when user types @
-    if (e.target.value.includes("@")) {
-      const mentionText = e.target.value.match(/@(\w*)$/)?.[1] || "";
-      if (mentionText) {
-        fetchFriendSuggestions(mentionText);
-      }
-    }
-  }}
-  onKeyDown={handleCommentKeyDown}
-  onKeyPress={(e) => {
-    if (e.key === "Enter" && !e.shiftKey && !showCommentSuggestions && !isSubmitting) {
-      e.preventDefault(); // Add this line
-      handleSubmitComment();
-    }
-  }}
-  rows={1}
-  style={{ minHeight: "40px", maxHeight: "120px" }}
-  disabled={isSubmitting} // Optional: disable while submitting
-/>
+                  ref={commentTextareaRef}
+                  placeholder="Add a reflection... (use @ to mention friends)"
+                  className="w-full rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none resize-none"
+                  value={commentText}
+                  onChange={(e) => {
+                    handleCommentTextChange(e.target.value);
+                    // Fetch suggestions when user types @
+                    if (e.target.value.includes("@")) {
+                      const mentionText =
+                        e.target.value.match(/@(\w*)$/)?.[1] || "";
+                      if (mentionText) {
+                        fetchFriendSuggestions(mentionText);
+                      }
+                    }
+                  }}
+                  onKeyDown={handleCommentKeyDown}
+                  onKeyPress={(e) => {
+                    if (
+                      e.key === "Enter" &&
+                      !e.shiftKey &&
+                      !showCommentSuggestions &&
+                      !isSubmitting
+                    ) {
+                      e.preventDefault(); // Add this line
+                      handleSubmitComment();
+                    }
+                  }}
+                  rows={1}
+                  style={{ minHeight: "40px", maxHeight: "120px" }}
+                  disabled={isSubmitting} // Optional: disable while submitting
+                />
 
                 {/* Friend Suggestions */}
                 {showCommentSuggestions && commentSuggestions.length > 0 && (
