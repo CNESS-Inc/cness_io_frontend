@@ -203,6 +203,30 @@ const CircleCard: React.FC<CircleCardProps> = ({ circle, isMember = false, onMem
           </button>
         </div>
       )}
+      
+      {/* Error Toast */}
+      {showError && joinError && (
+        <div 
+          className="absolute bottom-4 left-4 right-4 bg-red-50 border border-red-200 rounded-lg p-3 shadow-lg z-10"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-start gap-2">
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm text-red-700">{joinError}</p>
+            </div>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowError(false);
+              }}
+              className="text-red-400 hover:text-red-600"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
