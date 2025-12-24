@@ -27,6 +27,7 @@ const CircleDetail: React.FC = () => {
   const [newPostContent, setNewPostContent] = useState('');
   const [posting, setPosting] = useState(false);
   const [joining, setJoining] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
 
   useEffect(() => {
     if (circleId) {
