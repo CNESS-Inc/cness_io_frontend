@@ -201,9 +201,13 @@ const CircleDetail: React.FC = () => {
                   {getScopeIcon()}
                   {circle.scope}
                 </span>
-                <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium capitalize ${getCategoryBadgeStyle()}`}>
+                <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getCategoryBadgeStyle()}`}>
                   {getCategoryIcon()}
-                  {circle.category}
+                  {circle.category === 'profession' && circle.profession_name 
+                    ? circle.profession_name 
+                    : circle.category === 'interest' && circle.interest_name 
+                    ? circle.interest_name 
+                    : circle.category}
                 </span>
               </div>
 
