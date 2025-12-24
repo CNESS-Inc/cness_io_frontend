@@ -2128,7 +2128,7 @@ async def generate_all_global_circles(
             "message": f"Generated {created_count} global interest circles",
             "created_count": created_count,
             "skipped_count": skipped_count,
-            "total_interests": len(DEFAULT_INTERESTS)
+            "total_interests": len(interests)
         }
     
     raise HTTPException(status_code=400, detail="Invalid type. Use 'professions' or 'interests'")
