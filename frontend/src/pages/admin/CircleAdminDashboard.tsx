@@ -842,7 +842,17 @@ const SettingsTab: React.FC = () => {
       setGenerationResult(response.data);
       fetchCountries();
     } catch (error: any) {
-      setGenerationResult({ error: error.response?.data?.detail || 'Failed to generate circles' });
+      const errorMsg = error.response?.data?.detail || 'Failed to generate circles';
+      
+      // Show error modal
+      setModalConfig({
+        type: 'error',
+        title: 'Circle Generation Failed',
+        message: errorMsg
+      });
+      setShowModal(true);
+      
+      setGenerationResult({ error: errorMsg });
     }
     setGenerating(false);
   };
@@ -855,16 +865,40 @@ const SettingsTab: React.FC = () => {
         role,
         ...rolePermissions[role]
       });
-      alert('Permissions saved successfully');
+      
+      // Show success modal for permissions
+      setModalConfig({
+        type: 'success',
+        title: 'Permissions Saved!',
+        message: `${role} level permissions have been updated successfully.`
+      });
+      setShowModal(true);
     } catch (error) {
       console.error('Error saving permissions:', error);
-      alert('Failed to save permissions');
+      
+      // Show error modal
+      setModalConfig({
+        type: 'error',
+        title: 'Failed to Save Permissions',
+        message: 'An error occurred while saving permissions. Please try again.'
+      });
+      setShowModal(true);
     }
     setSavingPermissions(false);
   };
 
   return (
     <div>
+      {/* Success/Error Modal */}
+      <SuccessModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        type={modalConfig.type}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        details={modalConfig.details}
+      />
+      
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Settings</h2>
 
       {/* Section Tabs */}
