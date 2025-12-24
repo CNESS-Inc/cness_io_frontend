@@ -81,16 +81,38 @@ const CircleCard: React.FC<CircleCardProps> = ({ circle, isMember = false, onMem
   const handleJoinLeave = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setJoining(true);
+    setJoinError(null);
+    setShowError(false);
+    
     try {
       if (memberStatus) {
         await leaveCircle(circle.id);
         setMemberStatus(false);
       } else {
+        // Check eligibility first for profession/interest circles
+        if (circle.category === 'profession' || circle.category === 'interest') {
+          try {
+            const eligibility = await checkJoinEligibility(circle.id);
+            if (!eligibility.can_join) {
+              setJoinError(eligibility.reason);
+              setShowError(true);
+              setJoining(false);
+              return;
+            }
+          } catch (eligibilityError) {
+            // If eligibility check fails, continue with join attempt
+            console.warn('Eligibility check failed, attempting join:', eligibilityError);
+          }
+        }
+        
         await joinCircle(circle.id);
         setMemberStatus(true);
       }
       onMembershipChange?.();
-    } catch (error) {
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.detail || 'Failed to join circle';
+      setJoinError(errorMsg);
+      setShowError(true);
       console.error('Error changing membership:', error);
     }
     setJoining(false);
