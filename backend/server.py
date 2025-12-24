@@ -1625,8 +1625,8 @@ async def generate_circles_for_country(
     created_circles = []
     now = datetime.utcnow()
     
-    # Create Global circles
-    if request.create_for_professions:
+    # Create Global circles (only if create_global is True)
+    if request.create_global and request.create_for_professions:
         for prof in professions:
             prof_id = prof.get("_id")
             prof_name = prof.get("name")
