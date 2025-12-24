@@ -182,6 +182,7 @@ const CommentBox = ({
       text: "",
     });
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Mention functionality for comments
   const {
@@ -398,7 +399,7 @@ const CommentBox = ({
 
   const handleSubmitComment = async () => {
     if (!commentText.trim()) return;
-
+setIsSubmitting(true);
     try {
       const formattedData = {
         text: commentText,
@@ -471,7 +472,9 @@ const CommentBox = ({
         type: "error",
         duration: 5000,
       });
-    }
+    }finally {
+    setIsSubmitting(false);
+  }
   };
 
   const handleReplySubmit = async (commentId: string) => {
@@ -1448,28 +1451,31 @@ const CommentBox = ({
             <div className="flex items-center gap-2">
               <div className="flex-1 relative">
                 <textarea
-                  ref={commentTextareaRef}
-                  placeholder="Add a reflection... (use @ to mention friends)"
-                  className="w-full rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none resize-none"
-                  value={commentText}
-                  onChange={(e) => {
-                    handleCommentTextChange(e.target.value);
-                    // Fetch suggestions when user types @
-                    if (e.target.value.includes("@")) {
-                      const mentionText =
-                        e.target.value.match(/@(\w*)$/)?.[1] || "";
-                      if (mentionText) {
-                        fetchFriendSuggestions(mentionText);
-                      }
-                    }
-                  }}
-                  onKeyDown={handleCommentKeyDown}
-                  onKeyPress={(e) =>
-                    e.key === "Enter" && !e.shiftKey && handleSubmitComment()
-                  }
-                  rows={1}
-                  style={{ minHeight: "40px", maxHeight: "120px" }}
-                />
+  ref={commentTextareaRef}
+  placeholder="Add a reflection... (use @ to mention friends)"
+  className="w-full rounded-full px-4 py-2 focus:outline-none bg-gray-100 border-none resize-none"
+  value={commentText}
+  onChange={(e) => {
+    handleCommentTextChange(e.target.value);
+    // Fetch suggestions when user types @
+    if (e.target.value.includes("@")) {
+      const mentionText = e.target.value.match(/@(\w*)$/)?.[1] || "";
+      if (mentionText) {
+        fetchFriendSuggestions(mentionText);
+      }
+    }
+  }}
+  onKeyDown={handleCommentKeyDown}
+  onKeyPress={(e) => {
+    if (e.key === "Enter" && !e.shiftKey && !showCommentSuggestions && !isSubmitting) {
+      e.preventDefault(); // Add this line
+      handleSubmitComment();
+    }
+  }}
+  rows={1}
+  style={{ minHeight: "40px", maxHeight: "120px" }}
+  disabled={isSubmitting} // Optional: disable while submitting
+/>
 
                 {/* Friend Suggestions */}
                 {showCommentSuggestions && commentSuggestions.length > 0 && (
