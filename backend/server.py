@@ -2747,6 +2747,39 @@ async def join_chatroom(chatroom_id: str, user_id: str = Query(...)):
     
     return {"success": True, "message": "Joined chatroom"}
 
+@app.post("/api/circles/chatrooms/{chatroom_id}/add-member")
+async def add_member_to_chatroom(
+    chatroom_id: str, 
+    member_user_id: str = Query(..., description="User ID to add to chatroom")
+):
+    """Add a circle member to a chatroom"""
+    chatroom = await circle_chatrooms_collection.find_one({"id": chatroom_id})
+    if not chatroom:
+        raise HTTPException(status_code=404, detail="Chatroom not found")
+    
+    # Check if user is member of the circle
+    membership = await circle_members_collection.find_one({
+        "circle_id": chatroom["circle_id"],
+        "user_id": member_user_id
+    })
+    if not membership:
+        raise HTTPException(status_code=403, detail="User must be a circle member to be added")
+    
+    # Check if already a member
+    if member_user_id in chatroom.get("members", []):
+        return {"success": True, "message": "User is already a member", "already_member": True}
+    
+    # Add to chatroom
+    await circle_chatrooms_collection.update_one(
+        {"id": chatroom_id},
+        {
+            "$push": {"members": member_user_id},
+            "$inc": {"member_count": 1}
+        }
+    )
+    
+    return {"success": True, "message": "Member added to chatroom", "user_id": member_user_id}
+
 @app.post("/api/circles/chatrooms/{chatroom_id}/messages")
 async def send_chat_message(
     chatroom_id: str,
