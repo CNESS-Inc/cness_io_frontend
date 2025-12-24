@@ -3,9 +3,81 @@ import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, Settings, LogOut, Users, Activity,
   Globe, Flag, MapPin, TrendingUp, BarChart3, RefreshCw,
-  ChevronRight, Circle as CircleIcon, Briefcase, Heart, Search, X
+  ChevronRight, Circle as CircleIcon, Briefcase, Heart, Search, X, CheckCircle, AlertTriangle
 } from 'lucide-react';
 import axios from 'axios';
+
+// Success/Error Modal Component
+interface SuccessModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  type: 'success' | 'error';
+  title: string;
+  message: string;
+  details?: string;
+}
+
+const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, onClose, type, title, message, details }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      
+      {/* Modal */}
+      <div className="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 animate-in fade-in zoom-in duration-200">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        
+        {/* Icon */}
+        <div className="flex justify-center mb-4">
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+            type === 'success' ? 'bg-green-100' : 'bg-red-100'
+          }`}>
+            {type === 'success' ? (
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            ) : (
+              <AlertTriangle className="w-8 h-8 text-red-600" />
+            )}
+          </div>
+        </div>
+        
+        {/* Title */}
+        <h3 className={`text-xl font-bold text-center mb-2 ${
+          type === 'success' ? 'text-green-800' : 'text-red-800'
+        }`}>
+          {title}
+        </h3>
+        
+        {/* Message */}
+        <p className="text-gray-600 text-center mb-2">{message}</p>
+        
+        {/* Details */}
+        {details && (
+          <p className="text-sm text-gray-500 text-center mb-4">{details}</p>
+        )}
+        
+        {/* OK Button */}
+        <button
+          onClick={onClose}
+          className={`w-full py-3 rounded-xl font-medium text-white transition-colors ${
+            type === 'success' 
+              ? 'bg-green-600 hover:bg-green-700' 
+              : 'bg-red-600 hover:bg-red-700'
+          }`}
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  );
+};
 
 interface Statistics {
   circles: {
