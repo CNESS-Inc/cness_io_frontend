@@ -1041,7 +1041,7 @@ finally {
                                   e.key === "Enter" &&
                                   handleReplySubmit(comment.id)
                                 }
-                                disabled={posting} // Add disabled state to input too
+                                disabled={submittingReplies[comment.id]}
                               />
                               <button
                                 className={`px-3 py-1 rounded-full text-sm ${
@@ -1049,7 +1049,7 @@ finally {
                                     ? "text-purple-600 hover:text-purple-700"
                                     : "text-purple-300 cursor-not-allowed"
                                 }`}
-                                disabled={!replyInput || submittingReplies[comment.id]} // Ensure posting disables button
+                                disabled={!replyInput || submittingReplies[comment.id]} 
                                 onClick={() => handleReplySubmit(comment.id)}
                               >
                                 {submittingReplies[comment.id] ? "Posting..." : "Post"}
