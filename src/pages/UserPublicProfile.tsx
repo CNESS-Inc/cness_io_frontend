@@ -508,7 +508,7 @@ export default function UserProfileView() {
         }
 
         await UpdateBestPractice(formData);
-
+      setTags([]);
         showToast({
           message:
             "Best practice updated successfully and please wait until admin reviews it!",
@@ -607,6 +607,7 @@ export default function UserProfileView() {
       interest: "",
       file: null,
     });
+    setTags([]);
   };
 
   const removeTag = (index: number) => {
