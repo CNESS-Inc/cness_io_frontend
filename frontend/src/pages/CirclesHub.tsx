@@ -88,10 +88,14 @@ const CirclesHub: React.FC = () => {
 
   useEffect(() => {
     fetchCircles();
-  }, [selectedScope, selectedCategory, searchQuery, sortBy, userCountry, selectedProfession, selectedInterest]);
+  }, [selectedScope, selectedCategory, searchQuery, sortBy, userCountry, userProvince, selectedProfession, selectedInterest]);
 
   const handleCountryDetected = (country: string) => {
     setUserCountry(country);
+  };
+
+  const handleProvinceDetected = (province: string) => {
+    setUserProvince(province);
   };
 
   const handleProfessionSelect = (profession: Profession | null) => {
