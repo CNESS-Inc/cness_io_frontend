@@ -1663,7 +1663,7 @@ async def generate_circles_for_country(
                 await circles_collection.insert_one(circle_doc)
                 created_circles.append({"scope": "global", "name": circle_doc["name"]})
     
-    if request.create_for_interests:
+    if request.create_global and request.create_for_interests:
         for interest in interests:
             interest_id = interest.get("id")
             interest_name = interest.get("name")
