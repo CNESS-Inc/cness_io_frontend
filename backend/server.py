@@ -1224,6 +1224,98 @@ async def delete_circle(circle_id: str, user_id: str = Query(...)):
 
 # ============== MEMBERSHIP APIS ==============
 
+@app.get("/api/circles/{circle_id}/check-join-eligibility")
+async def check_join_eligibility(
+    circle_id: str,
+    user_id: str = Query(...),
+    user_profession_id: Optional[str] = Query(None),
+    user_interests: Optional[str] = Query(None),  # Comma-separated interest IDs
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Check if a user can join a circle based on their profession/interest
+    
+    Rules:
+    - For profession circles: User must have the same profession
+    - For interest circles: User must have the matching interest
+    - User must be Aspiring level or higher to join profession/interest circles
+    - Living and News circles: Anyone can join
+    """
+    circle = await circles_collection.find_one({"id": circle_id})
+    
+    if not circle:
+        raise HTTPException(status_code=404, detail="Circle not found")
+    
+    # Check if already a member
+    existing = await circle_members_collection.find_one({"circle_id": circle_id, "user_id": user_id})
+    if existing:
+        return {"success": True, "can_join": True, "reason": "Already a member", "is_member": True}
+    
+    # Get user level from external API
+    auth_token = authorization[7:] if authorization and authorization.startswith("Bearer ") else None
+    user_level = await get_user_level(user_id, auth_token)
+    
+    # Living and News circles: Anyone can join
+    if circle.get("category") in ["living", "news"]:
+        return {
+            "success": True,
+            "can_join": True,
+            "reason": "Open circle - anyone can join",
+            "is_member": False,
+            "user_level": user_level
+        }
+    
+    # For profession/interest circles, user must be Aspiring or higher
+    if user_level == "Member":
+        return {
+            "success": True,
+            "can_join": False,
+            "reason": "You must complete Aspiring certification to join profession/interest circles",
+            "is_member": False,
+            "user_level": user_level,
+            "required_level": "Aspiring"
+        }
+    
+    # Check profession match
+    if circle.get("category") == "profession":
+        circle_profession_id = circle.get("profession_id")
+        if circle_profession_id and user_profession_id:
+            if circle_profession_id != user_profession_id:
+                return {
+                    "success": True,
+                    "can_join": False,
+                    "reason": f"This circle is for {circle.get('profession_name', 'a specific profession')}. You can only join circles matching your profession.",
+                    "is_member": False,
+                    "user_level": user_level,
+                    "circle_profession": circle.get("profession_name"),
+                    "user_profession_id": user_profession_id
+                }
+        # If no profession info provided, allow join (for backward compatibility)
+    
+    # Check interest match
+    if circle.get("category") == "interest":
+        circle_interest_id = circle.get("interest_id")
+        user_interest_list = user_interests.split(",") if user_interests else []
+        
+        if circle_interest_id and user_interest_list:
+            if circle_interest_id not in user_interest_list:
+                return {
+                    "success": True,
+                    "can_join": False,
+                    "reason": f"This circle is for {circle.get('interest_name', 'a specific interest')}. You can only join circles matching your interests.",
+                    "is_member": False,
+                    "user_level": user_level,
+                    "circle_interest": circle.get("interest_name")
+                }
+    
+    return {
+        "success": True,
+        "can_join": True,
+        "reason": "Eligible to join",
+        "is_member": False,
+        "user_level": user_level
+    }
+
 @app.post("/api/circles/{circle_id}/join")
 async def join_circle(circle_id: str, user_id: str = Query(...)):
     """Join a circle"""
