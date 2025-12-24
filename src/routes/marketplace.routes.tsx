@@ -3,6 +3,7 @@ import ComingSoon from "../pages/ComingSoon";
 
 // Layout components (create these if needed)
  import MarketplaceLayout from "../features/marketplace/shared/layout/Marketplacelayout";
+import Recommendation from "../features/marketplace/buyer/pages/Recommendation";
 //import OrderHistory from "../features/marketplace/buyer/pages/OrderHistory";
 // import SellerLayout from "../layout/Marketplace/SellerLayout";
 
@@ -17,6 +18,7 @@ const MarketProductDetail = lazy(() => import("../features/marketplace/buyer/pag
 const BuyerCart = lazy(() => import("../pages/ComingSoon"));
 const BuyerCheckout = lazy(() => import("../pages/ComingSoon"));
 const OrderHistory = lazy(() => import("../features/marketplace/buyer/pages/OrderHistory"));
+
 
 // Seller Pages - Lazy loaded (replace with your actual page paths)
 const SellerDashboard = lazy(() => import("../pages/ComingSoon"));
@@ -79,6 +81,10 @@ export const marketplaceRoutes = {
     {
       path: "search",
       element: <ComingSoon />,
+    },
+    {
+      path:"recommendation",
+       element: <Recommendation />,
     },
 
     // ========================================

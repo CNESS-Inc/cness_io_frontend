@@ -1,4 +1,4 @@
-import PriceDisplay from '../components/Products/PriceDisplay';
+import PriceDisplay from '../Products/PriceDisplay';
 
 interface OrderPlaceProps {
   date: string;
@@ -10,7 +10,7 @@ interface OrderPlaceProps {
 
 export default function OrderPlace({ date, total, originalPrice, discount, orderId }: OrderPlaceProps) {
   return (
-    <div className="flex pt-[15px] pr-[45px] pb-[15px] pl-[45px] justify-between items-start self-stretch shrink-0 flex-nowrap rounded-tl-[20px] rounded-tr-[20px] rounded-br-none rounded-bl-none border-solid border border-[#f3f3f3] relative overflow-hidden">
+    <div className="flex pt-[20px] pr-[45px] pb-[15px] pl-[45px] justify-between items-start self-stretch shrink-0 flex-nowrap rounded-tl-[20px] rounded-tr-[20px]  bg-gradient-to-t from-[#FFFFFF] to-[#F1F3FF] rounded-br-none rounded-bl-none border-solid border border-[#f3f3f3] relative overflow-hidden">
       <div className="flex w-[402.469px] h-[72px] items-center shrink-0 flex-nowrap relative">
         <div className="flex w-[402.469px] gap-[80px] items-center self-stretch shrink-0 flex-nowrap relative">
           <div className="flex w-[130px] flex-col gap-[5px] items-start shrink-0 flex-nowrap relative">
@@ -21,16 +21,18 @@ export default function OrderPlace({ date, total, originalPrice, discount, order
               {date}
             </span>
           </div>
-          <div className="flex w-[192.469px] flex-col gap-[5px] items-start shrink-0 flex-nowrap relative">
-            <span className="h-[19px] shrink-0 basis-auto font-['Poppins'] text-[16px] font-normal leading-[19px] text-[#363842] relative text-left overflow-hidden whitespace-nowrap">
-              Total
-            </span>
-            <PriceDisplay 
-              currentPrice={total}
-              originalPrice={originalPrice}
-              discount={discount}
-            />
-          </div>
+          <div className="flex w-[192.469px] flex-col gap-[5px] items-start shrink-0">
+  <span className="font-['Poppins'] text-[16px] font-normal leading-[19px] text-[#363842] whitespace-nowrap">
+    Total
+  </span>
+
+  <PriceDisplay 
+    currentPrice={total}
+    originalPrice={originalPrice}
+    discount={discount}
+    variant="inline"
+  />
+</div>
         </div>
       </div>
       <div className="flex w-[180px] h-[72px] items-center shrink-0 flex-nowrap relative">

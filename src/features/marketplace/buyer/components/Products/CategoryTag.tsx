@@ -2,18 +2,15 @@ import React from 'react';
 
 interface CategoryTagProps {
   label: string;
-  color: 'purple' | 'yellow';
+  color: string;
   className?: string;
 }
 
 export const CategoryTag: React.FC<CategoryTagProps> = ({ label, color, className = "" }) => {
-  const colorClasses = {
-    purple: 'bg-[#fce9ff] text-[#ef7dff]',
-    yellow: 'bg-[#f8eac7] text-[#745301]'
-  };
+
 
   return (
-    <div className={`flex pt-0 pr-[10px] pb-0 pl-[10px] gap-[10px] justify-center items-center shrink-0 flex-nowrap ${colorClasses[color]} rounded-[20px] relative ${className}`}>
+    <div className={`flex pt-0 pr-[10px] pb-0 pl-[10px] gap-[10px] justify-center items-center shrink-0 flex-nowrap ${color}  rounded-[20px] relative ${className}`}>
       <div className="flex gap-[8px] items-center shrink-0 flex-nowrap bg-[rgba(255,255,255,0.1)] rounded-[100px] relative">
         <div className="flex gap-[2px] justify-center items-center shrink-0 flex-nowrap relative">
           <span className="flex justify-start items-start shrink-0 basis-auto font-['Open_Sans'] text-[12px] font-normal leading-[16px] relative text-left whitespace-nowrap">

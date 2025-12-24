@@ -41,8 +41,8 @@ export default function MoodSelector() {
                   transition-all text-[14px]
                   ${
                     selectedMood === mood.id
-                      ? "bg-[#F1F3FF] border-[#6366f1] text-black"
-                      : "bg-[#F1F3FF] border-[#e5e7eb] text-[#6b7280] hover:border-[#6366f1] hover:text-[#6366f1]"
+                      ? "bg-gradient-to-b from-[#7077FE] to-[#424ADC] text-white"
+                      : "bg-[#F1F3FF] text-[#6b7280] hover:text-white hover:bg-gradient-to-b  hover:from-[#7077FE] hover:to-[#424ADC]"
                   }
                 `}
               >
