@@ -3,12 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Users, Activity, Wifi, Globe, Flag, MapPin, 
   Briefcase, Heart, Flame, Newspaper, Share2, Settings,
-  MessageSquare, BookOpen, UserPlus, Loader2, MessageCircle
+  MessageSquare, BookOpen, UserPlus, Loader2, MessageCircle, AlertCircle
 } from 'lucide-react';
 import type { Circle, CirclePost } from '../types/circles';
 import { 
   getCircle, getCirclePosts, 
-  checkMembership, joinCircle, leaveCircle, createCirclePost 
+  checkMembership, joinCircle, leaveCircle, createCirclePost,
+  checkJoinEligibility
 } from '../services/circlesApi';
 import CirclePostCard from '../components/Circles/CirclePostCard';
 import ChatRoomList from '../components/Circles/ChatRoomList';
