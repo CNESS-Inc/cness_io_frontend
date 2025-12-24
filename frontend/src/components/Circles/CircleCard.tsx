@@ -137,7 +137,11 @@ const CircleCard: React.FC<CircleCardProps> = ({ circle, isMember = false, onMem
         </span>
         <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize flex items-center gap-1 ${getCategoryBadgeStyle()}`}>
           {getCategoryIcon()}
-          {circle.category}
+          {circle.category === 'profession' && circle.profession_name 
+            ? circle.profession_name 
+            : circle.category === 'interest' && circle.interest_name 
+            ? circle.interest_name 
+            : circle.category}
         </span>
       </div>
 
