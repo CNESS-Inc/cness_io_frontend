@@ -56,6 +56,7 @@ const CircleDetail: React.FC = () => {
 
   const handleJoinLeave = async () => {
     setJoining(true);
+    setJoinError(null);
     try {
       if (isMember) {
         await leaveCircle(circleId!);
