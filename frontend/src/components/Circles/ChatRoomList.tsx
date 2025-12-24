@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Send, MessageCircle, Plus, Users, Lock, Loader2, Wifi, WifiOff } from 'lucide-react';
+import { X, Send, MessageCircle, Plus, Users, Lock, Loader2, Wifi, WifiOff, UserPlus, Check, Search } from 'lucide-react';
 import { 
   getCircleChatrooms, createChatroom, joinChatroom, 
-  getChatMessages, sendChatMessage, checkChatPermission, getUserId 
+  getChatMessages, sendChatMessage, checkChatPermission, getUserId,
+  getCircleMembers
 } from '../../services/circlesApi';
 
 interface ChatRoom {
@@ -24,6 +25,13 @@ interface ChatMessage {
   content: string;
   mentions: string[];
   created_at: string;
+}
+
+interface CircleMember {
+  id: string;
+  user_id: string;
+  role: string;
+  joined_at: string;
 }
 
 interface ChatRoomListProps {
@@ -76,7 +84,6 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({ circleId, isOpen, onClose }
   };
 
   const handleSelectRoom = async (room: ChatRoom) => {
-    // Join if not a member
     if (!room.members.includes(currentUserId)) {
       try {
         await joinChatroom(room.id);
@@ -106,7 +113,11 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({ circleId, isOpen, onClose }
     return (
       <ChatRoomView 
         chatroom={selectedChatroom} 
-        onBack={() => setSelectedChatroom(null)}
+        circleId={circleId}
+        onBack={() => {
+          setSelectedChatroom(null);
+          fetchChatrooms();
+        }}
         onClose={onClose}
       />
     );
@@ -117,12 +128,10 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({ circleId, isOpen, onClose }
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       
       <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] flex flex-col animate-slide-up">
-        {/* Handle */}
         <div className="flex justify-center pt-3 pb-2">
           <div className="w-10 h-1 bg-gray-300 rounded-full" />
         </div>
         
-        {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100">
           <div className="flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-purple-600" />
@@ -141,7 +150,6 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({ circleId, isOpen, onClose }
           </div>
         </div>
 
-        {/* Create Room Form */}
         {showCreateForm && (
           <div className="px-4 py-3 bg-purple-50 border-b border-purple-100">
             <input
@@ -174,7 +182,6 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({ circleId, isOpen, onClose }
           </div>
         )}
 
-        {/* Chatrooms List */}
         <div className="flex-1 overflow-y-auto px-4 py-4">
           {loading ? (
             <div className="flex items-center justify-center py-8">
@@ -228,12 +235,13 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({ circleId, isOpen, onClose }
   );
 };
 
-// Chat Room View Component with WebSocket support
+// Chat Room View Component with WebSocket support and Add Members
 const ChatRoomView: React.FC<{
   chatroom: ChatRoom;
+  circleId: string;
   onBack: () => void;
   onClose: () => void;
-}> = ({ chatroom, onBack, onClose }) => {
+}> = ({ chatroom, circleId, onBack, onClose }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [newMessage, setNewMessage] = useState('');
@@ -241,15 +249,14 @@ const ChatRoomView: React.FC<{
   const [canSend, setCanSend] = useState(false);
   const [userLevel, setUserLevel] = useState('');
   const [wsConnected, setWsConnected] = useState(false);
-  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
+  const [showAddMembers, setShowAddMembers] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const currentUserId = getUserId();
 
-  // Get WebSocket URL from backend URL
   const getWebSocketUrl = useCallback(() => {
     const backendUrl = import.meta.env.REACT_APP_BACKEND_URL || window.location.origin;
     const wsProtocol = backendUrl.startsWith('https') ? 'wss' : 'ws';
@@ -257,19 +264,15 @@ const ChatRoomView: React.FC<{
     return `${wsProtocol}://${baseUrl}/ws/chat/${chatroom.id}?user_id=${currentUserId}`;
   }, [chatroom.id, currentUserId]);
 
-  // Connect to WebSocket
   const connectWebSocket = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
     
     try {
       const wsUrl = getWebSocketUrl();
-      console.log('Connecting to WebSocket:', wsUrl);
-      
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
       
       ws.onopen = () => {
-        console.log('WebSocket connected');
         setWsConnected(true);
       };
       
@@ -288,32 +291,15 @@ const ChatRoomView: React.FC<{
                 created_at: data.created_at
               }]);
               break;
-              
-            case 'system':
-              // Handle system messages (user joined/left)
-              console.log('System message:', data.message);
-              break;
-              
             case 'typing':
               if (data.user_id !== currentUserId) {
                 setTypingUsers(prev => {
                   const newSet = new Set(prev);
-                  if (data.is_typing) {
-                    newSet.add(data.user_id);
-                  } else {
-                    newSet.delete(data.user_id);
-                  }
+                  if (data.is_typing) newSet.add(data.user_id);
+                  else newSet.delete(data.user_id);
                   return newSet;
                 });
               }
-              break;
-              
-            case 'error':
-              alert(data.message);
-              break;
-              
-            case 'pong':
-              // Keep-alive response
               break;
           }
         } catch (e) {
@@ -321,11 +307,8 @@ const ChatRoomView: React.FC<{
         }
       };
       
-      ws.onclose = (event) => {
-        console.log('WebSocket disconnected:', event.code, event.reason);
+      ws.onclose = () => {
         setWsConnected(false);
-        
-        // Attempt to reconnect after 3 seconds
         if (!reconnectTimeoutRef.current) {
           reconnectTimeoutRef.current = setTimeout(() => {
             reconnectTimeoutRef.current = null;
@@ -333,17 +316,11 @@ const ChatRoomView: React.FC<{
           }, 3000);
         }
       };
-      
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
-      
     } catch (e) {
       console.error('Failed to connect WebSocket:', e);
     }
   }, [chatroom.id, currentUserId, getWebSocketUrl]);
 
-  // Disconnect WebSocket
   const disconnectWebSocket = useCallback(() => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
@@ -355,25 +332,17 @@ const ChatRoomView: React.FC<{
     }
   }, []);
 
-  // Send message via WebSocket
   const sendMessageViaWs = useCallback((content: string) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify({
-        type: 'message',
-        content: content
-      }));
+      wsRef.current.send(JSON.stringify({ type: 'message', content }));
       return true;
     }
     return false;
   }, []);
 
-  // Send typing indicator
   const sendTypingIndicator = useCallback((isTyping: boolean) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify({
-        type: 'typing',
-        is_typing: isTyping
-      }));
+      wsRef.current.send(JSON.stringify({ type: 'typing', is_typing: isTyping }));
     }
   }, []);
 
@@ -382,7 +351,6 @@ const ChatRoomView: React.FC<{
     checkPermission();
     connectWebSocket();
     
-    // Ping every 30 seconds to keep connection alive
     const pingInterval = setInterval(() => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify({ type: 'ping' }));
@@ -421,19 +389,9 @@ const ChatRoomView: React.FC<{
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
-    
-    // Send typing indicator
     sendTypingIndicator(true);
-    
-    // Clear existing timeout
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    
-    // Stop typing indicator after 2 seconds of no input
-    typingTimeoutRef.current = setTimeout(() => {
-      sendTypingIndicator(false);
-    }, 2000);
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => sendTypingIndicator(false), 2000);
   };
 
   const handleSendMessage = async () => {
@@ -443,19 +401,15 @@ const ChatRoomView: React.FC<{
     setNewMessage('');
     sendTypingIndicator(false);
     
-    // Try WebSocket first
-    if (sendMessageViaWs(messageContent)) {
-      return;
-    }
+    if (sendMessageViaWs(messageContent)) return;
     
-    // Fallback to REST API
     setSending(true);
     try {
       await sendChatMessage(chatroom.id, messageContent);
       fetchMessages();
     } catch (error: any) {
       alert(error.response?.data?.detail || 'Failed to send message');
-      setNewMessage(messageContent); // Restore message on error
+      setNewMessage(messageContent);
     }
     setSending(false);
   };
@@ -476,13 +430,10 @@ const ChatRoomView: React.FC<{
     return date.toLocaleDateString();
   };
 
-  // Group messages by date
   const groupedMessages: { [date: string]: ChatMessage[] } = {};
   messages.forEach(msg => {
     const date = formatDate(msg.created_at);
-    if (!groupedMessages[date]) {
-      groupedMessages[date] = [];
-    }
+    if (!groupedMessages[date]) groupedMessages[date] = [];
     groupedMessages[date].push(msg);
   });
 
@@ -506,10 +457,16 @@ const ChatRoomView: React.FC<{
               )}
             </div>
             <p className="text-xs text-gray-500">
-              {chatroom.member_count} members
-              {wsConnected && ' • Live'}
+              {chatroom.member_count} members {wsConnected && '• Live'}
             </p>
           </div>
+          <button 
+            onClick={() => setShowAddMembers(true)}
+            className="p-2 bg-purple-100 text-purple-600 rounded-full hover:bg-purple-200"
+            title="Add members"
+          >
+            <UserPlus className="w-5 h-5" />
+          </button>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
             <X className="w-5 h-5 text-gray-500" />
           </button>
@@ -542,7 +499,7 @@ const ChatRoomView: React.FC<{
                       key={msg.id} 
                       className={`flex mb-3 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className={`max-w-[75%] ${isOwnMessage ? 'order-2' : 'order-1'}`}>
+                      <div className={`max-w-[75%]`}>
                         {!isOwnMessage && (
                           <span className="text-xs text-gray-500 ml-2">
                             User {msg.user_id.slice(0, 8)}
@@ -574,7 +531,6 @@ const ChatRoomView: React.FC<{
             ))
           )}
           
-          {/* Typing indicator */}
           {typingUsers.size > 0 && (
             <div className="flex items-center gap-2 text-sm text-gray-500 ml-2">
               <div className="flex gap-1">
@@ -582,12 +538,7 @@ const ChatRoomView: React.FC<{
                 <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                 <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
-              <span>
-                {typingUsers.size === 1 
-                  ? `User ${Array.from(typingUsers)[0].slice(0, 8)} is typing...`
-                  : `${typingUsers.size} people are typing...`
-                }
-              </span>
+              <span>Someone is typing...</span>
             </div>
           )}
           
@@ -620,16 +571,26 @@ const ChatRoomView: React.FC<{
                 disabled={!newMessage.trim() || sending}
                 className="p-2.5 bg-purple-600 text-white rounded-full hover:bg-purple-700 disabled:opacity-50"
               >
-                {sending ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Send className="w-5 h-5" />
-                )}
+                {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
               </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* Add Members Modal */}
+      {showAddMembers && (
+        <AddMembersModal
+          chatroomId={chatroom.id}
+          circleId={circleId}
+          existingMembers={chatroom.members}
+          onClose={() => setShowAddMembers(false)}
+          onMembersAdded={() => {
+            setShowAddMembers(false);
+            // Refresh chatroom data
+          }}
+        />
+      )}
 
       <style>{`
         @keyframes slide-up {
@@ -640,6 +601,189 @@ const ChatRoomView: React.FC<{
           animation: slide-up 0.3s ease-out;
         }
       `}</style>
+    </div>
+  );
+};
+
+// Add Members Modal Component
+const AddMembersModal: React.FC<{
+  chatroomId: string;
+  circleId: string;
+  existingMembers: string[];
+  onClose: () => void;
+  onMembersAdded: () => void;
+}> = ({ chatroomId, circleId, existingMembers, onClose, onMembersAdded }) => {
+  const [circleMembers, setCircleMembers] = useState<CircleMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedMembers, setSelectedMembers] = useState<Set<string>>(new Set());
+  const [adding, setAdding] = useState(false);
+
+  useEffect(() => {
+    fetchCircleMembers();
+  }, [circleId]);
+
+  const fetchCircleMembers = async () => {
+    setLoading(true);
+    try {
+      const response = await getCircleMembers(circleId);
+      setCircleMembers(response.members || []);
+    } catch (error) {
+      console.error('Error fetching members:', error);
+    }
+    setLoading(false);
+  };
+
+  const toggleMember = (userId: string) => {
+    setSelectedMembers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(userId)) {
+        newSet.delete(userId);
+      } else {
+        newSet.add(userId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleAddMembers = async () => {
+    if (selectedMembers.size === 0) return;
+    
+    setAdding(true);
+    try {
+      const backendUrl = import.meta.env.REACT_APP_BACKEND_URL || '';
+      
+      // Add each selected member to the chatroom
+      for (const userId of selectedMembers) {
+        await fetch(`${backendUrl}/api/circles/chatrooms/${chatroomId}/add-member?member_user_id=${userId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      
+      onMembersAdded();
+    } catch (error) {
+      console.error('Error adding members:', error);
+      alert('Failed to add some members');
+    }
+    setAdding(false);
+  };
+
+  // Filter out existing chatroom members and apply search
+  const availableMembers = circleMembers.filter(m => {
+    const notInChatroom = !existingMembers.includes(m.user_id);
+    const matchesSearch = m.user_id.toLowerCase().includes(searchQuery.toLowerCase());
+    return notInChatroom && matchesSearch;
+  });
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      
+      <div className="relative bg-white rounded-2xl w-full max-w-md mx-4 max-h-[80vh] flex flex-col shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Add Members</h3>
+            <p className="text-sm text-gray-500">Select circle members to add</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="px-6 py-3 border-b border-gray-100">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search members..."
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+        </div>
+
+        {/* Members List */}
+        <div className="flex-1 overflow-y-auto px-6 py-4">
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+            </div>
+          ) : availableMembers.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p>No members to add</p>
+              <p className="text-sm mt-1">All circle members are already in this chat</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {availableMembers.map((member) => {
+                const isSelected = selectedMembers.has(member.user_id);
+                return (
+                  <button
+                    key={member.id}
+                    onClick={() => toggleMember(member.user_id)}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
+                      isSelected 
+                        ? 'bg-purple-50 border-2 border-purple-500' 
+                        : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white font-medium">
+                      {member.user_id.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="font-medium text-gray-900">User {member.user_id.slice(0, 8)}</p>
+                      <p className="text-xs text-gray-500 capitalize">{member.role}</p>
+                    </div>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                      isSelected ? 'bg-purple-600 text-white' : 'bg-gray-200'
+                    }`}>
+                      {isSelected && <Check className="w-4 h-4" />}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-gray-100">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm text-gray-500">
+              {selectedMembers.size} member{selectedMembers.size !== 1 ? 's' : ''} selected
+            </span>
+            {selectedMembers.size > 0 && (
+              <button
+                onClick={() => setSelectedMembers(new Set())}
+                className="text-sm text-purple-600 hover:text-purple-700"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+          <button
+            onClick={handleAddMembers}
+            disabled={selectedMembers.size === 0 || adding}
+            className="w-full py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {adding ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Adding...
+              </>
+            ) : (
+              <>
+                <UserPlus className="w-5 h-5" />
+                Add to Chat Room
+              </>
+            )}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
