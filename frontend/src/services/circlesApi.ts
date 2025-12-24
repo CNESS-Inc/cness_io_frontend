@@ -167,6 +167,33 @@ export const checkMembership = async (circleId: string) => {
   return response.data;
 };
 
+export const checkJoinEligibility = async (circleId: string) => {
+  // Get auth token from localStorage
+  const authToken = localStorage.getItem('authToken') || localStorage.getItem('token');
+  const headers: Record<string, string> = {};
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`;
+  }
+  
+  const response = await circlesAxios.get(`/circles/${circleId}/check-join-eligibility`, {
+    params: { user_id: getUserId() },
+    headers
+  });
+  return response.data;
+};
+
+export const getUserProfile = async () => {
+  const authToken = localStorage.getItem('authToken') || localStorage.getItem('token');
+  if (!authToken) {
+    throw new Error('Not authenticated');
+  }
+  
+  const response = await circlesAxios.get('/user/profile', {
+    headers: { 'Authorization': `Bearer ${authToken}` }
+  });
+  return response.data;
+};
+
 // ============== CIRCLE POSTS APIs ==============
 
 export const createCirclePost = async (circleId: string, postData: {
