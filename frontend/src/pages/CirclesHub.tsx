@@ -52,6 +52,11 @@ const CirclesHub: React.FC = () => {
         params.country = userCountry;
       }
       
+      // Add province filter when local scope is selected
+      if (selectedScope === 'local' && userProvince) {
+        params.province = userProvince;
+      }
+      
       // Add profession filter
       if (selectedProfession) {
         params.profession_id = selectedProfession._id;
