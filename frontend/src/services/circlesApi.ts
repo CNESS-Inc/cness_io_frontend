@@ -355,6 +355,20 @@ export const checkChatPermission = async (chatroomId: string) => {
   return response.data;
 };
 
+export const getCircleMembers = async (circleId: string, page = 1, limit = 100) => {
+  const response = await circlesAxios.get(`/circles/${circleId}/members`, {
+    params: { page, limit }
+  });
+  return response.data;
+};
+
+export const addMemberToChatroom = async (chatroomId: string, memberUserId: string) => {
+  const response = await circlesAxios.post(`/circles/chatrooms/${chatroomId}/add-member`, null, {
+    params: { member_user_id: memberUserId }
+  });
+  return response.data;
+};
+
 // ============== NOTIFICATIONS APIs ==============
 
 export const getNotifications = async (page = 1, limit = 20) => {
