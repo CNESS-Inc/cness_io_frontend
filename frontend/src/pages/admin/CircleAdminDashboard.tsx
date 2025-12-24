@@ -595,38 +595,19 @@ const SettingsTab: React.FC = () => {
     setLoadingProfessions(true);
     setLoadingInterests(true);
     try {
-      // Use the external APIs as requested
+      // Use the backend APIs which proxy the external APIs
       const [profRes, intRes] = await Promise.all([
-        axios.get('https://uatapi.cness.io/api/profession/get-valid-profession'),
-        axios.get('https://uatapi.cness.io/api/interests/get-interests')
+        axios.get('/api/professions'),
+        axios.get('/api/interests')
       ]);
       
-      // Parse professions from external API format - note: uses "title" not "name"
-      const professionData = profRes.data?.data?.data || profRes.data?.success?.data || [];
-      const mappedProfessions = Array.isArray(professionData) 
-        ? professionData.map((p: any) => ({ ...p, name: p.title || p.name, _id: p.id || p._id }))
-        : [];
-      setProfessions(mappedProfessions);
+      // Professions already mapped by backend
+      setProfessions(profRes.data.professions || []);
       
-      // Parse interests from external API format
-      const interestData = intRes.data?.data?.data || intRes.data?.success?.data || intRes.data?.data || [];
-      const mappedInterests = Array.isArray(interestData) 
-        ? interestData.map((i: any) => ({ ...i, name: i.title || i.interestName || i.name, _id: i.id || i._id }))
-        : [];
-      setInterests(mappedInterests);
+      // Interests already mapped by backend
+      setInterests(intRes.data.interests || []);
     } catch (error) {
       console.error('Error fetching professions/interests:', error);
-      // Fallback to local APIs
-      try {
-        const [profRes, intRes] = await Promise.all([
-          axios.get('/api/professions'),
-          axios.get('/api/interests')
-        ]);
-        setProfessions(profRes.data.professions || []);
-        setInterests(intRes.data.interests || []);
-      } catch (fallbackError) {
-        console.error('Fallback also failed:', fallbackError);
-      }
     }
     setLoadingProfessions(false);
     setLoadingInterests(false);
