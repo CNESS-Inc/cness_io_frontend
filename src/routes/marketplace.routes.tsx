@@ -15,7 +15,7 @@ const CuratorsDetail = lazy(() => import("../features/marketplace/buyer/pages/Cu
 // const BuyerProductDetail = lazy(() => import("../pages/ComingSoon"));
 const MarketplaceCategories = lazy(() => import("../features/marketplace/buyer/pages/MarketplaceCategories"));
 const MarketProductDetail = lazy(() => import("../features/marketplace/buyer/pages/MarketProductDetail"));
-const BuyerCart = lazy(() => import("../pages/ComingSoon"));
+const BuyerCart = lazy(() => import("../features/marketplace/buyer/pages/BuyerCart"));
 const BuyerCheckout = lazy(() => import("../pages/ComingSoon"));
 const OrderHistory = lazy(() => import("../features/marketplace/buyer/pages/OrderHistory"));
 
