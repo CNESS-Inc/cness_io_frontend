@@ -147,7 +147,7 @@ export const leaveCircle = async (circleId: string) => {
   return response.data;
 };
 
-export const getCircleMembers = async (circleId: string, page = 1, limit = 20) => {
+export const getCircleMembers = async (circleId: string, page = 1, limit = 100) => {
   const response = await circlesAxios.get(`/circles/${circleId}/members`, {
     params: { page, limit }
   });
