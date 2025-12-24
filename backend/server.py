@@ -502,20 +502,27 @@ async def get_professions_from_external_api(auth_token: Optional[str] = None):
             if response.status_code == 200:
                 data = response.json()
                 professions_list = []
+                
+                # Handle various API response formats
                 if isinstance(data, list):
                     professions_list = data
-                elif isinstance(data, dict) and "data" in data:
-                    professions_list = data["data"]
-                elif isinstance(data, dict) and "professions" in data:
-                    professions_list = data["professions"]
+                elif isinstance(data, dict):
+                    # Try nested data.data format first ({"data": {"data": [...]}} or {"success": {...}, "data": {"data": [...]}})
+                    if "data" in data and isinstance(data["data"], dict) and "data" in data["data"]:
+                        professions_list = data["data"]["data"]
+                    elif "data" in data and isinstance(data["data"], list):
+                        professions_list = data["data"]
+                    elif "professions" in data:
+                        professions_list = data["professions"]
                 
                 normalized = []
                 for prof in professions_list:
                     if isinstance(prof, str):
                         normalized.append({"_id": prof.lower().replace(" ", "-"), "name": prof})
                     elif isinstance(prof, dict):
-                        prof_id = prof.get("_id") or prof.get("id") or prof.get("name", "unknown").lower().replace(" ", "-")
-                        prof_name = prof.get("name") or prof.get("title") or prof.get("_id") or "Unknown"
+                        # External API uses "title" for profession name and "id" for ID
+                        prof_id = prof.get("id") or prof.get("_id") or prof.get("slug") or prof.get("name", "unknown").lower().replace(" ", "-")
+                        prof_name = prof.get("title") or prof.get("name") or prof.get("_id") or "Unknown"
                         normalized.append({"_id": prof_id, "name": prof_name})
                 
                 if normalized:
