@@ -806,56 +806,232 @@ const SettingsTab: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Create Individual Global Circle</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Profession */}
+              {/* Profession Searchable Dropdown */}
               <div className="p-4 border border-gray-200 rounded-lg">
                 <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
                   <Briefcase className="w-4 h-4 text-indigo-600" />
                   Create Profession Circle
                 </h4>
-                <select
-                  value={selectedProfession}
-                  onChange={(e) => setSelectedProfession(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3"
-                >
-                  <option value="">Select profession...</option>
-                  {professions.map((p) => (
-                    <option key={p._id || p.id} value={p._id || p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+                
+                <div className="relative mb-3">
+                  {/* Selected or Search Input */}
+                  <div 
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 cursor-pointer"
+                    onClick={() => setShowProfessionDropdown(!showProfessionDropdown)}
+                  >
+                    {selectedProfession ? (
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-gray-800">{selectedProfession.name}</span>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedProfession(null);
+                            setProfessionSearch('');
+                          }}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-gray-500">Select profession...</span>
+                    )}
+                  </div>
+
+                  {/* Dropdown */}
+                  {showProfessionDropdown && (
+                    <div className="absolute z-20 top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                      {/* Header */}
+                      <div className="px-4 py-3 bg-indigo-50 border-b border-gray-100">
+                        <h5 className="font-semibold text-indigo-800 flex items-center gap-2">
+                          <Briefcase className="w-4 h-4" />
+                          Professions
+                        </h5>
+                      </div>
+                      
+                      {/* Search Input */}
+                      <div className="p-3 border-b border-gray-100">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="text"
+                            placeholder="Search professions..."
+                            value={professionSearch}
+                            onChange={(e) => setProfessionSearch(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                      </div>
+
+                      {/* All Professions Option */}
+                      <button
+                        onClick={() => {
+                          setSelectedProfession(null);
+                          setShowProfessionDropdown(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2"
+                      >
+                        <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center">
+                          <Globe className="w-3 h-3 text-gray-500" />
+                        </div>
+                        All Professions
+                      </button>
+
+                      {/* Profession List */}
+                      <div className="max-h-60 overflow-y-auto">
+                        {loadingProfessions ? (
+                          <div className="flex items-center justify-center py-8">
+                            <RefreshCw className="w-5 h-5 animate-spin text-indigo-600" />
+                          </div>
+                        ) : filteredProfessions.length === 0 ? (
+                          <p className="text-center py-4 text-gray-500 text-sm">No professions found</p>
+                        ) : (
+                          filteredProfessions.slice(0, 50).map((p) => (
+                            <button
+                              key={p._id || p.id}
+                              onClick={() => {
+                                setSelectedProfession(p);
+                                setShowProfessionDropdown(false);
+                                setProfessionSearch('');
+                              }}
+                              className={`w-full px-4 py-2.5 text-left text-sm hover:bg-indigo-50 flex items-center gap-3 ${
+                                selectedProfession?._id === p._id ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'
+                              }`}
+                            >
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-medium text-xs">
+                                {(p.name || '').charAt(0).toUpperCase()}
+                              </div>
+                              <span className="font-medium">{p.name}</span>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <button
                   onClick={() => generateGlobalCircle('profession')}
                   disabled={!selectedProfession || generatingGlobal}
-                  className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50"
+                  className="w-full px-4 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
+                  {generatingGlobal ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Briefcase className="w-4 h-4" />}
                   Create Global Profession Circle
                 </button>
               </div>
 
-              {/* Interest */}
+              {/* Interest Searchable Dropdown */}
               <div className="p-4 border border-gray-200 rounded-lg">
                 <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
                   <Heart className="w-4 h-4 text-pink-600" />
                   Create Interest Circle
                 </h4>
-                <select
-                  value={selectedInterest}
-                  onChange={(e) => setSelectedInterest(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3"
-                >
-                  <option value="">Select interest...</option>
-                  {interests.map((i) => (
-                    <option key={i.id} value={i.id}>
-                      {i.name}
-                    </option>
-                  ))}
-                </select>
+                
+                <div className="relative mb-3">
+                  {/* Selected or Search Input */}
+                  <div 
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 cursor-pointer"
+                    onClick={() => setShowInterestDropdown(!showInterestDropdown)}
+                  >
+                    {selectedInterest ? (
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-gray-800">{selectedInterest.name || selectedInterest.interestName}</span>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedInterest(null);
+                            setInterestSearch('');
+                          }}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-gray-500">Select interest...</span>
+                    )}
+                  </div>
+
+                  {/* Dropdown */}
+                  {showInterestDropdown && (
+                    <div className="absolute z-20 top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                      {/* Header */}
+                      <div className="px-4 py-3 bg-pink-50 border-b border-gray-100">
+                        <h5 className="font-semibold text-pink-800 flex items-center gap-2">
+                          <Heart className="w-4 h-4" />
+                          Interests
+                        </h5>
+                      </div>
+                      
+                      {/* Search Input */}
+                      <div className="p-3 border-b border-gray-100">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="text"
+                            placeholder="Search interests..."
+                            value={interestSearch}
+                            onChange={(e) => setInterestSearch(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                      </div>
+
+                      {/* All Interests Option */}
+                      <button
+                        onClick={() => {
+                          setSelectedInterest(null);
+                          setShowInterestDropdown(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-600 hover:bg-gray-50 flex items-center gap-2"
+                      >
+                        <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center">
+                          <Globe className="w-3 h-3 text-gray-500" />
+                        </div>
+                        All Interests
+                      </button>
+
+                      {/* Interest List */}
+                      <div className="max-h-60 overflow-y-auto">
+                        {loadingInterests ? (
+                          <div className="flex items-center justify-center py-8">
+                            <RefreshCw className="w-5 h-5 animate-spin text-pink-600" />
+                          </div>
+                        ) : filteredInterests.length === 0 ? (
+                          <p className="text-center py-4 text-gray-500 text-sm">No interests found</p>
+                        ) : (
+                          filteredInterests.slice(0, 50).map((i) => (
+                            <button
+                              key={i._id || i.id}
+                              onClick={() => {
+                                setSelectedInterest(i);
+                                setShowInterestDropdown(false);
+                                setInterestSearch('');
+                              }}
+                              className={`w-full px-4 py-2.5 text-left text-sm hover:bg-pink-50 flex items-center gap-3 ${
+                                selectedInterest?._id === i._id ? 'bg-pink-50 text-pink-700' : 'text-gray-700'
+                              }`}
+                            >
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-medium text-xs">
+                                {(i.name || i.interestName || '').charAt(0).toUpperCase()}
+                              </div>
+                              <span className="font-medium">{i.name || i.interestName}</span>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <button
                   onClick={() => generateGlobalCircle('interest')}
                   disabled={!selectedInterest || generatingGlobal}
-                  className="w-full px-4 py-2 bg-pink-600 text-white rounded-lg font-medium hover:bg-pink-700 disabled:opacity-50"
+                  className="w-full px-4 py-2.5 bg-pink-600 text-white rounded-lg font-medium hover:bg-pink-700 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
+                  {generatingGlobal ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Heart className="w-4 h-4" />}
                   Create Global Interest Circle
                 </button>
               </div>
