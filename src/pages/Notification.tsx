@@ -177,6 +177,12 @@ const Notification: React.FC = () => {
     <div className="flex h-screen overflow-hidden">
       {/* Notification Panel */}
       <aside className="w-[440px] bg-white border-r border-gray-200 p-4 overflow-y-auto">
+        <button
+                  className="flex items-center gap-1 mb-3 text-black border border-[#D77CFF] rounded-full px-4 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition"
+                  onClick={() => navigate("/dashboard")}
+                >
+                  Go Back
+                </button>
         <div className="space-y-4">
           {notifications?.length > 0 ? (
             notifications?.map((notification) => (

@@ -419,7 +419,7 @@ export default function SellerDashboard() {
         type: "success",
         duration: 5000,
       });
-
+      setTags([]);
       closeModal();
       navigate("/dashboard/bestpractices");
       setTags([]);
@@ -622,6 +622,7 @@ export default function SellerDashboard() {
         profession={professions}
         interest={interests}
         tags={tags}
+        setTags={setTags}
         inputValue={inputValue}
         setInputValue={setInputValue}
         removeTag={removeTag}

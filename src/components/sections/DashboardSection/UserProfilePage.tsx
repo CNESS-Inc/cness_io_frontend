@@ -404,8 +404,8 @@ const customSelectStyles = {
     backgroundColor: state.isSelected
       ? "#E0E7FF"
       : state.isFocused
-        ? "#F3F4F6"
-        : "white",
+      ? "#F3F4F6"
+      : "white",
     color: "#111827",
     padding: "10px 12px",
     fontSize: "14px",
@@ -493,7 +493,16 @@ const UserProfilePage = () => {
   const [Country, setCountry] = useState<any>(null);
   const [states, setStates] = useState<any[]>([]);
   const [serviceData, setServiceData] = useState<any>(null);
-
+  const [hasExistingData, setHasExistingData] = useState<
+    Record<string, boolean>
+  >({
+    basic: false,
+    contact: false,
+    social: false,
+    education: false,
+    work: false,
+    public: false,
+  });
   // Create a ref to store Country for validation
   const countryRef = useRef(Country);
   const [customServiceInput, setCustomServiceInput] = useState("");
@@ -587,8 +596,9 @@ const UserProfilePage = () => {
       const isValid = validateSocialUrl(platform, url);
       if (!isValid) {
         showToast({
-          message: `Please enter a valid ${socialPlatforms.find((p) => p.value === platform)?.label
-            } URL`,
+          message: `Please enter a valid ${
+            socialPlatforms.find((p) => p.value === platform)?.label
+          } URL`,
           type: "error",
           duration: 5000,
         });
@@ -605,8 +615,9 @@ const UserProfilePage = () => {
       handleFormChange("social"); // Track changes
 
       showToast({
-        message: `${socialPlatforms.find((p) => p.value === platform)?.label
-          } link added successfully`,
+        message: `${
+          socialPlatforms.find((p) => p.value === platform)?.label
+        } link added successfully`,
         type: "success",
         duration: 3000,
       });
@@ -1181,7 +1192,7 @@ const UserProfilePage = () => {
         type: "success",
         duration: 5000,
       });
-
+      setHasExistingData((prev) => ({ ...prev, basic: true }));
       setUnsavedChanges((prev) => ({ ...prev, basic: false }));
 
       const lastIndex = tabNames.length - 1;
@@ -1259,7 +1270,7 @@ const UserProfilePage = () => {
         duration: 5000,
       });
 
-      // Reset unsaved changes for this tab
+      setHasExistingData((prev) => ({ ...prev, contact: true }));
       setUnsavedChanges((prev) => ({ ...prev, contact: false }));
 
       const lastIndex = tabNames.length - 1;
@@ -1293,7 +1304,7 @@ const UserProfilePage = () => {
         duration: 5000,
       });
 
-      // Reset unsaved changes for this tab
+      setHasExistingData((prev) => ({ ...prev, social: true }));
       setUnsavedChanges((prev) => ({ ...prev, social: false }));
 
       const lastIndex = tabNames.length - 1;
@@ -1332,7 +1343,7 @@ const UserProfilePage = () => {
         duration: 5000,
       });
 
-      // Reset unsaved changes for this tab
+      setHasExistingData((prev) => ({ ...prev, education: true }));
       setUnsavedChanges((prev) => ({ ...prev, education: false }));
 
       const lastIndex = tabNames.length - 1;
@@ -1371,7 +1382,7 @@ const UserProfilePage = () => {
         duration: 5000,
       });
 
-      // Reset unsaved changes for this tab
+      setHasExistingData((prev) => ({ ...prev, work: true }));
       setUnsavedChanges((prev) => ({ ...prev, work: false }));
 
       const lastIndex = tabNames.length - 1;
@@ -1418,7 +1429,7 @@ const UserProfilePage = () => {
         duration: 5000,
       });
 
-      // Reset unsaved changes for this tab
+      setHasExistingData((prev) => ({ ...prev, public: true }));
       setUnsavedChanges((prev) => ({ ...prev, public: false }));
     } catch (error: any) {
       showToast({
@@ -1467,12 +1478,35 @@ const UserProfilePage = () => {
               socialLinksData[platform.value] || "";
           });
         }
-
-        console.log(
-          initializedSocialLinks,
-          "initializedSocialLinks---initializedSocialLinks"
-        );
         setSocialLinks(initializedSocialLinks);
+        setHasExistingData((prev) => ({
+          ...prev,
+          basic: !!(
+            response.data.data?.first_name ||
+            response.data.data?.last_name ||
+            response.data.data?.bio ||
+            response.data.data?.professional_bio ||
+            response.data.data?.gender ||
+            response.data.data?.dob ||
+            response.data.data?.professions?.length > 0 ||
+            response.data.data?.interests?.length > 0
+          ),
+          contact: !!(
+            response.data.data?.phone_no ||
+            response.data.data?.email ||
+            response.data.data?.address ||
+            response.data.data?.country_id ||
+            response.data.data?.state_id
+          ),
+          social: !!(
+            response.data.data?.social_links &&
+            Object.keys(response.data.data.social_links).some(
+              (key) => response.data.data.social_links[key]
+            )
+          ),
+          education: !!(response.data.data?.education?.length > 0),
+          work: !!(response.data.data?.work_experience?.length > 0),
+        }));
 
         basicInfoForm.reset({
           firstName: response.data.data?.first_name || "",
@@ -1503,12 +1537,12 @@ const UserProfilePage = () => {
             "",
           country:
             response.data.data?.country_id !== undefined &&
-              response.data.data?.country_id !== null
+            response.data.data?.country_id !== null
               ? String(response.data.data?.country_id)
               : "",
           state:
             response.data.data?.state_id !== undefined &&
-              response.data.data?.state_id !== null
+            response.data.data?.state_id !== null
               ? String(response.data.data?.state_id)
               : "",
           city: response.data.data?.location?.city || "",
@@ -1608,6 +1642,19 @@ const UserProfilePage = () => {
     try {
       const response = await GetPublicProfileDetails();
       const profileData = response.data.data;
+      if (profileData) {
+        setHasExistingData((prev) => ({
+          ...prev,
+          public: !!(
+            profileData?.title ||
+            profileData?.notify_email ||
+            profileData?.email_address ||
+            profileData?.about_us ||
+            profileData?.tags?.length > 0 ||
+            profileData?.person_service?.length > 0
+          ),
+        }));
+      }
 
       publicProfileForm.reset({
         title: profileData?.title || "",
@@ -1615,6 +1662,7 @@ const UserProfilePage = () => {
         emailAddress: profileData?.email_address || "",
         aboutUs: profileData?.about_us || "",
       });
+
       if (profileData?.tags) {
         setTags(profileData?.tags);
       }
@@ -1848,17 +1896,17 @@ const UserProfilePage = () => {
               <img
                 src={
                   banner &&
-                    banner !== "null" &&
-                    banner !== "undefined" &&
-                    banner.startsWith("blob:")
+                  banner !== "null" &&
+                  banner !== "undefined" &&
+                  banner.startsWith("blob:")
                     ? banner // This will show the blob URL preview
                     : banner &&
                       banner !== "null" &&
                       banner !== "undefined" &&
                       banner.startsWith("http") &&
                       banner !== "http://localhost:5026/file/"
-                      ? banner
-                      : "https://cdn.cness.io/userprofilebanner.svg"
+                    ? banner
+                    : "https://cdn.cness.io/userprofilebanner.svg"
                 }
                 alt="Banner"
                 className="w-full h-full object-cover"
@@ -1925,10 +1973,10 @@ const UserProfilePage = () => {
                   <img
                     src={
                       !logoPreview ||
-                        logoPreview === "null" ||
-                        logoPreview === "undefined" ||
-                        !logoPreview.startsWith("http") ||
-                        logoPreview === "http://localhost:5026/file/"
+                      logoPreview === "null" ||
+                      logoPreview === "undefined" ||
+                      !logoPreview.startsWith("http") ||
+                      logoPreview === "http://localhost:5026/file/"
                         ? "/profile.jpg"
                         : logoPreview
                     }
@@ -2009,10 +2057,11 @@ const UserProfilePage = () => {
                                   duration-200 
                                   focus:outline-none
                                   border
-                                  ${selected
-                              ? "text-purple-600 h-[45px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
-                              : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
-                            }`
+                                  ${
+                                    selected
+                                      ? "text-purple-600 h-[45px] bg-[#F8F3FF] shadow-md border-[#ECEEF2] border-b-0 transform"
+                                      : "text-gray-500 bg-white border-[#ECEEF2] border-b-0 hover:text-purple-500"
+                                  }`
                           }
                         >
                           {tab}
@@ -2036,7 +2085,7 @@ const UserProfilePage = () => {
                       }
                     }}
                   >
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 bg-[#F8F3FF] mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 bg-[#F8F3FF] mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* First Name */}
                       <div>
                         <label className="block text-sm font-medium text-gray-800 mb-2">
@@ -2050,13 +2099,15 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Enter your First Name"
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.firstName
+                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                            basicInfoForm.formState.errors.firstName
                               ? "border-red-500"
                               : "border-gray-300"
-                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.firstName
+                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                            basicInfoForm.formState.errors.firstName
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                            }`}
+                          }`}
                           maxLength={40}
                         />
                         {basicInfoForm.formState.errors.firstName && (
@@ -2078,13 +2129,15 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Enter your Last Name"
-                          className={`w-full px-4 py-2 border h-[41px] bg-white ${basicInfoForm.formState.errors.lastName
+                          className={`w-full px-4 py-2 border h-[41px] bg-white ${
+                            basicInfoForm.formState.errors.lastName
                               ? "border-red-500"
                               : "border-gray-300"
-                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.lastName
+                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                            basicInfoForm.formState.errors.lastName
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                            }`}
+                          }`}
                           maxLength={40}
                         />
                         {basicInfoForm.formState.errors.lastName && (
@@ -2175,7 +2228,7 @@ const UserProfilePage = () => {
                                 (interest: any) =>
                                   typeof interest === "string" &&
                                   interest.toLowerCase() ===
-                                  inputValue.trim().toLowerCase()
+                                    inputValue.trim().toLowerCase()
                               )
                           }
                         />
@@ -2186,7 +2239,7 @@ const UserProfilePage = () => {
                         <label className="block text-sm font-medium text-gray-800 mb-2">
                           Professions <span className="text-red-500">*</span>
                         </label>
-                       
+
                         <CreatableSelect
                           isMulti
                           options={
@@ -2261,14 +2314,14 @@ const UserProfilePage = () => {
                                 (prof: any) =>
                                   typeof prof === "string" &&
                                   prof.toLowerCase() ===
-                                  inputValue.trim().toLowerCase()
+                                    inputValue.trim().toLowerCase()
                               )
                           }
-                          
                         />
-                         <p className="text-xs text-gray-500 text-center sm:text-left px-2 sm:px-2 py-1">
-  Based on your profession, your profile is personalized.
-</p>
+                        <p className="text-xs text-gray-500 text-center sm:text-left px-2 sm:px-2 py-1">
+                          Based on your profession, your profile is
+                          personalized.
+                        </p>
                         {basicInfoForm.formState.errors.professions && (
                           <p className="text-sm text-red-500 mt-1">
                             At least one profession is required
@@ -2437,7 +2490,7 @@ const UserProfilePage = () => {
                           </div> */}
                       {/* Gender Dropdown - Styled like the Interests Field */}
                       <div className="w-full col-span-1">
-                      <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
                           Gender
                         </label>
                         <Select
@@ -2462,7 +2515,7 @@ const UserProfilePage = () => {
                       </div>
                       {/* Date of Birth */}
                       <div className="col-span-1">
-                      <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
                           Date of Birth
                           <span className="text-red-500">*</span>
                         </label>
@@ -2471,6 +2524,24 @@ const UserProfilePage = () => {
                           {...basicInfoForm.register("dob", {
                             required: true,
                           })}
+                          max={(() => {
+                            // Calculate the maximum date (18 years ago from today)
+                            const today = new Date();
+                            const minAgeDate = new Date();
+                            minAgeDate.setFullYear(today.getFullYear() - 18);
+
+                            // Format as YYYY-MM-DD
+                            const year = minAgeDate.getFullYear();
+                            const month = String(
+                              minAgeDate.getMonth() + 1
+                            ).padStart(2, "0");
+                            const day = String(minAgeDate.getDate()).padStart(
+                              2,
+                              "0"
+                            );
+
+                            return `${year}-${month}-${day}`;
+                          })()}
                           onChange={(e) => {
                             basicInfoForm.setValue("dob", e.target.value);
                             handleFormChange("basic");
@@ -2478,13 +2549,15 @@ const UserProfilePage = () => {
                           onClick={(e: React.MouseEvent<HTMLInputElement>) =>
                             e.currentTarget.showPicker()
                           }
-                          className={`w-full px-3 sm:px-4 py-2 h-10 sm:h-[41px] text-sm border bg-white ${basicInfoForm.formState.errors.dob
+                          className={`w-full px-3 sm:px-4 py-2 h-10 sm:h-[41px] text-sm border bg-white ${
+                            basicInfoForm.formState.errors.dob
                               ? "border-red-500"
                               : "border-gray-300"
-                            } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.dob
+                          } rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 ${
+                            basicInfoForm.formState.errors.dob
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                            }`}
+                          }`}
                         />
                         {basicInfoForm.formState.errors.dob && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2506,13 +2579,15 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Enter your quote"
-                          className={`w-full px-4 py-2 h-[41px] border bg-white ${basicInfoForm.formState.errors.quote
+                          className={`w-full px-4 py-2 h-[41px] border bg-white ${
+                            basicInfoForm.formState.errors.quote
                               ? "border-red-500"
                               : "border-gray-300"
-                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.quote
+                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                            basicInfoForm.formState.errors.quote
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                            }`}
+                          }`}
                         />
                         {basicInfoForm.formState.errors.quote && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2533,13 +2608,15 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="Add a short professional bio"
-                          className={`w-full px-4 py-2 border bg-white ${basicInfoForm.formState.errors.bio
+                          className={`w-full px-4 py-2 border bg-white ${
+                            basicInfoForm.formState.errors.bio
                               ? "border-red-500"
                               : "border-gray-300"
-                            } rounded-xl min-h-[100px] resize-y text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.bio
+                          } rounded-xl min-h-[100px] resize-y text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                            basicInfoForm.formState.errors.bio
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                            }`}
+                          }`}
                         />
                         {basicInfoForm.formState.errors.bio && (
                           <p className="text-sm text-red-500 mt-1">
@@ -2560,13 +2637,15 @@ const UserProfilePage = () => {
                             handleFormChange("basic");
                           }}
                           placeholder="What is your conscious vision?"
-                          className={`w-full px-4 py-3 border bg-white ${basicInfoForm.formState.errors.vision
+                          className={`w-full px-4 py-3 border bg-white ${
+                            basicInfoForm.formState.errors.vision
                               ? "border-red-500"
                               : "border-gray-300"
-                            } rounded-xl text-sm placeholder-gray-400 
-                            focus:outline-none focus:ring-2 ${basicInfoForm.formState.errors.vision
-                              ? "focus:ring-red-500"
-                              : "focus:ring-purple-500"
+                          } rounded-xl text-sm placeholder-gray-400 
+                            focus:outline-none focus:ring-2 ${
+                              basicInfoForm.formState.errors.vision
+                                ? "focus:ring-red-500"
+                                : "focus:ring-purple-500"
                             } transition-all`}
                         />
                         {basicInfoForm.formState.errors.vision && (
@@ -2576,7 +2655,7 @@ const UserProfilePage = () => {
                         )}
                       </div>
                     </div>
-                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
+                    <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
@@ -2584,7 +2663,30 @@ const UserProfilePage = () => {
             shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => {
-                          basicInfoForm.reset();
+                          // Completely reset all fields to empty/default values
+                          basicInfoForm.reset({
+                            firstName: "",
+                            lastName: "",
+                            bio: "",
+                            gender: "",
+                            dob: "",
+                            quote: "",
+                            vision: "",
+                            professions: [],
+                            interests: [],
+                            identify_uploaded: null,
+                            custom_profession: "",
+                          });
+
+                          // Also clear any unsaved changes tracking
+                          setUnsavedChanges((prev) => ({
+                            ...prev,
+                            basic: false,
+                          }));
+
+                          // If you want to also clear the profile data state
+                          setProfileData(null);
+                          setBasicData(null);
                         }}
                       >
                         Reset
@@ -2595,7 +2697,11 @@ const UserProfilePage = () => {
                         type="submit"
                         disabled={isSubmitting.basic}
                       >
-                        {isSubmitting.basic ? "Saving..." : "Save"}
+                        {isSubmitting.basic
+                          ? "Saving..."
+                          : hasExistingData.basic
+                          ? "Update"
+                          : "Save"}
                       </Button>
                     </div>
                   </form>
@@ -2608,7 +2714,7 @@ const UserProfilePage = () => {
                       handleContactInfoSubmit
                     )}
                   >
-             <div className="grid grid-cols-1 md:grid-cols-2 bg-[#F8F3FF] gap-3 sm:gap-4 md:gap-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
+                    <div className="grid grid-cols-1 md:grid-cols-2 bg-[#F8F3FF] gap-3 sm:gap-4 md:gap-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* Privacy note - full width on mobile, spans 2 columns on desktop */}
                       <div className="col-span-1 md:col-span-2">
                         <p className="text-xs text-gray-500 text-center sm:text-left px-2 sm:px-0">
@@ -2670,15 +2776,18 @@ const UserProfilePage = () => {
                                   digits = digits.slice(0, maxDigits);
                                 let formatted: string;
 
-if (isoCountry === "US") {
-  // 🚫 Do NOT auto-format US numbers
-  formatted = digits;
-} else {
-  formatted = formatPhoneForCountry(digits, isoCountry);
+                                if (isoCountry === "US") {
+                                  // 🚫 Do NOT auto-format US numbers
+                                  formatted = digits;
+                                } else {
+                                  formatted = formatPhoneForCountry(
+                                    digits,
+                                    isoCountry
+                                  );
 
-  // remove trunk prefix (0) for countries like IN, EG, MA, etc.
-  formatted = formatted.replace(/^0+/, "");
-}
+                                  // remove trunk prefix (0) for countries like IN, EG, MA, etc.
+                                  formatted = formatted.replace(/^0+/, "");
+                                }
                                 contactInfoForm.setValue("phone", formatted, {
                                   shouldValidate: true,
                                   shouldDirty: true,
@@ -2708,7 +2817,7 @@ if (isoCountry === "US") {
                               }`}
                             />
                           </div>
-                          
+
                           {/*<input
                             type="tel"
                             placeholder="Enter Your Phone Number"
@@ -2765,7 +2874,7 @@ if (isoCountry === "US") {
 
                       {/* Email */}
                       <div className="col-span-1 md:col-span-2 lg:col-span-1">
-                      <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                           Email <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -2795,7 +2904,7 @@ if (isoCountry === "US") {
 
                       {/* Address */}
                       <div className="col-span-1 md:col-span-2 lg:col-span-1">
-                      <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
                           Address
                         </label>
                         <input
@@ -2819,27 +2928,27 @@ if (isoCountry === "US") {
                           options={
                             Country
                               ? Country.map((country: any) => ({
-                                value: String(country.id),
-                                label: country.name,
-                              }))
+                                  value: String(country.id),
+                                  label: country.name,
+                                }))
                               : []
                           }
                           value={
                             Country
                               ? Country.find(
-                                (c: any) =>
-                                  String(c.id) ===
-                                  contactInfoForm.watch("country")
-                              )
+                                  (c: any) =>
+                                    String(c.id) ===
+                                    contactInfoForm.watch("country")
+                                )
                                 ? {
-                                  value: contactInfoForm.watch("country"),
-                                  label:
-                                    Country.find(
-                                      (c: any) =>
-                                        String(c.id) ===
-                                        contactInfoForm.watch("country")
-                                    )?.name || "Select your country",
-                                }
+                                    value: contactInfoForm.watch("country"),
+                                    label:
+                                      Country.find(
+                                        (c: any) =>
+                                          String(c.id) ===
+                                          contactInfoForm.watch("country")
+                                      )?.name || "Select your country",
+                                  }
                                 : null
                               : null
                           }
@@ -2975,10 +3084,11 @@ if (isoCountry === "US") {
                             contactInfoForm.formState.errors.postalCode
                               ? "border-red-500"
                               : "border-gray-300"
-                            } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${contactInfoForm.formState.errors.postalCode
+                          } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                            contactInfoForm.formState.errors.postalCode
                               ? "focus:ring-red-500"
                               : "focus:ring-purple-500"
-                            } uppercase`}
+                          } uppercase`}
                           style={{ textTransform: "capitalize" }}
                         />
                         {contactInfoForm.formState.errors.postalCode && (
@@ -3076,7 +3186,33 @@ if (isoCountry === "US") {
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-sm sm:text-[14px] px-4 sm:px-6 py-2.5 sm:py-2 rounded-full border border-gray-300 text-black bg-white hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
-                        onClick={() => contactInfoForm.reset()}
+                        onClick={() => {
+                          // Reset contact form with default values only
+                          contactInfoForm.reset({
+                            country_code: countryCode[0], // Default country code
+                            phone: "",
+                            email: basicData?.email || "", // Keep original email if available
+                            address: "",
+                            country: "",
+                            state: "",
+                            city: "",
+                            postalCode: "",
+                            communication: {
+                              sms: false,
+                              email: false,
+                              whatsapp: false,
+                            },
+                          });
+
+                          // Reset states dropdown
+                          setStates([]);
+
+                          // Clear unsaved changes
+                          setUnsavedChanges((prev) => ({
+                            ...prev,
+                            contact: false,
+                          }));
+                        }}
                       >
                         Reset
                       </Button>
@@ -3086,7 +3222,11 @@ if (isoCountry === "US") {
                         type="submit"
                         disabled={isSubmitting.contact}
                       >
-                        {isSubmitting.contact ? "Saving..." : "Save"}
+                        {isSubmitting.contact
+                          ? "Saving..."
+                          : hasExistingData.contact
+                          ? "Update"
+                          : "Save"}
                       </Button>
                     </div>
                   </form>
@@ -3099,7 +3239,7 @@ if (isoCountry === "US") {
                       handleSocialLinksSubmit
                     )}
                   >
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 bg-[#F8F3FF] mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 bg-[#F8F3FF] mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* Render social links that have values OR custom social links */}
                       {socialPlatforms
                         .filter((platform) => socialLinks[platform.value])
@@ -3227,10 +3367,11 @@ if (isoCountry === "US") {
                                   url: e.target.value,
                                 }))
                               }
-                              placeholder={`Enter ${socialPlatforms.find(
-                                (p) => p.value === newSocialLink.platform
-                              )?.label || "social media"
-                                } URL`}
+                              placeholder={`Enter ${
+                                socialPlatforms.find(
+                                  (p) => p.value === newSocialLink.platform
+                                )?.label || "social media"
+                              } URL`}
                               className="w-full px-4 py-2 h-[41px] border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                             />
                           </div>
@@ -3270,12 +3411,12 @@ if (isoCountry === "US") {
                       </div>
                     </Modal>
 
-                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
+                    <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-        hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-        shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => {
                           // Reset all social links to empty
@@ -3284,11 +3425,19 @@ if (isoCountry === "US") {
                             resetSocialLinks[platform.value] = "";
                           });
                           setSocialLinks(resetSocialLinks);
+
+                          // Reset the form
+                          socialLinksForm.reset();
+
                           // Clear unsaved changes
                           setUnsavedChanges((prev) => ({
                             ...prev,
                             social: false,
                           }));
+
+                          // Reset new social link modal state
+                          setNewSocialLink({ platform: "", url: "" });
+                          setShowSocialModal(false);
                         }}
                       >
                         Reset
@@ -3299,7 +3448,11 @@ if (isoCountry === "US") {
                         type="submit"
                         disabled={isSubmitting.social}
                       >
-                        {isSubmitting.social ? "Saving..." : "Save"}
+                        {isSubmitting.social
+                          ? "Saving..."
+                          : hasExistingData.social
+                          ? "Update"
+                          : "Save"}
                       </Button>
                     </div>
                   </form>
@@ -3323,7 +3476,7 @@ if (isoCountry === "US") {
                             educationErrors.end_date);
 
                         return (
-                            <div className="grid grid-cols-1 md:grid-cols-2 bg-[#F8F3FF] gap-3 sm:gap-4 md:gap-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative overflow-visible">
+                          <div className="grid grid-cols-1 md:grid-cols-2 bg-[#F8F3FF] gap-3 sm:gap-4 md:gap-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative overflow-visible">
                             {/* Add remove button */}
                             {index > 0 && (
                               <button
@@ -3376,13 +3529,15 @@ if (isoCountry === "US") {
                                   handleFormChange("education"); // Track changes
                                 }}
                                 placeholder="Enter your degree"
-                                className={`w-full px-4 py-2 border bg-white ${educationErrors?.degree
+                                className={`w-full px-4 py-2 border bg-white ${
+                                  educationErrors?.degree
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                  } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationErrors?.degree
+                                } rounded-xl h-[41px] text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  educationErrors?.degree
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                  }`}
+                                }`}
                               />
                               {educationErrors?.degree && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3409,13 +3564,15 @@ if (isoCountry === "US") {
                                   handleFormChange("education"); // Track changes
                                 }}
                                 placeholder="Enter institution name"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${educationErrors?.institution
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  educationErrors?.institution
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${educationErrors?.institution
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  educationErrors?.institution
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                  }`}
+                                }`}
                               />
                               {educationErrors?.institution && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3612,15 +3769,26 @@ if (isoCountry === "US") {
                       </button>
                     </div>
 
-                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
+                    <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => {
-                          educationForm.reset();
+                          // Reset education form to single empty entry
+                          educationForm.reset({
+                            educations: [
+                              {
+                                degree: "",
+                                institution: "",
+                                start_date: "",
+                                end_date: "",
+                              },
+                            ],
+                          });
+
                           // Clear unsaved changes
                           setUnsavedChanges((prev) => ({
                             ...prev,
@@ -3636,7 +3804,11 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                         type="submit"
                         disabled={isSubmitting.education}
                       >
-                        {isSubmitting.education ? "Saving..." : "Save"}
+                        {isSubmitting.education
+                          ? "Saving..."
+                          : hasExistingData.education
+                          ? "Update"
+                          : "Save"}
                       </Button>
                     </div>
                   </form>
@@ -3731,13 +3903,15 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   );
                                 }}
                                 placeholder="Enter Company Name"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${experienceErrors?.company
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  experienceErrors?.company
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.company
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  experienceErrors?.company
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                  }`}
+                                }`}
                               />
                               {experienceErrors?.company && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3765,13 +3939,15 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   handleFormChange("work");
                                 }}
                                 placeholder="Enter your Designation"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${experienceErrors?.position
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  experienceErrors?.position
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.position
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  experienceErrors?.position
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                  }`}
+                                }`}
                               />
                               {experienceErrors?.position && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3798,13 +3974,15 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   handleFormChange("work");
                                 }}
                                 placeholder="Describe your key roles and responsibilities"
-                                className={`w-full px-4 py-2 border bg-white ${experienceErrors?.roles_responsibilities
+                                className={`w-full px-4 py-2 border bg-white ${
+                                  experienceErrors?.roles_responsibilities
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.roles_responsibilities
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  experienceErrors?.roles_responsibilities
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                  }`}
+                                }`}
                               />
                               {experienceErrors?.roles_responsibilities && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -3834,13 +4012,15 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                                   handleFormChange("work");
                                 }}
                                 placeholder="Enter city"
-                                className={`w-full h-[41px] px-4 py-2 border bg-white ${experienceErrors?.work_city
+                                className={`w-full h-[41px] px-4 py-2 border bg-white ${
+                                  experienceErrors?.work_city
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                  } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${experienceErrors?.work_city
+                                } rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 ${
+                                  experienceErrors?.work_city
                                     ? "focus:ring-red-500"
                                     : "focus:ring-purple-500"
-                                  }`}
+                                }`}
                               />
                               {experienceErrors?.work_city && (
                                 <p className="text-sm text-red-500 mt-1">
@@ -4061,11 +4241,28 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-         hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-         shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => {
-                          workExperienceForm.reset();
+                          // Reset work experience form to single empty entry
+                          workExperienceForm.reset({
+                            workExperiences: [
+                              {
+                                company: "",
+                                position: "",
+                                roles_responsibilities: "",
+                                work_city: "",
+                                work_state: "",
+                                work_country: "",
+                                currently_working: false,
+                                start_date: "",
+                                end_date: "",
+                              },
+                            ],
+                          });
+
+                          // Clear unsaved changes
                           setUnsavedChanges((prev) => ({
                             ...prev,
                             work: false,
@@ -4080,7 +4277,11 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                         type="submit"
                         disabled={isSubmitting.work}
                       >
-                        {isSubmitting.work ? "Saving..." : "Save"}
+                        {isSubmitting.work
+                          ? "Saving..."
+                          : hasExistingData.work
+                          ? "Update"
+                          : "Save"}
                       </Button>
                     </div>
                   </form>
@@ -4093,10 +4294,10 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                       handlePublicProfileSubmit
                     )}
                   >
-                <div className="bg-[#F8F3FF] space-y-4 md:space-y-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
+                    <div className="bg-[#F8F3FF] space-y-4 md:space-y-6 mb-8 p-3 sm:p-4 md:p-6 rounded-lg rounded-tl-none rounded-tr-none relative">
                       {/* Title */}
                       <div className="w-full">
-                      <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
+                        <label className="block text-xs sm:text-sm font-medium text-gray-800 mb-1.5 sm:mb-2">
                           Title
                         </label>
                         <textarea
@@ -4194,7 +4395,7 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             </button>
                             <span className="flex-1 truncate text-gray-500">
                               {publicProfileForm.watch("featuredImage") &&
-                                publicProfileForm.watch("featuredImage").length >
+                              publicProfileForm.watch("featuredImage").length >
                                 0 ? (
                                 publicProfileForm.watch("featuredImage")[0]
                                   ?.name
@@ -4245,9 +4446,9 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                             value={
                               serviceInput
                                 ? {
-                                  value: serviceInput,
-                                  label: serviceInput,
-                                }
+                                    value: serviceInput,
+                                    label: serviceInput,
+                                  }
                                 : undefined
                             }
                             onChange={(selectedOption) => {
@@ -4443,15 +4644,31 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                         )}
                       </div>*/}
                     </div>
-                   <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
+                    <div className="w-full flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6">
                       <Button
                         variant="white-outline"
                         className="font-['Plus Jakarta Sans'] text-[14px] px-6 py-2 rounded-full border border-[#ddd] text-black bg-white 
-        hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
-        shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
+            hover:bg-linear-to-r hover:from-[#7077FE] hover:to-[#7077FE] hover:text-white 
+            shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-auto flex justify-center"
                         type="button"
                         onClick={() => {
-                          publicProfileForm.reset();
+                          // Reset public profile form
+                          publicProfileForm.reset({
+                            title: "",
+                            notifyEmail: "",
+                            emailAddress: "",
+                            aboutUs: "",
+                            featuredImage: undefined,
+                          });
+
+                          // Clear services and tags
+                          setServices([]);
+                          setTags([]);
+                          setInputValue("");
+                          setServiceInput("");
+                          setCustomServiceInput("");
+                          setShowCustomInput(false);
+
                           // Clear unsaved changes
                           setUnsavedChanges((prev) => ({
                             ...prev,
@@ -4467,7 +4684,11 @@ shadow-sm hover:shadow-md transition-all duration-300 ease-in-out w-full sm:w-au
                         type="submit"
                         disabled={isSubmitting.public}
                       >
-                        {isSubmitting.public ? "Saving..." : "Save"}
+                        {isSubmitting.public
+                          ? "Saving..."
+                          : hasExistingData.public
+                          ? "Update"
+                          : "Save"}
                       </Button>
                     </div>
                   </form>

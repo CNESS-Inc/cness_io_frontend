@@ -179,7 +179,7 @@ const UserProfileCard: React.FC<ProfileCardNewProps> = ({
               letterSpacing: "0",
             }}
           >
-            My Interests
+            My Interest
           </h3>
           <div className="flex flex-wrap gap-2.5">
             {interests.map((interest, index) => (
@@ -199,7 +199,7 @@ const UserProfileCard: React.FC<ProfileCardNewProps> = ({
               letterSpacing: "0",
             }}
           >
-            My Professions
+            My Profession
           </h3>
           <div className="flex flex-wrap gap-2.5">
             {professions.map((profession, index) => (

@@ -534,11 +534,10 @@ export default function UserProfileView() {
           type: "success",
           duration: 5000,
         });
-
-        closeModal();
         setTags([]);
+        closeModal();
       }
-
+      setTags([]);
       closeModal();
       await fetchMineBestPractices();
     } catch (error: any) {
@@ -2255,6 +2254,7 @@ export default function UserProfileView() {
               profession={profession}
               interest={interest}
               tags={tags}
+              setTags={setTags}
               inputValue={inputValue}
               setInputValue={setInputValue}
               removeTag={removeTag}
