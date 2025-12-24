@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Activity, Briefcase, Heart, Flame, Newspaper } from 'lucide-react';
+import { Users, Activity, Briefcase, Heart, Flame, Newspaper, AlertCircle } from 'lucide-react';
 import type { Circle } from '../../types/circles';
-import { joinCircle, leaveCircle } from '../../services/circlesApi';
+import { joinCircle, leaveCircle, checkJoinEligibility } from '../../services/circlesApi';
 
 interface CircleCardProps {
   circle: Circle;
@@ -15,6 +15,8 @@ const CircleCard: React.FC<CircleCardProps> = ({ circle, isMember = false, onMem
   const [isHovered, setIsHovered] = useState(false);
   const [joining, setJoining] = useState(false);
   const [memberStatus, setMemberStatus] = useState(isMember);
+  const [joinError, setJoinError] = useState<string | null>(null);
+  const [showError, setShowError] = useState(false);
 
   // Scope ring styles
   const getScopeRingStyle = () => {
