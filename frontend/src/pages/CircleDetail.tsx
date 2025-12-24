@@ -373,10 +373,22 @@ const CircleDetail: React.FC = () => {
                 <p className="text-gray-500 mb-4">Become a member to participate in chat rooms</p>
                 <button
                   onClick={handleJoinLeave}
-                  className="px-6 py-2.5 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors"
+                  disabled={joining}
+                  className="px-6 py-2.5 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2 mx-auto"
                 >
+                  {joining && <Loader2 className="w-4 h-4 animate-spin" />}
                   Join Circle
                 </button>
+                
+                {/* Error Message Below Button */}
+                {joinError && (
+                  <div className="mt-4 mx-auto max-w-md bg-red-50 border border-red-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-red-700 text-left">{joinError}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="p-4">
