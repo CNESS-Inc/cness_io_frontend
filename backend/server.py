@@ -594,7 +594,35 @@ async def get_professions(authorization: Optional[str] = Header(None)):
 
 @app.get("/api/interests")
 async def get_interests():
-    """Get all interests"""
+    """Get all interests from external API"""
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(f"{EXTERNAL_API_BASE}/api/interests/get-interests")
+            if response.status_code == 200:
+                data = response.json()
+                # Handle nested data.data format
+                interests_list = []
+                if isinstance(data, dict):
+                    if "data" in data and isinstance(data["data"], dict) and "data" in data["data"]:
+                        interests_list = data["data"]["data"]
+                    elif "data" in data and isinstance(data["data"], list):
+                        interests_list = data["data"]
+                
+                # Normalize the interests
+                normalized = []
+                for interest in interests_list:
+                    if isinstance(interest, dict):
+                        int_id = interest.get("id") or interest.get("_id")
+                        int_name = interest.get("name") or interest.get("title") or interest.get("interestName")
+                        if int_id and int_name:
+                            normalized.append({"id": int_id, "name": int_name})
+                
+                if normalized:
+                    return {"success": True, "interests": normalized, "total": len(normalized)}
+    except Exception as e:
+        print(f"Error fetching interests from external API: {e}")
+    
+    # Fallback to default interests
     return {"success": True, "interests": DEFAULT_INTERESTS, "total": len(DEFAULT_INTERESTS)}
 
 @app.get("/api/admin/verify")
