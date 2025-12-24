@@ -297,6 +297,7 @@ class ResourceCreate(BaseModel):
 
 class BulkCircleCreate(BaseModel):
     country: str
+    create_global: bool = True
     create_national: bool = True
     create_local: bool = True
     create_for_professions: bool = True
