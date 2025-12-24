@@ -2064,9 +2064,27 @@ async def generate_all_global_circles(
         }
     
     elif request.type == 'interests':
-        for interest in DEFAULT_INTERESTS:
-            interest_id = interest.get("id")
-            interest_name = interest.get("name")
+        # Fetch interests from external API
+        interests = []
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(f"{EXTERNAL_API_BASE}/api/interests/get-interests")
+                if response.status_code == 200:
+                    data = response.json()
+                    if "data" in data and isinstance(data["data"], dict) and "data" in data["data"]:
+                        interests = data["data"]["data"]
+                    elif "data" in data and isinstance(data["data"], list):
+                        interests = data["data"]
+        except Exception as e:
+            print(f"Error fetching interests: {e}")
+            interests = DEFAULT_INTERESTS  # Fallback
+        
+        for interest in interests:
+            interest_id = interest.get("id") or interest.get("_id")
+            interest_name = interest.get("name") or interest.get("title") or interest.get("interestName")
+            
+            if not interest_id or not interest_name:
+                continue
             
             existing = await circles_collection.find_one({
                 "scope": "global",
