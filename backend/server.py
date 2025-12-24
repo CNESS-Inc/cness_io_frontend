@@ -1700,6 +1700,257 @@ async def get_circle_resources(circle_id: str, page: int = 1, limit: int = 20):
 
 # ============== BULK CIRCLE CREATION ==============
 
+class GlobalCircleCreate(BaseModel):
+    type: str  # 'profession' or 'interest'
+    profession_id: Optional[str] = None
+    interest_id: Optional[str] = None
+
+class AllGlobalCirclesCreate(BaseModel):
+    type: str  # 'professions' or 'interests'
+
+@app.post("/api/circles/generate/global")
+async def generate_single_global_circle(
+    request: GlobalCircleCreate,
+    user_id: str = Query(default="system"),
+    auth_token: Optional[str] = Query(default=None)
+):
+    """Generate a single global circle for a profession or interest"""
+    now = datetime.utcnow()
+    
+    if request.type == 'profession' and request.profession_id:
+        # Get profession details
+        professions = await get_professions_from_external_api(auth_token)
+        prof = next((p for p in professions if p.get("_id") == request.profession_id), None)
+        
+        if not prof:
+            raise HTTPException(status_code=404, detail="Profession not found")
+        
+        prof_name = prof.get("name")
+        
+        # Check if already exists
+        existing = await circles_collection.find_one({
+            "scope": "global",
+            "category": "profession",
+            "profession_id": request.profession_id
+        })
+        
+        if existing:
+            return {
+                "success": True,
+                "message": f"Global circle for {prof_name} already exists",
+                "existing": True,
+                "circle_id": existing["id"]
+            }
+        
+        # Create the circle
+        circle_doc = {
+            "id": str(uuid.uuid4()),
+            "name": f"Global {prof_name}s",
+            "description": f"A worldwide community for {prof_name}s to connect and grow together.",
+            "intention": f"Unite {prof_name}s globally",
+            "scope": "global",
+            "category": "profession",
+            "image_url": get_unsplash_url(prof_name.lower().replace(" ", "+")),
+            "country": None,
+            "province": None,
+            "profession_id": request.profession_id,
+            "profession_name": prof_name,
+            "interest_id": None,
+            "interest_name": None,
+            "creator_id": user_id,
+            "member_count": 0,
+            "active_today": 0,
+            "online_now": 0,
+            "post_count": 0,
+            "resource_count": 0,
+            "is_featured": False,
+            "created_at": now,
+            "updated_at": now
+        }
+        await circles_collection.insert_one(circle_doc)
+        
+        return {
+            "success": True,
+            "message": f"Created global circle for {prof_name}",
+            "circle_id": circle_doc["id"],
+            "circle_name": circle_doc["name"]
+        }
+    
+    elif request.type == 'interest' and request.interest_id:
+        # Find interest in DEFAULT_INTERESTS
+        interest = next((i for i in DEFAULT_INTERESTS if i.get("id") == request.interest_id), None)
+        
+        if not interest:
+            raise HTTPException(status_code=404, detail="Interest not found")
+        
+        interest_name = interest.get("name")
+        
+        # Check if already exists
+        existing = await circles_collection.find_one({
+            "scope": "global",
+            "category": "interest",
+            "interest_id": request.interest_id
+        })
+        
+        if existing:
+            return {
+                "success": True,
+                "message": f"Global circle for {interest_name} already exists",
+                "existing": True,
+                "circle_id": existing["id"]
+            }
+        
+        # Create the circle
+        circle_doc = {
+            "id": str(uuid.uuid4()),
+            "name": f"Global {interest_name}",
+            "description": f"A worldwide community for people interested in {interest_name}.",
+            "intention": f"Connect through {interest_name}",
+            "scope": "global",
+            "category": "interest",
+            "image_url": get_unsplash_url(interest_name.lower().replace(" ", "+").replace("&", "")),
+            "country": None,
+            "province": None,
+            "profession_id": None,
+            "profession_name": None,
+            "interest_id": request.interest_id,
+            "interest_name": interest_name,
+            "creator_id": user_id,
+            "member_count": 0,
+            "active_today": 0,
+            "online_now": 0,
+            "post_count": 0,
+            "resource_count": 0,
+            "is_featured": False,
+            "created_at": now,
+            "updated_at": now
+        }
+        await circles_collection.insert_one(circle_doc)
+        
+        return {
+            "success": True,
+            "message": f"Created global circle for {interest_name}",
+            "circle_id": circle_doc["id"],
+            "circle_name": circle_doc["name"]
+        }
+    
+    raise HTTPException(status_code=400, detail="Invalid request. Provide profession_id or interest_id")
+
+@app.post("/api/circles/generate/all-global")
+async def generate_all_global_circles(
+    request: AllGlobalCirclesCreate,
+    user_id: str = Query(default="system"),
+    auth_token: Optional[str] = Query(default=None)
+):
+    """Generate global circles for all professions or interests"""
+    now = datetime.utcnow()
+    created_count = 0
+    skipped_count = 0
+    
+    if request.type == 'professions':
+        professions = await get_professions_from_external_api(auth_token)
+        
+        for prof in professions:
+            prof_id = prof.get("_id")
+            prof_name = prof.get("name")
+            
+            existing = await circles_collection.find_one({
+                "scope": "global",
+                "category": "profession",
+                "profession_id": prof_id
+            })
+            
+            if existing:
+                skipped_count += 1
+                continue
+            
+            circle_doc = {
+                "id": str(uuid.uuid4()),
+                "name": f"Global {prof_name}s",
+                "description": f"A worldwide community for {prof_name}s to connect and grow together.",
+                "intention": f"Unite {prof_name}s globally",
+                "scope": "global",
+                "category": "profession",
+                "image_url": get_unsplash_url(prof_name.lower().replace(" ", "+")),
+                "country": None,
+                "province": None,
+                "profession_id": prof_id,
+                "profession_name": prof_name,
+                "interest_id": None,
+                "interest_name": None,
+                "creator_id": user_id,
+                "member_count": 0,
+                "active_today": 0,
+                "online_now": 0,
+                "post_count": 0,
+                "resource_count": 0,
+                "is_featured": False,
+                "created_at": now,
+                "updated_at": now
+            }
+            await circles_collection.insert_one(circle_doc)
+            created_count += 1
+        
+        return {
+            "success": True,
+            "message": f"Generated {created_count} global profession circles",
+            "created_count": created_count,
+            "skipped_count": skipped_count,
+            "total_professions": len(professions)
+        }
+    
+    elif request.type == 'interests':
+        for interest in DEFAULT_INTERESTS:
+            interest_id = interest.get("id")
+            interest_name = interest.get("name")
+            
+            existing = await circles_collection.find_one({
+                "scope": "global",
+                "category": "interest",
+                "interest_id": interest_id
+            })
+            
+            if existing:
+                skipped_count += 1
+                continue
+            
+            circle_doc = {
+                "id": str(uuid.uuid4()),
+                "name": f"Global {interest_name}",
+                "description": f"A worldwide community for people interested in {interest_name}.",
+                "intention": f"Connect through {interest_name}",
+                "scope": "global",
+                "category": "interest",
+                "image_url": get_unsplash_url(interest_name.lower().replace(" ", "+").replace("&", "")),
+                "country": None,
+                "province": None,
+                "profession_id": None,
+                "profession_name": None,
+                "interest_id": interest_id,
+                "interest_name": interest_name,
+                "creator_id": user_id,
+                "member_count": 0,
+                "active_today": 0,
+                "online_now": 0,
+                "post_count": 0,
+                "resource_count": 0,
+                "is_featured": False,
+                "created_at": now,
+                "updated_at": now
+            }
+            await circles_collection.insert_one(circle_doc)
+            created_count += 1
+        
+        return {
+            "success": True,
+            "message": f"Generated {created_count} global interest circles",
+            "created_count": created_count,
+            "skipped_count": skipped_count,
+            "total_interests": len(DEFAULT_INTERESTS)
+        }
+    
+    raise HTTPException(status_code=400, detail="Invalid type. Use 'professions' or 'interests'")
+
 @app.post("/api/circles/generate/for-country")
 async def generate_circles_for_country(
     request: BulkCircleCreate,
