@@ -1923,13 +1923,31 @@ async def generate_single_global_circle(
         }
     
     elif request.type == 'interest' and request.interest_id:
-        # Find interest in DEFAULT_INTERESTS
-        interest = next((i for i in DEFAULT_INTERESTS if i.get("id") == request.interest_id), None)
+        # Fetch interests from external API
+        interests = []
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(f"{EXTERNAL_API_BASE}/api/interests/get-interests")
+                if response.status_code == 200:
+                    data = response.json()
+                    if "data" in data and isinstance(data["data"], dict) and "data" in data["data"]:
+                        interests = data["data"]["data"]
+                    elif "data" in data and isinstance(data["data"], list):
+                        interests = data["data"]
+        except Exception as e:
+            print(f"Error fetching interests: {e}")
+            interests = DEFAULT_INTERESTS  # Fallback
+        
+        # Find interest by ID
+        interest = next((i for i in interests if i.get("id") == request.interest_id), None)
         
         if not interest:
-            raise HTTPException(status_code=404, detail="Interest not found")
+            raise HTTPException(status_code=404, detail=f"Interest not found with ID: {request.interest_id}")
         
-        interest_name = interest.get("name")
+        interest_name = interest.get("name") or interest.get("title") or interest.get("interestName")
+        
+        if not interest_name:
+            raise HTTPException(status_code=400, detail="Interest name not found")
         
         # Check if already exists
         existing = await circles_collection.find_one({
