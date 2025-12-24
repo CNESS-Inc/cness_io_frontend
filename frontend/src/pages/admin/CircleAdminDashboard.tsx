@@ -646,6 +646,15 @@ const SettingsTab: React.FC = () => {
   const [rolePermissions, setRolePermissions] = useState<Record<string, any>>({});
   const [savingPermissions, setSavingPermissions] = useState(false);
 
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [modalConfig, setModalConfig] = useState<{
+    type: 'success' | 'error';
+    title: string;
+    message: string;
+    details?: string;
+  }>({ type: 'success', title: '', message: '' });
+
   useEffect(() => {
     fetchCountries();
     fetchRolePermissions();
