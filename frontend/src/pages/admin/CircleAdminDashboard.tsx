@@ -559,8 +559,14 @@ const SettingsTab: React.FC = () => {
   // Global circles state
   const [professions, setProfessions] = useState<any[]>([]);
   const [interests, setInterests] = useState<any[]>([]);
-  const [selectedProfession, setSelectedProfession] = useState('');
-  const [selectedInterest, setSelectedInterest] = useState('');
+  const [selectedProfession, setSelectedProfession] = useState<any>(null);
+  const [selectedInterest, setSelectedInterest] = useState<any>(null);
+  const [professionSearch, setProfessionSearch] = useState('');
+  const [interestSearch, setInterestSearch] = useState('');
+  const [showProfessionDropdown, setShowProfessionDropdown] = useState(false);
+  const [showInterestDropdown, setShowInterestDropdown] = useState(false);
+  const [loadingProfessions, setLoadingProfessions] = useState(false);
+  const [loadingInterests, setLoadingInterests] = useState(false);
   const [generatingGlobal, setGeneratingGlobal] = useState(false);
   const [globalResult, setGlobalResult] = useState<any>(null);
   const [globalCirclesCount, setGlobalCirclesCount] = useState({ professions: 0, interests: 0 });
@@ -586,16 +592,38 @@ const SettingsTab: React.FC = () => {
   };
 
   const fetchProfessionsAndInterests = async () => {
+    setLoadingProfessions(true);
+    setLoadingInterests(true);
     try {
+      // Use the external APIs as requested
       const [profRes, intRes] = await Promise.all([
-        axios.get('/api/professions'),
-        axios.get('/api/interests')
+        axios.get('https://uatapi.cness.io/api/profession/get-valid-profession'),
+        axios.get('https://uatapi.cness.io/api/interests/get-interests')
       ]);
-      setProfessions(profRes.data.professions || []);
-      setInterests(intRes.data.interests || []);
+      
+      // Parse professions from external API format
+      const professionData = profRes.data?.success?.data || profRes.data?.data || [];
+      setProfessions(Array.isArray(professionData) ? professionData : []);
+      
+      // Parse interests from external API format
+      const interestData = intRes.data?.success?.data || intRes.data?.data || [];
+      setInterests(Array.isArray(interestData) ? interestData : []);
     } catch (error) {
       console.error('Error fetching professions/interests:', error);
+      // Fallback to local APIs
+      try {
+        const [profRes, intRes] = await Promise.all([
+          axios.get('/api/professions'),
+          axios.get('/api/interests')
+        ]);
+        setProfessions(profRes.data.professions || []);
+        setInterests(intRes.data.interests || []);
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError);
+      }
     }
+    setLoadingProfessions(false);
+    setLoadingInterests(false);
   };
 
   const fetchGlobalCirclesCount = async () => {
@@ -624,8 +652,10 @@ const SettingsTab: React.FC = () => {
   };
 
   const generateGlobalCircle = async (type: 'profession' | 'interest') => {
-    const id = type === 'profession' ? selectedProfession : selectedInterest;
-    if (!id) return;
+    const selected = type === 'profession' ? selectedProfession : selectedInterest;
+    if (!selected) return;
+    
+    const id = selected._id || selected.id;
     
     setGeneratingGlobal(true);
     setGlobalResult(null);
@@ -637,13 +667,28 @@ const SettingsTab: React.FC = () => {
       });
       setGlobalResult(response.data);
       fetchGlobalCirclesCount();
-      if (type === 'profession') setSelectedProfession('');
-      else setSelectedInterest('');
+      if (type === 'profession') {
+        setSelectedProfession(null);
+        setProfessionSearch('');
+      } else {
+        setSelectedInterest(null);
+        setInterestSearch('');
+      }
     } catch (error: any) {
       setGlobalResult({ error: error.response?.data?.detail || 'Failed to create global circle' });
     }
     setGeneratingGlobal(false);
   };
+
+  // Filter professions based on search
+  const filteredProfessions = professions.filter(p => 
+    (p.name || '').toLowerCase().includes(professionSearch.toLowerCase())
+  );
+
+  // Filter interests based on search
+  const filteredInterests = interests.filter(i => 
+    (i.name || i.interestName || '').toLowerCase().includes(interestSearch.toLowerCase())
+  );
 
   const generateAllGlobalCircles = async (type: 'professions' | 'interests') => {
     setGeneratingGlobal(true);
