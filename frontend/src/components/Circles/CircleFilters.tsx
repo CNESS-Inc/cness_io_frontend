@@ -11,7 +11,9 @@ interface CircleFiltersProps {
   sortBy: string;
   setSortBy: (sort: string) => void;
   userCountry?: string;
+  userProvince?: string;
   onCountryDetected?: (country: string) => void;
+  onProvinceDetected?: (province: string) => void;
 }
 
 const CircleFilters: React.FC<CircleFiltersProps> = ({
@@ -24,10 +26,13 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
   sortBy,
   setSortBy,
   userCountry,
+  userProvince,
   onCountryDetected,
+  onProvinceDetected,
 }) => {
-  const [detectingCountry, setDetectingCountry] = useState(false);
+  const [detectingLocation, setDetectingLocation] = useState(false);
   const [detectedCountry, setDetectedCountry] = useState<string | null>(userCountry || null);
+  const [detectedProvince, setDetectedProvince] = useState<string | null>(userProvince || null);
 
   const scopes = [
     { id: 'local', label: 'Local', icon: MapPin, color: 'blue' },
