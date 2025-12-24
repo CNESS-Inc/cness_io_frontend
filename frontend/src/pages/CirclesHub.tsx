@@ -82,10 +82,24 @@ const CirclesHub: React.FC = () => {
 
   useEffect(() => {
     fetchCircles();
-  }, [selectedScope, selectedCategory, searchQuery, sortBy, userCountry]);
+  }, [selectedScope, selectedCategory, searchQuery, sortBy, userCountry, selectedProfession, selectedInterest]);
 
   const handleCountryDetected = (country: string) => {
     setUserCountry(country);
+  };
+
+  const handleProfessionSelect = (profession: Profession | null) => {
+    setSelectedProfession(profession);
+    if (profession) {
+      setSelectedInterest(null); // Clear interest when profession is selected
+    }
+  };
+
+  const handleInterestSelect = (interest: Interest | null) => {
+    setSelectedInterest(interest);
+    if (interest) {
+      setSelectedProfession(null); // Clear profession when interest is selected
+    }
   };
 
   const handleCircleCreated = () => {
