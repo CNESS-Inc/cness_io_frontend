@@ -161,7 +161,9 @@ const CirclesHub: React.FC = () => {
           sortBy={sortBy}
           setSortBy={setSortBy}
           userCountry={userCountry || undefined}
+          userProvince={userProvince || undefined}
           onCountryDetected={handleCountryDetected}
+          onProvinceDetected={handleProvinceDetected}
         />
 
         {/* Profession & Interest Filters */}
