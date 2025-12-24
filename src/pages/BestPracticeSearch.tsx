@@ -535,6 +535,7 @@ export default function BestPracticeSearch() {
       interest: "",
       file: null,
     });
+    setTags([]);
   };
 
   const handleInputChange = (
@@ -662,7 +663,7 @@ export default function BestPracticeSearch() {
         type: "success",
         duration: 5000,
       });
-
+      setTags([]);
       closeModal();
       await fetchBestPractices();
       setTags([]);
@@ -1454,6 +1455,7 @@ export default function BestPracticeSearch() {
         profession={profession}
         interest={interest}
         tags={tags}
+        setTags={setTags}
         inputValue={inputValue}
         setInputValue={setInputValue}
         removeTag={removeTag}

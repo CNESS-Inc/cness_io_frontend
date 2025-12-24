@@ -124,6 +124,7 @@ interface AddBestPracticeModalProps {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   handleRemoveFile: () => void;
   isSubmitting: boolean;
+  setTags?: any;
 }
 
 // Validation interface
@@ -146,6 +147,7 @@ export default function AddBestPracticeModal({
   profession,
   interest,
   tags,
+  setTags,
   inputValue,
   setInputValue,
   removeTag,
@@ -181,6 +183,16 @@ export default function AddBestPracticeModal({
 
     handleTagKeyDown(e);
   };
+  const handleTagInputBlur = () => {
+  if (inputValue.trim()) {
+    const newTag = inputValue.trim();
+    if (!tags.includes(newTag)) {
+      setTags([...tags, newTag]);
+      setInputValue("");
+    }
+  }
+  setTouched((prev) => ({ ...prev, tags: true }));
+};
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
     {}
   );
@@ -689,19 +701,19 @@ export default function AddBestPracticeModal({
                   ))}
                 </div>
                 <input
-                  id="tags"
-                  type="text"
-                  className={`w-full text-sm bg-white focus:outline-none ${
-                    validationErrors.tags
-                      ? "placeholder-red-300"
-                      : "placeholder-gray-400"
-                  }`}
-                  placeholder="Add tags (e.g. therapy, online, free-consult)"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={handleTagKeyDownWrapper}
-                  onBlur={() => setTouched((prev) => ({ ...prev, tags: true }))}
-                />
+  id="tags"
+  type="text"
+  className={`w-full text-sm bg-white focus:outline-none ${
+    validationErrors.tags
+      ? "placeholder-red-300"
+      : "placeholder-gray-400"
+  }`}
+  placeholder="Add tags (e.g. therapy, online, free-consult)"
+  value={inputValue}
+  onChange={(e) => setInputValue(e.target.value)}
+  onKeyDown={handleTagKeyDownWrapper}
+  onBlur={handleTagInputBlur}
+/>
               </div>
               {validationErrors.tags && (
                 <p className="text-red-600 text-sm">{validationErrors.tags}</p>

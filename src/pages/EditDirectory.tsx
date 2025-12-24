@@ -103,7 +103,8 @@ const EditDirectory: React.FC = () => {
       photoId: null,
       photoIndex: null,
     });
-
+  const [hasExistingData, setHasExistingData] = useState<boolean>(false);
+  console.log("🚀 ~ EditDirectory ~ hasExistingData:", hasExistingData)
   // Review states
   const [reviews, setReviews] = useState<any[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
@@ -890,6 +891,7 @@ const onSubmit = async (data: DirectoryFormData) => {
 
       // Populate form with API data
       if (data) {
+        setHasExistingData(true);
         // Store directory_info_id and user_id for reviews
         if (data.id) {
           setDirectoryInfoId(data.id);
@@ -1019,6 +1021,7 @@ const onSubmit = async (data: DirectoryFormData) => {
         }
       }
     } catch (error: any) {
+      setHasExistingData(false);
       // showToast({
       //   message: error?.response?.data?.error?.message,
       //   type: "error",
@@ -3075,12 +3078,12 @@ const onSubmit = async (data: DirectoryFormData) => {
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 <span className="text-white font-Rubik leading-[16.59px] text-sm sm:text-base">
-                  Saving...
+                  {hasExistingData ? "Updating..." : "Saving..."}
                 </span>
               </>
             ) : (
               <span className="text-white font-Rubik leading-[16.59px] text-sm sm:text-base">
-                Save
+                {hasExistingData ? "Update" : "Save"}
               </span>
             )}
           </button>

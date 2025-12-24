@@ -85,14 +85,14 @@ export default function DashboardDirectory() {
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 10,
+    itemsPerPage: 12,
   });
 
   const [aspiringPagination, setAspiringPagination] = useState<PaginationData>({
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 10,
+    itemsPerPage: 12,
   });
 
   const [inspiringPagination, setInspiringPagination] =

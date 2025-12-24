@@ -615,7 +615,7 @@ const Managebestpractices = () => {
         type: "success",
         duration: 5000,
       });
-
+      setCreateTags([]);
       closeCreateModal();
       await fetchMineBestPractices();
       setTags([]);
@@ -1141,6 +1141,7 @@ const Managebestpractices = () => {
         profession={profession}
         interest={interest}
         tags={createTags}
+        setTags={setCreateTags}
         inputValue={inputValue}
         setInputValue={setInputValue}
         removeTag={(idx) => removeTag(idx, true)}
