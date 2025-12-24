@@ -543,11 +543,11 @@ const PostsManagementTab: React.FC = () => {
 
 // Settings Tab
 const SettingsTab: React.FC = () => {
-  const [activeSection, setActiveSection] = useState('circles');
+  const [activeSection, setActiveSection] = useState('global');
   const [countries, setCountries] = useState<any[]>([]);
   const [selectedCountry, setSelectedCountry] = useState('');
   const [createOptions, setCreateOptions] = useState({
-    create_global: true,
+    create_global: false,
     create_national: true,
     create_local: true,
     create_for_professions: true,
@@ -556,12 +556,23 @@ const SettingsTab: React.FC = () => {
   const [generating, setGenerating] = useState(false);
   const [generationResult, setGenerationResult] = useState<any>(null);
 
+  // Global circles state
+  const [professions, setProfessions] = useState<any[]>([]);
+  const [interests, setInterests] = useState<any[]>([]);
+  const [selectedProfession, setSelectedProfession] = useState('');
+  const [selectedInterest, setSelectedInterest] = useState('');
+  const [generatingGlobal, setGeneratingGlobal] = useState(false);
+  const [globalResult, setGlobalResult] = useState<any>(null);
+  const [globalCirclesCount, setGlobalCirclesCount] = useState({ professions: 0, interests: 0 });
+
   const [rolePermissions, setRolePermissions] = useState<Record<string, any>>({});
   const [savingPermissions, setSavingPermissions] = useState(false);
 
   useEffect(() => {
     fetchCountries();
     fetchRolePermissions();
+    fetchProfessionsAndInterests();
+    fetchGlobalCirclesCount();
   }, []);
 
   const fetchCountries = async () => {
@@ -571,6 +582,34 @@ const SettingsTab: React.FC = () => {
       setCountries(response.data.countries);
     } catch (error) {
       console.error('Error fetching countries:', error);
+    }
+  };
+
+  const fetchProfessionsAndInterests = async () => {
+    try {
+      const [profRes, intRes] = await Promise.all([
+        axios.get('/api/professions'),
+        axios.get('/api/interests')
+      ]);
+      setProfessions(profRes.data.professions || []);
+      setInterests(intRes.data.interests || []);
+    } catch (error) {
+      console.error('Error fetching professions/interests:', error);
+    }
+  };
+
+  const fetchGlobalCirclesCount = async () => {
+    try {
+      const [profCount, intCount] = await Promise.all([
+        axios.get('/api/circles?scope=global&category=profession&limit=1'),
+        axios.get('/api/circles?scope=global&category=interest&limit=1')
+      ]);
+      setGlobalCirclesCount({
+        professions: profCount.data.total || 0,
+        interests: intCount.data.total || 0
+      });
+    } catch (error) {
+      console.error('Error fetching global circles count:', error);
     }
   };
 
@@ -584,13 +623,47 @@ const SettingsTab: React.FC = () => {
     }
   };
 
+  const generateGlobalCircle = async (type: 'profession' | 'interest') => {
+    const id = type === 'profession' ? selectedProfession : selectedInterest;
+    if (!id) return;
+    
+    setGeneratingGlobal(true);
+    setGlobalResult(null);
+    try {
+      const response = await axios.post('/api/circles/generate/global', {
+        type,
+        profession_id: type === 'profession' ? id : null,
+        interest_id: type === 'interest' ? id : null
+      });
+      setGlobalResult(response.data);
+      fetchGlobalCirclesCount();
+      if (type === 'profession') setSelectedProfession('');
+      else setSelectedInterest('');
+    } catch (error: any) {
+      setGlobalResult({ error: error.response?.data?.detail || 'Failed to create global circle' });
+    }
+    setGeneratingGlobal(false);
+  };
+
+  const generateAllGlobalCircles = async (type: 'professions' | 'interests') => {
+    setGeneratingGlobal(true);
+    setGlobalResult(null);
+    try {
+      const response = await axios.post('/api/circles/generate/all-global', { type });
+      setGlobalResult(response.data);
+      fetchGlobalCirclesCount();
+    } catch (error: any) {
+      setGlobalResult({ error: error.response?.data?.detail || 'Failed to generate global circles' });
+    }
+    setGeneratingGlobal(false);
+  };
+
   const generateCircles = async () => {
     if (!selectedCountry) return;
     
     setGenerating(true);
     setGenerationResult(null);
     try {
-      const token = localStorage.getItem('circleAdminToken');
       const response = await axios.post(
         `/api/circles/generate/for-country?user_id=admin`,
         {
@@ -599,7 +672,7 @@ const SettingsTab: React.FC = () => {
         }
       );
       setGenerationResult(response.data);
-      fetchCountries(); // Refresh counts
+      fetchCountries();
     } catch (error: any) {
       setGenerationResult({ error: error.response?.data?.detail || 'Failed to generate circles' });
     }
