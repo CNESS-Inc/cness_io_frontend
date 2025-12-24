@@ -687,6 +687,15 @@ const SettingsTab: React.FC = () => {
                 <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
+                    checked={createOptions.create_global}
+                    onChange={(e) => setCreateOptions({...createOptions, create_global: e.target.checked})}
+                    className="w-4 h-4 text-purple-600 rounded"
+                  />
+                  <span>Create Global circles (one per profession/interest)</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
                     checked={createOptions.create_national}
                     onChange={(e) => setCreateOptions({...createOptions, create_national: e.target.checked})}
                     className="w-4 h-4 text-purple-600 rounded"
