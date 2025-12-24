@@ -576,6 +576,20 @@ async def admin_logout(admin_token: str = Query(...)):
     await admin_sessions_collection.delete_one({"token": admin_token})
     return {"success": True, "message": "Logged out successfully"}
 
+# ============== PROFESSIONS & INTERESTS PROXY APIs ==============
+
+@app.get("/api/professions")
+async def get_professions(authorization: Optional[str] = Header(None)):
+    """Get all professions from external API"""
+    auth_token = authorization[7:] if authorization and authorization.startswith("Bearer ") else None
+    professions = await get_professions_from_external_api(auth_token)
+    return {"success": True, "professions": professions, "total": len(professions)}
+
+@app.get("/api/interests")
+async def get_interests():
+    """Get all interests"""
+    return {"success": True, "interests": DEFAULT_INTERESTS, "total": len(DEFAULT_INTERESTS)}
+
 @app.get("/api/admin/verify")
 async def verify_admin_session(admin_token: str = Query(...)):
     """Verify admin session"""
