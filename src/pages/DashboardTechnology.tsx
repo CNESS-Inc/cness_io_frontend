@@ -16,7 +16,9 @@ import {
   SortAsc,
   SortDesc,
   X,
+  Search,
 } from "lucide-react";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 interface Company {
   logo: string;
@@ -50,6 +52,11 @@ interface Badge {
   level: string;
 }
 
+type SelectedFilter = {
+  id: string | number;
+  type: "profession";
+} | null;
+
 export default function DashboardTechnology() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
@@ -72,6 +79,16 @@ export default function DashboardTechnology() {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useClickOutside(() => {
+      setIsDropdownOpen(false);
+    });
+
+      const filteredProfessions = professions.filter((prof) =>
+        prof.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    
+      const [selectedFilter, setSelectedFilter] = useState<SelectedFilter>(null);
 
   // Friendly label shown in the UI for the selected profession
   const defaultProfessionText = "All Profession";
@@ -108,9 +125,33 @@ export default function DashboardTechnology() {
       if (found) {
         setSelectedDomainText(found.title);
         setSelectedDomain(urlDomain);
+        setSelectedFilter({
+          id: found.id,
+          type: "profession"
+        });
       } else {
         setSelectedDomainText(defaultProfessionText);
       }
+    }
+  }, [urlDomain, professions]);
+
+
+  useEffect(() => {
+    if (urlDomain) {
+      const foundProfession = professions.find((p) => p.id === urlDomain);
+      if (foundProfession) {
+        setSelectedFilter({
+          id: foundProfession.id,
+          type: "profession"
+        });
+        setSelectedDomain(foundProfession.id);
+        setSelectedDomainText(foundProfession.title);
+      }
+    } else {
+      // Clear filter if no profession in URL
+      setSelectedFilter(null);
+      setSelectedDomain("");
+      setSelectedDomainText(defaultProfessionText);
     }
   }, [urlDomain, professions]);
 
@@ -225,7 +266,7 @@ export default function DashboardTechnology() {
   }, [sort, selectedDomain, selectedCert]);
 
   // Update URL when filters change to include certification
-  const updateURL = (
+   const updateURL = (
     domainValue: string,
     searchValue: string,
     certValue: string
@@ -265,12 +306,25 @@ export default function DashboardTechnology() {
 
   // Update domain selection handler to also update URL
   const handleDomainChange = (domainValue: string) => {
-    setSelectedDomain(domainValue || "");
-    const selectedText =
-      professions.find((d) => d.id === domainValue)?.title || defaultProfessionText;
-    setSelectedDomainText(selectedText);
-    updateURL(domainValue, searchQuery, selectedCert);
+    const profession = professions.find((p) => p.id === domainValue);
+    
+    if (profession) {
+      setSelectedFilter({
+        id: profession.id,
+        type: "profession"
+      });
+      setSelectedDomain(profession.id);
+      setSelectedDomainText(profession.title);
+      updateURL(profession.id, searchQuery, selectedCert);
+    } else {
+      // Clear filter if "All Profession" selected
+      setSelectedFilter(null);
+      setSelectedDomain("");
+      setSelectedDomainText(defaultProfessionText);
+      updateURL("", searchQuery, selectedCert);
+    }
   };
+
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -295,9 +349,25 @@ export default function DashboardTechnology() {
     fetchUsersearchProfileDetails(1);
   };
 
+   const clearFilter = () => {
+    setSelectedFilter(null);
+    setSelectedDomain("");
+    setSelectedDomainText(defaultProfessionText);
+    setIsDropdownOpen(false);
+    
+    // Update URL
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("search", searchQuery);
+    if (selectedCert) params.set("certification", selectedCert);
+    navigate(`?${params.toString()}`);
+    
+    // Fetch data with cleared filters
+    fetchUsersearchProfileDetails(1);
+  };
+
   return (
     <>
-      <section className="relative h-auto max-w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl overflow-hidden mt-2 flex items-center justify-center">
+      <section className="relative max-w-full h-[350px] sm:h-[400px] md:h-[500px] mx-auto rounded-xl mt-2 flex items-center justify-center">
         {/* Background Image Full Fit */}
         <img
           src="https://cdn.cness.io/Directory.svg"
@@ -317,42 +387,138 @@ export default function DashboardTechnology() {
 
           {/* Search Bar Wrapper */}
           <div className="w-full flex justify-center mb-4">
-            <div className="w-full bg-white rounded-full shadow-[0_10px_30px_rgba(112,119,254,0.15)] 
-        flex items-center pl-5 h-14 max-w-[650px]">
-              <span className="text-[#7077FE] mr-3 text-lg">
-                <CiSearch />
-              </span>
+                          {/* Combined Search Input + Professions Pill */}
+              <div className="relative w-full">
+                <div className="flex items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden sm:overflow-visible min-h-11">
+                  {/* Left search icon + text input */}
+                  <div className="flex items-center pl-3 shrink-0">
+                    <CiSearch className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                  </div>
 
-              <input
-                type="text"
-                placeholder="Search Best Practice"
-                className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none"
-                value={searchQuery || ""}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyPress}
-              />
+                  <input
+                    type="text"
+                    placeholder="Search Best Practice"
+                    className="flex-1 min-w-0 text-xs sm:text-sm md:text-base font-openSans py-2 sm:py-3 pr-2 sm:pr-4 pl-2 text-gray-700 placeholder:text-gray-400 outline-none bg-transparent"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    aria-label="Search best practices"
+                  />
 
-              {/* Dropdown */}
-              <div className="relative shrink-0">
-                <select
-                  className="bg-[#6340FF] text-white font-semibold rounded-full h-12 px-6 pr-1 text-sm appearance-none 
-              focus:outline-none cursor-pointer shadow-[0_10px_30px_rgba(112,119,254,0.35)]"
-                  value={selectedDomain}
-                  onChange={(e) => handleDomainChange(e.target.value)}
-                >
-                  <option value="">Professions</option>
-                  {professions.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.title}
-                    </option>
-                  ))}
-                </select>
+                  {/* Right purple pill (dropdown trigger) */}
+                  <div className="relative shrink-0" ref={dropdownRef}>
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="flex items-center gap-1 sm:gap-2 bg-[#7077FE] text-white font-semibold rounded-full px-3 sm:px-4 py-2 h-full focus:outline-none whitespace-nowrap min-h-11"
+                      aria-haspopup="listbox"
+                      aria-expanded={isDropdownOpen}
+                      type="button"
+                    >
+                      <span className="text-xs">{selectedDomainText !== "All Domains" &&
+                        selectedDomainText !== ""
+                          ? selectedDomainText
+                          : "Professions"}</span>
+                      <ChevronDown
+                        className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 ${
+                          isDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
 
-                <div className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 text-white text-xs">
-                  ▼
+                    {isDropdownOpen && (
+                      <div
+                        className="
+                          fixed inset-x-0 top-0 bottom-0
+                          sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2
+                          w-full sm:w-80
+                          bg-white border border-gray-200 rounded-lg shadow-lg
+                          z-9999
+                          sm:max-h-96 max-h-full
+                          overflow-hidden
+                        "
+                      >
+                        {/* Mobile header for dropdown */}
+                        <div className="flex items-center justify-between p-4 border-b border-gray-200 sm:hidden bg-[#7077FE] text-white">
+                          <h3 className="font-semibold">Filter by</h3>
+                          <button
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="p-1"
+                            aria-label="Close filter"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+
+                        {/* Search inside dropdown */}
+                        <div className="p-3 border-b border-gray-100">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-4 sm:h-4" />
+                            <input
+                              type="text"
+                              placeholder="Search professions & interests..."
+                              className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7077FE] focus:border-transparent"
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            {searchQuery && (
+                              <button
+                                onClick={() => setSearchQuery("")}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                              >
+                                <X className="w-4 h-4 sm:w-4 sm:h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="overflow-y-auto h-full sm:max-h-64">
+                          <div className="border-b border-gray-100">
+    <button
+      className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${
+        !selectedFilter ? "bg-blue-50 text-[#7077FE] font-medium" : ""
+      }`}
+      onClick={() => {
+        clearFilter();
+        setIsDropdownOpen(false);
+      }}
+    >
+      All Profession
+    </button>
+  </div>
+
+                          {filteredProfessions.map((prof) => (
+    <button
+      key={`p-${prof.id}`}
+      className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${
+        selectedFilter?.id === prof.id && selectedFilter?.type === "profession"
+          ? "bg-blue-50 text-[#7077FE] font-medium"
+          : ""
+      }`}
+      onClick={() => {
+        handleDomainChange(prof.id);
+        setIsDropdownOpen(false);
+      }}
+    >
+      {prof.title}
+    </button>
+  ))}
+                        </div>
+
+                        {/* Close button for mobile (full-width) */}
+                        <div className="sm:hidden p-4 border-t border-gray-200 bg-white">
+                          <button
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="w-full py-3 bg-[#7077FE] text-white rounded-lg font-medium"
+                          >
+                            Close
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
           </div>
 
           <p className="text-xs text-[#6340FF] font-semibold md:text-sm ">

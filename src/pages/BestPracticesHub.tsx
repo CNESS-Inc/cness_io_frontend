@@ -86,7 +86,7 @@ export default function BestPracticesHub() {
   const [tags, setTags] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
 
-   const dropdownRef = useClickOutside(() => {
+  const dropdownRef = useClickOutside(() => {
     setIsDropdownOpen(false);
   });
 
@@ -538,6 +538,7 @@ export default function BestPracticesHub() {
       interest: "",
       file: null,
     });
+    setTags([]);
   };
 
   const handleInputChange = (
@@ -685,11 +686,12 @@ export default function BestPracticesHub() {
         type: "success",
         duration: 5000,
       });
-
+      setTags([]);
       closeModal();
       // Refetch both sections after creating new practice
       fetchBestPracticesByProfession(1, "", "");
       fetchBestPracticesByInterest(1, "", "");
+      setTags([]);
       setActiveModal(null);
     } catch (error: any) {
       console.error("Error creating best practice:", error);
@@ -897,8 +899,9 @@ export default function BestPracticesHub() {
                     >
                       <span className="text-xs">Professions</span>
                       <ChevronDown
-                        className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""
-                          }`}
+                        className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 ${
+                          isDropdownOpen ? "rotate-180" : ""
+                        }`}
                       />
                     </button>
 
@@ -942,10 +945,11 @@ export default function BestPracticesHub() {
                         <div className="overflow-y-auto h-full sm:max-h-64">
                           <div className="border-b border-gray-100">
                             <button
-                              className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${!selectedFilter.id
-                                ? "bg-blue-50 text-[#7077FE]"
-                                : ""
-                                }`}
+                              className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${
+                                !selectedFilter.id
+                                  ? "bg-blue-50 text-[#7077FE]"
+                                  : ""
+                              }`}
                               onClick={() => {
                                 clearFilter();
                                 setIsDropdownOpen(false);
@@ -963,11 +967,12 @@ export default function BestPracticesHub() {
                               {filteredProfessions.map((prof) => (
                                 <button
                                   key={`p-${prof.id}`}
-                                  className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${selectedFilter.id === prof.id &&
+                                  className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${
+                                    selectedFilter.id === prof.id &&
                                     selectedFilter.type === "profession"
-                                    ? "bg-blue-50 text-[#7077FE] font-medium"
-                                    : ""
-                                    }`}
+                                      ? "bg-blue-50 text-[#7077FE] font-medium"
+                                      : ""
+                                  }`}
                                   onClick={() => {
                                     handleFilterSelect(
                                       prof.id,
@@ -991,11 +996,12 @@ export default function BestPracticesHub() {
                               {filteredInterests.map((int) => (
                                 <button
                                   key={`i-${int.id}`}
-                                  className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${selectedFilter.id === int.id &&
+                                  className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 ${
+                                    selectedFilter.id === int.id &&
                                     selectedFilter.type === "interest"
-                                    ? "bg-blue-50 text-[#7077FE] font-medium"
-                                    : ""
-                                    }`}
+                                      ? "bg-blue-50 text-[#7077FE] font-medium"
+                                      : ""
+                                  }`}
                                   onClick={() => {
                                     handleFilterSelect(
                                       int.id,
@@ -1039,16 +1045,14 @@ export default function BestPracticesHub() {
             <div className="flex flex-col sm:flex-row mt-4 sm:mt-6 gap-3 sm:gap-4 p-2 sm:p-4">
               <div
                 onClick={handleExploreClick}
-                className="flex items-center gap-2 sm:gap-3 bg-white shadow-md rounded-xl px-4 sm:px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] transition w-full sm:w-auto">
+                className="flex items-center gap-2 sm:gap-3 bg-white shadow-md rounded-xl px-4 sm:px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] transition w-full sm:w-auto"
+              >
                 <img
                   src="https://cdn.cness.io/toy-with-red-handle-green-plastic-handle%201.svg"
                   alt="Explore Best Practice Icon"
                   className="w-10 h-10 sm:w-12 sm:h-12 md:w-15 md:h-15"
                 />
-                <span
-
-                  className="text-gray-800 font-openSans font-semibold leading-tight text-sm sm:text-base"
-                >
+                <span className="text-gray-800 font-openSans font-semibold leading-tight text-sm sm:text-base">
                   Explore
                   <br />
                   Best Practice
@@ -1057,14 +1061,14 @@ export default function BestPracticesHub() {
 
               <div
                 onClick={openModal}
-                className="flex items-center gap-2 sm:gap-3 bg-white shadow-md rounded-xl px-4 sm:px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] transition w-full sm:w-auto">
+                className="flex items-center gap-2 sm:gap-3 bg-white shadow-md rounded-xl px-4 sm:px-5 py-3 cursor-pointer hover:bg-[#F9FDFF] transition w-full sm:w-auto"
+              >
                 <img
                   src="https://cdn.cness.io/yellow-paper-clip-isolated-back-school-education-minimal-icon-3d-illustration%201.svg"
                   alt="Add Your Impact Story Icon"
                   className="w-10 h-10 sm:w-12 sm:h-12 md:w-15 md:h-15"
                 />
-                <span
-                  className="text-gray-800 font-openSans font-semibold leading-tight text-sm sm:text-base">
+                <span className="text-gray-800 font-openSans font-semibold leading-tight text-sm sm:text-base">
                   Add Your
                   <br />
                   Best Practices
@@ -1078,7 +1082,8 @@ export default function BestPracticesHub() {
       {/* Best Practices for Profession Section */}
       <section
         id="explore"
-        className="py-6 sm:py-8 px-2 sm:px-4 lg:px-6 bg-[#f9f9f9] border-t border-gray-100">
+        className="py-6 sm:py-8 px-2 sm:px-4 lg:px-6 bg-[#f9f9f9] border-t border-gray-100"
+      >
         <div className="w-full mx-auto">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 sm:gap-4">
             <h4 className="poppins font-medium text-sm sm:text-base md:text-lg leading-[150%] tracking-normal">
@@ -1118,10 +1123,10 @@ export default function BestPracticesHub() {
                         <img
                           src={
                             !company?.user?.profilePicture ||
-                              company?.user?.profilePicture === "null" ||
-                              company?.user?.profilePicture === "undefined" ||
-                              !company?.user?.profilePicture.startsWith("http") ||
-                              company?.user?.profilePicture ===
+                            company?.user?.profilePicture === "null" ||
+                            company?.user?.profilePicture === "undefined" ||
+                            !company?.user?.profilePicture.startsWith("http") ||
+                            company?.user?.profilePicture ===
                               "http://localhost:5026/file/"
                               ? "/profile.jpg"
                               : company?.user?.profilePicture
@@ -1150,10 +1155,10 @@ export default function BestPracticesHub() {
                             <img
                               src={
                                 !company.file ||
-                                  company.file === "null" ||
-                                  company.file === "undefined" ||
-                                  !company.file.startsWith("http") ||
-                                  company.file === "http://localhost:5026/file/"
+                                company.file === "null" ||
+                                company.file === "undefined" ||
+                                !company.file.startsWith("http") ||
+                                company.file === "http://localhost:5026/file/"
                                   ? "/profile.jpg"
                                   : company.file
                               }
@@ -1241,20 +1246,20 @@ export default function BestPracticesHub() {
                                 expandedDescriptions[company.id]
                                   ? company.description
                                   : truncateText(
-                                    company.description,
-                                    isMobile ? 80 : 100
-                                  )
+                                      company.description,
+                                      isMobile ? 80 : 100
+                                    )
                               ),
                             }}
                           />
                           {company.description.length >
                             (isMobile ? 80 : 100) && (
-                              <span className="text-purple-600 underline cursor-pointer ml-1 text-xs sm:text-sm">
-                                {expandedDescriptions[company.id]
-                                  ? "Read Less"
-                                  : "Read More"}
-                              </span>
-                            )}
+                            <span className="text-purple-600 underline cursor-pointer ml-1 text-xs sm:text-sm">
+                              {expandedDescriptions[company.id]
+                                ? "Read Less"
+                                : "Read More"}
+                            </span>
+                          )}
                         </p>
                       </div>
                       <div className="flex items-end justify-between px-3 sm:px-4 py-2 mt-1 sm:mt-2 text-xs text-gray-600">
@@ -1297,20 +1302,22 @@ export default function BestPracticesHub() {
                         >
                           <div className="flex items-center gap-1 sm:gap-2 cursor-pointer">
                             <Bookmark
-                              className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200 ${saveLoading[company.id] ? "opacity-50" : ""
-                                }`}
+                              className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200 ${
+                                saveLoading[company.id] ? "opacity-50" : ""
+                              }`}
                               fill={company.is_saved ? "#72DBF2" : "none"}
                               stroke={company.is_saved ? "#72DBF2" : "#4338CA"}
                             />
                             <span
-                              className={`text-xs sm:text-sm font-normal text-gray-700 ${saveLoading[company.id] ? "opacity-50" : ""
-                                }`}
+                              className={`text-xs sm:text-sm font-normal text-gray-700 ${
+                                saveLoading[company.id] ? "opacity-50" : ""
+                              }`}
                             >
                               {saveLoading[company.id]
                                 ? "Saving..."
                                 : company.is_saved
-                                  ? "Saved"
-                                  : "Save"}
+                                ? "Saved"
+                                : "Save"}
                             </span>
                           </div>
                         </div>
@@ -1358,10 +1365,11 @@ export default function BestPracticesHub() {
                           )
                         }
                         disabled={isLoading.profession}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === paginationProfession.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          1 === paginationProfession.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         1
                       </button>
@@ -1394,10 +1402,11 @@ export default function BestPracticesHub() {
                           )
                         }
                         disabled={isLoading.profession}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === paginationProfession.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          page === paginationProfession.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         {page}
                       </button>
@@ -1407,10 +1416,10 @@ export default function BestPracticesHub() {
                     <>
                       {paginationProfession.currentPage <
                         paginationProfession.totalPages - 2 && (
-                          <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
-                            ...
-                          </span>
-                        )}
+                        <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
+                          ...
+                        </span>
+                      )}
 
                       {paginationProfession.totalPages > 1 && (
                         <button
@@ -1422,11 +1431,12 @@ export default function BestPracticesHub() {
                             )
                           }
                           disabled={isLoading.profession}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${paginationProfession.totalPages ===
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                            paginationProfession.totalPages ===
                             paginationProfession.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                            }`}
+                              ? "bg-indigo-500 text-white"
+                              : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                         >
                           {paginationProfession.totalPages}
                         </button>
@@ -1444,7 +1454,7 @@ export default function BestPracticesHub() {
                     }
                     disabled={
                       paginationProfession.currentPage ===
-                      paginationProfession.totalPages || isLoading.profession
+                        paginationProfession.totalPages || isLoading.profession
                     }
                     className="px-2 sm:px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                   >
@@ -1498,10 +1508,10 @@ export default function BestPracticesHub() {
                         <img
                           src={
                             !company?.user?.profilePicture ||
-                              company?.user?.profilePicture === "null" ||
-                              company?.user?.profilePicture === "undefined" ||
-                              !company?.user?.profilePicture.startsWith("http") ||
-                              company?.user?.profilePicture ===
+                            company?.user?.profilePicture === "null" ||
+                            company?.user?.profilePicture === "undefined" ||
+                            !company?.user?.profilePicture.startsWith("http") ||
+                            company?.user?.profilePicture ===
                               "http://localhost:5026/file/"
                               ? "/profile.jpg"
                               : company?.user?.profilePicture
@@ -1530,10 +1540,10 @@ export default function BestPracticesHub() {
                             <img
                               src={
                                 !company.file ||
-                                  company.file === "null" ||
-                                  company.file === "undefined" ||
-                                  !company.file.startsWith("http") ||
-                                  company.file === "http://localhost:5026/file/"
+                                company.file === "null" ||
+                                company.file === "undefined" ||
+                                !company.file.startsWith("http") ||
+                                company.file === "http://localhost:5026/file/"
                                   ? "/profile.jpg"
                                   : company.file
                               }
@@ -1621,20 +1631,20 @@ export default function BestPracticesHub() {
                                 expandedDescriptions[company.id]
                                   ? company.description
                                   : truncateText(
-                                    company.description,
-                                    isMobile ? 80 : 100
-                                  )
+                                      company.description,
+                                      isMobile ? 80 : 100
+                                    )
                               ),
                             }}
                           />
                           {company.description.length >
                             (isMobile ? 80 : 100) && (
-                              <span className="text-purple-600 underline cursor-pointer ml-1 text-xs sm:text-sm">
-                                {expandedDescriptions[company.id]
-                                  ? "Read Less"
-                                  : "Read More"}
-                              </span>
-                            )}
+                            <span className="text-purple-600 underline cursor-pointer ml-1 text-xs sm:text-sm">
+                              {expandedDescriptions[company.id]
+                                ? "Read Less"
+                                : "Read More"}
+                            </span>
+                          )}
                         </p>
                       </div>
                       <div className="flex items-end justify-between px-3 sm:px-4 py-2 mt-1 sm:mt-2 text-xs text-gray-600">
@@ -1677,20 +1687,22 @@ export default function BestPracticesHub() {
                         >
                           <div className="flex items-center gap-1 sm:gap-2 cursor-pointer">
                             <Bookmark
-                              className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200 ${saveLoading[company.id] ? "opacity-50" : ""
-                                }`}
+                              className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200 ${
+                                saveLoading[company.id] ? "opacity-50" : ""
+                              }`}
                               fill={company.is_saved ? "#72DBF2" : "none"}
                               stroke={company.is_saved ? "#72DBF2" : "#4338CA"}
                             />
                             <span
-                              className={`text-xs sm:text-sm font-normal text-gray-700 ${saveLoading[company.id] ? "opacity-50" : ""
-                                }`}
+                              className={`text-xs sm:text-sm font-normal text-gray-700 ${
+                                saveLoading[company.id] ? "opacity-50" : ""
+                              }`}
                             >
                               {saveLoading[company.id]
                                 ? "Saving..."
                                 : company.is_saved
-                                  ? "Saved"
-                                  : "Save"}
+                                ? "Saved"
+                                : "Save"}
                             </span>
                           </div>
                         </div>
@@ -1737,10 +1749,11 @@ export default function BestPracticesHub() {
                           )
                         }
                         disabled={isLoading.interest}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${1 === paginationInterest.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          1 === paginationInterest.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         1
                       </button>
@@ -1772,10 +1785,11 @@ export default function BestPracticesHub() {
                           )
                         }
                         disabled={isLoading.interest}
-                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${page === paginationInterest.currentPage
-                          ? "bg-indigo-500 text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                          }`}
+                        className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                          page === paginationInterest.currentPage
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        }`}
                       >
                         {page}
                       </button>
@@ -1785,10 +1799,10 @@ export default function BestPracticesHub() {
                     <>
                       {paginationInterest.currentPage <
                         paginationInterest.totalPages - 2 && (
-                          <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
-                            ...
-                          </span>
-                        )}
+                        <span className="px-2 sm:px-3 py-1 border border-gray-300 bg-white">
+                          ...
+                        </span>
+                      )}
 
                       {paginationInterest.totalPages > 1 && (
                         <button
@@ -1800,11 +1814,12 @@ export default function BestPracticesHub() {
                             )
                           }
                           disabled={isLoading.interest}
-                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${paginationInterest.totalPages ===
+                          className={`px-2 sm:px-3 py-1 border border-gray-300 ${
+                            paginationInterest.totalPages ===
                             paginationInterest.currentPage
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-100"
-                            }`}
+                              ? "bg-indigo-500 text-white"
+                              : "bg-white text-gray-700 hover:bg-gray-100"
+                          }`}
                         >
                           {paginationInterest.totalPages}
                         </button>
@@ -1822,7 +1837,7 @@ export default function BestPracticesHub() {
                     }
                     disabled={
                       paginationInterest.currentPage ===
-                      paginationInterest.totalPages || isLoading.interest
+                        paginationInterest.totalPages || isLoading.interest
                     }
                     className="px-2 sm:px-3 py-1 rounded-r-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-40"
                   >
@@ -1842,6 +1857,7 @@ export default function BestPracticesHub() {
         profession={profession}
         interest={interest}
         tags={tags}
+        setTags={setTags}
         inputValue={inputValue}
         setInputValue={setInputValue}
         removeTag={removeTag}

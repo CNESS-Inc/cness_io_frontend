@@ -34,7 +34,7 @@ const DashboardLayout = () => {
     location.pathname === "/DashboardDirectory/dashboardtechnology";
 
   const isMarketplacePage =
-    location.pathname.includes("/dashboard/product-detail") ||
+    location.pathname.includes("/dashboard/new-marketplace") ||
     location.pathname.includes("/dashboard/market-place") ||
     location.pathname.includes("/dashboard/shop-detail") ||
     location.pathname.includes("/dashboard/product-review") ||
@@ -119,7 +119,12 @@ const DashboardLayout = () => {
                   />
                 </div>
 {/* Marketplace Navbar */}
-    <div className="fixed top-[72px] left-0 right-0 z-40 bg-white border-b">
+  <div
+  className={`fixed top-[72px] z-40 bg-white transition-all duration-300
+    inset-x-0
+    ${isMobileNavOpen ? "md:ml-64" : "md:ml-0"}
+  `}
+>
   <MarketplaceNavBar />
 </div>
                
