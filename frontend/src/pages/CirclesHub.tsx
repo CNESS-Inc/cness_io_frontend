@@ -111,6 +111,8 @@ const CirclesHub: React.FC = () => {
           setSearchQuery={setSearchQuery}
           sortBy={sortBy}
           setSortBy={setSortBy}
+          userCountry={userCountry || undefined}
+          onCountryDetected={handleCountryDetected}
         />
 
         {/* Results Count */}
