@@ -63,11 +63,27 @@ const CircleDetail: React.FC = () => {
         setIsMember(false);
         setMemberRole(null);
       } else {
+        // Check eligibility first for profession/interest circles
+        if (circle?.category === 'profession' || circle?.category === 'interest') {
+          try {
+            const eligibility = await checkJoinEligibility(circleId!);
+            if (!eligibility.can_join) {
+              setJoinError(eligibility.reason);
+              setJoining(false);
+              return;
+            }
+          } catch (eligibilityError) {
+            console.warn('Eligibility check failed:', eligibilityError);
+          }
+        }
+        
         await joinCircle(circleId!);
         setIsMember(true);
         setMemberRole('member');
       }
-    } catch (error) {
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.detail || 'Failed to join circle';
+      setJoinError(errorMsg);
       console.error('Error:', error);
     }
     setJoining(false);
