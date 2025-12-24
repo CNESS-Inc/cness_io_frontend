@@ -170,15 +170,16 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
           const Icon = scope.icon;
           const isSelected = selectedScope === scope.id;
           const showCountry = scope.id === 'national' && isSelected && detectedCountry;
+          const showProvince = scope.id === 'local' && isSelected && detectedProvince;
           
           return (
             <button
               key={scope.id}
               onClick={() => handleScopeClick(scope.id)}
-              disabled={detectingCountry && scope.id === 'national'}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${getChipStyle(isSelected, scope.color)} ${detectingCountry && scope.id === 'national' ? 'opacity-70' : ''}`}
+              disabled={detectingLocation && (scope.id === 'national' || scope.id === 'local')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${getChipStyle(isSelected, scope.color)} ${detectingLocation && (scope.id === 'national' || scope.id === 'local') ? 'opacity-70' : ''}`}
             >
-              {detectingCountry && scope.id === 'national' ? (
+              {detectingLocation && (scope.id === 'national' || scope.id === 'local') ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <Icon className="w-4 h-4" />
@@ -186,6 +187,9 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
               {scope.label}
               {showCountry && (
                 <span className="ml-1 opacity-90">({detectedCountry})</span>
+              )}
+              {showProvince && (
+                <span className="ml-1 opacity-90">({detectedProvince})</span>
               )}
             </button>
           );
