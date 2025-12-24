@@ -154,10 +154,20 @@ const CirclesHub: React.FC = () => {
           onCountryDetected={handleCountryDetected}
         />
 
+        {/* Profession & Interest Filters */}
+        <ProfessionInterestFilter
+          selectedProfession={selectedProfession}
+          onProfessionSelect={handleProfessionSelect}
+          selectedInterest={selectedInterest}
+          onInterestSelect={handleInterestSelect}
+        />
+
         {/* Results Count */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-gray-600">
             {circles.length} {circles.length === 1 ? 'circle' : 'circles'} found
+            {selectedProfession && ` for ${selectedProfession.name}`}
+            {selectedInterest && ` for ${selectedInterest.name}`}
           </p>
         </div>
 
