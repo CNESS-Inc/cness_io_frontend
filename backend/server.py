@@ -2088,7 +2088,7 @@ async def generate_single_global_circle(
             "intention": f"Unite {prof_name}s globally",
             "scope": "global",
             "category": "profession",
-            "image_url": get_unsplash_url(prof_name.lower().replace(" ", "+")),
+            "image_url": get_default_community_image(hash(prof_name) % len(DEFAULT_COMMUNITY_IMAGES)),
             "country": None,
             "province": None,
             "profession_id": request.profession_id,
