@@ -1277,7 +1277,7 @@ const SingleBP = () => {
                         disabled={isAppreciateLoading}
                         className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${
                           isLiked
-                            ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
+                            ? "border-white bg-[#7178FF] bg-opacity-10 text-white"
                             : "border-[#7B78FE] text-dark hover:bg-gray-100"
                         } ${
                           isAppreciateLoading
