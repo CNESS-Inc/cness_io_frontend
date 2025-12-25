@@ -1,4 +1,4 @@
-"use client";
+Conscious Social Media Super appConscious Social Media Super appConscious Social Media Super appConscious Social Media Super appConscious Social Media Super app"use client";
 import { useEffect, useState } from "react";
 import Button from "../../ui/Button";
 //import { MessageCircle, ShoppingBag, BookOpen, Compass,  } from "lucide-react";
@@ -37,7 +37,7 @@ export default function HeroSection() {
             step >= 4 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6"
           }`}
         >
-          Find Your People. Grow Together.
+          Conscious Social Media Superapp.
           <br />
         </h1>
 
