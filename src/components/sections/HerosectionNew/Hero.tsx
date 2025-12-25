@@ -1,4 +1,4 @@
-Conscious Social Media Super appConscious Social Media Super appConscious Social Media Super appConscious Social Media Super appConscious Social Media Super app"use client";
+"use client";
 import { useEffect, useState } from "react";
 import Button from "../../ui/Button";
 //import { MessageCircle, ShoppingBag, BookOpen, Compass,  } from "lucide-react";
