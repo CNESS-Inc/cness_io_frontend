@@ -37,7 +37,7 @@ export default function HeroSection() {
             step >= 4 ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-6"
           }`}
         >
-          Conscious Social Media Superapp.
+          Consciousness Social Media Superapp.
           <br />
         </h1>
 
@@ -65,7 +65,7 @@ export default function HeroSection() {
              leading-[100%] tracking-[0px] text-center"
               onClick={() => setOpenSignup(true)}
             >
-              Start your Consciousness Journey
+              Start your Conscious Journey
             </Button>
 
             <Button
