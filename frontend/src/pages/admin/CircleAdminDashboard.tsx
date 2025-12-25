@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, Settings, LogOut, Users, Activity,
   Globe, Flag, MapPin, TrendingUp, BarChart3, RefreshCw,
-  ChevronRight, Circle as CircleIcon, Briefcase, Heart, Search, X, CheckCircle, AlertTriangle
+  ChevronRight, Circle as CircleIcon, Briefcase, Heart, Search, X, CheckCircle, AlertTriangle,
+  Trash2, Edit, Image, Upload
 } from 'lucide-react';
 import axios from 'axios';
 
