@@ -145,6 +145,7 @@ const CircleAdminDashboard: React.FC = () => {
 
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+    { id: 'circles', label: 'Manage Circles', icon: CircleIcon },
     { id: 'posts', label: 'Manage Posts', icon: FileText },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -153,6 +154,8 @@ const CircleAdminDashboard: React.FC = () => {
     switch (activeTab) {
       case 'overview':
         return <OverviewTab statistics={statistics} loading={loading} onRefresh={fetchStatistics} />;
+      case 'circles':
+        return <CirclesManagementTab onRefresh={fetchStatistics} />;
       case 'posts':
         return <PostsManagementTab />;
       case 'settings':
