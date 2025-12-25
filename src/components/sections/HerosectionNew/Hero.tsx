@@ -65,7 +65,7 @@ export default function HeroSection() {
              leading-[100%] tracking-[0px] text-center"
               onClick={() => setOpenSignup(true)}
             >
-              Start your Conscious Journey
+              Start your Consciousness Journey
             </Button>
 
             <Button
