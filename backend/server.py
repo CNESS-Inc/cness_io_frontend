@@ -583,6 +583,198 @@ async def admin_logout(admin_token: str = Query(...)):
     await admin_sessions_collection.delete_one({"token": admin_token})
     return {"success": True, "message": "Logged out successfully"}
 
+# ============== ADMIN CIRCLE MANAGEMENT ==============
+
+# Default community images - curated high-quality images
+DEFAULT_COMMUNITY_IMAGES = [
+    "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop",  # Group of friends
+    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=400&fit=crop",  # Team collaboration
+    "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&h=400&fit=crop",  # Community gathering
+    "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=400&h=400&fit=crop",  # People laughing
+    "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=400&h=400&fit=crop",  # Group dinner
+    "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=400&fit=crop",  # Business team
+    "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=400&fit=crop",  # Conference
+    "https://images.unsplash.com/photo-1543269865-cbf427effbad?w=400&h=400&fit=crop",  # Friends group
+    "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=400&fit=crop",  # Team meeting
+    "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=400&h=400&fit=crop",  # Family/community
+    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop",  # People outdoors
+    "https://images.unsplash.com/photo-1506869640319-fe1a24fd76dc?w=400&h=400&fit=crop",  # Teamwork hands
+]
+
+def get_default_community_image(index: int = 0) -> str:
+    """Get a default community image based on index"""
+    return DEFAULT_COMMUNITY_IMAGES[index % len(DEFAULT_COMMUNITY_IMAGES)]
+
+@app.delete("/api/admin/circles/all")
+async def delete_all_circles(admin_token: str = Query(...)):
+    """Delete all circles and related data - Admin only"""
+    # Verify admin token
+    session = await admin_sessions_collection.find_one({"token": admin_token})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    
+    # Delete all circles and related data
+    circles_deleted = await circles_collection.delete_many({})
+    members_deleted = await circle_members_collection.delete_many({})
+    posts_deleted = await circle_posts_collection.delete_many({})
+    resources_deleted = await circle_resources_collection.delete_many({})
+    comments_deleted = await circle_comments_collection.delete_many({})
+    chatrooms_deleted = await circle_chatrooms_collection.delete_many({})
+    messages_deleted = await circle_chat_messages_collection.delete_many({})
+    
+    return {
+        "success": True,
+        "message": "All circles and related data deleted",
+        "deleted_counts": {
+            "circles": circles_deleted.deleted_count,
+            "members": members_deleted.deleted_count,
+            "posts": posts_deleted.deleted_count,
+            "resources": resources_deleted.deleted_count,
+            "comments": comments_deleted.deleted_count,
+            "chatrooms": chatrooms_deleted.deleted_count,
+            "messages": messages_deleted.deleted_count
+        }
+    }
+
+@app.get("/api/admin/circles/list")
+async def admin_list_circles(
+    admin_token: str = Query(...),
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=200),
+    search: str = Query(None)
+):
+    """List all circles for admin management"""
+    # Verify admin token
+    session = await admin_sessions_collection.find_one({"token": admin_token})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    
+    # Build query
+    query = {}
+    if search:
+        query["$or"] = [
+            {"name": {"$regex": search, "$options": "i"}},
+            {"category": {"$regex": search, "$options": "i"}},
+            {"scope": {"$regex": search, "$options": "i"}}
+        ]
+    
+    # Get total count
+    total = await circles_collection.count_documents(query)
+    
+    # Get circles with pagination
+    skip = (page - 1) * limit
+    circles = await circles_collection.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    return {
+        "success": True,
+        "circles": circles,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "total_pages": (total + limit - 1) // limit
+    }
+
+class CircleImageUpdate(BaseModel):
+    image_url: str
+
+@app.put("/api/admin/circles/{circle_id}/image")
+async def admin_update_circle_image(
+    circle_id: str,
+    image_data: CircleImageUpdate,
+    admin_token: str = Query(...)
+):
+    """Update circle image - Admin only"""
+    # Verify admin token
+    session = await admin_sessions_collection.find_one({"token": admin_token})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    
+    # Update circle image
+    result = await circles_collection.update_one(
+        {"id": circle_id},
+        {"$set": {"image_url": image_data.image_url, "updated_at": datetime.utcnow()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Circle not found")
+    
+    return {
+        "success": True,
+        "message": "Circle image updated successfully"
+    }
+
+class CircleEditUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+
+@app.put("/api/admin/circles/{circle_id}")
+async def admin_update_circle(
+    circle_id: str,
+    update_data: CircleEditUpdate,
+    admin_token: str = Query(...)
+):
+    """Update circle details - Admin only"""
+    # Verify admin token
+    session = await admin_sessions_collection.find_one({"token": admin_token})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    
+    # Build update dict
+    update_dict = {"updated_at": datetime.utcnow()}
+    if update_data.name:
+        update_dict["name"] = update_data.name
+    if update_data.description:
+        update_dict["description"] = update_data.description
+    if update_data.image_url:
+        update_dict["image_url"] = update_data.image_url
+    
+    # Update circle
+    result = await circles_collection.update_one(
+        {"id": circle_id},
+        {"$set": update_dict}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Circle not found")
+    
+    # Get updated circle
+    circle = await circles_collection.find_one({"id": circle_id}, {"_id": 0})
+    
+    return {
+        "success": True,
+        "message": "Circle updated successfully",
+        "circle": circle
+    }
+
+@app.delete("/api/admin/circles/{circle_id}")
+async def admin_delete_circle(
+    circle_id: str,
+    admin_token: str = Query(...)
+):
+    """Delete a specific circle - Admin only"""
+    # Verify admin token
+    session = await admin_sessions_collection.find_one({"token": admin_token})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    
+    # Delete circle and related data
+    circle_result = await circles_collection.delete_one({"id": circle_id})
+    
+    if circle_result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Circle not found")
+    
+    # Delete related data
+    await circle_members_collection.delete_many({"circle_id": circle_id})
+    await circle_posts_collection.delete_many({"circle_id": circle_id})
+    await circle_resources_collection.delete_many({"circle_id": circle_id})
+    await circle_chatrooms_collection.delete_many({"circle_id": circle_id})
+    
+    return {
+        "success": True,
+        "message": "Circle deleted successfully"
+    }
+
 # ============== PROFESSIONS & INTERESTS PROXY APIs ==============
 
 @app.get("/api/professions")
