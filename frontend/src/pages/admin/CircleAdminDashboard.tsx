@@ -442,6 +442,490 @@ const StatusBar: React.FC<{
   );
 };
 
+// Default community images for selection
+const DEFAULT_COMMUNITY_IMAGES = [
+  { url: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop", label: "Group of Friends" },
+  { url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=400&fit=crop", label: "Team Collaboration" },
+  { url: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&h=400&fit=crop", label: "Community Gathering" },
+  { url: "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=400&h=400&fit=crop", label: "People Laughing" },
+  { url: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=400&h=400&fit=crop", label: "Group Dinner" },
+  { url: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=400&fit=crop", label: "Business Team" },
+  { url: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=400&fit=crop", label: "Conference" },
+  { url: "https://images.unsplash.com/photo-1543269865-cbf427effbad?w=400&h=400&fit=crop", label: "Friends Group" },
+  { url: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=400&fit=crop", label: "Team Meeting" },
+  { url: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=400&h=400&fit=crop", label: "Family/Community" },
+  { url: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop", label: "People Outdoors" },
+  { url: "https://images.unsplash.com/photo-1506869640319-fe1a24fd76dc?w=400&h=400&fit=crop", label: "Teamwork Hands" },
+];
+
+// Circles Management Tab
+const CirclesManagementTab: React.FC<{ onRefresh: () => void }> = ({ onRefresh }) => {
+  const [circles, setCircles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [selectedCircle, setSelectedCircle] = useState<any>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
+  const [editForm, setEditForm] = useState({ name: '', description: '', image_url: '' });
+  const [showImagePicker, setShowImagePicker] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState({ title: '', message: '' });
+
+  useEffect(() => {
+    fetchCircles();
+  }, [page, searchQuery]);
+
+  const fetchCircles = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('circleAdminToken');
+      const response = await axios.get(`/api/admin/circles/list?admin_token=${token}&page=${page}&limit=20&search=${searchQuery}`);
+      setCircles(response.data.circles || []);
+      setTotal(response.data.total || 0);
+    } catch (error) {
+      console.error('Error fetching circles:', error);
+    }
+    setLoading(false);
+  };
+
+  const handleDeleteAll = async () => {
+    setDeleting(true);
+    try {
+      const token = localStorage.getItem('circleAdminToken');
+      const response = await axios.delete(`/api/admin/circles/all?admin_token=${token}`);
+      setShowDeleteAllConfirm(false);
+      setSuccessMessage({
+        title: 'All Circles Deleted!',
+        message: `Successfully deleted ${response.data.deleted_counts?.circles || 0} circles and all related data.`
+      });
+      setShowSuccessModal(true);
+      fetchCircles();
+      onRefresh();
+    } catch (error) {
+      console.error('Error deleting circles:', error);
+    }
+    setDeleting(false);
+  };
+
+  const handleDeleteCircle = async () => {
+    if (!selectedCircle) return;
+    setDeleting(true);
+    try {
+      const token = localStorage.getItem('circleAdminToken');
+      await axios.delete(`/api/admin/circles/${selectedCircle.id}?admin_token=${token}`);
+      setShowDeleteConfirm(false);
+      setSelectedCircle(null);
+      setSuccessMessage({
+        title: 'Circle Deleted!',
+        message: `Successfully deleted "${selectedCircle.name}".`
+      });
+      setShowSuccessModal(true);
+      fetchCircles();
+      onRefresh();
+    } catch (error) {
+      console.error('Error deleting circle:', error);
+    }
+    setDeleting(false);
+  };
+
+  const handleEditCircle = async () => {
+    if (!selectedCircle) return;
+    try {
+      const token = localStorage.getItem('circleAdminToken');
+      await axios.put(`/api/admin/circles/${selectedCircle.id}?admin_token=${token}`, editForm);
+      setShowEditModal(false);
+      setSelectedCircle(null);
+      setSuccessMessage({
+        title: 'Circle Updated!',
+        message: `Successfully updated "${editForm.name}".`
+      });
+      setShowSuccessModal(true);
+      fetchCircles();
+    } catch (error) {
+      console.error('Error updating circle:', error);
+    }
+  };
+
+  const openEditModal = (circle: any) => {
+    setSelectedCircle(circle);
+    setEditForm({
+      name: circle.name || '',
+      description: circle.description || '',
+      image_url: circle.image_url || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const selectImage = (url: string) => {
+    setEditForm({ ...editForm, image_url: url });
+    setShowImagePicker(false);
+  };
+
+  return (
+    <div>
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowSuccessModal(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+            </div>
+            <h3 className="text-xl font-bold text-center text-green-800 mb-2">{successMessage.title}</h3>
+            <p className="text-gray-600 text-center mb-4">{successMessage.message}</p>
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="w-full py-3 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Manage Circles</h2>
+          <p className="text-sm text-gray-500 mt-1">Total: {total} circles</p>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={fetchCircles}
+            className="flex items-center gap-2 px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </button>
+          <button
+            onClick={() => setShowDeleteAllConfirm(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete All Circles
+          </button>
+        </div>
+      </div>
+
+      {/* Search */}
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search circles by name, category, or scope..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+      </div>
+
+      {/* Circles Table */}
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b border-gray-100">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Image</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Name</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Scope</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Category</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Members</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-8 text-center">
+                  <RefreshCw className="w-6 h-6 animate-spin mx-auto text-purple-600" />
+                </td>
+              </tr>
+            ) : circles.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                  No circles found
+                </td>
+              </tr>
+            ) : (
+              circles.map((circle) => (
+                <tr key={circle.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    <img
+                      src={circle.image_url || DEFAULT_COMMUNITY_IMAGES[0].url}
+                      alt={circle.name}
+                      className="w-12 h-12 rounded-lg object-cover"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="font-medium text-gray-900 truncate max-w-[200px]">{circle.name}</p>
+                    <p className="text-xs text-gray-500 truncate max-w-[200px]">{circle.description}</p>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      circle.scope === 'global' ? 'bg-amber-100 text-amber-700' :
+                      circle.scope === 'national' ? 'bg-purple-100 text-purple-700' :
+                      'bg-blue-100 text-blue-700'
+                    }`}>
+                      {circle.scope}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="text-sm text-gray-600 capitalize">{circle.category}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="text-sm font-medium text-gray-900">{circle.member_count || 0}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => openEditModal(circle)}
+                        className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg"
+                        title="Edit"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => { setSelectedCircle(circle); setShowDeleteConfirm(true); }}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+
+        {/* Pagination */}
+        <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
+          <p className="text-sm text-gray-500">
+            Showing {circles.length} of {total} circles
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 border border-gray-200 rounded-lg disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setPage(p => p + 1)}
+              disabled={circles.length < 20}
+              className="px-4 py-2 border border-gray-200 rounded-lg disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Edit Modal */}
+      {showEditModal && selectedCircle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowEditModal(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setShowEditModal(false)}
+              className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Edit Circle</h3>
+            
+            {/* Current Image */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Circle Image</label>
+              <div className="flex items-start gap-4">
+                <img
+                  src={editForm.image_url || DEFAULT_COMMUNITY_IMAGES[0].url}
+                  alt="Circle"
+                  className="w-24 h-24 rounded-xl object-cover"
+                />
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={editForm.image_url}
+                    onChange={(e) => setEditForm({ ...editForm, image_url: e.target.value })}
+                    placeholder="Enter image URL..."
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm mb-2"
+                  />
+                  <button
+                    onClick={() => setShowImagePicker(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm hover:bg-purple-200"
+                  >
+                    <Image className="w-4 h-4" />
+                    Choose from Gallery
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Name */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+              <input
+                type="text"
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg"
+              />
+            </div>
+            
+            {/* Description */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+              <textarea
+                value={editForm.description}
+                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg resize-none"
+              />
+            </div>
+            
+            {/* Actions */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-700 font-medium hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEditCircle}
+                className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Picker Modal */}
+      {showImagePicker && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowImagePicker(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setShowImagePicker(false)}
+              className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Choose Image</h3>
+            
+            <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+              {DEFAULT_COMMUNITY_IMAGES.map((img, index) => (
+                <button
+                  key={index}
+                  onClick={() => selectImage(img.url)}
+                  className="relative group"
+                >
+                  <img
+                    src={img.url}
+                    alt={img.label}
+                    className="w-full aspect-square object-cover rounded-xl border-2 border-transparent group-hover:border-purple-500 transition-all"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-xl transition-all flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 text-white text-xs font-medium bg-black/50 px-2 py-1 rounded">
+                      {img.label}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirm Modal */}
+      {showDeleteConfirm && selectedCircle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowDeleteConfirm(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+                <AlertTriangle className="w-8 h-8 text-red-600" />
+              </div>
+            </div>
+            <h3 className="text-xl font-bold text-center text-gray-900 mb-2">Delete Circle?</h3>
+            <p className="text-gray-600 text-center mb-6">
+              Are you sure you want to delete "{selectedCircle.name}"? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-700 font-medium hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteCircle}
+                disabled={deleting}
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete All Confirm Modal */}
+      {showDeleteAllConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowDeleteAllConfirm(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4">
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+                <AlertTriangle className="w-8 h-8 text-red-600" />
+              </div>
+            </div>
+            <h3 className="text-xl font-bold text-center text-gray-900 mb-2">Delete All Circles?</h3>
+            <p className="text-gray-600 text-center mb-2">
+              This will permanently delete <strong>ALL {total} circles</strong> and their related data including:
+            </p>
+            <ul className="text-sm text-gray-500 mb-6 list-disc list-inside">
+              <li>All circle members</li>
+              <li>All posts and comments</li>
+              <li>All chat rooms and messages</li>
+              <li>All resources</li>
+            </ul>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteAllConfirm(false)}
+                className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-700 font-medium hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAll}
+                disabled={deleting}
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 disabled:opacity-50"
+              >
+                {deleting ? 'Deleting...' : 'Delete All'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Posts Management Tab
 const PostsManagementTab: React.FC = () => {
   const [posts, setPosts] = useState<any[]>([]);
