@@ -2164,7 +2164,7 @@ async def generate_single_global_circle(
             "intention": f"Connect through {interest_name}",
             "scope": "global",
             "category": "interest",
-            "image_url": get_unsplash_url(interest_name.lower().replace(" ", "+").replace("&", "")),
+            "image_url": get_default_community_image(hash(interest_name) % len(DEFAULT_COMMUNITY_IMAGES)),
             "country": None,
             "province": None,
             "profession_id": None,
