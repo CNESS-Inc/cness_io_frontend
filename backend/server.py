@@ -767,6 +767,33 @@ async def admin_delete_circle(
         "message": "Circle deleted successfully"
     }
 
+@app.post("/api/admin/circles/update-images")
+async def admin_update_all_circle_images(admin_token: str = Query(...)):
+    """Update all circles to use default CNESS images - Admin only"""
+    # Verify admin token
+    session = await admin_sessions_collection.find_one({"token": admin_token})
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    
+    # Get all circles
+    circles = await circles_collection.find({}, {"id": 1}).to_list(10000)
+    
+    updated_count = 0
+    for i, circle in enumerate(circles):
+        # Assign one of the 4 default images in rotation
+        new_image = DEFAULT_COMMUNITY_IMAGES[i % len(DEFAULT_COMMUNITY_IMAGES)]
+        await circles_collection.update_one(
+            {"id": circle["id"]},
+            {"$set": {"image_url": new_image}}
+        )
+        updated_count += 1
+    
+    return {
+        "success": True,
+        "message": f"Updated {updated_count} circles with default images",
+        "updated_count": updated_count
+    }
+
 # ============== PROFESSIONS & INTERESTS PROXY APIs ==============
 
 @app.get("/api/professions")
