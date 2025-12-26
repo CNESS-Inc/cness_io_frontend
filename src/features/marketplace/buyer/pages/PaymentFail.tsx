@@ -7,7 +7,7 @@ export default function PaymentFailed() {
     <div className="min-h-screen flex flex-col">
 
       {/* MAIN CONTENT */}
-      <div className="flex flex-1 items-start justify-center px-4 pt-16 sm:pt-20 lg:pt-34 mb-16 sm:mb-20 lg:mb-24">
+      <div className="flex flex-1 items-start justify-center px-4 pt-24 sm:pt-20 lg:pt-34 mb-16 sm:mb-20 lg:mb-24">
         <div className="w-full max-w-[720px] text-center">
 
           {/* Icon */}
@@ -31,7 +31,7 @@ export default function PaymentFailed() {
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-            
+
             {/* Go Back */}
             <button
               className="

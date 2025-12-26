@@ -147,7 +147,7 @@ const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
 
 
 {/* Mobile Filter (Hamburger + Drawer) */}
-<div className="px-4 lg:hidden">
+<div className="px-4 lg:hidden mt-2">
   <Responsivefiletr title="Filters">
     <Filter />
   </Responsivefiletr>

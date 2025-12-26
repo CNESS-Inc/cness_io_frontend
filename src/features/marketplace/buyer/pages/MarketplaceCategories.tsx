@@ -244,7 +244,7 @@ const visibleTrendingProducts = trendingProducts.slice(0, visibleCount);
     <Filter />
   </Responsivefiletr>
 </div>
-       <div className="flex gap-6 p-4 lg:p-6">
+       <div className="flex gap-6 ">
   <div className="flex-1">
 
     {activeTab === "trending" && (
