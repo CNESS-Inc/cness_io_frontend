@@ -805,18 +805,34 @@ async def admin_update_all_circle_images(admin_token: str = Query(...)):
         "updated_count": updated_count
     }
 
-# ============== PROFESSIONS & INTERESTS PROXY APIs ==============
+# ============================================================================
+#                    PROXY APIs TO EXISTING CNESS SYSTEM
+# ============================================================================
+# These endpoints proxy requests to the existing CNESS system APIs at:
+# https://uatapi.cness.io
+#
+# Used endpoints from existing system:
+# - GET /api/profile - Get user profile with professions and interests
+# - GET /api/profession/get-valid-profession - Get all professions
+# - GET /api/interests/get-interests - Get all interests
+# ============================================================================
 
 @app.get("/api/professions")
 async def get_professions(authorization: Optional[str] = Header(None)):
-    """Get all professions from external API"""
+    """
+    PROXY API: Get all professions from existing CNESS system
+    Proxies to: GET /api/profession/get-valid-profession
+    """
     auth_token = authorization[7:] if authorization and authorization.startswith("Bearer ") else None
     professions = await get_professions_from_external_api(auth_token)
     return {"success": True, "professions": professions, "total": len(professions)}
 
 @app.get("/api/interests")
 async def get_interests():
-    """Get all interests from external API"""
+    """
+    PROXY API: Get all interests from existing CNESS system  
+    Proxies to: GET /api/interests/get-interests
+    """
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(f"{EXTERNAL_API_BASE}/api/interests/get-interests")
