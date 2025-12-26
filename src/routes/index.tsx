@@ -24,13 +24,8 @@ import UpgradeBadge from "../pages/UpgradeBadge";
 import DirectoryProfile from "../pages/DirectoryProfile";
 import Notification from "../pages/Notification";
 import Support from "../pages/Support";
-import MarketPlaceNew from "../pages/MarketPlaceNew";
 import MarketPlace from "../pages/MarketPlace";
-
 import SearchListing from "../pages/SearchListing";
-import DigitalProducts from "../pages/DigitalProducts";
-// import Feed from "../pages/Feed";
-import CourseDetail from "../pages/CourseDetail";
 import SearchExplore from "../pages/SearchExplore";
 import BecomeMentor from "../pages/BecomeMentorNew";
 //import DashboardDirectoryPage from "../pages/DashboardDirectoryPage";
@@ -38,8 +33,6 @@ import EditPublicListing from "../pages/EditPublicListing";
 import VisibilitySettings from "../pages/VisibilitySettings";
 import RatingReviews from "../pages/RatingReviews";
 import SellProducts from "../pages/SellProducts";
-import Tracking from "../pages/Tracking";
-import CreatorGuideline from "../pages/CreatorGuideline";
 import Profile from "../pages/Profile";
 import MyConnection from "../pages/MyConnection";
 import Certification from "../pages/Certification";
@@ -68,56 +61,15 @@ import Faqs from "../pages/Faqs";
 import EcoSystem from "../pages/EcoSystem";
 import Premium from "../pages/Premium";
 import WhyCness from "../pages/WhyCness";
-import MyCollections from "../pages/MyCollections";
-import Library from "../pages/Library";
-import ContinueWatching from "../pages/ContinueWatching";
 //import SellerDashboard from "../pages/SellerDashboard";
 import UserPublicProfile from "../pages/UserPublicProfile";
 import Affiliate from "../pages/Affiliate";
-import ProductDetail from "../pages/ProductDetail";
-import MPSearch from "../pages/MPsearch";
-import TrendingProducts from "../pages/TrendingProducts";
-import NewContents from "../pages/NewContents";
 import AssessmentCertification from "../pages/AssessmentCertifications";
 import AspiringAssessment from "../pages/AspiringAssessment";
 import InspiredAssessment from "../pages/InspiredAssessment";
-import ShopDetail from "../pages/ShopDetail";
-import ReviewAll from "../pages/ReviewAll";
-import CartPage from "../pages/CartPage";
-import Checkout from "../pages/Checkout";
-import PaymentSuccess from "../pages/PaymentSuccess";
-import PaymentFailed from "../pages/PaymentFailed";
-import Wishlist from "../pages/Wishlist";
-import OrderHistory from "../pages/OrderHistory";
-import ProductSummery from "../pages/ProductSummery";
 //import Category from "../pages/Category";
-import ShopsList from "../pages/Shops";
-import VendorDashboard from "../pages/VendorDashboard";
-import CreateShopForm from "../pages/CreateShopForm";
-import SellerProductList from "../pages/SellerProductList";
-import Preview from "../pages/Preview";
-import AddVideoForm from "../pages/AddVideo";
-import AddPodcastsForm from "../pages/AddPodcasts";
-import AddEbookForm from "../pages/AddEbook";
-import AddMusicForm from "../pages/AddMusic";
-import AddCourseForm from "../pages/AddCourse";
-import AddArtsForm from "../pages/AddArts";
-import SellerOrderList from "../pages/SellerOrderList";
-import SellerOrderDetail from "../pages/SellerOrderDetail";
-import SellerSales from "../pages/SellerSales";
-import SellerHelp from "../pages/SellerHelp";
-import DashboardFaqs from "../pages/DashboardFaqs";
-import SellerWithdrawal from "../pages/SellerWithdrawal";
 import Wallet from "../pages/Wallet";
-import AudioPreview from "../pages/MusicPreview";
-import PodcastPreview from "../pages/PodcastPreview";
-import EbookPreview from "../pages/EbookPreview";
-import CoursePreview from "../pages/CoursePreview";
-import ArtPreview from "../pages/ArtPreview";
-import EditSellerProductPage from "../pages/EditSellerProductPage";
-import PaymentConfirmation from "../pages/PaymentConfirmation";
 import BestPracticeSearch from "../pages/BestPracticeSearch";
-import CollectionDetail from "../pages/CollectionDetail";
 import EditProfile from "../pages/EditProfile";
 import EditDirectory from "../pages/EditDirectory";
 import MyEnquiry from "../pages/MyEnquiry";
@@ -314,207 +266,10 @@ export const router = createBrowserRouter([
             path: "support",
             element: <Support />,
           },
-          //old marketplacepage
-          {
-            path: "marketplace",
-            element: <MarketPlace />,
-          },
-          {
-            path: "market-place",
-            element: <MarketPlaceNew />,
-          },
-          {
-            path: "collections",
-            element: <MyCollections />,
-          },
-          {
-            path: "my-collections/:id",
-            element: <CollectionDetail />,
-          },
           {
             path: "all-services",
             element: <AllServices />,
           },
-          {
-            path: "library",
-            element: <Library />,
-          },
-          {
-            path: "continue-watching",
-            element: <ContinueWatching />,
-          },
-          {
-            path: "market-place/search",
-            element: <MPSearch />, // ← new page
-          },
-          {
-            path: "market-place/trending-products",
-            element: <TrendingProducts />,
-          },
-          {
-            path: "market-place/new-contents",
-            element: <NewContents />,
-          },
-
-          {
-           // path: "categories",
-           // element: <Category />,
-          },
-
-          {
-            path: "product-detail/:id",
-            element: <ProductDetail />,
-          },
-
-          {
-            path: "shop-detail/:id",
-            element: <ShopDetail />,
-          },
-
-          {
-            path: "product-review/:id",
-            element: <ReviewAll />,
-          },
-          {
-            path: "cart",
-            element: <CartPage />,
-          },
-          {
-            path: "checkout",
-            element: <Checkout />,
-          },
-          {
-            path: "market-place/checkout-confirmation",
-            element: <PaymentConfirmation />,
-          },
-          {
-            path: "payment-success",
-            element: <PaymentSuccess />,
-          },
-          {
-            path: "payment-failed",
-            element: <PaymentFailed />,
-          },
-          {
-            path: "wishlist",
-            element: <Wishlist />,
-          },
-          {
-            path: "order-history",
-            element: <OrderHistory />,
-          },
-          {
-            path: "order-history/:id",
-            element: <ProductSummery />,
-          },
-          {
-            path: "shops",
-            element: <ShopsList />,
-          },
-
-          {
-            path: "seller-dashboard",
-            element: <VendorDashboard />,
-          },
-
-          {
-            path: "createshop",
-            element: <CreateShopForm />,
-          },
-          {
-            path: "products",
-            element: <SellerProductList />,
-          },
-          {
-            path: "products/add-video",
-            element: <AddVideoForm />,
-          },
-          {
-            path: "products/add-podcast",
-            element: <AddPodcastsForm />,
-          },
-          {
-            path: "products/add-ebook",
-            element: <AddEbookForm />,
-          },
-          {
-            path: "products/add-music",
-            element: <AddMusicForm />,
-          },
-
-          {
-            path: "products/add-course",
-            element: <AddCourseForm />,
-          },
-
-          {
-            path: "products/add-arts",
-            element: <AddArtsForm />,
-          },
-          {
-            path: "products/edit/:productNo",
-            element: <EditSellerProductPage />,
-          },
-          {
-            path: "products/preview/:productNo",
-            element: <Preview />,
-          },
-          {
-            path: "products/music-preview/:productNo",
-            element: <AudioPreview />,
-          },
-          {
-            path: "products/podcast-preview/:productNo",
-            element: <PodcastPreview />,
-          },
-          {
-            path: "products/ebook-preview/:productNo",
-            element: <EbookPreview />,
-          },
-          {
-            path: "products/course-preview/:productNo",
-            element: <CoursePreview />,
-          },
-          {
-            path: "products/art-preview/:productNo",
-            element: <ArtPreview />,
-          },
-
-          {
-            path: "orderlist",
-            element: <SellerOrderList />,
-          },
-          {
-            path: "seller-sales",
-            element: <SellerSales />,
-          },
-          {
-            path: "seller-help",
-            element: <SellerHelp />,
-          },
-          {
-            path: "faqs",
-            element: <DashboardFaqs />,
-          },
-
-          {
-            path: "seller-sales/withdrawal",
-            element: <SellerWithdrawal />,
-          },
-
-          {
-            path: "orderlist/:id",
-            element: <SellerOrderDetail />,
-          },
-          // {
-          //   path: "search-listing",
-          //   element:
-          //     import.meta.env.VITE_ENV_STAGE === "test" ? (
-          //       <SearchListing />
-          //     ) : (
-          //       <ComingSoon />
-          //     ),
-          // },
           {
             path: "search-listing",
             element: <SearchListing />,
@@ -525,20 +280,9 @@ export const router = createBrowserRouter([
             element: <UserPublicProfile />,
           },
           {
-            path: "digital_products",
-            element: <DigitalProducts />,
-          },
-
-          {
-            path: "library/course/:id",
-            element: <CourseDetail />,
-          },
-
-          {
             path: "Feed",
             element: <DashboardSocial />,
           },
-
           {
             path: "trendingpost",
             children: [
@@ -552,11 +296,11 @@ export const router = createBrowserRouter([
               },
             ],
           },
-          // {
-          //   path: ":slug",
-          //   element: <TopicPost />,
-          // },
-
+          //old marketplacepage
+          {
+            path: "marketplace",
+            element: <MarketPlace />,
+          },
           {
             path: "SearchExplore",
             element: <SearchExplore />,
@@ -610,16 +354,6 @@ export const router = createBrowserRouter([
             path: "SellProducts",
             element: <SellProducts />,
           },
-          {
-            path: "Tracking",
-            element: <Tracking />,
-          },
-
-          {
-            path: "CreatorGuideline",
-            element: <CreatorGuideline />,
-          },
-
           {
             path: "Profile/:id?",
             element: <Profile />,

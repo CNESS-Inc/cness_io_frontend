@@ -21,7 +21,6 @@ const DashboardNavbar = ({
     {}
   );
   const loggedInUserID = localStorage.getItem("Id");
-  const isSeller = localStorage.getItem("is_seller") === "true";
 
   // Check if viewing other user's profile
   const isViewingOtherUserProfile = () => {
