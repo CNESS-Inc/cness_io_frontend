@@ -775,8 +775,8 @@ async def admin_update_all_circle_images(admin_token: str = Query(...)):
     if not session:
         raise HTTPException(status_code=401, detail="Invalid admin token")
     
-    # Get all circles
-    circles = await circles_collection.find({}, {"id": 1}).to_list(10000)
+    # Get all circles (increase limit to handle large datasets)
+    circles = await circles_collection.find({}, {"id": 1}).to_list(100000)
     
     updated_count = 0
     for i, circle in enumerate(circles):
