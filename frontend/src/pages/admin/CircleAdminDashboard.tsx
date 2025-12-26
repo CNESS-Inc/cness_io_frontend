@@ -503,6 +503,23 @@ const CirclesManagementTab: React.FC<{ onRefresh: () => void }> = ({ onRefresh }
     setDeleting(false);
   };
 
+  const handleUpdateAllImages = async () => {
+    setDeleting(true);
+    try {
+      const token = localStorage.getItem('circleAdminToken');
+      const response = await axios.post(`/api/admin/circles/update-images?admin_token=${token}`);
+      setSuccessMessage({
+        title: 'Images Updated!',
+        message: response.data.message || `Updated ${response.data.updated_count} circles with default images.`
+      });
+      setShowSuccessModal(true);
+      fetchCircles();
+    } catch (error) {
+      console.error('Error updating images:', error);
+    }
+    setDeleting(false);
+  };
+
   const handleDeleteCircle = async () => {
     if (!selectedCircle) return;
     setDeleting(true);
