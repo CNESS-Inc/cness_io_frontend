@@ -1580,66 +1580,58 @@ async def check_join_eligibility(
     if auth_token:
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
-                # Try /api/profile first
+                # Fetch from /api/profile (existing system API)
                 response = await client.get(
                     f"{EXTERNAL_API_BASE}/api/profile",
                     headers={"Authorization": f"Bearer {auth_token}"}
                 )
                 if response.status_code == 200:
                     data = response.json()
-                    profile_data = data.get("data", {}).get("data", {}) or data.get("data", {})
+                    # Navigate to the nested data structure
+                    profile_data = data.get("data", {}).get("data", {})
+                    if not profile_data:
+                        profile_data = data.get("data", {})
                     
-                    # Extract profession IDs and names
+                    print(f"[DEBUG] Profile data keys: {profile_data.keys() if profile_data else 'None'}")
+                    
+                    # Extract profession IDs and names from professions array
+                    # Format: {"profession_id": "...", "title": "...", "description": ...}
                     professions = profile_data.get("professions", [])
+                    print(f"[DEBUG] Found {len(professions)} professions in profile")
+                    
                     for prof in professions:
+                        # Primary field is profession_id
                         prof_id = prof.get("profession_id") or prof.get("id") or prof.get("_id")
-                        prof_name = prof.get("name") or prof.get("profession_name") or prof.get("professionName")
+                        # Name field is "title" in the existing API
+                        prof_name = prof.get("title") or prof.get("name") or prof.get("profession_name")
+                        
                         if prof_id:
                             user_profession_ids.append(str(prof_id))
+                            print(f"[DEBUG] Added profession ID: {prof_id}")
                         if prof_name:
                             user_profession_names.append(prof_name.lower().strip())
+                            print(f"[DEBUG] Added profession name: {prof_name}")
                     
-                    # Extract interest IDs and names
+                    # Extract interest IDs and names from interests array
+                    # Format: {"id": "...", "name": "..."}
                     interests = profile_data.get("interests", [])
+                    print(f"[DEBUG] Found {len(interests)} interests in profile")
+                    
                     for interest in interests:
                         int_id = interest.get("id") or interest.get("_id") or interest.get("interest_id")
-                        int_name = interest.get("name") or interest.get("interestName") or interest.get("interest_name")
+                        int_name = interest.get("name") or interest.get("interestName") or interest.get("title")
+                        
                         if int_id:
                             user_interest_ids.append(str(int_id))
                         if int_name:
                             user_interest_names.append(int_name.lower().strip())
-                
-                # Also try /api/dashboard if needed
-                if not user_profession_ids:
-                    dash_response = await client.get(
-                        f"{EXTERNAL_API_BASE}/api/dashboard",
-                        headers={"Authorization": f"Bearer {auth_token}"}
-                    )
-                    if dash_response.status_code == 200:
-                        dash_data = dash_response.json()
-                        dash_profile = dash_data.get("data", {}).get("data", {}) or dash_data.get("data", {})
-                        
-                        # Extract from dashboard data
-                        professions = dash_profile.get("professions", [])
-                        for prof in professions:
-                            prof_id = prof.get("profession_id") or prof.get("id") or prof.get("_id")
-                            prof_name = prof.get("name") or prof.get("profession_name") or prof.get("professionName")
-                            if prof_id:
-                                user_profession_ids.append(str(prof_id))
-                            if prof_name:
-                                user_profession_names.append(prof_name.lower().strip())
-                        
-                        interests = dash_profile.get("interests", [])
-                        for interest in interests:
-                            int_id = interest.get("id") or interest.get("_id") or interest.get("interest_id")
-                            int_name = interest.get("name") or interest.get("interestName") or interest.get("interest_name")
-                            if int_id:
-                                user_interest_ids.append(str(int_id))
-                            if int_name:
-                                user_interest_names.append(int_name.lower().strip())
                                 
         except Exception as e:
-            print(f"Error fetching user profile: {e}")
+            print(f"[ERROR] Error fetching user profile: {e}")
+    
+    print(f"[DEBUG] Circle profession_id: {circle.get('profession_id')}")
+    print(f"[DEBUG] User profession_ids: {user_profession_ids}")
+    print(f"[DEBUG] User profession_names: {user_profession_names}")
     
     # Living and News circles: Anyone can join
     if circle.get("category") in ["living", "news"]:
@@ -1667,6 +1659,12 @@ async def check_join_eligibility(
         circle_profession_id = circle.get("profession_id")
         circle_profession_name = circle.get("profession_name", "").lower().strip()
         
+        print(f"[DEBUG] Checking profession match:")
+        print(f"[DEBUG]   Circle profession_id: {circle_profession_id}")
+        print(f"[DEBUG]   Circle profession_name: {circle_profession_name}")
+        print(f"[DEBUG]   User profession_ids: {user_profession_ids}")
+        print(f"[DEBUG]   User profession_names: {user_profession_names}")
+        
         if circle_profession_id or circle_profession_name:
             if not user_profession_ids and not user_profession_names:
                 return {
@@ -1678,9 +1676,12 @@ async def check_join_eligibility(
                     "circle_profession": circle.get("profession_name")
                 }
             
-            # Check by ID first, then by name
+            # Check by ID first (exact match with string comparison)
             id_match = str(circle_profession_id) in user_profession_ids if circle_profession_id else False
+            # Then check by name (case-insensitive)
             name_match = circle_profession_name in user_profession_names if circle_profession_name else False
+            
+            print(f"[DEBUG] ID match: {id_match}, Name match: {name_match}")
             
             if not id_match and not name_match:
                 return {
