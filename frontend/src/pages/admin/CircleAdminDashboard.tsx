@@ -613,6 +613,14 @@ const CirclesManagementTab: React.FC<{ onRefresh: () => void }> = ({ onRefresh }
             Refresh
           </button>
           <button
+            onClick={handleUpdateAllImages}
+            disabled={deleting || total === 0}
+            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+          >
+            <Image className="w-4 h-4" />
+            Update All Images
+          </button>
+          <button
             onClick={() => setShowDeleteAllConfirm(true)}
             className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
           >
