@@ -183,7 +183,8 @@ export const checkJoinEligibility = async (circleId: string) => {
 };
 
 export const getUserProfile = async () => {
-  const authToken = localStorage.getItem('authToken') || localStorage.getItem('token');
+  // Get auth token from localStorage - check all possible keys used by existing CNESS app
+  const authToken = localStorage.getItem('jwt') || localStorage.getItem('authToken') || localStorage.getItem('token');
   if (!authToken) {
     throw new Error('Not authenticated');
   }
