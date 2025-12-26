@@ -168,8 +168,8 @@ export const checkMembership = async (circleId: string) => {
 };
 
 export const checkJoinEligibility = async (circleId: string) => {
-  // Get auth token from localStorage
-  const authToken = localStorage.getItem('authToken') || localStorage.getItem('token');
+  // Get auth token from localStorage - check all possible keys used by existing CNESS app
+  const authToken = localStorage.getItem('jwt') || localStorage.getItem('authToken') || localStorage.getItem('token');
   const headers: Record<string, string> = {};
   if (authToken) {
     headers['Authorization'] = `Bearer ${authToken}`;
