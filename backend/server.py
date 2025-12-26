@@ -1596,6 +1596,9 @@ async def check_join_eligibility(
     
     # Get user level and profile from external API
     auth_token = authorization[7:] if authorization and authorization.startswith("Bearer ") else None
+    print(f"[DEBUG] Authorization header received: {authorization[:50] if authorization else 'None'}...")
+    print(f"[DEBUG] Auth token extracted: {auth_token[:20] if auth_token else 'None'}...")
+    
     user_level = await get_user_level(user_id, auth_token)
     
     # Get user's professions and interests from profile
@@ -1608,10 +1611,12 @@ async def check_join_eligibility(
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
                 # Fetch from /api/profile (existing system API)
+                print(f"[DEBUG] Fetching profile from: {EXTERNAL_API_BASE}/api/profile")
                 response = await client.get(
                     f"{EXTERNAL_API_BASE}/api/profile",
                     headers={"Authorization": f"Bearer {auth_token}"}
                 )
+                print(f"[DEBUG] Profile API response status: {response.status_code}")
                 if response.status_code == 200:
                     data = response.json()
                     # Navigate to the nested data structure
