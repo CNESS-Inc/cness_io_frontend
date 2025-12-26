@@ -1573,30 +1573,71 @@ async def check_join_eligibility(
     
     # Get user's professions and interests from profile
     user_profession_ids = []
+    user_profession_names = []
     user_interest_ids = []
+    user_interest_names = []
     
     if auth_token:
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
+                # Try /api/profile first
                 response = await client.get(
                     f"{EXTERNAL_API_BASE}/api/profile",
                     headers={"Authorization": f"Bearer {auth_token}"}
                 )
                 if response.status_code == 200:
                     data = response.json()
-                    profile_data = data.get("data", {}).get("data", {})
+                    profile_data = data.get("data", {}).get("data", {}) or data.get("data", {})
                     
-                    # Extract profession IDs
-                    for prof in profile_data.get("professions", []):
+                    # Extract profession IDs and names
+                    professions = profile_data.get("professions", [])
+                    for prof in professions:
                         prof_id = prof.get("profession_id") or prof.get("id") or prof.get("_id")
+                        prof_name = prof.get("name") or prof.get("profession_name") or prof.get("professionName")
                         if prof_id:
-                            user_profession_ids.append(prof_id)
+                            user_profession_ids.append(str(prof_id))
+                        if prof_name:
+                            user_profession_names.append(prof_name.lower().strip())
                     
-                    # Extract interest IDs
-                    for interest in profile_data.get("interests", []):
-                        int_id = interest.get("id") or interest.get("_id")
+                    # Extract interest IDs and names
+                    interests = profile_data.get("interests", [])
+                    for interest in interests:
+                        int_id = interest.get("id") or interest.get("_id") or interest.get("interest_id")
+                        int_name = interest.get("name") or interest.get("interestName") or interest.get("interest_name")
                         if int_id:
-                            user_interest_ids.append(int_id)
+                            user_interest_ids.append(str(int_id))
+                        if int_name:
+                            user_interest_names.append(int_name.lower().strip())
+                
+                # Also try /api/dashboard if needed
+                if not user_profession_ids:
+                    dash_response = await client.get(
+                        f"{EXTERNAL_API_BASE}/api/dashboard",
+                        headers={"Authorization": f"Bearer {auth_token}"}
+                    )
+                    if dash_response.status_code == 200:
+                        dash_data = dash_response.json()
+                        dash_profile = dash_data.get("data", {}).get("data", {}) or dash_data.get("data", {})
+                        
+                        # Extract from dashboard data
+                        professions = dash_profile.get("professions", [])
+                        for prof in professions:
+                            prof_id = prof.get("profession_id") or prof.get("id") or prof.get("_id")
+                            prof_name = prof.get("name") or prof.get("profession_name") or prof.get("professionName")
+                            if prof_id:
+                                user_profession_ids.append(str(prof_id))
+                            if prof_name:
+                                user_profession_names.append(prof_name.lower().strip())
+                        
+                        interests = dash_profile.get("interests", [])
+                        for interest in interests:
+                            int_id = interest.get("id") or interest.get("_id") or interest.get("interest_id")
+                            int_name = interest.get("name") or interest.get("interestName") or interest.get("interest_name")
+                            if int_id:
+                                user_interest_ids.append(str(int_id))
+                            if int_name:
+                                user_interest_names.append(int_name.lower().strip())
+                                
         except Exception as e:
             print(f"Error fetching user profile: {e}")
     
@@ -1624,8 +1665,10 @@ async def check_join_eligibility(
     # Check profession match
     if circle.get("category") == "profession":
         circle_profession_id = circle.get("profession_id")
-        if circle_profession_id:
-            if not user_profession_ids:
+        circle_profession_name = circle.get("profession_name", "").lower().strip()
+        
+        if circle_profession_id or circle_profession_name:
+            if not user_profession_ids and not user_profession_names:
                 return {
                     "success": True,
                     "can_join": False,
@@ -1634,7 +1677,12 @@ async def check_join_eligibility(
                     "user_level": user_level,
                     "circle_profession": circle.get("profession_name")
                 }
-            if circle_profession_id not in user_profession_ids:
+            
+            # Check by ID first, then by name
+            id_match = str(circle_profession_id) in user_profession_ids if circle_profession_id else False
+            name_match = circle_profession_name in user_profession_names if circle_profession_name else False
+            
+            if not id_match and not name_match:
                 return {
                     "success": True,
                     "can_join": False,
@@ -1642,14 +1690,18 @@ async def check_join_eligibility(
                     "is_member": False,
                     "user_level": user_level,
                     "circle_profession": circle.get("profession_name"),
-                    "user_profession_ids": user_profession_ids
+                    "user_professions": user_profession_names,
+                    "debug_circle_id": str(circle_profession_id),
+                    "debug_user_ids": user_profession_ids
                 }
     
     # Check interest match
     if circle.get("category") == "interest":
         circle_interest_id = circle.get("interest_id")
-        if circle_interest_id:
-            if not user_interest_ids:
+        circle_interest_name = circle.get("interest_name", "").lower().strip()
+        
+        if circle_interest_id or circle_interest_name:
+            if not user_interest_ids and not user_interest_names:
                 return {
                     "success": True,
                     "can_join": False,
@@ -1658,7 +1710,12 @@ async def check_join_eligibility(
                     "user_level": user_level,
                     "circle_interest": circle.get("interest_name")
                 }
-            if circle_interest_id not in user_interest_ids:
+            
+            # Check by ID first, then by name
+            id_match = str(circle_interest_id) in user_interest_ids if circle_interest_id else False
+            name_match = circle_interest_name in user_interest_names if circle_interest_name else False
+            
+            if not id_match and not name_match:
                 return {
                     "success": True,
                     "can_join": False,
@@ -1666,7 +1723,9 @@ async def check_join_eligibility(
                     "is_member": False,
                     "user_level": user_level,
                     "circle_interest": circle.get("interest_name"),
-                    "user_interest_ids": user_interest_ids
+                    "user_interests": user_interest_names,
+                    "debug_circle_id": str(circle_interest_id),
+                    "debug_user_ids": user_interest_ids
                 }
     
     return {
