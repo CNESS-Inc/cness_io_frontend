@@ -585,20 +585,12 @@ async def admin_logout(admin_token: str = Query(...)):
 
 # ============== ADMIN CIRCLE MANAGEMENT ==============
 
-# Default community images - curated high-quality images
+# Default community images - CNESS branded images
 DEFAULT_COMMUNITY_IMAGES = [
-    "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop",  # Group of friends
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=400&fit=crop",  # Team collaboration
-    "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&h=400&fit=crop",  # Community gathering
-    "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=400&h=400&fit=crop",  # People laughing
-    "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=400&h=400&fit=crop",  # Group dinner
-    "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=400&fit=crop",  # Business team
-    "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=400&fit=crop",  # Conference
-    "https://images.unsplash.com/photo-1543269865-cbf427effbad?w=400&h=400&fit=crop",  # Friends group
-    "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=400&fit=crop",  # Team meeting
-    "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=400&h=400&fit=crop",  # Family/community
-    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop",  # People outdoors
-    "https://images.unsplash.com/photo-1506869640319-fe1a24fd76dc?w=400&h=400&fit=crop",  # Teamwork hands
+    "https://cdn.cness.io/community1.webp",
+    "https://cdn.cness.io/community_group.webp",
+    "https://cdn.cness.io/community_group2.webp",
+    "https://cdn.cness.io/community_hand.webp",
 ]
 
 def get_default_community_image(index: int = 0) -> str:

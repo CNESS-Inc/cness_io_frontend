@@ -442,20 +442,12 @@ const StatusBar: React.FC<{
   );
 };
 
-// Default community images for selection
+// Default community images for selection - CNESS branded
 const DEFAULT_COMMUNITY_IMAGES = [
-  { url: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop", label: "Group of Friends" },
-  { url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=400&fit=crop", label: "Team Collaboration" },
-  { url: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&h=400&fit=crop", label: "Community Gathering" },
-  { url: "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=400&h=400&fit=crop", label: "People Laughing" },
-  { url: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=400&h=400&fit=crop", label: "Group Dinner" },
-  { url: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=400&fit=crop", label: "Business Team" },
-  { url: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=400&fit=crop", label: "Conference" },
-  { url: "https://images.unsplash.com/photo-1543269865-cbf427effbad?w=400&h=400&fit=crop", label: "Friends Group" },
-  { url: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=400&fit=crop", label: "Team Meeting" },
-  { url: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=400&h=400&fit=crop", label: "Family/Community" },
-  { url: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop", label: "People Outdoors" },
-  { url: "https://images.unsplash.com/photo-1506869640319-fe1a24fd76dc?w=400&h=400&fit=crop", label: "Teamwork Hands" },
+  { url: "https://cdn.cness.io/community1.webp", label: "Community 1" },
+  { url: "https://cdn.cness.io/community_group.webp", label: "Community Group" },
+  { url: "https://cdn.cness.io/community_group2.webp", label: "Community Group 2" },
+  { url: "https://cdn.cness.io/community_hand.webp", label: "Community Hand" },
 ];
 
 // Circles Management Tab
