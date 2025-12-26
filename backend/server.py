@@ -12,7 +12,18 @@ import asyncio
 import json
 from motor.motor_asyncio import AsyncIOMotorClient
 
-app = FastAPI(title="CNESS Circles API")
+# ============================================================================
+#                        CNESS CIRCLES API
+#                    Built by Emergent AI
+# ============================================================================
+#
+# This API is divided into two sections:
+# 1. EMERGENT AI CREATED APIs - New endpoints for Circles feature
+# 2. PROXY APIs - Endpoints that proxy to the existing CNESS system
+#
+# ============================================================================
+
+app = FastAPI(title="CNESS Circles API", description="Circles feature API - Built by Emergent AI")
 
 # Security
 security = HTTPBasic()
@@ -27,12 +38,12 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-# MongoDB connection
+# MongoDB connection (Emergent AI Database)
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
 client = AsyncIOMotorClient(MONGO_URL)
 db = client.cness_circles
 
-# Collections
+# Collections (Emergent AI Collections for Circles)
 circles_collection = db.circles
 circle_members_collection = db.circle_members
 circle_posts_collection = db.circle_posts
@@ -46,7 +57,7 @@ notifications_collection = db.notifications
 admin_settings_collection = db.admin_settings
 admin_sessions_collection = db.admin_sessions
 
-# External API base URL
+# External API base URL (Existing CNESS System)
 EXTERNAL_API_BASE = os.environ.get("EXTERNAL_API_BASE", "https://uatapi.cness.io")
 
 # ============== WEBSOCKET CONNECTION MANAGER ==============
