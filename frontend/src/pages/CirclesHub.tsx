@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, RefreshCw } from 'lucide-react';
 import type { Circle } from '../types/circles';
-import { getCircles, getPersonalizedCircles, getFeaturedCircles, getUserCircles } from '../services/circlesApi';
+import { getCircles, getPersonalizedCircles, getFeaturedCircles, getUserCircles, getRecentActivities } from '../services/circlesApi';
 import CircleCard from '../components/Circles/CircleCard';
 import FeaturedCarousel from '../components/Circles/FeaturedCarousel';
 import CircleFilters from '../components/Circles/CircleFilters';
 import CreateCircleModal from '../components/Circles/CreateCircleModal';
-import ProfessionInterestFilter from '../components/Circles/ProfessionInterestFilter';
 import RecentActivity from '../components/Circles/RecentActivity';
 
 interface Profession {
@@ -17,6 +16,7 @@ interface Profession {
 interface Interest {
   id: string;
   name: string;
+  interestName?: string;
 }
 
 const CirclesHub: React.FC = () => {
@@ -25,7 +25,8 @@ const CirclesHub: React.FC = () => {
   const [userCircleIds, setUserCircleIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [isPersonalized, setIsPersonalized] = useState(true); // Track if showing personalized view
+  const [isPersonalized, setIsPersonalized] = useState(true);
+  const [showActivityView, setShowActivityView] = useState(false);
 
   // Filters
   const [selectedScope, setSelectedScope] = useState<string | null>(null);
@@ -38,6 +39,8 @@ const CirclesHub: React.FC = () => {
   const [selectedInterest, setSelectedInterest] = useState<Interest | null>(null);
 
   const fetchCircles = async () => {
+    if (showActivityView) return; // Don't fetch circles when showing activity
+    
     setLoading(true);
     try {
       // Check if any filters are applied
@@ -103,8 +106,10 @@ const CirclesHub: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchCircles();
-  }, [selectedScope, selectedCategory, searchQuery, sortBy, userCountry, userProvince, selectedProfession, selectedInterest]);
+    if (!showActivityView) {
+      fetchCircles();
+    }
+  }, [selectedScope, selectedCategory, searchQuery, sortBy, userCountry, userProvince, selectedProfession, selectedInterest, showActivityView]);
 
   const handleCountryDetected = (country: string) => {
     setUserCountry(country);
@@ -117,14 +122,24 @@ const CirclesHub: React.FC = () => {
   const handleProfessionSelect = (profession: Profession | null) => {
     setSelectedProfession(profession);
     if (profession) {
-      setSelectedInterest(null); // Clear interest when profession is selected
+      setSelectedInterest(null);
     }
   };
 
   const handleInterestSelect = (interest: Interest | null) => {
     setSelectedInterest(interest);
     if (interest) {
-      setSelectedProfession(null); // Clear profession when interest is selected
+      setSelectedProfession(null);
+    }
+  };
+
+  const handleActivityToggle = (show: boolean) => {
+    setShowActivityView(show);
+    if (show) {
+      setSelectedScope(null);
+      setSelectedCategory(null);
+      setSelectedProfession(null);
+      setSelectedInterest(null);
     }
   };
 
@@ -146,7 +161,7 @@ const CirclesHub: React.FC = () => {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={fetchCircles}
+              onClick={() => showActivityView ? setShowActivityView(false) : fetchCircles()}
               className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
@@ -161,8 +176,8 @@ const CirclesHub: React.FC = () => {
           </div>
         </div>
 
-        {/* Featured Carousel */}
-        {featuredCircles.length > 0 && (
+        {/* Featured Carousel - Only show when not viewing activity */}
+        {!showActivityView && featuredCircles.length > 0 && (
           <FeaturedCarousel circles={featuredCircles} />
         )}
 
@@ -180,46 +195,54 @@ const CirclesHub: React.FC = () => {
           userProvince={userProvince || undefined}
           onCountryDetected={handleCountryDetected}
           onProvinceDetected={handleProvinceDetected}
-        />
-
-        {/* Profession & Interest Filters */}
-        <ProfessionInterestFilter
           selectedProfession={selectedProfession}
           onProfessionSelect={handleProfessionSelect}
           selectedInterest={selectedInterest}
           onInterestSelect={handleInterestSelect}
+          showActivity={showActivityView}
+          onActivityToggle={handleActivityToggle}
         />
 
-        {/* Results Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            {isPersonalized ? (
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-semibold text-gray-900">For You</span>
-                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-                  Personalized
-                </span>
-              </div>
-            ) : (
-              <span className="text-lg font-semibold text-gray-900">All Circles</span>
-            )}
-            <p className="text-sm text-gray-500 mt-0.5">
-              {circles.length} {circles.length === 1 ? 'circle' : 'circles'} found
-              {selectedProfession && ` for ${selectedProfession.name}`}
-              {selectedInterest && ` for ${selectedInterest.name}`}
-              {isPersonalized && ' based on your profile'}
-            </p>
+        {/* Activity View */}
+        {showActivityView ? (
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Community Activity</h2>
+              <p className="text-sm text-gray-500 mt-1">See what's happening across all circles</p>
+            </div>
+            <RecentActivity maxItems={50} />
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Results Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                {isPersonalized && !selectedProfession && !selectedInterest && !selectedCategory && !selectedScope ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-semibold text-gray-900">For You</span>
+                    <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                      Personalized
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-lg font-semibold text-gray-900">
+                    {selectedProfession ? selectedProfession.name : 
+                     selectedInterest ? (selectedInterest.name || selectedInterest.interestName) :
+                     selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Circles` :
+                     'All Circles'}
+                  </span>
+                )}
+                <p className="text-sm text-gray-500 mt-0.5">
+                  {circles.length} {circles.length === 1 ? 'circle' : 'circles'} found
+                  {isPersonalized && !selectedProfession && !selectedInterest && !selectedCategory && !selectedScope && ' based on your profile'}
+                </p>
+              </div>
+            </div>
 
-        {/* Main Content with Sidebar */}
-        <div className="flex gap-6">
-          {/* Circles Section - Main Content */}
-          <div className="flex-1 min-w-0">
             {/* Circles Grid */}
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {[...Array(8)].map((_, i) => (
                   <div key={i} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 animate-pulse">
                     <div className="flex justify-center mb-4">
                       <div className="w-24 h-24 rounded-full bg-gray-200" />
@@ -244,7 +267,7 @@ const CirclesHub: React.FC = () => {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No circles found</h3>
                 <p className="text-gray-600 mb-4">
-                  {searchQuery || selectedScope || selectedCategory
+                  {searchQuery || selectedScope || selectedCategory || selectedProfession || selectedInterest
                     ? 'Try adjusting your filters'
                     : 'Be the first to create a circle!'}
                 </p>
@@ -256,7 +279,7 @@ const CirclesHub: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {circles.map((circle) => (
                   <CircleCard
                     key={circle.id}
@@ -267,20 +290,8 @@ const CirclesHub: React.FC = () => {
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Sidebar - Recent Activity */}
-          <div className="hidden xl:block w-80 flex-shrink-0">
-            <div className="sticky top-6">
-              <RecentActivity maxItems={5} />
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Recent Activity - Shows below circles on smaller screens */}
-        <div className="xl:hidden mt-8">
-          <RecentActivity maxItems={5} />
-        </div>
+          </>
+        )}
       </div>
 
       {/* Create Circle Modal */}
