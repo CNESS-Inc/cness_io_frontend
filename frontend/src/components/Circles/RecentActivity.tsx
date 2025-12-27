@@ -30,11 +30,12 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ circleId, maxItems = 5 
   const navigate = useNavigate();
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = useState(maxItems > 10); // Auto-show all for full page view
   const [allActivities, setAllActivities] = useState<ActivityItem[]>([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [page, setPage] = useState(1);
+  const isFullPage = maxItems > 10;
 
   const fetchActivities = async (pageNum = 1, append = false) => {
     if (pageNum === 1) setLoading(true);
