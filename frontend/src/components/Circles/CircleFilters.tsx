@@ -49,8 +49,6 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
   onProfessionSelect,
   selectedInterest,
   onInterestSelect,
-  showActivity,
-  onActivityToggle,
 }) => {
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [detectedCountry, setDetectedCountry] = useState<string | null>(userCountry || null);
