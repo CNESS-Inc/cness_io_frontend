@@ -113,7 +113,7 @@ const Notification: React.FC = () => {
       case "post":
         // Redirect to post
         if (notification.data_id) {
-          navigate(`/dashboard/profile${query}`);
+          navigate(`/dashboard/Profile${query}`);
         }
         break;
 
