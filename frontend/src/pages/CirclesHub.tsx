@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw, Activity } from 'lucide-react';
 import type { Circle } from '../types/circles';
-import { getCircles, getPersonalizedCircles, getFeaturedCircles, getUserCircles, getRecentActivities } from '../services/circlesApi';
+import { getCircles, getPersonalizedCircles, getFeaturedCircles, getUserCircles } from '../services/circlesApi';
 import CircleCard from '../components/Circles/CircleCard';
 import FeaturedCarousel from '../components/Circles/FeaturedCarousel';
 import CircleFilters from '../components/Circles/CircleFilters';
