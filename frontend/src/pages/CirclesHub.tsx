@@ -189,13 +189,26 @@ const CirclesHub: React.FC = () => {
           onInterestSelect={handleInterestSelect}
         />
 
-        {/* Results Count */}
+        {/* Results Header */}
         <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-gray-600">
-            {circles.length} {circles.length === 1 ? 'circle' : 'circles'} found
-            {selectedProfession && ` for ${selectedProfession.name}`}
-            {selectedInterest && ` for ${selectedInterest.name}`}
-          </p>
+          <div>
+            {isPersonalized ? (
+              <div className="flex items-center gap-2">
+                <span className="text-lg font-semibold text-gray-900">For You</span>
+                <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                  Personalized
+                </span>
+              </div>
+            ) : (
+              <span className="text-lg font-semibold text-gray-900">All Circles</span>
+            )}
+            <p className="text-sm text-gray-500 mt-0.5">
+              {circles.length} {circles.length === 1 ? 'circle' : 'circles'} found
+              {selectedProfession && ` for ${selectedProfession.name}`}
+              {selectedInterest && ` for ${selectedInterest.name}`}
+              {isPersonalized && ' based on your profile'}
+            </p>
+          </div>
         </div>
 
         {/* Circles Grid */}
