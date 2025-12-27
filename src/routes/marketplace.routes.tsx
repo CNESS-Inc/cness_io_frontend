@@ -23,9 +23,11 @@ const OrderHistory = lazy(() => import("../features/marketplace/buyer/pages/Orde
 
 
 // Seller Pages - Lazy loaded (replace with your actual page paths)
+ import SellerLayout from "../features/marketplace/shared/layout/SellerLayout";
+ const SellerProfile = lazy(() => import("../features/marketplace/seller/pages/SellerProfile"));
 const SellerDashboard = lazy(() => import("../features/marketplace/seller/pages/MarketPlaceSellerDashboard"));
 const SellerProducts = lazy(() => import("../pages/ComingSoon"));
-const SellerAddProduct = lazy(() => import("../pages/ComingSoon"));
+const AddMusic = lazy(() => import("../features/marketplace/seller/pages/AddMusic"));
 const SellerEditProduct = lazy(() => import("../pages/ComingSoon"));
 const SellerOrders = lazy(() => import("../pages/ComingSoon"));
 const SellerAnalytics = lazy(() => import("../pages/ComingSoon"));
@@ -102,20 +104,24 @@ export const marketplaceRoutes = {
     // ========================================
     {
       path: "seller",
-      // element: <SellerLayout />, // Optional: Add seller-specific layout
+       element: <SellerLayout />, // Optional: Add seller-specific layout
       children: [
         {
           index: true,
           element: <SellerDashboard />,
+        },
+       { path: "seller-profile",
+         element: <SellerProfile /> 
         },
         {
           path: "products",
           element: <SellerProducts />,
         },
         {
-          path: "add-product",
-          element: <SellerAddProduct />,
+          path: "add-music",
+          element: <AddMusic />,
         },
+
         {
           path: "edit-product/:productId",
           element: <SellerEditProduct />,
