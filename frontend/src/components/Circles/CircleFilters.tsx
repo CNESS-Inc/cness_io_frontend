@@ -435,6 +435,15 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
           )}
         </div>
 
+        {/* Living */}
+        <button
+          onClick={() => handleCategoryClick('living')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${getChipStyle(selectedCategory === 'living', 'orange')}`}
+        >
+          <Flame className="w-4 h-4" />
+          Living
+        </button>
+
         {/* News & Events */}
         <button
           onClick={() => handleCategoryClick('news')}
@@ -442,15 +451,6 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
         >
           <Newspaper className="w-4 h-4" />
           News & Events
-        </button>
-
-        {/* Activity Button */}
-        <button
-          onClick={handleActivityClick}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${getChipStyle(showActivity || false, 'cyan')}`}
-        >
-          <Activity className="w-4 h-4" />
-          Activity
         </button>
       </div>
     </div>
