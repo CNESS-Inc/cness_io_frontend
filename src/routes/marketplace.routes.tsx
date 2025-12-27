@@ -25,7 +25,7 @@ const OrderHistory = lazy(() => import("../features/marketplace/buyer/pages/Orde
 // Seller Pages - Lazy loaded (replace with your actual page paths)
  import SellerLayout from "../features/marketplace/shared/layout/SellerLayout";
  const SellerProfile = lazy(() => import("../features/marketplace/seller/pages/SellerProfile"));
-const SellerDashboard = lazy(() => import("../pages/ComingSoon"));
+const SellerDashboard = lazy(() => import("../features/marketplace/seller/pages/MarketPlaceSellerDashboard"));
 const SellerProducts = lazy(() => import("../pages/ComingSoon"));
 const AddMusic = lazy(() => import("../features/marketplace/seller/pages/AddMusic"));
 const SellerEditProduct = lazy(() => import("../pages/ComingSoon"));
