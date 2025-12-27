@@ -13,6 +13,7 @@ import {
 } from '../services/circlesApi';
 import CirclePostCard from '../components/Circles/CirclePostCard';
 import ChatRoomList from '../components/Circles/ChatRoomList';
+import PromptsQA from '../components/Circles/PromptsQA';
 
 const CircleDetail: React.FC = () => {
   const { circleId } = useParams<{ circleId: string }>();
