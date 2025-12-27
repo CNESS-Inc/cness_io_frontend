@@ -2,6 +2,8 @@ import CartItemCard from "../components/CartItem";
 import BillingSummary from "../components/BillingSummary";
 import carticon from "../../../../assets/solar_cart-broken.svg";
 import nandhiji from '../../../../assets/nandhiji.svg';
+import Testimonial from "../components/Testimonial";
+import Footer from "../components/Footer";
 const cartItems = [
     { id: 1 },
     { id: 2 },
@@ -83,6 +85,9 @@ export default function CartPage() {
       />
       </div>
     </div>
+
+    <Testimonial />
+    <Footer />
     </div>
 
   );
