@@ -165,9 +165,6 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
   };
 
   const handleScopeClick = async (scopeId: string) => {
-    // Clear activity view when selecting scope
-    onActivityToggle?.(false);
-    
     if (selectedScope === scopeId) {
       setSelectedScope(null);
       return;
@@ -188,7 +185,6 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
     onInterestSelect?.(null);
     setShowProfessionDropdown(false);
     setProfessionSearch('');
-    onActivityToggle?.(false);
   };
 
   const handleInterestSelect = (interest: Interest) => {
@@ -197,22 +193,9 @@ const CircleFilters: React.FC<CircleFiltersProps> = ({
     onProfessionSelect?.(null);
     setShowInterestDropdown(false);
     setInterestSearch('');
-    onActivityToggle?.(false);
-  };
-
-  const handleActivityClick = () => {
-    const newState = !showActivity;
-    onActivityToggle?.(newState);
-    if (newState) {
-      // Clear other filters when viewing activity
-      setSelectedCategory(null);
-      onProfessionSelect?.(null);
-      onInterestSelect?.(null);
-    }
   };
 
   const handleCategoryClick = (categoryId: string) => {
-    onActivityToggle?.(false);
     if (categoryId === 'profession' || categoryId === 'interest') {
       // These are handled by dropdowns now
       return;
