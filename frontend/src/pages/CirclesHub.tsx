@@ -7,6 +7,7 @@ import FeaturedCarousel from '../components/Circles/FeaturedCarousel';
 import CircleFilters from '../components/Circles/CircleFilters';
 import CreateCircleModal from '../components/Circles/CreateCircleModal';
 import ProfessionInterestFilter from '../components/Circles/ProfessionInterestFilter';
+import RecentActivity from '../components/Circles/RecentActivity';
 
 interface Profession {
   _id: string;
