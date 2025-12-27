@@ -17,15 +17,17 @@ export default function SellerInfo({
                             his products have had on customers' lives. Many of them shared how his creations
                             have brought meaningful change and inspiration to their daily experiences.
                         </p>
-                        <div className="flex">
-                            <p className="font-open-sans me-2 font-bold text-[18px] leading-[160%] tracking-normal text-[#363842]">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
+                            <p className="font-open-sans font-bold text-[16px] sm:text-[18px] leading-[160%] text-[#363842] sm:me-2">
                                 Impact Rating :
                             </p>
-                            <div className="rotate-0 opacity-100 me-2 gap-2.5 rounded-lg px-2.5 bg-[#E5E5E5] font-open-sans font-bold text-[16px] leading-[160%] tracking-normal text-[#291B89]">
-                                21.8k
-                            </div>
-                            <div className="rotate-0 opacity-100 gap-2.5 rounded-lg px-5 bg-[#291B89] font-poppins font-semibold italic text-[12px] leading-[190%] tracking-normal text-[#F9BA1D]">
-                                Rank 1
+                            <div className="flex items-center gap-2">
+                                <div className="rotate-0 opacity-100 gap-2.5 rounded-lg px-2.5 py-1 bg-[#E5E5E5] font-open-sans font-bold text-[14px] sm:text-[16px] leading-[160%] text-[#291B89]">
+                                    21.8k
+                                </div>
+                                <div className="rotate-0 opacity-100 gap-2.5 rounded-lg px-3 sm:px-5 py-1 bg-[#291B89] font-poppins font-semibold italic text-[11px] sm:text-[12px] leading-[190%] text-[#F9BA1D]">
+                                    Rank 1
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -59,7 +61,7 @@ export default function SellerInfo({
                     </div>
                     <div className="rounded-[30px] pt-[3px] px-2.5 pb-[3px] me-1 bg-[#F2F2F2] font-poppins font-medium text-[10px] leading-[190%] -tracking-[0.019em] text-[#242424]">
                         MeditationMusic
-                    </div>  
+                    </div>
                 </div>
             </div>
 

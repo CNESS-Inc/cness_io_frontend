@@ -508,7 +508,7 @@ export default function UserProfileView() {
         }
 
         await UpdateBestPractice(formData);
-
+      setTags([]);
         showToast({
           message:
             "Best practice updated successfully and please wait until admin reviews it!",
@@ -607,6 +607,7 @@ export default function UserProfileView() {
       interest: "",
       file: null,
     });
+    setTags([]);
   };
 
   const removeTag = (index: number) => {
@@ -1729,7 +1730,7 @@ export default function UserProfileView() {
                           ) : (
                             ""
                           )}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-x-4 gap-y-4 pt-6 px-4 pb-6 rounded-lg rounded-tl-none rounded-tr-none">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-x-4 gap-y-4 pt-6 px-4 pb-6 rounded-lg rounded-tl-none rounded-tr-none">
                             {filteredMineBestPractices?.map((company) => {
                               return (
                                 <div
@@ -2080,7 +2081,7 @@ export default function UserProfileView() {
                             </h3>
 
                             {/* <div className="pt-4 grid gap-4 md:gap-5 justify-start xl:grid-cols-3"> */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-x-4 gap-y-4 pt-6 px-4 pb-6 rounded-lg rounded-tl-none rounded-tr-none">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-x-4 gap-y-4 pt-6 px-4 pb-6 rounded-lg rounded-tl-none rounded-tr-none">
                               {followBP?.map((practice: any) => {
                                 return (
                                   <div

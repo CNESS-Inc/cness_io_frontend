@@ -4,6 +4,7 @@ import { MessageCircle, X, Send, Paperclip } from "lucide-react";
 import { useToast } from "../ui/Toast/ToastProvider";
 import { useMessaging } from "./MessagingContext";
 import EmojiPicker from "emoji-picker-react";
+import { useNavigate } from "react-router-dom";
 
 interface Connection {
   id: string | number;
@@ -58,6 +59,7 @@ const PersistentMessagingWidget: React.FC = () => {
   // Add new state for conversation panel
   const [showConversationPanel, setShowConversationPanel] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const navigate = useNavigate();
 
   const emojiPickerRef = useRef<HTMLDivElement>(null);
 
@@ -1049,7 +1051,16 @@ const PersistentMessagingWidget: React.FC = () => {
                 })
               ) : (
                 // Show message when no connections are available
-                <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+                <div
+                  className="flex flex-col items-center justify-center h-full p-6 text-center cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/dashboard/MyConnection", {
+                      state: { to: "suggestion" },
+                    });
+                    setShowConversationPanel(false);
+                  }}
+                >
                   <div className="w-20 h-20 mb-4 text-gray-300">
                     {/* You can add an icon here */}
                     <svg

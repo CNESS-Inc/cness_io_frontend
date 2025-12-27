@@ -1,6 +1,5 @@
-import RatingBanner from './RatingBanner';
-import ProductInfo from './ProductInfo';
-
+import RatingBanner from "./RatingBanner";
+import ProductInfo from "./ProductInfo";
 
 interface ProductData {
   title: string;
@@ -19,11 +18,26 @@ interface OrderContentProps {
   showRatingBanner?: boolean;
 }
 
-export default function OrderContent({ product, showRatingBanner }: OrderContentProps) {
+export default function OrderContent({
+  product,
+  showRatingBanner,
+}: OrderContentProps) {
   return (
-    <div className="flex pt-[20px] pr-[45px] pb-[20px] pl-[45px] flex-col gap-[20px] items-start self-stretch shrink-0 flex-nowrap rounded-tl-none rounded-tr-none rounded-br-[20px] rounded-bl-[20px] border-solid border-t border-t-[#f3f3f3] border-solid border-l border-l-[#f3f3f3] border-solid border-r border-r-[#f3f3f3] bg-[#F3F3F3]/10 relative overflow-hidden">
+    <div
+      className="
+        w-full
+        px-4 sm:px-6 lg:px-10
+        py-4 sm:py-5
+        flex flex-col
+        gap-4 sm:gap-6
+        rounded-b-2xl
+        border border-t-0 border-[#f3f3f3]
+        bg-[#F3F3F3]/10
+      "
+    >
       {showRatingBanner && <RatingBanner />}
-      <div className="flex flex-col gap-[30px] items-start self-stretch shrink-0 flex-nowrap relative">
+
+      <div className="flex flex-col gap-4 sm:gap-6 w-full">
         <ProductInfo product={product} />
       </div>
     </div>

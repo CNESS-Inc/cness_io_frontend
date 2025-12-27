@@ -191,8 +191,11 @@ export default function CuratorsDetail() {
                         <div className="flex-1 mt-4.5">
 
                             {activeTab === "trending" && (
-                                <div className="grid gap-3
-                                      grid-cols-[repeat(auto-fill,minmax(170px,1fr))]">
+                                <div className="grid gap-3 sm:gap-4
+                                    grid-cols-2 
+                                    sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))]
+                                    md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))]
+                                    lg:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
                                     {visibleTrendingProducts.map((p) => (
                                         <SellerProductCard key={p.id} {...p} />
                                     ))}
@@ -212,7 +215,7 @@ export default function CuratorsDetail() {
 
                         </div>
                     </div>
-                    <div className="lg:col-span-1">
+                    <div>
                         <ReviewsSection />
                     </div>
                 </div>
