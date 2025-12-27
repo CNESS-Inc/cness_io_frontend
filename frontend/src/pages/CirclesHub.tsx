@@ -133,9 +133,9 @@ const CirclesHub: React.FC = () => {
     }
   };
 
-  const handleActivityToggle = (show: boolean) => {
-    setShowActivityView(show);
-    if (show) {
+  const handleActivityToggle = () => {
+    setShowActivityView(!showActivityView);
+    if (!showActivityView) {
       setSelectedScope(null);
       setSelectedCategory(null);
       setSelectedProfession(null);
@@ -167,6 +167,17 @@ const CirclesHub: React.FC = () => {
               <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button
+              onClick={handleActivityToggle}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all ${
+                showActivityView 
+                  ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/25' 
+                  : 'bg-white text-gray-700 border border-gray-200 hover:border-cyan-300 hover:text-cyan-600'
+              }`}
+            >
+              <Activity className="w-5 h-5" />
+              Activity
+            </button>
+            <button
               onClick={() => setShowCreateModal(true)}
               className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg shadow-purple-500/25"
             >
@@ -181,23 +192,24 @@ const CirclesHub: React.FC = () => {
           <FeaturedCarousel circles={featuredCircles} />
         )}
 
-        {/* Filters */}
-        <CircleFilters
-          selectedScope={selectedScope}
-          setSelectedScope={setSelectedScope}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          userCountry={userCountry || undefined}
-          userProvince={userProvince || undefined}
-          onCountryDetected={handleCountryDetected}
-          onProvinceDetected={handleProvinceDetected}
-          selectedProfession={selectedProfession}
-          onProfessionSelect={handleProfessionSelect}
-          selectedInterest={selectedInterest}
+        {/* Filters - Only show when not viewing activity */}
+        {!showActivityView && (
+          <CircleFilters
+            selectedScope={selectedScope}
+            setSelectedScope={setSelectedScope}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            userCountry={userCountry || undefined}
+            userProvince={userProvince || undefined}
+            onCountryDetected={handleCountryDetected}
+            onProvinceDetected={handleProvinceDetected}
+            selectedProfession={selectedProfession}
+            onProfessionSelect={handleProfessionSelect}
+            selectedInterest={selectedInterest}
           onInterestSelect={handleInterestSelect}
           showActivity={showActivityView}
           onActivityToggle={handleActivityToggle}
