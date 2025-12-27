@@ -110,6 +110,16 @@ export const getFeaturedCircles = async (limit = 5) => {
   return response.data;
 };
 
+// Get recent activities across all circles
+export const getRecentActivities = async (params?: {
+  page?: number;
+  limit?: number;
+  circle_id?: string;
+}) => {
+  const response = await circlesAxios.get('/circles/activities/recent', { params });
+  return response.data;
+};
+
 export const getCircle = async (circleId: string) => {
   const response = await circlesAxios.get(`/circles/${circleId}`);
   return response.data;
