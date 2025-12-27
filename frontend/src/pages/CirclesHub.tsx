@@ -210,17 +210,16 @@ const CirclesHub: React.FC = () => {
             selectedProfession={selectedProfession}
             onProfessionSelect={handleProfessionSelect}
             selectedInterest={selectedInterest}
-          onInterestSelect={handleInterestSelect}
-          showActivity={showActivityView}
-          onActivityToggle={handleActivityToggle}
-        />
+            onInterestSelect={handleInterestSelect}
+          />
+        )}
 
         {/* Activity View */}
         {showActivityView ? (
           <div className="max-w-4xl mx-auto">
             <div className="mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Community Activity</h2>
-              <p className="text-sm text-gray-500 mt-1">See what's happening across all circles</p>
+              <h2 className="text-xl font-bold text-gray-900">My Community Activity</h2>
+              <p className="text-sm text-gray-500 mt-1">See what's happening in your circles</p>
             </div>
             <RecentActivity maxItems={50} />
           </div>
