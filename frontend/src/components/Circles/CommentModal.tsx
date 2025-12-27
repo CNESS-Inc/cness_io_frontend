@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, Heart, Reply, MoreHorizontal, Loader2, AtSign } from 'lucide-react';
+import { X, Send, Heart, Reply, Loader2, MessageCircle, ArrowUp } from 'lucide-react';
 import { getPostComments, createComment, likeComment, deleteComment, getUserId } from '../../services/circlesApi';
+import axios from 'axios';
 
 interface Comment {
   id: string;
@@ -13,6 +14,12 @@ interface Comment {
   replies_count: number;
   created_at: string;
   replies?: Comment[];
+}
+
+interface UserProfile {
+  profile_picture?: string;
+  first_name?: string;
+  last_name?: string;
 }
 
 interface CommentModalProps {
@@ -28,8 +35,32 @@ const CommentModal: React.FC<CommentModalProps> = ({ postId, isOpen, onClose, on
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<Comment | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const currentUserId = getUserId();
+
+  // Fetch user profile for avatar
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const authToken = localStorage.getItem('jwt') || localStorage.getItem('authToken') || localStorage.getItem('token');
+      if (authToken) {
+        try {
+          const response = await axios.get('/api/user/profile', {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+          });
+          const profileData = response.data?.data?.data || response.data?.data || response.data;
+          setUserProfile({
+            profile_picture: profileData.profile_picture,
+            first_name: profileData.first_name,
+            last_name: profileData.last_name
+          });
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        }
+      }
+    };
+    fetchUserProfile();
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -106,11 +137,18 @@ const CommentModal: React.FC<CommentModalProps> = ({ postId, isOpen, onClose, on
     return date.toLocaleDateString();
   };
 
+  const getUserInitials = () => {
+    if (userProfile?.first_name) {
+      return userProfile.first_name.charAt(0).toUpperCase();
+    }
+    return currentUserId.charAt(0).toUpperCase();
+  };
+
   const renderComment = (comment: Comment, isReply = false) => (
     <div key={comment.id} className={`${isReply ? 'ml-10 mt-3' : 'mb-4'}`}>
       <div className="flex gap-3">
         {/* Avatar */}
-        <div className={`${isReply ? 'w-8 h-8' : 'w-10 h-10'} rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white font-medium flex-shrink-0`}>
+        <div className={`${isReply ? 'w-8 h-8' : 'w-10 h-10'} rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white font-medium flex-shrink-0 overflow-hidden`}>
           {comment.user_id.charAt(0).toUpperCase()}
         </div>
         
@@ -179,6 +217,19 @@ const CommentModal: React.FC<CommentModalProps> = ({ postId, isOpen, onClose, on
         onClick={onClose}
       />
       
+      {/* Floating Action Buttons - Moved to top right when modal is open */}
+      <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+        <button className="p-3 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors">
+          <MessageCircle className="w-5 h-5 text-purple-600" />
+        </button>
+        <button 
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="p-3 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors"
+        >
+          <ArrowUp className="w-5 h-5 text-purple-600" />
+        </button>
+      </div>
+      
       {/* Modal - Slide up from bottom */}
       <div 
         className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] flex flex-col transform transition-transform animate-slide-up"
@@ -199,6 +250,78 @@ const CommentModal: React.FC<CommentModalProps> = ({ postId, isOpen, onClose, on
           </button>
         </div>
         
+        {/* Comment Input - At the top with avatar on left */}
+        <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+          <div className="flex items-start gap-3">
+            {/* User Avatar */}
+            <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden">
+              {userProfile?.profile_picture ? (
+                <img 
+                  src={userProfile.profile_picture} 
+                  alt="Your avatar" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white font-medium">
+                  {getUserInitials()}
+                </div>
+              )}
+            </div>
+            
+            {/* Input Area */}
+            <div className="flex-1">
+              <textarea
+                ref={inputRef}
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Write a comment..."
+                rows={2}
+                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none text-sm"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmitComment();
+                  }
+                }}
+              />
+              
+              {/* Reply indicator */}
+              {replyingTo && (
+                <div className="mt-2 px-3 py-1.5 bg-purple-50 border border-purple-100 rounded-lg flex items-center justify-between">
+                  <span className="text-xs text-purple-600">
+                    Replying to <strong>User {replyingTo.user_id.slice(0, 8)}</strong>
+                  </span>
+                  <button 
+                    onClick={() => {
+                      setReplyingTo(null);
+                      setNewComment('');
+                    }}
+                    className="p-0.5 hover:bg-purple-100 rounded-full"
+                  >
+                    <X className="w-3.5 h-3.5 text-purple-600" />
+                  </button>
+                </div>
+              )}
+              
+              {/* Submit Button */}
+              <div className="flex justify-end mt-2">
+                <button
+                  onClick={handleSubmitComment}
+                  disabled={!newComment.trim() || submitting}
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {submitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                  Post
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         {/* Comments List */}
         <div className="flex-1 overflow-y-auto px-4 py-4">
           {loading ? (
@@ -207,66 +330,13 @@ const CommentModal: React.FC<CommentModalProps> = ({ postId, isOpen, onClose, on
             </div>
           ) : comments.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              <p>No comments yet</p>
+              <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="font-medium">No comments yet</p>
               <p className="text-sm mt-1">Be the first to comment!</p>
             </div>
           ) : (
             comments.map(comment => renderComment(comment))
           )}
-        </div>
-        
-        {/* Reply indicator */}
-        {replyingTo && (
-          <div className="px-4 py-2 bg-purple-50 border-t border-purple-100 flex items-center justify-between">
-            <span className="text-sm text-purple-600">
-              Replying to <strong>User {replyingTo.user_id.slice(0, 8)}</strong>
-            </span>
-            <button 
-              onClick={() => {
-                setReplyingTo(null);
-                setNewComment('');
-              }}
-              className="p-1 hover:bg-purple-100 rounded-full"
-            >
-              <X className="w-4 h-4 text-purple-600" />
-            </button>
-          </div>
-        )}
-        
-        {/* Comment Input */}
-        <div className="px-4 py-3 border-t border-gray-100 bg-white">
-          <div className="flex items-end gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
-              {currentUserId.charAt(0).toUpperCase()}
-            </div>
-            <div className="flex-1 relative">
-              <textarea
-                ref={inputRef}
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write a comment... Use @ to mention someone"
-                rows={1}
-                className="w-full px-4 py-2.5 bg-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none text-sm"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSubmitComment();
-                  }
-                }}
-              />
-            </div>
-            <button
-              onClick={handleSubmitComment}
-              disabled={!newComment.trim() || submitting}
-              className="p-2.5 bg-purple-600 text-white rounded-full hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {submitting ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <Send className="w-5 h-5" />
-              )}
-            </button>
-          </div>
         </div>
       </div>
       
