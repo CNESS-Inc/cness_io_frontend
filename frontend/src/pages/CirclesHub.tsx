@@ -272,21 +272,25 @@ const CirclesHub: React.FC = () => {
                 ))}
               </div>
             ) : circles.length === 0 ? (
-              <div className="text-center py-16">
+              <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
                 <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
                   <Plus className="w-10 h-10 text-gray-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No circles found</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {selectedCategory === 'living' ? 'No Living Circles Yet' : 'No circles found'}
+                </h3>
                 <p className="text-gray-600 mb-4">
-                  {searchQuery || selectedScope || selectedCategory || selectedProfession || selectedInterest
-                    ? 'Try adjusting your filters'
-                    : 'Be the first to create a circle!'}
+                  {selectedCategory === 'living' 
+                    ? 'Be the first to create a Living circle for your community!'
+                    : searchQuery || selectedScope || selectedCategory || selectedProfession || selectedInterest
+                      ? 'Try adjusting your filters'
+                      : 'Be the first to create a circle!'}
                 </p>
                 <button
                   onClick={() => setShowCreateModal(true)}
                   className="px-6 py-2.5 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition-colors"
                 >
-                  Create Circle
+                  {selectedCategory === 'living' ? 'Create Living Circle' : 'Create Circle'}
                 </button>
               </div>
             ) : (
