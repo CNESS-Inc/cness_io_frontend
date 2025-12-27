@@ -281,8 +281,6 @@ const CirclesHub: React.FC = () => {
         <div className="xl:hidden mt-8">
           <RecentActivity maxItems={5} />
         </div>
-          </div>
-        )}
       </div>
 
       {/* Create Circle Modal */}
