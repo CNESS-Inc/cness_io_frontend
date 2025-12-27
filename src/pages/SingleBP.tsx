@@ -1176,9 +1176,10 @@ const SingleBP = () => {
                     {/* Created By */}
                     <div className="flex items-center gap-3 py-2 relative">
                       <img
-                        src="/profile.png"
+                        src={singlepost?.profile?.profile_picture ? singlepost?.profile?.profile_picture : "/profile.png"}
                         alt="Author"
-                        className="w-10 h-10 rounded-full border object-cover"
+                        className="w-10 h-10 rounded-full border object-cover cursor-pointer"
+                        onClick={()=>navigate(`/dashboard/directory-profile/${singlepost?.user_id}`)}
                       />
                       <div>
                         <p className="font-medium text-gray-800">

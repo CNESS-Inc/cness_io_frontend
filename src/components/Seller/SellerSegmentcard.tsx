@@ -1994,7 +1994,7 @@ export function BestPracticesSection({
 
               {/* Content */}
               <div className="flex flex-col flex-1">
-                <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
+                <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728] line-clamp-2">
                   {bp.title}
                 </div>
                 <span
@@ -2107,7 +2107,7 @@ export function BestPracticesSection({
 
             {/* Content */}
             <div className="flex flex-col flex-1">
-              <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728]">
+              <div className="font-poppins font-medium text-[16px] leading-[120%] text-[#0F1728] line-clamp-2">
                 {bp.title}
               </div>
 
