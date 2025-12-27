@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, RefreshCw } from 'lucide-react';
 import type { Circle } from '../types/circles';
-import { getCircles, getFeaturedCircles, getUserCircles } from '../services/circlesApi';
+import { getCircles, getPersonalizedCircles, getFeaturedCircles, getUserCircles } from '../services/circlesApi';
 import CircleCard from '../components/Circles/CircleCard';
 import FeaturedCarousel from '../components/Circles/FeaturedCarousel';
 import CircleFilters from '../components/Circles/CircleFilters';
@@ -24,6 +24,7 @@ const CirclesHub: React.FC = () => {
   const [userCircleIds, setUserCircleIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isPersonalized, setIsPersonalized] = useState(true); // Track if showing personalized view
 
   // Filters
   const [selectedScope, setSelectedScope] = useState<string | null>(null);
@@ -38,39 +39,53 @@ const CirclesHub: React.FC = () => {
   const fetchCircles = async () => {
     setLoading(true);
     try {
-      const params: any = {
-        sort: sortBy,
-        page: 1,
-        limit: 50,
-      };
-      if (selectedScope) params.scope = selectedScope;
-      if (selectedCategory) params.category = selectedCategory;
-      if (searchQuery) params.search = searchQuery;
+      // Check if any filters are applied
+      const hasFilters = selectedScope || selectedCategory || searchQuery || selectedProfession || selectedInterest;
       
-      // Add country filter when national scope is selected
-      if (selectedScope === 'national' && userCountry) {
-        params.country = userCountry;
-      }
+      let circlesRes;
       
-      // Add province filter when local scope is selected
-      if (selectedScope === 'local' && userProvince) {
-        params.province = userProvince;
-      }
-      
-      // Add profession filter
-      if (selectedProfession) {
-        params.profession_id = selectedProfession._id;
-        params.category = 'profession';
-      }
-      
-      // Add interest filter
-      if (selectedInterest) {
-        params.interest_id = selectedInterest.id;
-        params.category = 'interest';
+      if (!hasFilters) {
+        // No filters - use personalized endpoint
+        setIsPersonalized(true);
+        circlesRes = await getPersonalizedCircles({ page: 1, limit: 50 });
+      } else {
+        // Filters applied - use regular endpoint
+        setIsPersonalized(false);
+        const params: any = {
+          sort: sortBy,
+          page: 1,
+          limit: 50,
+        };
+        if (selectedScope) params.scope = selectedScope;
+        if (selectedCategory) params.category = selectedCategory;
+        if (searchQuery) params.search = searchQuery;
+        
+        // Add country filter when national scope is selected
+        if (selectedScope === 'national' && userCountry) {
+          params.country = userCountry;
+        }
+        
+        // Add province filter when local scope is selected
+        if (selectedScope === 'local' && userProvince) {
+          params.province = userProvince;
+        }
+        
+        // Add profession filter
+        if (selectedProfession) {
+          params.profession_id = selectedProfession._id;
+          params.category = 'profession';
+        }
+        
+        // Add interest filter
+        if (selectedInterest) {
+          params.interest_id = selectedInterest.id;
+          params.category = 'interest';
+        }
+        
+        circlesRes = await getCircles(params);
       }
 
-      const [circlesRes, featuredRes, userCirclesRes] = await Promise.all([
-        getCircles(params),
+      const [featuredRes, userCirclesRes] = await Promise.all([
         getFeaturedCircles(5),
         getUserCircles(),
       ]);
