@@ -64,6 +64,27 @@ export const getCircles = async (params?: {
   return response.data;
 };
 
+// Get personalized circles based on user's professions, interests, and location
+export const getPersonalizedCircles = async (params?: {
+  page?: number;
+  limit?: number;
+}) => {
+  const authToken = localStorage.getItem('jwt') || localStorage.getItem('authToken') || localStorage.getItem('token');
+  const headers: Record<string, string> = {};
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`;
+  }
+  
+  const response = await circlesAxios.get('/circles/personalized', {
+    params: {
+      user_id: getUserId(),
+      ...params
+    },
+    headers
+  });
+  return response.data;
+};
+
 export const getCirclesByLocation = async (
   country: string,
   province?: string,
