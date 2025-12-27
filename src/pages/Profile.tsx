@@ -287,7 +287,7 @@ export default function Profile() {
         setSelectedPost(postToOpen);
 
         // Optional: Clear the URL parameters after opening the post
-        // navigate(location.pathname, { replace: true });
+        navigate(location.pathname, { replace: true });
       }
     }
   }, [searchParams, userPosts, navigate, location.pathname]);
