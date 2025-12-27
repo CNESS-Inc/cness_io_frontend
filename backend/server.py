@@ -2262,6 +2262,300 @@ async def get_circle_posts(
     
     return {"success": True, "posts": posts, "total": total}
 
+# ============== PROMPTS/Q&A APIs (Quora/Reddit-style Threading) ==============
+
+class PromptCreate(BaseModel):
+    title: str
+    content: str
+    tags: Optional[List[str]] = []
+
+class AnswerCreate(BaseModel):
+    content: str
+    parent_answer_id: Optional[str] = None  # For nested replies
+
+@app.post("/api/circles/{circle_id}/prompts")
+async def create_prompt(circle_id: str, prompt_data: PromptCreate, user_id: str = Query(...)):
+    """Create a new Q&A prompt/question in a circle"""
+    # Verify circle exists
+    circle = await circles_collection.find_one({"id": circle_id})
+    if not circle:
+        raise HTTPException(status_code=404, detail="Circle not found")
+    
+    # Check if user is a member
+    member = await circle_members_collection.find_one({"circle_id": circle_id, "user_id": user_id})
+    if not member:
+        raise HTTPException(status_code=403, detail="Must be a member to create prompts")
+    
+    now = datetime.utcnow()
+    prompt_doc = {
+        "id": str(uuid.uuid4()),
+        "circle_id": circle_id,
+        "author_id": user_id,
+        "author_name": member.get("user_name", "Member"),
+        "author_avatar": member.get("user_avatar"),
+        "title": prompt_data.title,
+        "content": prompt_data.content,
+        "tags": prompt_data.tags or [],
+        "answer_count": 0,
+        "upvotes": 0,
+        "downvotes": 0,
+        "views": 0,
+        "is_pinned": False,
+        "is_closed": False,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await circle_prompts_collection.insert_one(prompt_doc)
+    prompt_doc.pop("_id", None)
+    
+    return {"success": True, "prompt": prompt_doc}
+
+@app.get("/api/circles/{circle_id}/prompts")
+async def get_circle_prompts(
+    circle_id: str,
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=50),
+    sort: str = Query("newest", enum=["newest", "popular", "unanswered"])
+):
+    """Get all prompts/questions for a circle"""
+    query = {"circle_id": circle_id}
+    
+    # Determine sort order
+    if sort == "newest":
+        sort_field = [("is_pinned", -1), ("created_at", -1)]
+    elif sort == "popular":
+        sort_field = [("is_pinned", -1), ("upvotes", -1), ("answer_count", -1)]
+    else:  # unanswered
+        query["answer_count"] = 0
+        sort_field = [("created_at", -1)]
+    
+    skip = (page - 1) * limit
+    
+    prompts = await circle_prompts_collection.find(query, {"_id": 0}).sort(sort_field).skip(skip).limit(limit).to_list(limit)
+    
+    # Convert datetime objects
+    for prompt in prompts:
+        if isinstance(prompt.get("created_at"), datetime):
+            prompt["created_at"] = prompt["created_at"].isoformat()
+        if isinstance(prompt.get("updated_at"), datetime):
+            prompt["updated_at"] = prompt["updated_at"].isoformat()
+    
+    total = await circle_prompts_collection.count_documents({"circle_id": circle_id})
+    
+    return {
+        "success": True,
+        "prompts": prompts,
+        "total": total,
+        "page": page,
+        "limit": limit
+    }
+
+@app.get("/api/circles/prompts/{prompt_id}")
+async def get_prompt_detail(prompt_id: str):
+    """Get a single prompt with its answers"""
+    prompt = await circle_prompts_collection.find_one({"id": prompt_id}, {"_id": 0})
+    if not prompt:
+        raise HTTPException(status_code=404, detail="Prompt not found")
+    
+    # Increment view count
+    await circle_prompts_collection.update_one(
+        {"id": prompt_id},
+        {"$inc": {"views": 1}}
+    )
+    
+    # Convert datetime
+    if isinstance(prompt.get("created_at"), datetime):
+        prompt["created_at"] = prompt["created_at"].isoformat()
+    if isinstance(prompt.get("updated_at"), datetime):
+        prompt["updated_at"] = prompt["updated_at"].isoformat()
+    
+    return {"success": True, "prompt": prompt}
+
+@app.post("/api/circles/prompts/{prompt_id}/answers")
+async def create_answer(prompt_id: str, answer_data: AnswerCreate, user_id: str = Query(...)):
+    """Create an answer or reply to a prompt"""
+    # Verify prompt exists
+    prompt = await circle_prompts_collection.find_one({"id": prompt_id})
+    if not prompt:
+        raise HTTPException(status_code=404, detail="Prompt not found")
+    
+    if prompt.get("is_closed"):
+        raise HTTPException(status_code=403, detail="This prompt is closed for new answers")
+    
+    # Verify user is a member of the circle
+    member = await circle_members_collection.find_one({
+        "circle_id": prompt["circle_id"],
+        "user_id": user_id
+    })
+    if not member:
+        raise HTTPException(status_code=403, detail="Must be a member to answer")
+    
+    now = datetime.utcnow()
+    
+    # Determine depth level
+    depth = 0
+    if answer_data.parent_answer_id:
+        parent = await circle_prompt_answers_collection.find_one({"id": answer_data.parent_answer_id})
+        if parent:
+            depth = parent.get("depth", 0) + 1
+    
+    answer_doc = {
+        "id": str(uuid.uuid4()),
+        "prompt_id": prompt_id,
+        "circle_id": prompt["circle_id"],
+        "parent_answer_id": answer_data.parent_answer_id,
+        "depth": depth,
+        "author_id": user_id,
+        "author_name": member.get("user_name", "Member"),
+        "author_avatar": member.get("user_avatar"),
+        "content": answer_data.content,
+        "upvotes": 0,
+        "downvotes": 0,
+        "is_accepted": False,
+        "reply_count": 0,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await circle_prompt_answers_collection.insert_one(answer_doc)
+    answer_doc.pop("_id", None)
+    
+    # Update answer count on prompt
+    await circle_prompts_collection.update_one(
+        {"id": prompt_id},
+        {"$inc": {"answer_count": 1}}
+    )
+    
+    # If this is a reply to another answer, update that answer's reply count
+    if answer_data.parent_answer_id:
+        await circle_prompt_answers_collection.update_one(
+            {"id": answer_data.parent_answer_id},
+            {"$inc": {"reply_count": 1}}
+        )
+    
+    return {"success": True, "answer": answer_doc}
+
+@app.get("/api/circles/prompts/{prompt_id}/answers")
+async def get_prompt_answers(
+    prompt_id: str,
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=100),
+    sort: str = Query("best", enum=["best", "newest", "oldest"])
+):
+    """Get answers for a prompt with threading support"""
+    # Get top-level answers first (no parent)
+    query = {"prompt_id": prompt_id, "parent_answer_id": None}
+    
+    if sort == "best":
+        sort_field = [("is_accepted", -1), ("upvotes", -1)]
+    elif sort == "newest":
+        sort_field = [("created_at", -1)]
+    else:
+        sort_field = [("created_at", 1)]
+    
+    skip = (page - 1) * limit
+    top_level_answers = await circle_prompt_answers_collection.find(query, {"_id": 0}).sort(sort_field).skip(skip).limit(limit).to_list(limit)
+    
+    # Get all nested replies for these answers
+    answer_ids = [a["id"] for a in top_level_answers]
+    all_replies = await circle_prompt_answers_collection.find(
+        {"prompt_id": prompt_id, "parent_answer_id": {"$in": answer_ids}},
+        {"_id": 0}
+    ).sort([("created_at", 1)]).to_list(500)
+    
+    # Build threaded structure
+    def build_tree(answers, replies):
+        result = []
+        for answer in answers:
+            if isinstance(answer.get("created_at"), datetime):
+                answer["created_at"] = answer["created_at"].isoformat()
+            if isinstance(answer.get("updated_at"), datetime):
+                answer["updated_at"] = answer["updated_at"].isoformat()
+            
+            # Find direct replies
+            direct_replies = [r for r in replies if r.get("parent_answer_id") == answer["id"]]
+            answer["replies"] = build_tree(direct_replies, replies)
+            result.append(answer)
+        return result
+    
+    # Convert datetime for replies
+    for reply in all_replies:
+        if isinstance(reply.get("created_at"), datetime):
+            reply["created_at"] = reply["created_at"].isoformat()
+        if isinstance(reply.get("updated_at"), datetime):
+            reply["updated_at"] = reply["updated_at"].isoformat()
+    
+    threaded_answers = build_tree(top_level_answers, all_replies)
+    
+    total = await circle_prompt_answers_collection.count_documents({"prompt_id": prompt_id, "parent_answer_id": None})
+    
+    return {
+        "success": True,
+        "answers": threaded_answers,
+        "total": total,
+        "page": page,
+        "limit": limit
+    }
+
+@app.post("/api/circles/prompts/{prompt_id}/vote")
+async def vote_prompt(prompt_id: str, user_id: str = Query(...), vote: str = Query(..., enum=["up", "down"])):
+    """Upvote or downvote a prompt"""
+    prompt = await circle_prompts_collection.find_one({"id": prompt_id})
+    if not prompt:
+        raise HTTPException(status_code=404, detail="Prompt not found")
+    
+    if vote == "up":
+        await circle_prompts_collection.update_one({"id": prompt_id}, {"$inc": {"upvotes": 1}})
+    else:
+        await circle_prompts_collection.update_one({"id": prompt_id}, {"$inc": {"downvotes": 1}})
+    
+    return {"success": True, "message": f"Vote recorded"}
+
+@app.post("/api/circles/answers/{answer_id}/vote")
+async def vote_answer(answer_id: str, user_id: str = Query(...), vote: str = Query(..., enum=["up", "down"])):
+    """Upvote or downvote an answer"""
+    answer = await circle_prompt_answers_collection.find_one({"id": answer_id})
+    if not answer:
+        raise HTTPException(status_code=404, detail="Answer not found")
+    
+    if vote == "up":
+        await circle_prompt_answers_collection.update_one({"id": answer_id}, {"$inc": {"upvotes": 1}})
+    else:
+        await circle_prompt_answers_collection.update_one({"id": answer_id}, {"$inc": {"downvotes": 1}})
+    
+    return {"success": True, "message": f"Vote recorded"}
+
+@app.post("/api/circles/answers/{answer_id}/accept")
+async def accept_answer(answer_id: str, user_id: str = Query(...)):
+    """Mark an answer as accepted (only prompt author can do this)"""
+    answer = await circle_prompt_answers_collection.find_one({"id": answer_id})
+    if not answer:
+        raise HTTPException(status_code=404, detail="Answer not found")
+    
+    prompt = await circle_prompts_collection.find_one({"id": answer["prompt_id"]})
+    if not prompt:
+        raise HTTPException(status_code=404, detail="Prompt not found")
+    
+    if prompt["author_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Only the question author can accept answers")
+    
+    # Unaccept any previously accepted answer
+    await circle_prompt_answers_collection.update_many(
+        {"prompt_id": answer["prompt_id"]},
+        {"$set": {"is_accepted": False}}
+    )
+    
+    # Accept this answer
+    await circle_prompt_answers_collection.update_one(
+        {"id": answer_id},
+        {"$set": {"is_accepted": True}}
+    )
+    
+    return {"success": True, "message": "Answer accepted"}
+
+# ============== POSTS FEED APIs ==============
+
 @app.get("/api/circles/posts/feed")
 async def get_circles_feed(user_id: str = Query(...), page: int = 1, limit: int = 20):
     """Get feed of posts from all circles user has joined (excludes suspended)"""
