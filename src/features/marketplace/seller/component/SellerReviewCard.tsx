@@ -10,7 +10,7 @@ interface ReviewCardProps {
     initials: string;
     timeAgo: string;
   };
-  image: any
+  image: any;
 }
 
 export const SellerReviewCard: React.FC<ReviewCardProps> = ({ rating, comment, tags, author, image }) => {
