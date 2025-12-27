@@ -168,7 +168,65 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ circleId, maxItems = 5 
     </div>
   );
 
-  if (loading) {
+  // For full page mode, show activities directly without the card wrapper
+  if (isFullPage) {
+    if (loading) {
+      return (
+        <div className="space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-white border border-gray-100 animate-pulse">
+              <div className="w-12 h-12 rounded-lg bg-gray-200" />
+              <div className="flex-1">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                <div className="h-3 bg-gray-200 rounded w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (activities.length === 0) {
+      return (
+        <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
+          <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Activity Yet</h3>
+          <p className="text-gray-500">Activities will appear here when members interact with circles</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-3">
+        {allActivities.map((activity) => (
+          <ActivityCard key={activity.id} activity={activity} />
+        ))}
+        
+        {/* Load More */}
+        {hasMore && (
+          <button
+            onClick={loadMore}
+            disabled={loadingMore}
+            className="w-full py-3 text-sm font-medium text-purple-600 hover:text-purple-700 bg-white hover:bg-purple-50 rounded-xl border border-gray-200 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {loadingMore ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              <>
+                Load More Activities
+                <ChevronRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  // Regular card view for sidebar
     return (
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
         <div className="flex items-center gap-2 mb-4">
