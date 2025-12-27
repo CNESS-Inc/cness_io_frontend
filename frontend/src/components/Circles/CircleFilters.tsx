@@ -30,8 +30,6 @@ interface CircleFiltersProps {
   onProfessionSelect?: (profession: Profession | null) => void;
   selectedInterest?: Interest | null;
   onInterestSelect?: (interest: Interest | null) => void;
-  showActivity?: boolean;
-  onActivityToggle?: (show: boolean) => void;
 }
 
 const CircleFilters: React.FC<CircleFiltersProps> = ({
