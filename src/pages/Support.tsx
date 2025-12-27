@@ -1,8 +1,8 @@
 import { useState } from "react";
 import FAQSection from "../components/ui/Faq";
 import tollfree from "..//assets/tollfree.png";
-import ContactUsPopup from "../components/zohoforms/contactus";
 import { useNavigate } from "react-router-dom";
+import LazyZohoForm from "../components/ui/LazyZohoFormProps";
 
 declare global {
   interface Window {
@@ -12,6 +12,12 @@ declare global {
 }
 
 const Support = () => {
+
+  const formType = "contact"; // or "feedback"
+  const formUrl =
+    formType === "contact"
+      ? "https://forms.zohopublic.com/vijicn1/form/ContactUs/formperma/AIrQeiVD8-sU0ApGGPfnhgdRbE4zmRcYN0dLiam7ZQI"
+      : "https://forms.zohopublic.com/vijicn1/form/Feedback1/formperma/UiuS4wyKkpqz1XsTbHsHZVtFfj3tg8MTGPPQzLT8S40";
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"tickets" | "faq">("faq");
   const [searchQuery, setSearchQuery] = useState("");
@@ -68,7 +74,7 @@ const Support = () => {
           </button>
 
           <button
-            onClick={() => setShowForm("feedback")} // ✅ Same popup for feedback
+            onClick={() => setShowForm("feedback")}
             className="px-6 py-2 rounded-full bg-[#FF5C7C] text-white font-semibold hover:bg-[#e14a67]"
           >
             Provide Feedback
@@ -195,12 +201,13 @@ const Support = () => {
             >
               ✖
             </button>
-
-            {/* Pass form type */}
-            <ContactUsPopup
-              formType={showForm} // either "contact" or "feedback"
-              onClose={() => setShowForm(null)}
-            />
+             <LazyZohoForm
+          url={formUrl}
+          title={formType === "contact" ? "Contact Form" : "Feedback Form"}
+          minHeight={750}
+          style={{ height: "100%" }}
+          className="rounded-lg"
+        />
           </div>
         </div>
       )}

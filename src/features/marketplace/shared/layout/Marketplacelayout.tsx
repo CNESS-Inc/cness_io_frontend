@@ -7,6 +7,7 @@ export default function MarketplaceLayout() {
       {/* Marketplace-only header */}
       <MarketplaceNavBar />
 
+
       {/* Marketplace content */}
   <div className="flex-1 min-w-0">
           <Outlet />

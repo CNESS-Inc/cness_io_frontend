@@ -4,6 +4,8 @@ import ComingSoon from "../pages/ComingSoon";
 // Layout components (create these if needed)
  import MarketplaceLayout from "../features/marketplace/shared/layout/Marketplacelayout";
 import Recommendation from "../features/marketplace/buyer/pages/Recommendation";
+import PaymentSuccess from "../features/marketplace/buyer/pages/PaymentSuccess.tsx";
+import PaymentFailed from "../features/marketplace/buyer/pages/PaymentFail.tsx";
 //import OrderHistory from "../features/marketplace/buyer/pages/OrderHistory";
 // import SellerLayout from "../layout/Marketplace/SellerLayout";
 
@@ -21,9 +23,11 @@ const OrderHistory = lazy(() => import("../features/marketplace/buyer/pages/Orde
 
 
 // Seller Pages - Lazy loaded (replace with your actual page paths)
-const SellerDashboard = lazy(() => import("../pages/ComingSoon"));
+ import SellerLayout from "../features/marketplace/shared/layout/SellerLayout";
+ const SellerProfile = lazy(() => import("../features/marketplace/seller/pages/SellerProfile"));
+const SellerDashboard = lazy(() => import("../features/marketplace/seller/pages/MarketPlaceSellerDashboard"));
 const SellerProducts = lazy(() => import("../pages/ComingSoon"));
-const SellerAddProduct = lazy(() => import("../pages/ComingSoon"));
+const AddMusic = lazy(() => import("../features/marketplace/seller/pages/AddMusic"));
 const SellerEditProduct = lazy(() => import("../pages/ComingSoon"));
 const SellerOrders = lazy(() => import("../pages/ComingSoon"));
 const SellerAnalytics = lazy(() => import("../pages/ComingSoon"));
@@ -86,26 +90,38 @@ export const marketplaceRoutes = {
       path:"recommendation",
        element: <Recommendation />,
     },
+    {
+      path :"payment-success",
+      element: <PaymentSuccess />,
+    },
+    {
+      path :"payment-fail",
+      element: <PaymentFailed />,
+    },
 
     // ========================================
     // SELLER ROUTES (With /seller prefix)
     // ========================================
     {
       path: "seller",
-      // element: <SellerLayout />, // Optional: Add seller-specific layout
+       element: <SellerLayout />, // Optional: Add seller-specific layout
       children: [
         {
           index: true,
           element: <SellerDashboard />,
+        },
+       { path: "seller-profile",
+         element: <SellerProfile /> 
         },
         {
           path: "products",
           element: <SellerProducts />,
         },
         {
-          path: "add-product",
-          element: <SellerAddProduct />,
+          path: "add-music",
+          element: <AddMusic />,
         },
+
         {
           path: "edit-product/:productId",
           element: <SellerEditProduct />,

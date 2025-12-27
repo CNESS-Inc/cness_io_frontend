@@ -31,7 +31,11 @@ import {
   FaTrash,
   FaTwitter,
 } from "react-icons/fa";
-import { ChatBubbleLeftIcon, HandThumbUpIcon } from "@heroicons/react/24/solid";
+import { 
+  HandThumbUpIcon as HandThumbUpIconSolid,
+  ChatBubbleLeftIcon 
+} from "@heroicons/react/24/solid";
+import { HandThumbUpIcon as HandThumbUpIconOutline } from "@heroicons/react/24/outline";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import CreditAnimation from "../Common/CreditAnimation";
 import { useToast } from "../components/ui/Toast/ToastProvider";
@@ -509,13 +513,11 @@ const SingleBP = () => {
                 disabled={commentLikeLoading[comment.id]}
                 className="flex items-center space-x-1 hover:text-gray-700 disabled:opacity-50"
               >
-                <HandThumbUpIcon
-                  className={`w-6 h-6 ${
-                    likedComments[comment.id]
-                      ? "text-[#7077FE]"
-                      : "text-gray-600"
-                  }`}
-                />
+                {likedComments[comment.id] ? (
+                  <HandThumbUpIconSolid className="w-6 h-6 text-[#7077FE]" />
+                ) : (
+                  <HandThumbUpIconOutline className="w-6 h-6 text-gray-600" />
+                )}
                 <span className="text-[12px]">{comment.likes_count}</span>
               </button>
               <div className="h-4 border-l border-gray-300"></div>
@@ -707,13 +709,11 @@ const SingleBP = () => {
                       disabled={replyLikeLoading[reply.id]}
                       className="flex items-center space-x-1 hover:text-gray-700 disabled:opacity-50"
                     >
-                      <HandThumbUpIcon
-                        className={`w-5 h-5 ${
-                          likedReplies[reply.id]
-                            ? "text-[#7077FE]"
-                            : "text-gray-600"
-                        }`}
-                      />
+                      {likedReplies[reply.id] ? (
+                        <HandThumbUpIconSolid className="w-5 h-5 text-[#7077FE]" />
+                      ) : (
+                        <HandThumbUpIconOutline className="w-5 h-5 text-gray-600" />
+                      )}
                       <span className="text-[12px]">{reply.likes_count}</span>
                     </button>
                   </div>
@@ -1176,9 +1176,10 @@ const SingleBP = () => {
                     {/* Created By */}
                     <div className="flex items-center gap-3 py-2 relative">
                       <img
-                        src="/profile.png"
+                        src={singlepost?.profile?.profile_picture ? singlepost?.profile?.profile_picture : "/profile.png"}
                         alt="Author"
-                        className="w-10 h-10 rounded-full border object-cover"
+                        className="w-10 h-10 rounded-full border object-cover cursor-pointer"
+                        onClick={()=>navigate(`/dashboard/directory-profile/${singlepost?.user_id}`)}
                       />
                       <div>
                         <p className="font-medium text-gray-800">
@@ -1277,7 +1278,7 @@ const SingleBP = () => {
                         disabled={isAppreciateLoading}
                         className={`flex border items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-full transition whitespace-nowrap ${
                           isLiked
-                            ? "border-[#7178FF] bg-[#7178FF] bg-opacity-10 text-white"
+                            ? "border-white bg-[#7178FF] bg-opacity-10 text-white"
                             : "border-[#7B78FE] text-dark hover:bg-gray-100"
                         } ${
                           isAppreciateLoading

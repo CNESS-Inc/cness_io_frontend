@@ -2,6 +2,8 @@ import CartItemCard from "../components/CartItem";
 import BillingSummary from "../components/BillingSummary";
 import carticon from "../../../../assets/solar_cart-broken.svg";
 import nandhiji from '../../../../assets/nandhiji.svg';
+import Testimonial from "../components/Testimonial";
+import Footer from "../components/Footer";
 const cartItems = [
     { id: 1 },
     { id: 2 },
@@ -12,10 +14,18 @@ export default function CartPage() {
   return (
 
 
-  <div className="w-full flex flex-col gap-6">
-
+<div
+      className="
+        w-full
+        pt-20        /* mobile */
+        md:pt-16     /* tablet */
+        lg:pt-20       /* desktop */
+        flex flex-col
+        gap-6
+      "
+    > 
       {/* ================= CART HEADER ================= */}
-      <div className="flex items-center gap-3 pt-16 sm:pt-20 px-4 sm:px-0">
+<div className="flex items-center gap-3 px-4 sm:px-0">
         {/* Icon */}
 <img src={carticon} alt="cart" className="w-6 h-6"></img>
         {/* Title */}
@@ -75,6 +85,9 @@ export default function CartPage() {
       />
       </div>
     </div>
+
+    <Testimonial />
+    <Footer />
     </div>
 
   );

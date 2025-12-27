@@ -104,7 +104,7 @@ const EditDirectory: React.FC = () => {
       photoIndex: null,
     });
   const [hasExistingData, setHasExistingData] = useState<boolean>(false);
-  console.log("🚀 ~ EditDirectory ~ hasExistingData:", hasExistingData)
+  console.log("🚀 ~ EditDirectory ~ hasExistingData:", hasExistingData);
   // Review states
   const [reviews, setReviews] = useState<any[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
@@ -488,92 +488,92 @@ const EditDirectory: React.FC = () => {
     return { mobile_code: 0, mobile_no: 0 };
   };
 
-const onSubmit = async (data: DirectoryFormData) => {
-  setIsSubmitting(true);
+  const onSubmit = async (data: DirectoryFormData) => {
+    setIsSubmitting(true);
 
-  try {
-    // Parse phone number with dial code if available
-    const { mobile_code, mobile_no } = parsePhoneNumber(
-      data.contact,
-      phoneDialCode
-    );
+    try {
+      // Parse phone number with dial code if available
+      const { mobile_code, mobile_no } = parsePhoneNumber(
+        data.contact,
+        phoneDialCode
+      );
 
-    // Prepare the payload - conditionally include fields
-    const payload: any = {
-      bussiness_name: data.bussiness_name,
-      location: selectedLocation || null,
-      website: data.website || null,
-      mobile_no: mobile_no,
-      mobile_code: mobile_code,
-      about: data.about,
-      service_ids: data.services,
-    };
+      // Prepare the payload - conditionally include fields
+      const payload: any = {
+        bussiness_name: data.bussiness_name,
+        location: selectedLocation || null,
+        website: data.website || null,
+        mobile_no: mobile_no,
+        mobile_code: mobile_code,
+        about: data.about,
+        service_ids: data.services,
+      };
 
-    // Only include email if it has a value
-    if (data.email && data.email.trim() !== '') {
-      payload.email = data.email.trim();
-    }
+      // Only include email if it has a value
+      if (data.email && data.email.trim() !== "") {
+        payload.email = data.email.trim();
+      }
 
-    // Only include website if it has a value
-    if (data.website && data.website.trim() !== '') {
-      payload.website = data.website.trim();
-    }
+      // Only include website if it has a value
+      if (data.website && data.website.trim() !== "") {
+        payload.website = data.website.trim();
+      }
 
-    // Only include phone if contact has a value
-    if (data.contact && data.contact.trim() !== '') {
-      // Re-parse to ensure we have valid values
-      const parsedPhone = parsePhoneNumber(data.contact, phoneDialCode);
-      if (parsedPhone.mobile_code !== 0 && parsedPhone.mobile_no !== 0) {
-        payload.mobile_code = parsedPhone.mobile_code;
-        payload.mobile_no = parsedPhone.mobile_no;
+      // Only include phone if contact has a value
+      if (data.contact && data.contact.trim() !== "") {
+        // Re-parse to ensure we have valid values
+        const parsedPhone = parsePhoneNumber(data.contact, phoneDialCode);
+        if (parsedPhone.mobile_code !== 0 && parsedPhone.mobile_no !== 0) {
+          payload.mobile_code = parsedPhone.mobile_code;
+          payload.mobile_no = parsedPhone.mobile_no;
+        } else {
+          // If parsing failed, pass null or don't include
+          delete payload.mobile_code;
+          delete payload.mobile_no;
+        }
       } else {
-        // If parsing failed, pass null or don't include
+        // If contact is empty, don't include phone fields
         delete payload.mobile_code;
         delete payload.mobile_no;
       }
-    } else {
-      // If contact is empty, don't include phone fields
-      delete payload.mobile_code;
-      delete payload.mobile_no;
-    }
 
-    console.log("Payload:", payload);
+      console.log("Payload:", payload);
 
-    const response = await CreateOrUpdateBasicInfo(payload);
-    const status = response?.success?.status;
+      const response = await CreateOrUpdateBasicInfo(payload);
+      const status = response?.success?.status;
 
-    console.log("response:", response);
+      console.log("response:", response);
 
-    if (status) {
+      if (status) {
+        showToast({
+          message: response?.success?.message,
+          type: "success",
+          duration: 5000,
+        });
+        // navigate("/dashboard/DashboardDirectory");
+      } else {
+        showToast({
+          message: response?.error?.message,
+          type: "error",
+          duration: 5000,
+        });
+      }
+
+      // Submit business hours separately
+      await handleBusinessHoursSubmit(data);
+    } catch (error: any) {
+      console.log("🚀 ~ onSubmit ~ error:", error);
       showToast({
-        message: response?.success?.message,
-        type: "success",
-        duration: 5000,
-      });
-      // navigate("/dashboard/DashboardDirectory");
-    } else {
-      showToast({
-        message: response?.error?.message,
+        message:
+          error?.response?.data?.error?.message ||
+          "Failed to save directory information",
         type: "error",
         duration: 5000,
       });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Submit business hours separately
-    await handleBusinessHoursSubmit(data);
-  } catch (error: any) {
-    console.log("🚀 ~ onSubmit ~ error:", error);
-    showToast({
-      message:
-        error?.response?.data?.error?.message ||
-        "Failed to save directory information",
-      type: "error",
-      duration: 5000,
-    });
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
   // Handle business hours submission
   const handleBusinessHoursSubmit = async (data: DirectoryFormData) => {
@@ -1590,6 +1590,49 @@ const onSubmit = async (data: DirectoryFormData) => {
       hasFetched.current = true;
     }
   }, []);
+
+  const handleResetForm = () => {
+    // Reset form values
+    publicProfileForm.reset({
+      bussiness_name: "",
+      services: [],
+      contact: "",
+      website: "",
+      email: "",
+      about: "",
+      logo: null,
+      operationMode: "main",
+      days: defaultDays,
+      temporaryStartDate: "",
+      temporaryEndDate: "",
+      photos: null,
+      location: null,
+    });
+
+    // Clear all state variables
+    setSelectedLocation(null);
+    setPhoneDialCode("");
+    setLogoUrl("");
+    setLogoPreview("");
+    setPhotos([]);
+    setPhotoPreviews([]);
+    setEditingPhotoId(null);
+    setDeletingPhotoId(null);
+    setHasExistingData(false);
+
+    // Clear file inputs
+    if (photoInputRef.current) {
+      photoInputRef.current.value = "";
+    }
+
+    // Clear all edit photo refs
+    Object.values(editPhotoInputRefs.current).forEach((ref) => {
+      if (ref) ref.value = "";
+    });
+
+    // Clear any validation errors
+    clearErrors();
+  };
 
   return (
     <main className="flex-1 p-2 sm:p-4 flex flex-col items-end gap-4">
@@ -3044,7 +3087,7 @@ const onSubmit = async (data: DirectoryFormData) => {
         <div className="flex flex-col sm:flex-row items-center gap-3 self-end w-full sm:w-auto">
           <button
             type="button"
-            onClick={() => publicProfileForm.reset()}
+            onClick={handleResetForm}
             className="bg-white shadow-sm rounded-full px-5 py-3 flex items-center justify-center gap-2 w-full sm:w-auto"
           >
             <span className="text-[#081021] font-Rubik leading-[16.59px] text-sm sm:text-base">

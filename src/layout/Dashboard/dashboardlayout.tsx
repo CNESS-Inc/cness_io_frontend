@@ -9,6 +9,7 @@ import { MessagingProvider } from "../../components/Messaging/MessagingContext";
 import PersistentMessagingWidget from "../../components/Messaging/PersistentMessagingWidget";
 import { CartWishlistProvider } from "../../components/MarketPlace/context/CartWishlistContext";
 import MarketplaceNavBar from "../../features/marketplace/buyer/components/MarketplaceNavBar";
+import MarketSellerHeader from "../../features/marketplace/seller/components/MarketSellerHeader";
 const DashboardLayout = () => {
   const location = useLocation();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -33,29 +34,16 @@ const DashboardLayout = () => {
   const isDashboardTechPage =
     location.pathname === "/DashboardDirectory/dashboardtechnology";
 
-  const isMarketplacePage =
-    location.pathname.includes("/dashboard/new-marketplace") ||
-    location.pathname.includes("/dashboard/market-place") ||
-    location.pathname.includes("/dashboard/shop-detail") ||
-    location.pathname.includes("/dashboard/product-review") ||
-    location.pathname.includes("/dashboard/cart") ||
-    location.pathname.includes("/dashboard/collections") ||
-    location.pathname.includes("/dashboard/library") ||
-    location.pathname.includes("/dashboard/order-history") ||
-    location.pathname.includes("/dashboard/faqs") ||
-    location.pathname.includes("/dashboard/categories") ||
-    location.pathname.includes("/dashboard/shops") ||
-    location.pathname.includes("/dashboard/wishlist") ||
-    location.pathname.includes("/dashboard/checkout") ||
-    location.pathname.includes("/dashboard/payment-success") ||
-    location.pathname.includes("/dashboard/payment-failed");
+    
+     const isSellerPage  =
+    location.pathname.includes("dashboard/new-marketplace/seller")
 
-  const isSellerPage =
-    location.pathname.includes("/dashboard/seller-dashboard") ||
-    location.pathname.includes("/dashboard/products") ||
-    location.pathname.includes("/dashboard/orderlist") ||
-    location.pathname.includes("/dashboard/seller-sales");
-  location.pathname.includes("/dashboard/seller-help");
+  const isMarketplacePage =
+    location.pathname.includes("/dashboard/new-marketplace") && !isSellerPage;
+ 
+
+ 
+
 
   const isCreateShopPage =
     location.pathname.includes("/dashboard/createshop") ||
@@ -72,7 +60,7 @@ const DashboardLayout = () => {
   if (isMarketplacePage) {
     pageBackground = "bg-white";
   } else if (isCreateShopPage || isSellerPage) {
-    pageBackground = "bg-[#EEF3FF]"; // light blue background for seller pages
+    pageBackground = "bg-white"; // light blue background for seller pages
   }
 
   return (
@@ -105,38 +93,50 @@ const DashboardLayout = () => {
           )}
 
           {/* Desktop Headers */}
-          <div
-            className={`md:block transition-all duration-300 ${isMobileNavOpen ? "md:ml-60" : "md:ml-0"
-              }`}
-          >
-            {isMarketplacePage ? (
-              <>
-                {/* Fixed Dashboard Header */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  <DashboardHeader
-                    toggleMobileNav={toggleMobileNav}
-                    isMobileNavOpen={isMobileNavOpen}
-                  />
-                </div>
-{/* Marketplace Navbar */}
-  <div
-  className={`fixed top-[72px] z-40 bg-white transition-all duration-300
-    inset-x-0
-    ${isMobileNavOpen ? "md:ml-64" : "md:ml-0"}
-  `}
->
-  <MarketplaceNavBar />
-</div>
-               
-              </>
-            ) : (
-              <div className="relative">
-                <DashboardHeader
-                  toggleMobileNav={toggleMobileNav}
-                  isMobileNavOpen={isMobileNavOpen}
-                />
-              </div>
-            )}
+<div className={`md:block transition-all duration-300 ${isMobileNavOpen ? "md:ml-60" : "md:ml-0"}`}>
+
+  {/* ================= SELLER PAGES ================= */}
+  {isSellerPage && (
+    <>
+      <div className="fixed top-0 left-0 right-0 z-50 bg-[#EEF3FF] border-b border-gray-100">
+        <DashboardHeader
+          toggleMobileNav={toggleMobileNav}
+          isMobileNavOpen={isMobileNavOpen}
+        />
+      </div>
+
+      <div className={`fixed top-[72px] z-40 inset-x-0 transition-all duration-300
+        ${isMobileNavOpen ? "md:ml-64" : "md:ml-0"}`}>
+        <MarketSellerHeader />
+      </div>
+    </>
+  )}
+
+  {/* ================= MARKETPLACE BUYER PAGES ================= */}
+  {isMarketplacePage && !isSellerPage && (
+    <>
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
+        <DashboardHeader
+          toggleMobileNav={toggleMobileNav}
+          isMobileNavOpen={isMobileNavOpen}
+        />
+      </div>
+
+      <div className={`fixed top-[72px] z-40 bg-white inset-x-0 transition-all duration-300
+        ${isMobileNavOpen ? "md:ml-64" : "md:ml-0"}`}>
+        <MarketplaceNavBar />
+      </div>
+    </>
+  )}
+
+  {/* ================= OTHER DASHBOARD PAGES ================= */}
+  {!isMarketplacePage && !isSellerPage && (
+    <DashboardHeader
+      toggleMobileNav={toggleMobileNav}
+      isMobileNavOpen={isMobileNavOpen}
+    />
+  )}
+
           </div>
 
           {/* Sidebar */}

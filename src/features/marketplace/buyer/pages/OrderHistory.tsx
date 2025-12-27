@@ -2,6 +2,8 @@ import OrderHeader from "../components/Orders/OrderHeader";
 import Orderplace from "../components/Orders/OrderPlace";
 import OrderContent from "../components/Orders/OrderContent";
 import ContactCard from "../components/Orders/ContactCard";
+import WhyCness from '../../../../assets/whycness.jpg'; 
+import nandhiji from '../../../../assets/nandhiji.svg';
 const orders = [
   {
     orderId: "#ORD-10293",
@@ -17,7 +19,7 @@ const orders = [
       image: "https://cdn.cness.io/feat1.png",
       author: {
         name: "Nandhiji",
-        avatar: "/assets/nandhiji.svg",
+        avatar: nandhiji
       },
     },
   },
@@ -32,18 +34,26 @@ const orders = [
       description: "A meditative journey through stillness.",
       category: "Podcast",
       categoryColor: "blue",
-      image: "https://cdn.cness.io/feat2.png",
+      image: WhyCness,
       author: {
         name: "Arul Master",
-        avatar: "/assets/arul.svg",
+        avatar: nandhiji
       },
     },
   },
 ];
 export default function OrderHistory() {
   return (
-    <div className="mt-6 grid grid-cols-1 lg:grid-cols-[1fr_265px] gap-6 items-start">
-      
+<div
+  className="
+    pt-20        /* mobile */
+    md:pt-16     /* tablet */
+    lg:pt-2     /* desktop */
+    grid grid-cols-1 lg:grid-cols-[1fr_265px]
+    gap-6
+    items-start
+  "
+>    
       {/* LEFT COLUMN */}
       <div className="flex flex-col gap-6">
         
@@ -73,7 +83,7 @@ export default function OrderHistory() {
       </div>
 
       {/* RIGHT COLUMN */}
-      <div className="sticky top-48">
+      <div className="sticky top-44">
         <ContactCard />
       </div>
 

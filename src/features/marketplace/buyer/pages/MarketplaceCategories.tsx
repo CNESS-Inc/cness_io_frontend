@@ -159,13 +159,21 @@ const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
 const visibleTrendingProducts = trendingProducts.slice(0, visibleCount);
 
   return (
-<div className="w-full flex flex-col gap-[30px] relative px-3 sm:px-0">
-
+<div
+  className="
+    w-full
+    flex flex-col
+    gap-[30px]
+    relative
+    px-3 sm:px-0
+    pt-20        /* mobile */
+    md:pt-16     /* tablet */
+    lg:pt-25     /* desktop */
+  "
+>
     
       {/* ================= MOOD SELECTOR ================= */}
-      <section className="w-full px-[1px]">
-        <MoodSelector />
-      </section>
+      
      {/* ================= CATEGORY + CNESSS ================= */}
     <section className="w-full px-[20px]">
   <div className="flex flex-col lg:flex-row w-full items-start gap-[20px]">
@@ -185,7 +193,7 @@ const visibleTrendingProducts = trendingProducts.slice(0, visibleCount);
   </div>
 </section>
 
-  <section className="w-full px-[1px]">
+  <section>
         <MoodSelector />
       </section>
 
@@ -236,7 +244,7 @@ const visibleTrendingProducts = trendingProducts.slice(0, visibleCount);
     <Filter />
   </Responsivefiletr>
 </div>
-       <div className="flex gap-6 p-4 lg:p-6">
+       <div className="flex gap-6 ">
   <div className="flex-1">
 
     {activeTab === "trending" && (

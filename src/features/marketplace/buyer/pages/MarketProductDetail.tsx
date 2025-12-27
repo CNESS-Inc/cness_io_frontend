@@ -51,7 +51,7 @@ export default function MarketProductDetail() {
         </div>
 
         <ProductHero product={MOCK_PRODUCT} />
-        <div className="flex flex-col items-start self-stretch shrink-0 flex-nowrap relative">
+        {/* <div className="flex flex-col items-start self-stretch shrink-0 flex-nowrap relative">
           <div className="flex pt-0 pr-[20px] pb-0 pl-[20px] flex-col gap-[10px] items-start self-stretch shrink-0 flex-nowrap relative">
             <div className="flex pt-[20px] pr-0 pb-[20px] pl-0 flex-col gap-[33px] justify-center items-start self-stretch shrink-0 flex-nowrap rounded-[24px] relative">
               <div className="flex gap-[20px] items-start self-stretch shrink-0 flex-nowrap relative">
@@ -61,6 +61,14 @@ export default function MarketProductDetail() {
                 <ReviewsSection />
               </div>
             </div>
+          </div>
+        </div> */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
+          <div className="lg:col-span-2">
+            <ProductDescription />
+          </div>
+          <div className="">
+            <ReviewsSection />
           </div>
         </div>
 

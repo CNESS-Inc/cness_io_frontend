@@ -1,5 +1,6 @@
 import React from "react";
 import profilefill from "../../assets/profile-fill.svg";
+import { useNavigate } from "react-router-dom";
 
 interface TagButtonProps {
   text: string;
@@ -71,6 +72,8 @@ const UserProfileCard: React.FC<ProfileCardNewProps> = ({
     ? levels.find((el) => el.key === badge?.level)?.img
     : "";
 
+    const navigate = useNavigate();
+
   return (
     <div className="px-3 sm:px-6 py-1 bg-white rounded-2xl">
       {/* TOP SECTION */}
@@ -133,13 +136,12 @@ const UserProfileCard: React.FC<ProfileCardNewProps> = ({
           </div>
         </div>
 
-        {/* <button
-          onClick={() => navigate(`/dashboard/Profile/editprofile`)}
-          className="bg-[#7077FE] text-white px-4 sm:px-6 py-2 rounded-full flex items-center gap-2 text-sm font-semibold"
+        <button
+          className="flex items-center gap-1 mb-3 text-black border border-[#D77CFF] rounded-full px-4 py-1.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-medium hover:bg-gray-50 transition"
+          onClick={() => navigate("/dashboard/MyConnection?t=suggestion")}
         >
-          <Pencil className="w-4 h-4" />
-          Edit Profile
-        </button> */}
+          Go Back
+        </button>
       </div>
 
       {/* About */}
