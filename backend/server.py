@@ -1421,6 +1421,143 @@ async def get_circles(
         "limit": limit
     }
 
+# ============== RECENT ACTIVITY APIs ==============
+
+@app.get("/api/circles/activities/recent")
+async def get_recent_activities(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    circle_id: Optional[str] = None
+):
+    """
+    Get recent activities across all circles or a specific circle.
+    Activities include: member joins, new posts, comments, likes
+    """
+    activities = []
+    
+    # Build base query for filtering by circle if specified
+    circle_query = {"circle_id": circle_id} if circle_id else {}
+    
+    # 1. Get recent member joins
+    member_joins = await circle_members_collection.find(
+        circle_query,
+        {"_id": 0}
+    ).sort("joined_at", -1).limit(limit * 2).to_list(limit * 2)
+    
+    for member in member_joins:
+        if member.get("joined_at"):
+            circle = await circles_collection.find_one({"id": member.get("circle_id")}, {"_id": 0, "name": 1, "image_url": 1})
+            activities.append({
+                "id": f"join_{member.get('id', '')}",
+                "type": "member_join",
+                "action": "joined",
+                "user_id": member.get("user_id"),
+                "user_name": member.get("user_name", "A member"),
+                "circle_id": member.get("circle_id"),
+                "circle_name": circle.get("name") if circle else "Unknown Circle",
+                "circle_image": circle.get("image_url") if circle else None,
+                "timestamp": member.get("joined_at").isoformat() if isinstance(member.get("joined_at"), datetime) else member.get("joined_at"),
+                "description": f"joined {circle.get('name') if circle else 'a circle'}"
+            })
+    
+    # 2. Get recent posts
+    posts = await circle_posts_collection.find(
+        {**circle_query, "status": {"$ne": "suspended"}},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit * 2).to_list(limit * 2)
+    
+    for post in posts:
+        if post.get("created_at"):
+            circle = await circles_collection.find_one({"id": post.get("circle_id")}, {"_id": 0, "name": 1, "image_url": 1})
+            activities.append({
+                "id": f"post_{post.get('id', '')}",
+                "type": "new_post",
+                "action": "posted",
+                "user_id": post.get("author_id"),
+                "user_name": post.get("author_name", "Someone"),
+                "circle_id": post.get("circle_id"),
+                "circle_name": circle.get("name") if circle else "Unknown Circle",
+                "circle_image": circle.get("image_url") if circle else None,
+                "post_id": post.get("id"),
+                "content_preview": (post.get("content", "")[:100] + "...") if len(post.get("content", "")) > 100 else post.get("content", ""),
+                "timestamp": post.get("created_at").isoformat() if isinstance(post.get("created_at"), datetime) else post.get("created_at"),
+                "description": f"shared a post in {circle.get('name') if circle else 'a circle'}"
+            })
+    
+    # 3. Get recent comments
+    comments = await circle_comments_collection.find(
+        {},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit * 2).to_list(limit * 2)
+    
+    for comment in comments:
+        if comment.get("created_at"):
+            # Get the post to find the circle
+            post = await circle_posts_collection.find_one({"id": comment.get("post_id")}, {"_id": 0, "circle_id": 1})
+            if post:
+                if circle_id and post.get("circle_id") != circle_id:
+                    continue
+                circle = await circles_collection.find_one({"id": post.get("circle_id")}, {"_id": 0, "name": 1, "image_url": 1})
+                activities.append({
+                    "id": f"comment_{comment.get('id', '')}",
+                    "type": "comment",
+                    "action": "commented",
+                    "user_id": comment.get("author_id"),
+                    "user_name": comment.get("author_name", "Someone"),
+                    "circle_id": post.get("circle_id"),
+                    "circle_name": circle.get("name") if circle else "Unknown Circle",
+                    "circle_image": circle.get("image_url") if circle else None,
+                    "post_id": comment.get("post_id"),
+                    "content_preview": (comment.get("content", "")[:80] + "...") if len(comment.get("content", "")) > 80 else comment.get("content", ""),
+                    "timestamp": comment.get("created_at").isoformat() if isinstance(comment.get("created_at"), datetime) else comment.get("created_at"),
+                    "description": f"commented on a post in {circle.get('name') if circle else 'a circle'}"
+                })
+    
+    # 4. Get recent likes
+    likes = await circle_post_likes_collection.find(
+        {},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    for like in likes:
+        if like.get("created_at"):
+            post = await circle_posts_collection.find_one({"id": like.get("post_id")}, {"_id": 0, "circle_id": 1, "author_name": 1})
+            if post:
+                if circle_id and post.get("circle_id") != circle_id:
+                    continue
+                circle = await circles_collection.find_one({"id": post.get("circle_id")}, {"_id": 0, "name": 1, "image_url": 1})
+                activities.append({
+                    "id": f"like_{like.get('id', '')}",
+                    "type": "like",
+                    "action": "liked",
+                    "user_id": like.get("user_id"),
+                    "user_name": like.get("user_name", "Someone"),
+                    "circle_id": post.get("circle_id"),
+                    "circle_name": circle.get("name") if circle else "Unknown Circle",
+                    "circle_image": circle.get("image_url") if circle else None,
+                    "post_id": like.get("post_id"),
+                    "timestamp": like.get("created_at").isoformat() if isinstance(like.get("created_at"), datetime) else like.get("created_at"),
+                    "description": f"liked a post in {circle.get('name') if circle else 'a circle'}"
+                })
+    
+    # Sort all activities by timestamp (most recent first)
+    activities.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+    
+    # Paginate
+    total = len(activities)
+    start_idx = (page - 1) * limit
+    end_idx = start_idx + limit
+    paginated_activities = activities[start_idx:end_idx]
+    
+    return {
+        "success": True,
+        "activities": paginated_activities,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "has_more": end_idx < total
+    }
+
 @app.get("/api/circles/personalized")
 async def get_personalized_circles(
     user_id: str = Query(...),
