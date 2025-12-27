@@ -227,6 +227,7 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ circleId, maxItems = 5 
   }
 
   // Regular card view for sidebar
+  if (loading) {
     return (
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
         <div className="flex items-center gap-2 mb-4">
