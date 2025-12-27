@@ -1421,6 +1421,131 @@ async def get_circles(
         "limit": limit
     }
 
+@app.get("/api/circles/personalized")
+async def get_personalized_circles(
+    user_id: str = Query(...),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get personalized circles for the user based on:
+    1. User's professions and interests from their profile
+    2. User's location (nearby local circles)
+    3. Sorted by most popular (member_count)
+    
+    Returns circles in this priority order:
+    - Circles matching user's professions
+    - Circles matching user's interests
+    - Local circles near user's location
+    """
+    auth_token = authorization[7:] if authorization and authorization.startswith("Bearer ") else None
+    
+    # Get user's professions, interests, and location from profile
+    user_profession_ids = []
+    user_interest_ids = []
+    user_country = None
+    user_province = None
+    user_city = None
+    
+    if auth_token:
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(
+                    f"{EXTERNAL_API_BASE}/api/profile",
+                    headers={"Authorization": f"Bearer {auth_token}"}
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    profile_data = data.get("data", {}).get("data", {})
+                    if not profile_data:
+                        profile_data = data.get("data", {})
+                    
+                    # Extract profession IDs
+                    for prof in profile_data.get("professions", []):
+                        prof_id = prof.get("profession_id") or prof.get("id")
+                        if prof_id:
+                            user_profession_ids.append(str(prof_id))
+                    
+                    # Extract interest IDs
+                    for interest in profile_data.get("interests", []):
+                        int_id = interest.get("id") or interest.get("interest_id")
+                        if int_id:
+                            user_interest_ids.append(str(int_id))
+                    
+                    # Extract location
+                    country_data = profile_data.get("country", {})
+                    if isinstance(country_data, dict):
+                        user_country = country_data.get("name")
+                    location_data = profile_data.get("location", {})
+                    if isinstance(location_data, dict):
+                        user_city = location_data.get("city")
+                    
+                    print(f"[DEBUG] Personalized - User professions: {user_profession_ids}")
+                    print(f"[DEBUG] Personalized - User interests: {user_interest_ids}")
+                    print(f"[DEBUG] Personalized - User location: {user_country}, {user_city}")
+        except Exception as e:
+            print(f"[ERROR] Failed to fetch user profile for personalization: {e}")
+    
+    # Build query to find circles matching user's professions OR interests OR location
+    or_conditions = []
+    
+    # Add profession matches
+    if user_profession_ids:
+        or_conditions.append({"profession_id": {"$in": user_profession_ids}})
+    
+    # Add interest matches
+    if user_interest_ids:
+        or_conditions.append({"interest_id": {"$in": user_interest_ids}})
+    
+    # Add local circles (same country)
+    if user_country:
+        or_conditions.append({"country": {"$regex": user_country, "$options": "i"}})
+    
+    # If we have conditions, use them; otherwise return popular circles
+    if or_conditions:
+        query = {"$or": or_conditions}
+    else:
+        query = {}  # Return all circles sorted by popularity if no profile data
+    
+    # Sort by member_count (most popular first)
+    skip = (page - 1) * limit
+    
+    cursor = circles_collection.find(query, {"_id": 0}).sort("member_count", -1).skip(skip).limit(limit)
+    circles = await cursor.to_list(length=limit)
+    
+    # Add relevance info to each circle
+    for circle in circles:
+        if isinstance(circle.get("created_at"), datetime):
+            circle["created_at"] = circle["created_at"].isoformat()
+        if isinstance(circle.get("updated_at"), datetime):
+            circle["updated_at"] = circle["updated_at"].isoformat()
+        
+        # Mark why this circle is relevant
+        relevance = []
+        if circle.get("profession_id") in user_profession_ids:
+            relevance.append("profession_match")
+        if circle.get("interest_id") in user_interest_ids:
+            relevance.append("interest_match")
+        if user_country and circle.get("country") and user_country.lower() in circle.get("country", "").lower():
+            relevance.append("location_match")
+        circle["relevance"] = relevance
+    
+    total = await circles_collection.count_documents(query)
+    
+    return {
+        "success": True,
+        "circles": circles,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "personalization": {
+            "user_profession_count": len(user_profession_ids),
+            "user_interest_count": len(user_interest_ids),
+            "user_country": user_country
+        }
+    }
+
 @app.get("/api/circles/by-location")
 async def get_circles_by_location(
     country: str,
